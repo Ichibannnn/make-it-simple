@@ -1,19 +1,43 @@
-import { Stack, Typography } from "@mui/material";
-import React from "react";
+import {
+  Drawer,
+  IconButton,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { theme } from "../theme/theme";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setSidebar, toggleSidebar } from "../features/sidebar/sidebarSlice";
+import { user } from "../features/user/userSlice";
 
 const Sidebar = () => {
+  const isVisible = useSelector((state) => state.sidebar.isVisible);
+  const dispatch = useDispatch();
+  const hideSidebar = useMediaQuery("(max-width: 1069px)");
+
+  useEffect(() => {
+    dispatch(setSidebar(!hideSidebar));
+  }, [dispatch, hideSidebar]);
+
+  console.log("sidebar: ", hideSidebar);
+
   return (
-    <Stack
-      sx={{
-        width: "280px",
-        height: "100%",
-        backgroundColor: theme.palette.bgForm.black2,
-      }}
-    >
-      <SidebarHeader />
-      <SidebarList />
-      <SidebarFooter />
+    <Stack>
+      {isVisible && (
+        <Stack
+          sx={{
+            height: "100%",
+            backgroundColor: theme.palette.bgForm.black2,
+            width: "280px",
+          }}
+        >
+          <SidebarHeader />
+          <SidebarList />
+          <SidebarFooter />
+        </Stack>
+      )}
     </Stack>
   );
 };
@@ -29,6 +53,7 @@ const SidebarHeader = () => {
         alignItems: "center",
         padding: "24px",
         gap: "5px",
+        // width: "280px",
       }}
     >
       <img
@@ -64,7 +89,7 @@ const SidebarHeader = () => {
         <Typography
           sx={{
             margin: "0",
-            fontSize: "13px",
+            fontSize: "14px",
             fontWeight: "450",
             color: "#A0AEC0",
             lineHeight: "1.2",
@@ -79,7 +104,17 @@ const SidebarHeader = () => {
 };
 
 const SidebarList = () => {
-  return <div>{/* Content */}</div>;
+  const userPermission = useSelector((state) => state.user.permissions);
+
+  return (
+    <Stack>
+      {/* {
+        userPermission.includes("User Management") && (
+          
+        )
+      } */}
+    </Stack>
+  );
 };
 
 const SidebarFooter = () => {

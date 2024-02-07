@@ -11,7 +11,7 @@ const black = {
   700: "#10131a",
   800: "#0a0d12",
   900: "#050609",
-  900: "#0E1320",
+  1000: "#0E1320",
 };
 
 // const purple = {
@@ -136,11 +136,9 @@ const theme = createTheme({
     MuiMenuItem: {
       styleOverrides: {
         root: {
-          "& .MuiMenuItem-root": {
-            backgroundColor: "#ffffff",
-          },
-          "& .MuiMenuItem-hover": {
-            backgroundColor: "#ffffff",
+          "&:hover": {
+            backgroundColor: "#1A222F",
+            color: "#9e77ed", // Change the text color when hovering
           },
         },
       },
@@ -149,6 +147,19 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#A0AEC0",
+          "&:hover": {
+            color: "#9e77ed",
+            transform: "scale(1.3)",
+          },
+        },
+      },
+    },
+    MuiMenuList: {
+      root: {
+        color: "#A0AEC0",
+        "&:hover": {
+          color: "#9e77ed",
+          transform: "scale(1.1)",
         },
       },
     },
@@ -156,6 +167,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#A0AEC0",
+          "&:hover": {
+            color: "#9e77ed",
+            transform: "scale(1.1)",
+          },
         },
       },
     },

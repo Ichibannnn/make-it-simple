@@ -9,6 +9,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import React from "react";
 import { theme } from "../theme/theme";
@@ -19,14 +20,18 @@ import PersonIcon from "@mui/icons-material/Person";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUserDetails } from "../features/user/userSlice";
 import ReusableAlert from "../hooks/ReusableAlert";
+import { toggleSidebar } from "../features/sidebar/sidebarSlice";
 
 const Header = () => {
+  const hideMenu = useMediaQuery("(max-width: 1069px)");
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -36,7 +41,7 @@ const Header = () => {
   const fullName = useSelector((state) => state.user.fullname);
   const userName = useSelector((state) => state.user.username);
 
-  // console.log("Details: ", userDetails);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({
@@ -74,6 +79,10 @@ const Header = () => {
     setShowAlert(false);
   };
 
+  const toggleSidebarHandler = () => {
+    dispatch(toggleSidebar());
+  };
+
   return (
     <Stack
       sx={{
@@ -88,7 +97,15 @@ const Header = () => {
         paddingRight: "16px",
       }}
     >
-      <Box></Box>
+      <Box>
+        {hideMenu && (
+          <Box>
+            <IconButton onClick={toggleSidebarHandler}>
+              <MenuOutlinedIcon />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
 
       <Box>
         <IconButton>
@@ -107,9 +124,6 @@ const Header = () => {
           open={open}
           onClose={closeHandler}
           onClick={closeHandler}
-          // sx={{ backgroundColor: "red" }}
-          // transformOrigin={{ horizontal: "right", vertical: "top" }}
-          // anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
           <MenuItem onClick={closeHandler}>
             <Box
@@ -125,7 +139,7 @@ const Header = () => {
                 {fullName}
               </Typography>
               <Typography
-                sx={{ fontSize: "1rem", fontWeight: "400", lineWeight: "1.5" }}
+                sx={{ fontSize: ".8rem", fontWeight: "400", lineWeight: "1.5" }}
               >
                 {userName}
               </Typography>
@@ -136,19 +150,19 @@ const Header = () => {
             <ListItemIcon>
               <PersonAdd fontSize="small" />
             </ListItemIcon>
-            <Typography color="#A0AEC0">Add another account</Typography>
+            <Typography>Add another account</Typography>
           </MenuItem>
           <MenuItem onClick={closeHandler}>
             <ListItemIcon>
               <Settings fontSize="small" />
             </ListItemIcon>
-            Settings
+            <Typography>Settings</Typography>
           </MenuItem>
           <MenuItem onClick={logoutHandler}>
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>
-            Logout
+            <Typography>Logout</Typography>
           </MenuItem>
         </Menu>
       </Box>

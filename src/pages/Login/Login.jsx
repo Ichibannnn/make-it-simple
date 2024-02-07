@@ -167,7 +167,12 @@ const LoginForm = () => {
   const loginHandler = async (data) => {
     try {
       const res = await logIn(data).unwrap();
+
+      // console.log("Response: ", res);
       const { token, ...user } = res.value;
+
+      // console.log("Token: ", token);
+      // console.log("User: ", user);
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
@@ -175,7 +180,7 @@ const LoginForm = () => {
       dispatch(setUserDetails(user));
 
       navigate("/user-management/user-account", { replace: true });
-      window.location.reload(false);
+      // window.location.reload(false);
       setAlertData({
         severity: "success",
         title: "Success",
