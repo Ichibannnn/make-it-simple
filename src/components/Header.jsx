@@ -86,7 +86,6 @@ const Header = () => {
   return (
     <Stack
       sx={{
-        display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -139,7 +138,12 @@ const Header = () => {
                 {fullName}
               </Typography>
               <Typography
-                sx={{ fontSize: ".8rem", fontWeight: "400", lineWeight: "1.5" }}
+                sx={{
+                  fontSize: ".8rem",
+                  fontWeight: "400",
+                  lineWeight: "1.5",
+                  color: "#A0AEC0",
+                }}
               >
                 {userName}
               </Typography>

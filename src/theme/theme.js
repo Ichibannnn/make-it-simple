@@ -45,6 +45,11 @@ const theme = createTheme({
       black2: "#1C2536",
       black3: "#111927",
     },
+    text: {
+      main: "#EDF2F7",
+      secondary: "#A0AEC0",
+      accent: "#9e77ed",
+    },
     primary: {
       main: "#9e77ed",
     },
@@ -62,17 +67,16 @@ const theme = createTheme({
     },
   },
   typography: {
-    color: {
-      main: "#EDF2F7",
-      secondary: "#A0AEC0",
-      accent: "#9e77ed",
-    },
+    fontFamily: "Plus Jakarta Sans",
     h6: {
       display: "block",
       marginBlockStart: "2.33rem",
       marginBlockEnd: "2.33rem",
       marginInlineStart: "0px",
       marginInlineEnd: "0px",
+    },
+    h4: {
+      fontWeight: "700",
     },
     h1: {
       display: "block",
@@ -119,7 +123,7 @@ const theme = createTheme({
           fontSize: "0.875rem",
           fontWeight: "600px",
           borderRadius: "12px",
-          // textTransform: "capitalize",
+          textTransform: "capitalize",
           boxShadow: "rgba(0, 0, 0, 0.24) 0px 1px 2px",
           boxSizing: "border-box",
         },
@@ -143,13 +147,18 @@ const theme = createTheme({
         },
       },
     },
+    MuiListItemButton: {
+      defaultProps: {
+        disableTouchRipple: true,
+      },
+    },
     MuiIconButton: {
       styleOverrides: {
         root: {
           color: "#A0AEC0",
           "&:hover": {
             color: "#9e77ed",
-            transform: "scale(1.3)",
+            // transform: "scale(1.3)",
           },
         },
       },
@@ -157,9 +166,26 @@ const theme = createTheme({
     MuiMenuList: {
       root: {
         color: "#A0AEC0",
+        paddingTop: 0,
+        paddingBottom: 0,
         "&:hover": {
           color: "#9e77ed",
-          transform: "scale(1.1)",
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          color: "#A0AEC0",
+          borderRadius: "12px",
+          "&:hover": {
+            backgroundColor: "#252E3E",
+          },
+          "&:focus": {
+            backgroundColor: "#252E3E",
+            color: "#EDF2F7",
+          },
+          fontSize: "15px",
         },
       },
     },
@@ -167,9 +193,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#A0AEC0",
+          minWidth: "37px",
+          padding: "0px",
           "&:hover": {
             color: "#9e77ed",
-            transform: "scale(1.1)",
+          },
+          "&:focus": {
+            color: "#9e77ed",
           },
         },
       },

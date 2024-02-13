@@ -9,7 +9,15 @@ const LandingPage = () => {
   return (
     <Stack sx={{ flexDirection: "row", height: "100vh" }}>
       <Sidebar />
-      <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          overflowY: "auto",
+          flex: 1,
+        }}
+      >
         <Header />
         <MainContent />
       </Box>
