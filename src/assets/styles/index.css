@@ -1,12 +1,6 @@
 /* @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap"); */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap");
 
-/* * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-} */
-
 .paper-color {
   background: radial-gradient(
     circle at 44% 42%,
@@ -27,7 +21,6 @@
 
 .login-icon {
   width: 170px;
-  /* height: 100px; */
   object-fit: fill;
   z-index: -1;
   top: 0;
@@ -39,26 +32,62 @@
   background: linear-gradient(237deg, #111927 0%, #1a202c 100%);
 }
 
-/* .sidebar-text {
-  margin: 0;
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-weight: 700;
-  line-height: 1.5;
-} */
-
 .logo-sidebar {
-  /* border-color: #2f3746; */
-  /* border-radius: 8px;
-  border-style: solid;
-  border-width: 1px; */
   padding: 2px;
 }
 
-/* .logo-title {
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  background-image: linear-gradient(120deg, #973efe, #c20aff);
-  background-clip: text;
-  color: transparent;
+/* .my-swal {
+  z-index: 99999999 !important;
+}
+
+.my-swal-title {
+  font-size: 16px !important;
+}
+
+.my-swal-text {
+  font-size: 30px !important;
 } */
+
+/* .swal-container {
+  z-index: 99999999 !important;
+}
+
+.swal-custom-title {
+  font-size: 20px !important;
+}
+
+.swal-custom-text {
+  font-size: 30px !important;
+} */
+
+.custom-container {
+  z-index: 99999999 !important;
+}
+
+.custom-title {
+  font-size: 20px !important;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.custom-text {
+  font-size: 15px !important;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.custom-icon {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  position: relative;
+  box-sizing: content-box;
+}
+
+.custom-confirm-btn {
+  font-size: 13px !important;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.custom-cancel-btn {
+  font-size: 13px !important;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}

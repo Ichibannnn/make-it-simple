@@ -3,6 +3,7 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Divider,
   OutlinedInput,
   Stack,
   Tab,
@@ -15,6 +16,7 @@ import {
   TableRow,
   Tabs,
   Typography,
+  capitalize,
 } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "../../../theme/theme";
@@ -70,9 +72,21 @@ const UserAccounts = () => {
       title: "Are you sure?",
       text: "This will move this user to the archived tab.",
       icon: "warning",
+      color: "white",
       showCancelButton: true,
+      background: "#111927",
       confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#d33",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         archiveUser(data)
@@ -106,9 +120,21 @@ const UserAccounts = () => {
       title: "Are you sure?",
       text: "This will reset the password of this user.",
       icon: "warning",
+      color: "white",
       showCancelButton: true,
+      background: "#111927",
       confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#d33",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         resetUser(data)
@@ -135,6 +161,8 @@ const UserAccounts = () => {
     });
   };
 
+  console.log("Data: ", data);
+
   return (
     <Stack
       sx={{
@@ -143,7 +171,7 @@ const UserAccounts = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "64px 40px 64px",
+        padding: "44px 94px 94px 94px",
       }}
     >
       <Stack>
@@ -186,71 +214,165 @@ const UserAccounts = () => {
               </Button>
             </Stack>
           </Stack>
-          <Stack alignItems="center">
-            <Button
-              variant="contained"
-              size="large"
-              color="primary"
-              startIcon={<AddOutlined />}
-              onClick={onToggle}
-            >
-              Add
-            </Button>
-          </Stack>
         </Stack>
       </Stack>
 
       <Stack
-      // sx={{ backgroundColor: theme.palette.bgForm.black2, padding: "20px", borderRadius: "" }}
+        sx={{
+          backgroundColor: theme.palette.bgForm.black3,
+          borderRadius: "20px",
+          marginTop: "20px",
+        }}
       >
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          // sx={{ padding: "20px", overflow: "hidden", }}
+        >
           <Tabs value={status} onChange={(_, value) => setStatus(value)}>
-            <Tab value="" label="All" wrapped />
-            <Tab value="true" label="Active" />
-            <Tab value="false" label="Archived" />
+            <Tab
+              value=""
+              label="All"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
+            <Tab
+              value="true"
+              label="Active"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
+            <Tab
+              value="false"
+              label="Archived"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
           </Tabs>
+        </Stack>
 
+        <Divider
+          variant="fullWidth"
+          sx={{ background: "#2D3748", marginTop: "1px" }}
+        />
+
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ marginTop: "10px", padding: "20px" }}
+          gap={4}
+        >
           <OutlinedInput
-            placeholder="Search"
-            startAdornment={<Search />}
+            flex="1"
+            placeholder="Search users"
+            startAdornment={
+              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
+            }
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            sx={{
+              flex: 1,
+              borderRadius: "15px",
+              fontSize: "small",
+              fontWeight: 400,
+              lineHeight: "1.4375rem",
+              // backgroundColor: "#111927",
+            }}
           />
+          <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            startIcon={<AddOutlined />}
+            onClick={onToggle}
+          >
+            Add
+          </Button>
         </Stack>
 
         <TableContainer>
-          <Table>
+          <Table sx={{ borderBottom: "none" }}>
             <TableHead>
               <TableRow>
                 <TableCell
-                  sx={{ color: "#A0AEC0", fontWeight: 700 }}
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
                   align="center"
                 >
                   LINE NO.
                 </TableCell>
-                <TableCell sx={{ color: "#A0AEC0", fontWeight: 700 }}>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
                   FULLNAME
                 </TableCell>
-                <TableCell sx={{ color: "#A0AEC0", fontWeight: 700 }}>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
                   USERNAME
                 </TableCell>
-                <TableCell sx={{ color: "#A0AEC0", fontWeight: 700 }}>
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
                   ROLE
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#A0AEC0", fontWeight: 700 }}
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
                   align="center"
                 >
-                  PERMISSIONS
+                  ACCOUNT ACCESS
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#A0AEC0", fontWeight: 700 }}
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
                   align="center"
                 >
                   STATUS
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#A0AEC0", fontWeight: 700 }}
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
                   align="center"
                 >
                   ACTIONS
@@ -263,35 +385,84 @@ const UserAccounts = () => {
                 !isFetching &&
                 data?.value?.users?.map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell sx={{ color: "#A0AEC0" }} align="center">
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
                       {index + 1}
                     </TableCell>
 
-                    <TableCell sx={{ color: "#A0AEC0" }}>
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                    >
                       {item.fullname}
                     </TableCell>
 
-                    <TableCell sx={{ color: "#A0AEC0" }}>
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                    >
                       {item.username}
                     </TableCell>
 
-                    <TableCell sx={{ color: "#A0AEC0" }}>
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                    >
                       {item.user_Role_Name}
                     </TableCell>
 
-                    <TableCell sx={{ color: "#A0AEC0" }} align="center">
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
                       <UserAccountPermissions permissions={item.permission} />
                     </TableCell>
 
-                    <TableCell sx={{ color: "#A0AEC0" }} align="center">
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
                       <Chip
                         variant="outlined"
+                        sx={{
+                          fontSize: "small",
+                        }}
                         color={item.is_Active ? "success" : "warning"}
                         label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                       />
                     </TableCell>
 
-                    <TableCell sx={{ color: "#A0AEC0" }} align="center">
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
                       <UserAccountAction
                         data={item}
                         status={status}

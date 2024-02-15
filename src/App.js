@@ -11,8 +11,6 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./app/router";
 import { theme } from "./theme/theme";
 
-import "./assets/styles/index.css";
-
 const App = () => {
   return (
     <ThemeProvider theme={theme}>

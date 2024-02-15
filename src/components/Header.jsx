@@ -149,7 +149,7 @@ const Header = () => {
               </Typography>
             </Box>
           </MenuItem>
-          <Divider />
+          <Divider color="#1C2536" variant="fullWidth" />
           <MenuItem onClick={closeHandler}>
             <ListItemIcon>
               <PersonAdd fontSize="small" />

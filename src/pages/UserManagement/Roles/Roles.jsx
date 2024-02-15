@@ -229,14 +229,14 @@ const Roles = () => {
                     </TableCell>
 
                     <TableCell sx={{ color: "#A0AEC0" }} align="center">
-                      <RolePermissions permissions={item.permission} />
+                      <RolePermissions permissions={item.permissions} />
                     </TableCell>
 
                     <TableCell sx={{ color: "#A0AEC0" }} align="center">
                       <Chip
                         variant="outlined"
-                        color={item.is_Active ? "success" : "warning"}
-                        label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                        color={item.is_Tagged ? "success" : "warning"}
+                        label={item.is_Tagged ? "ACTIVE" : "INACTIVE"}
                       />
                     </TableCell>
 

@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material";
-import { red } from "@mui/material/colors";
+import { purple, red } from "@mui/material/colors";
 
 const black = {
   100: "#d1d2d5",
@@ -91,20 +91,28 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#fff",
-          backgroundColor: black[600],
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: black[600],
+            color: "#EDF2F7",
+            borderColor: "#2D3748",
           },
+          "& .MuiOutlinedInput-input": {
+            color: "#fff",
+          },
+          "& input::placeholder": {
+            color: "#EDF2F7",
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#ffffff",
+            borderColor: "#2D3748",
           },
-          "& .Mui-active .MuiOutlinedInput-notchedOutline": {
-            color: black[600],
-            borderColor: black[600],
-          },
-          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-            color: black[600],
-            borderColor: black[600],
+
+          "&:active .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#9e77ed",
           },
         },
       },
@@ -158,7 +166,6 @@ const theme = createTheme({
           color: "#A0AEC0",
           "&:hover": {
             color: "#9e77ed",
-            // transform: "scale(1.3)",
           },
         },
       },
@@ -180,6 +187,7 @@ const theme = createTheme({
           borderRadius: "12px",
           "&:hover": {
             backgroundColor: "#252E3E",
+            // transform: "scale(1.1)",
           },
           "&:focus": {
             backgroundColor: "#252E3E",
@@ -204,6 +212,43 @@ const theme = createTheme({
         },
       },
     },
+    MuiTable: {
+      styleOverrides: {
+        root: {
+          borderColor: "#2D3748",
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottom: "1px solid #2D3748",
+          "&:hover": {
+            backgroundColor: "#1A222F",
+            color: "#9e77ed",
+          },
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          "&:hover": {
+            backgroundColor: "#1A222F",
+            color: "#9e77ed",
+          },
+        },
+      },
+    },
+    // MuiTextField: {
+    //   styleOverrides: {
+    //     root: {
+    //       "& input::placeholder": {
+    //         color: "green",
+    //       },
+    //     },
+    //   },
+    // },
   },
 });
 

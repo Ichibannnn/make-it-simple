@@ -64,6 +64,7 @@ const SidebarHeader = () => {
         flexDirection: "row",
         alignItems: "center",
         padding: "24px",
+        marginTop: 3,
         gap: "5px",
         // width: "280px",
       }}
@@ -124,6 +125,10 @@ const SidebarList = () => {
     useDisclosure();
   const { open: masterListOpen, onToggle: masterListOnToggle } =
     useDisclosure();
+  const { open: requestOpen, onToggle: requestOnToggle } = useDisclosure();
+  const { open: channelOpen, onToggle: channelOnToggle } = useDisclosure();
+  const { open: filingOpen, onToggle: filingOnToggle } = useDisclosure();
+  const { open: generateOpen, onToggle: generateOnToggle } = useDisclosure();
 
   const sidebarMenu = [
     {
@@ -174,13 +179,45 @@ const SidebarList = () => {
         },
       ],
     },
+    {
+      id: 3,
+      name: "Request",
+      path: "/request",
+      icon: "DynamicFeedOutlined",
+      open: requestOpen,
+      onToggle: requestOnToggle,
+    },
+    {
+      id: 4,
+      name: "Channel",
+      path: "/channel",
+      icon: "NumbersOutlined",
+      open: channelOpen,
+      onToggle: channelOnToggle,
+    },
+    {
+      id: 5,
+      name: "Filing",
+      path: "/filing",
+      icon: "AttachFileOutlined",
+      open: filingOpen,
+      onToggle: filingOnToggle,
+    },
+    {
+      id: 6,
+      name: "Generate",
+      path: "/generate",
+      icon: "BallotOutlined",
+      open: generateOpen,
+      onToggle: generateOnToggle,
+    },
   ];
 
   return (
     <Stack>
       <List
         sx={{
-          marginTop: "4px",
+          marginTop: "35px",
           marginLeft: "6px",
           marginRight: "17px",
           padding: "0px",
@@ -191,21 +228,42 @@ const SidebarList = () => {
           .map((item, i) => {
             return (
               <Fragment key={i}>
-                <ListItemButton onClick={item.onToggle}>
-                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    primaryTypographyProps={{
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      lineHeight: "24px",
-                      mb: "2px",
-                    }}
-                  />
-                  {item.open ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
+                {item.sub?.length && (
+                  <ListItemButton onClick={item.onToggle}>
+                    <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
+
+                    <ListItemText
+                      primary={item.name}
+                      primaryTypographyProps={{
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        lineHeight: "24px",
+                        mb: "2px",
+                      }}
+                    />
+
+                    {item.open ? <ExpandLess /> : <ExpandMore />}
+                  </ListItemButton>
+                )}
+
+                {!item.sub?.length && (
+                  <ListItemButton onClick={() => navigate(item.path)}>
+                    <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
+
+                    <ListItemText
+                      primary={item.name}
+                      primaryTypographyProps={{
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        lineHeight: "24px",
+                        mb: "2px",
+                      }}
+                    />
+                  </ListItemButton>
+                )}
+
                 {item.sub
-                  .filter((subItem) => userPermission.includes(subItem.name))
+                  ?.filter((subItem) => userPermission.includes(subItem.name))
                   .map((subItem, i) => {
                     return (
                       <Collapse
@@ -218,8 +276,8 @@ const SidebarList = () => {
                           sx={{
                             marginTop: "4px",
                             marginBottom: "4px",
-                            marginLeft: "17px",
-                            marginRight: "17px",
+                            marginLeft: "25px",
+                            marginRight: "2px",
                             padding: "0px",
                           }}
                         >
@@ -230,6 +288,7 @@ const SidebarList = () => {
                             <ListItemIcon>
                               {getSubMenuIcon(subItem.icon)}
                             </ListItemIcon>
+
                             <ListItemText
                               primary={subItem.name}
                               primaryTypographyProps={{

@@ -9,6 +9,7 @@ import {
   Divider,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import React from "react";
 
@@ -51,6 +52,7 @@ const UserAccountDialog = ({ open, onClose }) => {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -67,14 +69,19 @@ const UserAccountDialog = ({ open, onClose }) => {
   console.log(watch());
 
   const onSubmitHandler = (data) => {
-    console.log("Data: ", data);
+    // console.log("Data: ", data);
+  };
+
+  const onCloseHandler = () => {
+    reset();
+    onClose();
   };
 
   return (
     <>
       <Dialog
         fullWidth
-        maxWidth="sm"
+        maxWidth="md"
         open={open}
         // onClose={handleClose}
       >
@@ -89,7 +96,16 @@ const UserAccountDialog = ({ open, onClose }) => {
             gap={2}
             paddingTop={3}
           >
-            <Stack direction="row" gap={4}>
+            <Typography
+              sx={{
+                color: "#48BB78",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+            >
+              Basic Information
+            </Typography>
+            <Stack direction="row" gap={1}>
               <Controller
                 control={control}
                 name="empId"
@@ -205,7 +221,7 @@ const UserAccountDialog = ({ open, onClose }) => {
                       option.id === value.id
                     }
                     sx={{
-                      flex: 1,
+                      flex: 2,
                     }}
                     fullWidth
                     disablePortal
@@ -214,7 +230,20 @@ const UserAccountDialog = ({ open, onClose }) => {
               }}
             />
 
-            <Divider variant="middle" />
+            <Divider
+              variant="fullWidth"
+              sx={{ background: "#2D3748", marginTop: 3, marginBottom: 3 }}
+            />
+
+            <Typography
+              sx={{
+                color: "#48BB78",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+            >
+              Other Information
+            </Typography>
 
             <Autocomplete
               size="small"
@@ -284,8 +313,8 @@ const UserAccountDialog = ({ open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={onClose}>Close</Button>
           <Button variant="contained">Save</Button>
+          <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
     </>
