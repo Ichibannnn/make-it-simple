@@ -224,11 +224,7 @@ const UserAccounts = () => {
           marginTop: "20px",
         }}
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          // sx={{ padding: "20px", overflow: "hidden", }}
-        >
+        <Stack direction="row" justifyContent="space-between">
           <Tabs value={status} onChange={(_, value) => setStatus(value)}>
             <Tab
               value=""
@@ -271,7 +267,7 @@ const UserAccounts = () => {
         >
           <OutlinedInput
             flex="1"
-            placeholder="Search users"
+            placeholder="Search user"
             startAdornment={
               <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
             }
@@ -379,6 +375,7 @@ const UserAccounts = () => {
                 </TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {isSuccess &&
                 !isLoading &&
@@ -446,11 +443,17 @@ const UserAccounts = () => {
                       align="center"
                     >
                       <Chip
-                        variant="outlined"
+                        variant="filled"
+                        size="30px"
                         sx={{
-                          fontSize: "small",
+                          fontSize: "13px",
+                          backgroundColor: item.is_Active
+                            ? "#112C32"
+                            : "#2D2823",
+                          color: item.is_Active ? "#10B981" : "#D27D0E",
+                          fontWeight: 800,
                         }}
-                        color={item.is_Active ? "success" : "warning"}
+                        // color={item.is_Active ? "success" : "warning"}
                         label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                       />
                     </TableCell>

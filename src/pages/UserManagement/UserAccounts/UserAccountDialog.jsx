@@ -66,8 +66,6 @@ const UserAccountDialog = ({ open, onClose }) => {
     },
   });
 
-  console.log(watch());
-
   const onSubmitHandler = (data) => {
     // console.log("Data: ", data);
   };
@@ -105,6 +103,7 @@ const UserAccountDialog = ({ open, onClose }) => {
             >
               Basic Information
             </Typography>
+            
             <Stack direction="row" gap={1}>
               <Controller
                 control={control}

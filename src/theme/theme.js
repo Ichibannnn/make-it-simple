@@ -108,12 +108,15 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#2D3748",
+            borderColor: "#9e77ed",
           },
 
           "&:active .MuiOutlinedInput-notchedOutline": {
             borderColor: "#9e77ed",
           },
+          // "& input::placeholder": {
+          //   color: "green",
+          // },
         },
       },
     },
