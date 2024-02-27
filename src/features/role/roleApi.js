@@ -28,6 +28,31 @@ export const roleApi = createApi({
       }),
       providesTags: ["Roles"],
     }),
+    createRole: builder.mutation({
+      query: (body) => ({
+        url: "UserRole/AddNewUserRole",
+        method: "POST",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+    }),
+    updateRoleName: builder.mutation({
+      query: (body) => ({
+        url: "UserRole/UpdateUserRole",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+    }),
+    updateRolePermission: builder.mutation({
+      query: (body) => ({
+        url: "UserRole/UntagAndTagUserRolePermission",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+    }),
+
     archiveRole: builder.mutation({
       query: (body) => ({
         url: "UserRole/UpdateUserRoleStatus",
@@ -42,5 +67,8 @@ export const roleApi = createApi({
 export const {
   useLazyGetRolesQuery,
   useGetRolesQuery,
+  useCreateRoleMutation,
+  useUpdateRoleNameMutation,
+  useUpdateRolePermissionMutation,
   useArchiveRoleMutation,
 } = roleApi;

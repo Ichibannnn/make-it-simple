@@ -13,17 +13,25 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Swal from "sweetalert2";
-import { useArchiveRoleMutation } from "../../../features/role/roleApi";
+import { theme } from "../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
+
+import {
+  useArchiveRoleMutation,
+  useCreateRoleMutation,
+  useUpdateRoleNameMutation,
+  useUpdateRolePermissionMutation,
+} from "../../../features/role/roleApi";
 
 const schema = yup.object().shape({
-  role_name: yup.string().required("Role Name is required."),
-  access_permission: yup.array().required(),
+  user_Role_Name: yup.string().required("Role Name is required."),
+  permissions: yup.array().required(),
 });
 
 const parentCheckbox = [
@@ -44,8 +52,10 @@ const masterlistCheckbox = [
   "Location",
 ];
 
-const RoleAddDialog = ({ open, onClose }) => {
-  const [archiveRole] = useArchiveRoleMutation();
+const RoleAddDialog = ({ data, open, onClose }) => {
+  const [createRole] = useCreateRoleMutation();
+  const [updateRoleName] = useUpdateRoleNameMutation();
+  const [updateRolePermission] = useUpdateRolePermissionMutation();
 
   const {
     control,
@@ -54,24 +64,28 @@ const RoleAddDialog = ({ open, onClose }) => {
     watch,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      access_permission: [],
+      user_Role_Name: "",
+      permissions: [],
     },
   });
 
-  // console.log("Errors: ", errors);
-  console.log("Role: ", watch("role_name"));
-  console.log(watch("access_permission"));
+  useEffect(() => {
+    if (data) {
+      setValue("user_Role_Name", data?.user_Role_Name);
+      setValue("permissions", data?.permissions);
+    }
+  }, [data]);
 
   const onCloseAction = () => {
     reset();
     onClose();
   };
 
-  const onSubmitAction = (data) => {
+  const onSubmitAction = (formData) => {
     Swal.fire({
       title: "Information",
       text: "Are you sure you want to save this role information?",
@@ -93,29 +107,113 @@ const RoleAddDialog = ({ open, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        archiveRole(data)
-          .unwrap()
-          .then(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Role added successfully.",
-              showConfirmButton: false,
-              timer: 1500,
+        if (data) {
+          // console.log("Formdata: ", formData);
+
+          if (formData.user_Role_Name !== data.user_Role_Name) {
+            updateRoleName({
+              id: data.id,
+              user_Role_Name: formData.user_Role_Name,
+            })
+              .unwrap()
+              .then(() => {
+                Swal.fire({
+                  position: "top-end",
+                  icon: "success",
+                  title: "Role updated successfully.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                onClose();
+              })
+              .catch(() => {
+                Swal.fire({
+                  position: "top-end",
+                  icon: "error",
+                  title: "Submit role failed.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+              });
+          }
+
+          const isPermissionMatch = formData.permissions.every((item) =>
+            data.permissions.includes(item)
+          );
+
+          if (!isPermissionMatch) {
+            updateRolePermission({
+              id: data.id,
+              permissions: formData.permissions,
+            })
+              .unwrap()
+              .then(() => {
+                Swal.fire({
+                  position: "top-end",
+                  icon: "success",
+                  title: "Role updated successfully.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                onClose();
+              })
+              .catch(() => {
+                Swal.fire({
+                  position: "top-end",
+                  icon: "error",
+                  title: "Submit role failed.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+              });
+          }
+        } else {
+          createRole(formData)
+            .unwrap()
+            .then(() => {
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Role added successfully.",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              onClose();
+            })
+            .catch(() => {
+              Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Submit role failed.",
+                showConfirmButton: false,
+                timer: 1500,
+              });
             });
-          })
-          .catch(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Submit role failed.",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          });
+        }
       }
     });
   };
+
+  const handleParentCheckboxChange = (e) => {
+    if (!e.target.checked && e.target.value === "User Management") {
+      setValue(
+        "permissions",
+        watch("permissions").filter(
+          (item) => !userManagementCheckbox.includes(item)
+        )
+      );
+    }
+    if (!e.target.checked && e.target.value === "Masterlist") {
+      setValue(
+        "permissions",
+        watch("permissions").filter(
+          (item) => !masterlistCheckbox.includes(item)
+        )
+      );
+    }
+  };
+
+  console.log("Access Permission: ", watch("permissions"));
 
   return (
     <>
@@ -136,11 +234,11 @@ const RoleAddDialog = ({ open, onClose }) => {
             <Stack sx={{ padding: "5px" }}>
               <FormLabel>
                 <TextField
-                  {...register("role_name")}
+                  {...register("user_Role_Name")}
                   variant="outlined"
                   label="Role Name*"
-                  helperText={errors?.role_name?.message}
-                  error={!!errors?.role_name?.message}
+                  helperText={errors?.user_Role_Name?.message}
+                  error={!!errors?.user_Role_Name?.message}
                   sx={{ borderColor: "primary" }}
                   fullWidth
                   autoComplete="off"
@@ -174,7 +272,7 @@ const RoleAddDialog = ({ open, onClose }) => {
                       <Controller
                         key={index}
                         control={control}
-                        name="access_permission"
+                        name="permissions"
                         render={({ field: { ref, value, onChange } }) => {
                           return (
                             <FormControlLabel
@@ -196,6 +294,7 @@ const RoleAddDialog = ({ open, onClose }) => {
                                           (item) => item !== e.target.value
                                         ),
                                       ]);
+                                      handleParentCheckboxChange(e);
                                     }
                                   }}
                                 />
@@ -211,7 +310,7 @@ const RoleAddDialog = ({ open, onClose }) => {
               </FormControl>
 
               {/* USER MANAGEMENT */}
-              {watch("access_permission")?.includes("User Management") && (
+              {watch("permissions")?.includes("User Management") && (
                 <FormControl
                   component="fieldset"
                   variant="standard"
@@ -236,7 +335,7 @@ const RoleAddDialog = ({ open, onClose }) => {
                         <Controller
                           key={index}
                           control={control}
-                          name="access_permission"
+                          name="permissions"
                           render={({ field: { ref, value, onChange } }) => {
                             return (
                               <FormControlLabel
@@ -274,7 +373,7 @@ const RoleAddDialog = ({ open, onClose }) => {
               )}
 
               {/* MASTERLIST */}
-              {watch("access_permission")?.includes("Masterlist") && (
+              {watch("permissions")?.includes("Masterlist") && (
                 <FormControl
                   component="fieldset"
                   variant="standard"
@@ -299,7 +398,7 @@ const RoleAddDialog = ({ open, onClose }) => {
                         <Controller
                           key={index}
                           control={control}
-                          name="access_permission"
+                          name="permissions"
                           render={({ field: { ref, value, onChange } }) => {
                             return (
                               <FormControlLabel
@@ -339,12 +438,35 @@ const RoleAddDialog = ({ open, onClose }) => {
           </DialogContent>
 
           <DialogActions>
-            <Button type="submit" variant="contained">
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              disabled={
+                !watch("user_Role_Name") ||
+                !watch("permissions").length ||
+                (watch("permissions").includes("User Management")
+                  ? !watch("permissions").some((item) =>
+                      userManagementCheckbox.includes(item)
+                    )
+                  : false) ||
+                (watch("permissions").includes("Masterlist")
+                  ? !watch("permissions").some((item) =>
+                      masterlistCheckbox.includes(item)
+                    )
+                  : false)
+              }
+              sx={{
+                ":disabled": {
+                  backgroundColor: theme.palette.secondary.main,
+                  color: "black",
+                },
+              }}
+            >
               Save
-            </Button>
-            <Button variant="outlined" onClick={onCloseAction}>
+            </LoadingButton>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
               Close
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </form>
       </Dialog>

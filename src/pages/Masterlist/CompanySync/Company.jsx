@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -16,30 +17,29 @@ import {
   TableRow,
   Tabs,
   Typography,
+  capitalize,
 } from "@mui/material";
-import React, { useState } from "react";
-import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
-import useDebounce from "../../../hooks/useDebounce";
-
 import {
   AddOutlined,
   FileUploadOutlined,
   FileDownloadOutlined,
   Search,
+  SyncOutlined,
 } from "@mui/icons-material";
 
+import Swal from "sweetalert2";
+import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-import RoleAction from "./RoleAction";
+import { theme } from "../../../theme/theme";
 
 import {
-  useGetRolesQuery,
-  useArchiveRoleMutation,
-} from "../../../features/role/roleApi";
-import RolePermissions from "./RolePermissions";
-import RoleAddDialog from "./RoleAddDialog";
+  useGetCompanyQuery,
+  useSyncCompanyMutation,
+} from "../../../features/company/companyApi";
+import { useLazyGetCompaniesQuery } from "../../../features/ymir/ymirApi";
+import { LoadingButton } from "@mui/lab";
 
-const Roles = () => {
+const Company = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -47,18 +47,27 @@ const Roles = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const [editData, setEditData] = useState(null);
+  const { open, onToggle } = useDisclosure();
 
-  const { open, onToggle, onClose } = useDisclosure();
+  const { data, isLoading, isFetching, isSuccess, isError } =
+    useGetCompanyQuery({
+      Status: status,
+      Search: search,
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    });
 
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetRolesQuery({
-    Status: status,
-    Search: search,
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
+  const [
+    getCompanies,
+    { isLoading: isCompanyLoading, isFetching: isCompanyFetching },
+  ] = useLazyGetCompaniesQuery();
+  const [
+    syncCompanies,
+    { isLoading: isCompanySyncLoading, isFetching: isCompanySyncFetching },
+  ] = useSyncCompanyMutation();
 
-  const [archiveRole] = useArchiveRoleMutation();
+  //   console.log("Data: ", companyData);
+  // const [archiveUser] = useArchiveUserMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -68,16 +77,11 @@ const Roles = () => {
     setPageSize(e.target.value);
   };
 
-  const onDialogClose = () => {
-    setEditData(null);
-    onClose();
-  };
-
-  const onArchiveAction = (data) => {
+  const onSyncCompany = () => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "This will move this role to the archived tab.",
-      icon: "warning",
+      title: "Confirmation?",
+      text: "Are you sure you want to sync the company list?",
+      icon: "info",
       color: "white",
       showCancelButton: true,
       background: "#111927",
@@ -95,33 +99,51 @@ const Roles = () => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        archiveRole(data)
+        getCompanies()
           .unwrap()
-          .then(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Archived successfully.",
-              showConfirmButton: false,
-              timer: 1500,
-            });
+          .then((response) => {
+            console.log("Response: ", response);
+
+            const payload = response.map((item) => ({
+              company_No: item.id,
+              company_Code: item.code,
+              company_Name: item.name,
+            }));
+
+            syncCompanies({
+              companies: payload,
+            })
+              .unwrap()
+              .then(() => {
+                Swal.fire({
+                  position: "top-end",
+                  icon: "success",
+                  title: "Sync company successfully!.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+              })
+              .catch(() => {
+                Swal.fire({
+                  position: "top-end",
+                  icon: "error",
+                  title: "Company sync failed.",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+              });
           })
           .catch(() => {
             Swal.fire({
               position: "top-end",
               icon: "error",
-              title: "Unable to archive this role.",
+              title: "Company sync failed.",
               showConfirmButton: false,
               timer: 1500,
             });
           });
       }
     });
-  };
-
-  const onEditAction = (data) => {
-    onToggle();
-    setEditData(data);
   };
 
   return (
@@ -139,7 +161,7 @@ const Roles = () => {
         <Stack direction="row" justifyContent="space-between">
           <Stack>
             <Stack justifyItems="left">
-              <Typography variant="h4">Roles</Typography>
+              <Typography variant="h4">Company</Typography>
             </Stack>
             <Stack justifyItems="space-between" direction="row">
               <Button
@@ -185,40 +207,6 @@ const Roles = () => {
           marginTop: "20px",
         }}
       >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={(_, value) => setStatus(value)}>
-            <Tab
-              value=""
-              label="All"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="true"
-              label="Active"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="false"
-              label="Archived"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-          </Tabs>
-        </Stack>
-
-        <Divider
-          variant="fullWidth"
-          sx={{ background: "#2D3748", marginTop: "1px" }}
-        />
-
         <Stack
           direction="row"
           alignItems="center"
@@ -228,7 +216,7 @@ const Roles = () => {
         >
           <OutlinedInput
             flex="1"
-            placeholder="Search role"
+            placeholder="Search company"
             startAdornment={
               <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
             }
@@ -243,15 +231,21 @@ const Roles = () => {
               // backgroundColor: "#111927",
             }}
           />
-          <Button
+          <LoadingButton
             variant="contained"
             size="large"
             color="primary"
-            startIcon={<AddOutlined />}
-            onClick={onToggle}
+            startIcon={<SyncOutlined />}
+            onClick={() => onSyncCompany()}
+            loading={
+              isCompanyLoading ||
+              isCompanyFetching ||
+              isCompanySyncLoading ||
+              isCompanySyncFetching
+            }
           >
-            Add
-          </Button>
+            Sync Company
+          </LoadingButton>
         </Stack>
 
         <TableContainer>
@@ -269,6 +263,7 @@ const Roles = () => {
                 >
                   LINE NO.
                 </TableCell>
+
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -277,7 +272,7 @@ const Roles = () => {
                     fontSize: "12px",
                   }}
                 >
-                  ROLE NAME
+                  COMPANY CODE
                 </TableCell>
                 <TableCell
                   sx={{
@@ -286,39 +281,17 @@ const Roles = () => {
                     fontWeight: 700,
                     fontSize: "12px",
                   }}
-                  align="center"
                 >
-                  PERMISSIONS
-                </TableCell>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  STATUS
-                </TableCell>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  ACTIONS
+                  COMPANY NAME
                 </TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {isSuccess &&
                 !isLoading &&
                 !isFetching &&
-                data?.value?.userRole?.map((item, index) => (
+                data?.value?.company?.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell
                       sx={{
@@ -328,7 +301,7 @@ const Roles = () => {
                       }}
                       align="center"
                     >
-                      {item.id}
+                      {index + 1}
                     </TableCell>
 
                     <TableCell
@@ -338,7 +311,7 @@ const Roles = () => {
                         fontWeight: 500,
                       }}
                     >
-                      {item.user_Role_Name}
+                      {item.company_Code}
                     </TableCell>
 
                     <TableCell
@@ -347,48 +320,8 @@ const Roles = () => {
                         fontSize: "14px",
                         fontWeight: 500,
                       }}
-                      align="center"
                     >
-                      <RolePermissions permissions={item.permissions} />
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <Chip
-                        variant="filled"
-                        size="30px"
-                        sx={{
-                          fontSize: "13px",
-                          backgroundColor: item.is_Active
-                            ? "#112C32"
-                            : "#2D2823",
-                          color: item.is_Active ? "#10B981" : "#D27D0E",
-                          fontWeight: 800,
-                        }}
-                        label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                      />
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <RoleAction
-                        data={item}
-                        status={status}
-                        onArchive={onArchiveAction}
-                        onUpdate={onEditAction}
-                      />
+                      {item.company_Name}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -414,7 +347,7 @@ const Roles = () => {
                 </TableRow>
               )}
 
-              {isSuccess && !data?.value?.userRole.length && (
+              {isSuccess && !data?.value?.company.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
                     <Typography variant="h5" color="#EDF2F7">
@@ -437,11 +370,9 @@ const Roles = () => {
           onPageChange={onPageNumberChange}
           onRowsPerPageChange={onPageSizeChange}
         />
-
-        <RoleAddDialog data={editData} open={open} onClose={onDialogClose} />
       </Stack>
     </Stack>
   );
 };
 
-export default Roles;
+export default Company;

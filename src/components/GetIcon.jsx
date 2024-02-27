@@ -28,8 +28,11 @@ export const getMenuIcon = (iconName) => {
 
 export const getSubMenuIcon = (iconName) => {
   const iconMap = {
+    // User Management
     PermIdentityOutlinedIcon: <PermIdentityOutlinedIcon />,
     ManageAccountsOutlinedIcon: <ManageAccountsOutlinedIcon />,
+
+    // Masterlist
     BusinessOutlinedIcon: <BusinessOutlinedIcon />,
     AccountTreeOutlinedIcon: <AccountTreeOutlinedIcon />,
   };

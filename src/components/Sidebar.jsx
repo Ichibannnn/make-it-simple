@@ -141,14 +141,12 @@ const SidebarList = () => {
       sub: [
         {
           id: 1,
-          menuId: 1,
           name: "User Account",
           path: "/user-management/user-account",
           icon: "PermIdentityOutlinedIcon",
         },
         {
           id: 2,
-          menuId: 1,
           name: "User Role",
           path: "/user-management/user-role",
           icon: "ManageAccountsOutlinedIcon",
@@ -165,16 +163,38 @@ const SidebarList = () => {
       sub: [
         {
           id: 1,
-          menuId: 2,
           name: "Company",
-          path: "/masterlist-company",
+          path: "/masterlist/company",
           icon: "BusinessOutlinedIcon",
         },
         {
           id: 2,
-          menuId: 2,
+          name: "Business Unit",
+          path: "/masterlist/business-unit",
+          icon: "AccountTreeOutlinedIcon",
+        },
+        {
+          id: 3,
           name: "Department",
-          path: "/masterlist-department",
+          path: "/masterlist/department",
+          icon: "AccountTreeOutlinedIcon",
+        },
+        {
+          id: 4,
+          name: "Unit",
+          path: "/masterlist/unit",
+          icon: "AccountTreeOutlinedIcon",
+        },
+        {
+          id: 5,
+          name: "Sub Unit",
+          path: "/masterlist/sub-unit",
+          icon: "AccountTreeOutlinedIcon",
+        },
+        {
+          id: 6,
+          name: "Location",
+          path: "/masterlist/location",
           icon: "AccountTreeOutlinedIcon",
         },
       ],

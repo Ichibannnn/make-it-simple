@@ -9,6 +9,8 @@ import { loginApi } from "../features/login/loginSlice";
 import { userApi } from "../features/user/userApi";
 import { sedarApi } from "../features/sedar/sedarApi";
 import { roleApi } from "../features/role/roleApi";
+import { companyApi } from "../features/company/companyApi";
+import { ymirApi } from "../features/ymir/ymirApi";
 
 export const store = configureStore({
   reducer: {
@@ -17,17 +19,25 @@ export const store = configureStore({
     sidebar: sidebarReducer,
 
     [loginApi.reducerPath]: loginApi.reducer,
+
     [userApi.reducerPath]: userApi.reducer,
-    [sedarApi.reducerPath]: sedarApi.reducer,
     [roleApi.reducerPath]: roleApi.reducer,
+    [companyApi.reducerPath]: companyApi.reducer,
+
+    [sedarApi.reducerPath]: sedarApi.reducer,
+    [ymirApi.reducerPath]: ymirApi.reducer,
   },
 
   middleware: (getDefaultMiddleWare) =>
     getDefaultMiddleWare().concat([
       loginApi.middleware,
+
       userApi.middleware,
-      sedarApi.middleware,
       roleApi.middleware,
+      companyApi.middleware,
+
+      sedarApi.middleware,
+      ymirApi.middleware,
     ]),
 });
 

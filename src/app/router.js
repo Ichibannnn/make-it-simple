@@ -9,6 +9,14 @@ import UserManagement from "../pages/UserManagement/UserManagement";
 import UserAccounts from "../pages/UserManagement/UserAccounts/UserAccounts";
 import Roles from "../pages/UserManagement/Roles/Roles";
 
+import MasterlistPage from "../pages/Masterlist/MasterlistPage";
+import Company from "../pages/Masterlist/CompanySync/Company";
+import Business from "../pages/Masterlist/BusinessUnitSync/Business";
+import Department from "../pages/Masterlist/DepartmentSync/Department";
+import Unit from "../pages/Masterlist/UnitSync/Unit";
+import SubUnit from "../pages/Masterlist/SubUnitSync/SubUnit";
+import Location from "../pages/Masterlist/LocationSync/Location";
+
 export const router = createBrowserRouter([
   {
     path: "*",
@@ -32,6 +40,36 @@ export const router = createBrowserRouter([
           {
             path: "/user-management/user-role",
             element: <Roles />,
+          },
+        ],
+      },
+      {
+        path: "/masterlist",
+        element: <MasterlistPage />,
+        children: [
+          {
+            path: "/masterlist/company",
+            element: <Company />,
+          },
+          {
+            path: "/masterlist/business-unit",
+            element: <Business />,
+          },
+          {
+            path: "/masterlist/department",
+            element: <Department />,
+          },
+          {
+            path: "/masterlist/unit",
+            element: <Unit />,
+          },
+          {
+            path: "/masterlist/sub-unit",
+            element: <SubUnit />,
+          },
+          {
+            path: "/masterlist/location",
+            element: <Location />,
           },
         ],
       },
