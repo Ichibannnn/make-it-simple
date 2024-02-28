@@ -7,9 +7,10 @@ import sidebarReducer from "../features/sidebar/sidebarSlice";
 
 import { loginApi } from "../features/login/loginSlice";
 import { userApi } from "../features/user/userApi";
-import { sedarApi } from "../features/sedar/sedarApi";
 import { roleApi } from "../features/role/roleApi";
 import { companyApi } from "../features/company/companyApi";
+import { businessUnitApi } from "../features/business-unit/businessUnitApi";
+import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
 
 export const store = configureStore({
@@ -22,7 +23,9 @@ export const store = configureStore({
 
     [userApi.reducerPath]: userApi.reducer,
     [roleApi.reducerPath]: roleApi.reducer,
+
     [companyApi.reducerPath]: companyApi.reducer,
+    [businessUnitApi.reducerPath]: businessUnitApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -34,7 +37,9 @@ export const store = configureStore({
 
       userApi.middleware,
       roleApi.middleware,
+
       companyApi.middleware,
+      businessUnitApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,
