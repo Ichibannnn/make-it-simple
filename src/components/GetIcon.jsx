@@ -7,10 +7,15 @@ import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 
 import {
+  AccountTreeOutlined,
   AttachFileOutlined,
   BallotOutlined,
+  DomainAddOutlined,
   DynamicFeedOutlined,
+  LanOutlined,
+  ListOutlined,
   NumbersOutlined,
+  RoomOutlined,
 } from "@mui/icons-material";
 
 export const getMenuIcon = (iconName) => {
@@ -34,7 +39,11 @@ export const getSubMenuIcon = (iconName) => {
 
     // Masterlist
     BusinessOutlinedIcon: <BusinessOutlinedIcon />,
-    AccountTreeOutlinedIcon: <AccountTreeOutlinedIcon />,
+    LanOutlined: <LanOutlined />,
+    DomainAddOutlined: <DomainAddOutlined />,
+    AccountTreeOutlined: <AccountTreeOutlined />,
+    ListOutlined: <ListOutlined />,
+    RoomOutlined: <RoomOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

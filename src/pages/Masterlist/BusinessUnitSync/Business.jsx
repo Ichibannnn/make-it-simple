@@ -236,6 +236,7 @@ const Business = () => {
             size="large"
             color="primary"
             startIcon={<SyncOutlined />}
+            loadingPosition="start"
             onClick={() => onSyncBusinessUnit()}
             loading={
               isBusinessUnitLoading ||
@@ -243,6 +244,12 @@ const Business = () => {
               isBusinessUnitSyncLoading ||
               isBusinessUnitSyncFetching
             }
+            sx={{
+              ":disabled": {
+                backgroundColor: theme.palette.primary.main,
+                color: "black",
+              },
+            }}
           >
             Sync Business Unit
           </LoadingButton>
@@ -272,7 +279,7 @@ const Business = () => {
                     fontSize: "12px",
                   }}
                 >
-                  BUSINESS CODE
+                  BUSINESS UNIT CODE
                 </TableCell>
                 <TableCell
                   sx={{
@@ -282,7 +289,7 @@ const Business = () => {
                     fontSize: "12px",
                   }}
                 >
-                  BUSINESS NAME
+                  BUSINESS UNIT NAME
                 </TableCell>
 
                 <TableCell

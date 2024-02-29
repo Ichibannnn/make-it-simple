@@ -145,6 +145,7 @@ const LoginForm = () => {
     severity: "",
     title: "",
     description: "",
+    autoHideDuration: 2000,
   });
 
   const handleAlertClose = () => {
@@ -194,6 +195,7 @@ const LoginForm = () => {
           severity: "error",
           title: "Error!",
           description: `${error.data.error.message}`,
+          autoHideDuration: 2000,
         });
         setShowAlert(true);
       }
@@ -283,6 +285,7 @@ const LoginForm = () => {
           severity={alertData.severity}
           title={alertData.title}
           description={alertData.description}
+          autoHideDuration={alertData.autoHideDuration}
           onClose={handleAlertClose}
         />
       )}

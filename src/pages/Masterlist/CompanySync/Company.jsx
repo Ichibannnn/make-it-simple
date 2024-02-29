@@ -28,8 +28,9 @@ import {
 } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
+import { LoadingButton } from "@mui/lab";
 import useDebounce from "../../../hooks/useDebounce";
-import useDisclosure from "../../../hooks/useDisclosure";
+import useSweetAlert from "../../../hooks/useSweetAlert";
 import { theme } from "../../../theme/theme";
 
 import {
@@ -37,7 +38,6 @@ import {
   useSyncCompanyMutation,
 } from "../../../features/company/companyApi";
 import { useLazyGetCompaniesQuery } from "../../../features/ymir/ymirApi";
-import { LoadingButton } from "@mui/lab";
 
 const Company = () => {
   const [status, setStatus] = useState("true");
@@ -47,7 +47,7 @@ const Company = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { open, onToggle } = useDisclosure();
+  const { toast } = useSweetAlert();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetCompanyQuery({
@@ -65,9 +65,6 @@ const Company = () => {
     syncCompanies,
     { isLoading: isCompanySyncLoading, isFetching: isCompanySyncFetching },
   ] = useSyncCompanyMutation();
-
-  //   console.log("Data: ", companyData);
-  // const [archiveUser] = useArchiveUserMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -115,31 +112,26 @@ const Company = () => {
             })
               .unwrap()
               .then(() => {
-                Swal.fire({
-                  position: "top-end",
+                toast({
                   icon: "success",
-                  title: "Sync company successfully!.",
-                  showConfirmButton: false,
-                  timer: 1500,
+                  title: "Success!",
+                  text: "Sync data successfully!",
+                  background: "#1d4b30",
                 });
               })
               .catch(() => {
-                Swal.fire({
-                  position: "top-end",
+                toast({
                   icon: "error",
-                  title: "Company sync failed.",
-                  showConfirmButton: false,
-                  timer: 1500,
+                  title: "Error!",
+                  text: "Company sync failed!",
                 });
               });
           })
           .catch(() => {
-            Swal.fire({
-              position: "top-end",
+            toast({
               icon: "error",
-              title: "Company sync failed.",
-              showConfirmButton: false,
-              timer: 1500,
+              title: "Error!",
+              text: "Company sync failed!",
             });
           });
       }
@@ -236,6 +228,7 @@ const Company = () => {
             size="large"
             color="primary"
             startIcon={<SyncOutlined />}
+            loadingPosition="start"
             onClick={() => onSyncCompany()}
             loading={
               isCompanyLoading ||
@@ -243,6 +236,12 @@ const Company = () => {
               isCompanySyncLoading ||
               isCompanySyncFetching
             }
+            sx={{
+              ":disabled": {
+                backgroundColor: theme.palette.primary.main,
+                color: "black",
+              },
+            }}
           >
             Sync Company
           </LoadingButton>
