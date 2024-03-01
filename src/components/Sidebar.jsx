@@ -28,8 +28,9 @@ import {
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
-  const dispatch = useDispatch();
   const hideSidebar = useMediaQuery("(max-width: 1069px)");
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setSidebar(!hideSidebar));
@@ -118,13 +119,16 @@ const SidebarHeader = () => {
 
 const SidebarList = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
+
+  console.log("path: ", pathname);
 
   const userPermission = useSelector((state) => state.user.permissions);
   const { open: userManagementOpen, onToggle: userManagementOnToggle } =
-    useDisclosure();
-  const { open: masterListOpen, onToggle: masterListOnToggle } =
-    useDisclosure();
+    useDisclosure(!!pathname.match(/user-management/gi));
+  const { open: masterListOpen, onToggle: masterListOnToggle } = useDisclosure(
+    !!pathname.match(/masterlist/gi)
+  );
   const { open: requestOpen, onToggle: requestOnToggle } = useDisclosure();
   const { open: channelOpen, onToggle: channelOnToggle } = useDisclosure();
   const { open: filingOpen, onToggle: filingOnToggle } = useDisclosure();
@@ -141,12 +145,14 @@ const SidebarList = () => {
       sub: [
         {
           id: 1,
+          menuId: 1,
           name: "User Account",
           path: "/user-management/user-account",
           icon: "PermIdentityOutlinedIcon",
         },
         {
           id: 2,
+          menuId: 1,
           name: "User Role",
           path: "/user-management/user-role",
           icon: "ManageAccountsOutlinedIcon",
@@ -249,7 +255,10 @@ const SidebarList = () => {
             return (
               <Fragment key={i}>
                 {item.sub?.length && (
-                  <ListItemButton onClick={item.onToggle}>
+                  <ListItemButton
+                    onClick={item.onToggle}
+                    selected={item.path === pathname}
+                  >
                     <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
 
                     <ListItemText
@@ -267,7 +276,10 @@ const SidebarList = () => {
                 )}
 
                 {!item.sub?.length && (
-                  <ListItemButton onClick={() => navigate(item.path)}>
+                  <ListItemButton
+                    onClick={() => navigate(item.path)}
+                    selected={item.path === pathname}
+                  >
                     <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
 
                     <ListItemText
@@ -303,6 +315,7 @@ const SidebarList = () => {
                         >
                           <ListItemButton
                             onClick={() => navigate(subItem.path)}
+                            selected={subItem.path === pathname}
                             sx={{ padding: "2px" }}
                           >
                             <ListItemIcon>

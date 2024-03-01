@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const ymirApi = createApi({
   reducerPath: "ymirApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://10.10.10.17:8001/api",
+    baseUrl: "http://10.10.10.17:8000/api",
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
       headers.set(
@@ -52,7 +52,7 @@ export const ymirApi = createApi({
     }),
     getSubUnits: builder.query({
       query: () => ({
-        url: "/sub-units?pagination=none&per_page=100&page=1&status=active",
+        url: "/sub_units?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
       transformResponse: (response) => response.result,

@@ -105,7 +105,7 @@ const SubUnit = () => {
               subUnit_No: item.id,
               subUnit_Code: item.code,
               subUnit_Name: item.name,
-              unit_Name: item.subUnit.name,
+              unit_Name: item.department_unit.name,
             }));
 
             syncSubUnits({

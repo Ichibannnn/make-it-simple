@@ -33,6 +33,8 @@ import useDebounce from "../../../hooks/useDebounce";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import { theme } from "../../../theme/theme";
 
+import { Toaster, toast } from "sonner";
+
 import {
   useGetCompanyQuery,
   useSyncCompanyMutation,
@@ -47,7 +49,7 @@ const Company = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { toast } = useSweetAlert();
+  // const { toast } = useSweetAlert();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetCompanyQuery({
@@ -112,12 +114,18 @@ const Company = () => {
             })
               .unwrap()
               .then(() => {
-                toast({
-                  icon: "success",
-                  title: "Success!",
-                  text: "Sync data successfully!",
-                  background: "#1d4b30",
+                toast.success("Success", {
+                  description: "Sync data successfully",
+                  classNames: {
+                    toast: "bg-blue-400",
+                  },
                 });
+                // toast({
+                //   icon: "success",
+                //   title: "Success!",
+                //   text: "Sync data successfully!",
+                //   background: "#1d4b30",
+                // });
               })
               .catch(() => {
                 toast({
@@ -223,6 +231,7 @@ const Company = () => {
               // backgroundColor: "#111927",
             }}
           />
+          <Toaster richColors position="top-right" />
           <LoadingButton
             variant="contained"
             size="large"

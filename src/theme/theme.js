@@ -204,7 +204,7 @@ const theme = createTheme({
             backgroundColor: "#252E3E",
             // transform: "scale(1.1)",
           },
-          "&:focus": {
+          "&.Mui-selected": {
             backgroundColor: "#252E3E",
             color: "#EDF2F7",
           },

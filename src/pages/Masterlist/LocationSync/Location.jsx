@@ -38,6 +38,7 @@ import {
   useGetLocationQuery,
   useSyncLocationMutation,
 } from "../../../features/location/locationApi";
+import LocationSubUnit from "./LocationSubUnit";
 
 const Location = () => {
   const [status, setStatus] = useState("true");
@@ -61,6 +62,7 @@ const Location = () => {
     getLocations,
     { isLoading: isLocationLoading, isFetching: isLocationFetching },
   ] = useLazyGetLocationsQuery();
+
   const [
     syncLocations,
     { isLoading: isLocationSyncLoading, isFetching: isLocationSyncFetching },
@@ -99,14 +101,16 @@ const Location = () => {
         getLocations()
           .unwrap()
           .then((response) => {
-            console.log("Response: ", response);
-
             const payload = response.map((item) => ({
               location_No: item.id,
               location_Code: item.code,
               location_Name: item.name,
-              subUnit_Name: item.sub_units.name,
+              upsertSubunitLists: item.sub_units.map((item) => ({
+                subUnit_Name: item.name,
+              })),
             }));
+
+            console.log("Payload: ", payload);
 
             syncLocations({
               locations: payload,
@@ -120,7 +124,7 @@ const Location = () => {
                   background: "#1d4b30",
                 });
               })
-              .catch(() => {
+              .catch((error) => {
                 toast({
                   icon: "error",
                   title: "Error!",
@@ -154,7 +158,7 @@ const Location = () => {
         <Stack direction="row" justifyContent="space-between">
           <Stack>
             <Stack justifyItems="left">
-              <Typography variant="h4">Unit</Typography>
+              <Typography variant="h4">Location</Typography>
             </Stack>
             <Stack justifyItems="space-between" direction="row">
               <Button
@@ -209,7 +213,7 @@ const Location = () => {
         >
           <OutlinedInput
             flex="1"
-            placeholder="Search unit"
+            placeholder="Search location"
             startAdornment={
               <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
             }
@@ -244,7 +248,7 @@ const Location = () => {
               },
             }}
           >
-            Sync Unit
+            Sync Location
           </LoadingButton>
         </Stack>
 
@@ -272,7 +276,7 @@ const Location = () => {
                     fontSize: "12px",
                   }}
                 >
-                  UNIT CODE
+                  LOCATION CODE
                 </TableCell>
 
                 <TableCell
@@ -283,7 +287,7 @@ const Location = () => {
                     fontSize: "12px",
                   }}
                 >
-                  UNIT NAME
+                  LOCATION NAME
                 </TableCell>
 
                 <TableCell
@@ -294,7 +298,7 @@ const Location = () => {
                     fontSize: "12px",
                   }}
                 >
-                  DEPARTMENT
+                  SUB UNIT
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -343,7 +347,7 @@ const Location = () => {
                         fontWeight: 500,
                       }}
                     >
-                      {item.subUnit_Name}
+                      <LocationSubUnit subUnits={item.subUnits} />
                     </TableCell>
                   </TableRow>
                 ))}
