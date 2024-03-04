@@ -121,8 +121,6 @@ const SidebarList = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  console.log("path: ", pathname);
-
   const userPermission = useSelector((state) => state.user.permissions);
   const { open: userManagementOpen, onToggle: userManagementOnToggle } =
     useDisclosure(!!pathname.match(/user-management/gi));

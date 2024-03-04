@@ -36,6 +36,7 @@ export const roleApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
     }),
+
     updateRoleName: builder.mutation({
       query: (body) => ({
         url: "UserRole/UpdateUserRole",
@@ -44,6 +45,7 @@ export const roleApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
     }),
+
     updateRolePermission: builder.mutation({
       query: (body) => ({
         url: "UserRole/UntagAndTagUserRolePermission",

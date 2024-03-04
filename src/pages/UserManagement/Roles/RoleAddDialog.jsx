@@ -28,6 +28,7 @@ import {
   useUpdateRoleNameMutation,
   useUpdateRolePermissionMutation,
 } from "../../../features/role/roleApi";
+import { Toaster, toast } from "sonner";
 
 const schema = yup.object().shape({
   user_Role_Name: yup.string().required("Role Name is required."),
@@ -64,7 +65,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     watch,
     setValue,
     reset,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -108,8 +109,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         if (data) {
-          // console.log("Formdata: ", formData);
-
+          // ROLE API
           if (formData.user_Role_Name !== data.user_Role_Name) {
             updateRoleName({
               id: data.id,
@@ -117,53 +117,67 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             })
               .unwrap()
               .then(() => {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "success",
-                  title: "Role updated successfully.",
-                  showConfirmButton: false,
-                  timer: 1500,
+                toast.success("Success!", {
+                  description: "Role updated successfully!",
                 });
                 onClose();
               })
-              .catch(() => {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "error",
-                  title: "Submit role failed.",
-                  showConfirmButton: false,
-                  timer: 1500,
+              .catch((err) => {
+                toast.error("Error", {
+                  description: err.data.error.message,
                 });
               });
           }
 
-          const isPermissionMatch = formData.permissions.every((item) =>
-            data.permissions.includes(item)
-          );
+          // ROLE PERMISSION API
+          const isPermissionMatch =
+            formData.permissions.every((item) =>
+              data.permissions.includes(item)
+            ) && formData.permissions.length === data.permissions.length;
 
           if (!isPermissionMatch) {
+            console.log("isPermissionMatch: ", isPermissionMatch);
+            console.log("Data: ", data);
             updateRolePermission({
               id: data.id,
               permissions: formData.permissions,
             })
               .unwrap()
               .then(() => {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "success",
-                  title: "Role updated successfully.",
-                  showConfirmButton: false,
-                  timer: 1500,
+                toast.success("Success!", {
+                  description: "Role updated successfully!",
+                  duration: 1500,
                 });
                 onClose();
               })
               .catch(() => {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "error",
-                  title: "Submit role failed.",
-                  showConfirmButton: false,
-                  timer: 1500,
+                toast.error("Error!", {
+                  description: "Submit role failed",
+                  duration: 1500,
+                });
+              });
+          }
+
+          if (
+            formData.user_Role_Name === data.user_Role_Name &&
+            isPermissionMatch
+          ) {
+            updateRolePermission({
+              id: data.id,
+              permissions: formData.permissions,
+            })
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Nothing has changed.",
+                  duration: 1500,
+                });
+                onClose();
+              })
+              .catch(() => {
+                toast.error("Error!", {
+                  description: "Submit role failed",
+                  duration: 1500,
                 });
               });
           }
@@ -171,22 +185,16 @@ const RoleAddDialog = ({ data, open, onClose }) => {
           createRole(formData)
             .unwrap()
             .then(() => {
-              Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Role added successfully.",
-                showConfirmButton: false,
-                timer: 1500,
+              toast.success("Success!", {
+                description: "Role added successfully!",
+                duration: 1500,
               });
               onClose();
             })
             .catch(() => {
-              Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Submit role failed.",
-                showConfirmButton: false,
-                timer: 1500,
+              toast.error("Error!", {
+                description: "Submit role failed!",
+                duration: 1500,
               });
             });
         }
@@ -213,10 +221,9 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     }
   };
 
-  console.log("Access Permission: ", watch("permissions"));
-
   return (
     <>
+      <Toaster richColors position="top-right" />
       <Dialog fullWidth open={open}>
         <DialogTitle
           sx={{
