@@ -20,6 +20,7 @@ const RoleAction = ({ data, onArchive, onUpdate }) => {
     onToggle();
     onArchive({
       id: data.id,
+      isActive: data.is_Active,
     });
   };
 

@@ -38,6 +38,7 @@ import Swal from "sweetalert2";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
 import useDisclosure from "../../../hooks/useDisclosure";
+import { Toaster, toast } from "sonner";
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
@@ -92,21 +93,22 @@ const UserAccounts = () => {
         archiveUser(data)
           .unwrap()
           .then(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Archived successfully.",
-              showConfirmButton: false,
-              timer: 1500,
-            });
+            if (data.isActive === true) {
+              toast.success("Success!", {
+                description: "Archive successfully.",
+                duration: 1500,
+              });
+            } else {
+              toast.success("Success!", {
+                description: "Restore successfully.",
+                duration: 1500,
+              });
+            }
           })
-          .catch(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Unable to archive this user.",
-              showConfirmButton: false,
-              timer: 1500,
+          .catch((error) => {
+            toast.error("Error!", {
+              description: "Unable to archive this user.",
+              duration: 1500,
             });
           });
       }
@@ -140,21 +142,15 @@ const UserAccounts = () => {
         resetUser(data)
           .unwrap()
           .then(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Reset password successfully.",
-              showConfirmButton: false,
-              timer: 1500,
+            toast.success("Success!", {
+              description: "Reset password successfully.",
+              duration: 1500,
             });
           })
           .catch(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Unable to reset password.",
-              showConfirmButton: false,
-              timer: 1500,
+            toast.error("Error!", {
+              description: "Unable to reset password.",
+              duration: 1500,
             });
           });
       }
@@ -174,6 +170,7 @@ const UserAccounts = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>

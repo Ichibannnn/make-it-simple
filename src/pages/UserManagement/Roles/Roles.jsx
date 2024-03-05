@@ -38,6 +38,7 @@ import {
 } from "../../../features/role/roleApi";
 import RolePermissions from "./RolePermissions";
 import RoleAddDialog from "./RoleAddDialog";
+import { Toaster, toast } from "sonner";
 
 const Roles = () => {
   const [status, setStatus] = useState("true");
@@ -95,24 +96,25 @@ const Roles = () => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        console.log("Data: ", data);
+
         archiveRole(data)
           .unwrap()
           .then(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Archived successfully.",
-              showConfirmButton: false,
-              timer: 1500,
-            });
+            if (data.isActive === true) {
+              toast.success("Success!", {
+                description: "Role archived successfully!",
+              });
+            } else {
+              toast.success("Success!", {
+                description: "Role restored successfully!",
+              });
+            }
           })
-          .catch(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Unable to archive this role.",
-              showConfirmButton: false,
-              timer: 1500,
+          .catch((error) => {
+            console.log("Error: ", error);
+            toast.error("Error!", {
+              description: error.data.error.message,
             });
           });
       }
@@ -135,6 +137,7 @@ const Roles = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>

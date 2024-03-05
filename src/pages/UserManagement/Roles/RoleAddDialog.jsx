@@ -150,9 +150,9 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 });
                 onClose();
               })
-              .catch(() => {
+              .catch((error) => {
                 toast.error("Error!", {
-                  description: "Submit role failed",
+                  description: error.data.error.message,
                   duration: 1500,
                 });
               });
@@ -191,9 +191,9 @@ const RoleAddDialog = ({ data, open, onClose }) => {
               });
               onClose();
             })
-            .catch(() => {
+            .catch((error) => {
               toast.error("Error!", {
-                description: "Submit role failed!",
+                description: error.data.error.message,
                 duration: 1500,
               });
             });

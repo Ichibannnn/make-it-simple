@@ -38,6 +38,8 @@ import {
 } from "../../../features/business-unit/businessUnitApi";
 import { useLazyGetBusinessUnitsQuery } from "../../../features/ymir/ymirApi";
 import { LoadingButton } from "@mui/lab";
+import { toast } from "sonner";
+import { BusinessErrorDialog } from "./BusinessErrorDialog";
 
 const Business = () => {
   const [status, setStatus] = useState("true");
@@ -46,6 +48,7 @@ const Business = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+  const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetBusinessUnitQuery({
@@ -63,6 +66,7 @@ const Business = () => {
   const [
     syncCompanies,
     {
+      error: errorData,
       isLoading: isBusinessUnitSyncLoading,
       isFetching: isBusinessUnitSyncFetching,
     },
@@ -108,38 +112,25 @@ const Business = () => {
               company_Name: item.company.name,
             }));
 
-            console.log("Payload: ", payload);
-
             syncCompanies({
               businessUnit: payload,
             })
               .unwrap()
               .then(() => {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "success",
-                  title: "Sync business unit successfully!.",
-                  showConfirmButton: false,
-                  timer: 1500,
+                toast.success("Success!", {
+                  description: "Sync data successfully!",
                 });
               })
               .catch(() => {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "error",
-                  title: "Business sync failed.",
-                  showConfirmButton: false,
-                  timer: 1500,
-                });
+                console.log("Error");
+                if (errorData) {
+                  onToggle();
+                }
               });
           })
           .catch(() => {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Business sync failed.",
-              showConfirmButton: false,
-              timer: 1500,
+            toast.error("Error!", {
+              description: "Business unit sync failed",
             });
           });
       }
@@ -397,6 +388,12 @@ const Business = () => {
           page={data?.value?.currentPage - 1 || 0}
           onPageChange={onPageNumberChange}
           onRowsPerPageChange={onPageSizeChange}
+        />
+
+        <BusinessErrorDialog
+          errorData={errorData}
+          open={open}
+          onClose={onClose}
         />
       </Stack>
     </Stack>

@@ -27,6 +27,7 @@ const UserAccountAction = ({ data, onReset, onArchive }) => {
     onToggle();
     onArchive({
       id: data.id,
+      isActive: data.is_Active,
     });
   };
 

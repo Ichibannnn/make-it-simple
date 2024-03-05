@@ -120,26 +120,16 @@ const Company = () => {
                     toast: "bg-blue-400",
                   },
                 });
-                // toast({
-                //   icon: "success",
-                //   title: "Success!",
-                //   text: "Sync data successfully!",
-                //   background: "#1d4b30",
-                // });
               })
               .catch(() => {
-                toast({
-                  icon: "error",
-                  title: "Error!",
-                  text: "Company sync failed!",
+                toast.error("Error!", {
+                  description: "Company sync failed!",
                 });
               });
           })
           .catch(() => {
-            toast({
-              icon: "error",
-              title: "Error!",
-              text: "Company sync failed!",
+            toast.error("Error!", {
+              description: "Company sync failed!",
             });
           });
       }

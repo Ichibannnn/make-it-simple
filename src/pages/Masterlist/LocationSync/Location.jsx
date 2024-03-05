@@ -125,6 +125,7 @@ const Location = () => {
                 });
               })
               .catch((error) => {
+                console.log("Error: ", error);
                 toast({
                   icon: "error",
                   title: "Error!",
@@ -308,7 +309,7 @@ const Location = () => {
                 !isLoading &&
                 !isFetching &&
                 data?.value?.location?.map((item, index) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.location_No}>
                     <TableCell
                       sx={{
                         color: "#EDF2F7",
