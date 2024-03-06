@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import {
-  Box,
   Button,
-  Chip,
   CircularProgress,
-  Divider,
   OutlinedInput,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -15,12 +11,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
-  capitalize,
 } from "@mui/material";
 import {
-  AddOutlined,
   FileUploadOutlined,
   FileDownloadOutlined,
   Search,

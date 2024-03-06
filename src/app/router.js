@@ -4,6 +4,7 @@ import { PageNotFound } from "../components/LottieComponents";
 import Private from "../components/Private";
 import Login from "../pages/Login/Login";
 import LandingPage from "../pages/Layout/LandingPage";
+import Overview from "../pages/Overview/Overview";
 
 import UserManagement from "../pages/UserManagement/UserManagement";
 import UserAccounts from "../pages/UserManagement/UserAccounts/UserAccounts";
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
   {
     element: <Private Render={LandingPage} />,
     children: [
+      {
+        path: "/overview",
+        element: <Overview />,
+      },
       {
         path: "/user-management",
         element: <UserManagement />,

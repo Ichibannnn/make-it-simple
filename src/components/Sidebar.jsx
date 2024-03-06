@@ -122,19 +122,22 @@ const SidebarList = () => {
   const { pathname } = useLocation();
 
   const userPermission = useSelector((state) => state.user.permissions);
+
   const { open: userManagementOpen, onToggle: userManagementOnToggle } =
     useDisclosure(!!pathname.match(/user-management/gi));
   const { open: masterListOpen, onToggle: masterListOnToggle } = useDisclosure(
     !!pathname.match(/masterlist/gi)
   );
-  const { open: requestOpen, onToggle: requestOnToggle } = useDisclosure();
-  const { open: channelOpen, onToggle: channelOnToggle } = useDisclosure();
-  const { open: filingOpen, onToggle: filingOnToggle } = useDisclosure();
-  const { open: generateOpen, onToggle: generateOnToggle } = useDisclosure();
 
   const sidebarMenu = [
     {
       id: 1,
+      name: "Overview",
+      path: "/overview",
+      icon: "EqualizerOutlined",
+    },
+    {
+      id: 2,
       name: "User Management",
       path: "/user-management",
       icon: "PeopleOutlinedIcon",
@@ -158,7 +161,7 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 2,
+      id: 3,
       name: "Masterlist",
       path: "/masterlist",
       icon: "ChecklistOutlinedIcon",
@@ -204,36 +207,28 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 3,
+      id: 4,
       name: "Request",
       path: "/request",
       icon: "DynamicFeedOutlined",
-      open: requestOpen,
-      onToggle: requestOnToggle,
-    },
-    {
-      id: 4,
-      name: "Channel",
-      path: "/channel",
-      icon: "NumbersOutlined",
-      open: channelOpen,
-      onToggle: channelOnToggle,
     },
     {
       id: 5,
-      name: "Filing",
-      path: "/filing",
-      icon: "AttachFileOutlined",
-      open: filingOpen,
-      onToggle: filingOnToggle,
+      name: "Channel",
+      path: "/channel",
+      icon: "NumbersOutlined",
     },
     {
       id: 6,
+      name: "Filing",
+      path: "/filing",
+      icon: "AttachFileOutlined",
+    },
+    {
+      id: 7,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",
-      open: generateOpen,
-      onToggle: generateOnToggle,
     },
   ];
 

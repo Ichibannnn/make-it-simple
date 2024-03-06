@@ -12,6 +12,7 @@ import {
   BallotOutlined,
   DomainAddOutlined,
   DynamicFeedOutlined,
+  EqualizerOutlined,
   LanOutlined,
   ListOutlined,
   NumbersOutlined,
@@ -20,6 +21,7 @@ import {
 
 export const getMenuIcon = (iconName) => {
   const iconMap = {
+    EqualizerOutlined: <EqualizerOutlined />,
     PeopleOutlinedIcon: <PeopleOutlinedIcon />,
     ChecklistOutlinedIcon: <ChecklistOutlinedIcon />,
     DynamicFeedOutlined: <DynamicFeedOutlined />,

@@ -116,8 +116,22 @@ export const LocationErrorDialog = ({ errorData, open, onClose }) => {
                   </TableHead>
 
                   <TableBody>
-                    {errorData?.data?.value?.subUnitNotExist?.map(
-                      (item, index) => (
+                    {errorData?.data?.value?.subUnitNotExist
+                      ?.reduce((carry, item) => {
+                        if (
+                          carry.some(
+                            (carryItem) =>
+                              carryItem.location_Code === item.location_Code
+                          )
+                        )
+                          return carry;
+
+                        console.log("Carry", carry);
+                        // console.log("Item", item);
+
+                        return [...carry, item];
+                      }, [])
+                      .map((item, index) => (
                         <TableRow key={index}>
                           <TableCell
                             sx={{
@@ -158,8 +172,7 @@ export const LocationErrorDialog = ({ errorData, open, onClose }) => {
                             />
                           </TableCell>
                         </TableRow>
-                      )
-                    )}
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -182,8 +195,6 @@ export const LocationErrorDialog = ({ errorData, open, onClose }) => {
 export const LocationSubUnitError = ({ subUnits }) => {
   const ref = useRef();
   const { open, onToggle } = useDisclosure();
-
-  console.log("Sub Units", subUnits);
 
   return (
     <div>
