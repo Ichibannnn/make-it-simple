@@ -28,17 +28,19 @@ import {
 } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
+import { LoadingButton } from "@mui/lab";
+import { theme } from "../../../theme/theme";
+import { Toaster, toast } from "sonner";
+
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-import { theme } from "../../../theme/theme";
 
 import {
   useGetBusinessUnitQuery,
   useSyncBusinessUnitMutation,
 } from "../../../features/business-unit/businessUnitApi";
 import { useLazyGetBusinessUnitsQuery } from "../../../features/ymir/ymirApi";
-import { LoadingButton } from "@mui/lab";
-import { toast } from "sonner";
+
 import { BusinessErrorDialog } from "./BusinessErrorDialog";
 
 const Business = () => {
@@ -121,9 +123,8 @@ const Business = () => {
                   description: "Sync data successfully!",
                 });
               })
-              .catch(() => {
-                console.log("Error");
-                if (errorData) {
+              .catch((error) => {
+                if (error.status === 400) {
                   onToggle();
                 }
               });
@@ -148,6 +149,7 @@ const Business = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>

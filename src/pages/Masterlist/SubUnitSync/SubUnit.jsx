@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import {
-  Box,
   Button,
-  Chip,
   CircularProgress,
-  Divider,
   OutlinedInput,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -15,12 +11,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
-  capitalize,
 } from "@mui/material";
 import {
-  AddOutlined,
   FileUploadOutlined,
   FileDownloadOutlined,
   Search,
@@ -29,15 +22,19 @@ import {
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
-import useDebounce from "../../../hooks/useDebounce";
-import useSweetAlert from "../../../hooks/useSweetAlert";
 import { theme } from "../../../theme/theme";
+import { Toaster, toast } from "sonner";
+
+import useDebounce from "../../../hooks/useDebounce";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 import {
   useGetSubUnitQuery,
   useSyncSubUnitMutation,
 } from "../../../features/sub-unit/subUnitApi";
 import { useLazyGetSubUnitsQuery } from "../../../features/ymir/ymirApi";
+
+import { SubUnitErrorDialog } from "./SubUnitErrorDialog";
 
 const SubUnit = () => {
   const [status, setStatus] = useState("true");
@@ -46,8 +43,7 @@ const SubUnit = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
-
-  const { toast } = useSweetAlert();
+  const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetSubUnitQuery({
@@ -63,7 +59,11 @@ const SubUnit = () => {
   ] = useLazyGetSubUnitsQuery();
   const [
     syncSubUnits,
-    { isLoading: isSubUnitSyncLoading, isFetching: isSubUnitSyncFetching },
+    {
+      error: errorData,
+      isLoading: isSubUnitSyncLoading,
+      isFetching: isSubUnitSyncFetching,
+    },
   ] = useSyncSubUnitMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -113,26 +113,19 @@ const SubUnit = () => {
             })
               .unwrap()
               .then(() => {
-                toast({
-                  icon: "success",
-                  title: "Success!",
-                  text: "Sync data successfully!",
-                  background: "#1d4b30",
+                toast.success("Success!", {
+                  description: "Sync data successfully!",
                 });
               })
-              .catch(() => {
-                toast({
-                  icon: "error",
-                  title: "Error!",
-                  text: "Sub Unit sync failed!",
-                });
+              .catch((error) => {
+                if (error.status === 400) {
+                  onToggle();
+                }
               });
           })
           .catch(() => {
-            toast({
-              icon: "error",
-              title: "Error!",
-              text: "Sub Unit sync failed!",
+            toast.error("Error!", {
+              description: "Sub unit sync failed",
             });
           });
       }
@@ -150,6 +143,7 @@ const SubUnit = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>
@@ -391,6 +385,12 @@ const SubUnit = () => {
           page={data?.value?.currentPage - 1 || 0}
           onPageChange={onPageNumberChange}
           onRowsPerPageChange={onPageSizeChange}
+        />
+
+        <SubUnitErrorDialog
+          errorData={errorData}
+          open={open}
+          onClose={onClose}
         />
       </Stack>
     </Stack>

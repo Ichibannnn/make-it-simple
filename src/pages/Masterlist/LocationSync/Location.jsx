@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import {
-  Box,
   Button,
-  Chip,
   CircularProgress,
-  Divider,
   OutlinedInput,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -15,12 +11,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
-  capitalize,
 } from "@mui/material";
 import {
-  AddOutlined,
   FileUploadOutlined,
   FileDownloadOutlined,
   Search,
@@ -29,16 +22,20 @@ import {
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
-import useDebounce from "../../../hooks/useDebounce";
-import useSweetAlert from "../../../hooks/useSweetAlert";
 import { theme } from "../../../theme/theme";
+import { Toaster, toast } from "sonner";
+
+import useDebounce from "../../../hooks/useDebounce";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 import { useLazyGetLocationsQuery } from "../../../features/ymir/ymirApi";
 import {
   useGetLocationQuery,
   useSyncLocationMutation,
 } from "../../../features/location/locationApi";
+
 import LocationSubUnit from "./LocationSubUnit";
+import { LocationErrorDialog } from "./LocationErrorDialog";
 
 const Location = () => {
   const [status, setStatus] = useState("true");
@@ -47,8 +44,7 @@ const Location = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
-
-  const { toast } = useSweetAlert();
+  const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetLocationQuery({
@@ -65,7 +61,11 @@ const Location = () => {
 
   const [
     syncLocations,
-    { isLoading: isLocationSyncLoading, isFetching: isLocationSyncFetching },
+    {
+      error: errorData,
+      isLoading: isLocationSyncLoading,
+      isFetching: isLocationSyncFetching,
+    },
   ] = useSyncLocationMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -117,27 +117,19 @@ const Location = () => {
             })
               .unwrap()
               .then(() => {
-                toast({
-                  icon: "success",
-                  title: "Success!",
-                  text: "Sync data successfully!",
-                  background: "#1d4b30",
+                toast.success("Success!", {
+                  description: "Sync data successfully!",
                 });
               })
               .catch((error) => {
-                console.log("Error: ", error);
-                toast({
-                  icon: "error",
-                  title: "Error!",
-                  text: "Location sync failed!",
-                });
+                if (error.status === 400) {
+                  onToggle();
+                }
               });
           })
           .catch(() => {
-            toast({
-              icon: "error",
-              title: "Error!",
-              text: "Location sync failed!",
+            toast.error("Error!", {
+              description: "Location sync failed",
             });
           });
       }
@@ -155,6 +147,7 @@ const Location = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>
@@ -396,6 +389,12 @@ const Location = () => {
           page={data?.value?.currentPage - 1 || 0}
           onPageChange={onPageNumberChange}
           onRowsPerPageChange={onPageSizeChange}
+        />
+
+        <LocationErrorDialog
+          errorData={errorData}
+          open={open}
+          onClose={onClose}
         />
       </Stack>
     </Stack>

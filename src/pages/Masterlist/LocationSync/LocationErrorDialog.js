@@ -3,6 +3,11 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
   Stack,
   Table,
   TableBody,
@@ -10,13 +15,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useRef } from "react";
 import { theme } from "../../../theme/theme";
-import { GppBadOutlined } from "@mui/icons-material";
+import { GppBadOutlined, LanOutlined } from "@mui/icons-material";
+import useDisclosure from "../../../hooks/useDisclosure";
 
-export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
+export const LocationErrorDialog = ({ errorData, open, onClose }) => {
   const onCloseAction = () => {
     onClose();
   };
@@ -50,14 +57,13 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                   fontSize: "13px",
                 }}
               >
-                Unsuccessful sync of business unit due to the following
-                error(s):
+                Unsuccessful sync of location due to the following error(s):
               </Typography>
             </Stack>
 
             <Stack sx={{ paddingTop: 5 }}>
               <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
-                Company information does not exist:{" "}
+                Sub Unit information does not exist:{" "}
               </Typography>
 
               <TableContainer>
@@ -83,7 +89,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                           fontSize: "10px",
                         }}
                       >
-                        BUSINESS UNIT CODE
+                        LOCATION CODE
                       </TableCell>
                       <TableCell
                         sx={{
@@ -93,7 +99,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                           fontSize: "10px",
                         }}
                       >
-                        BUSINESS UNIT NAME
+                        LOCATION NAME
                       </TableCell>
 
                       <TableCell
@@ -104,13 +110,13 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                           fontSize: "10px",
                         }}
                       >
-                        COMPANY NAME
+                        SUB UNITS
                       </TableCell>
                     </TableRow>
                   </TableHead>
 
                   <TableBody>
-                    {errorData?.data?.value?.companyNotExist?.map(
+                    {errorData?.data?.value?.subUnitNotExist?.map(
                       (item, index) => (
                         <TableRow key={index}>
                           <TableCell
@@ -129,7 +135,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                               fontSize: "12px",
                             }}
                           >
-                            {item.business_Code}
+                            {item.location_Code}
                           </TableCell>
 
                           <TableCell
@@ -138,7 +144,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                               fontSize: "12px",
                             }}
                           >
-                            {item.business_Name}
+                            {item.location_Name}
                           </TableCell>
 
                           <TableCell
@@ -147,7 +153,9 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                               fontSize: "12px",
                             }}
                           >
-                            {item.company_Name}
+                            <LocationSubUnitError
+                              subUnits={item.upsertSubunitLists}
+                            />
                           </TableCell>
                         </TableRow>
                       )
@@ -168,5 +176,50 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
         </DialogActions>
       </Dialog>
     </>
+  );
+};
+
+export const LocationSubUnitError = ({ subUnits }) => {
+  const ref = useRef();
+  const { open, onToggle } = useDisclosure();
+
+  console.log("Sub Units", subUnits);
+
+  return (
+    <div>
+      <IconButton ref={ref} onClick={onToggle}>
+        <Tooltip title="View Sub units">
+          <LanOutlined />
+        </Tooltip>
+      </IconButton>
+
+      <Menu
+        anchorEl={ref.current}
+        open={open}
+        onClose={onToggle}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <List dense>
+          {subUnits?.map((item, index) => (
+            <ListItem key={index}>
+              <ListItemText
+                primary={item.subUnit_Name}
+                sx={{
+                  color: theme.palette.error.main,
+                  fontSize: "12px",
+                }}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Menu>
+    </div>
   );
 };

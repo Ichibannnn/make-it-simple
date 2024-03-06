@@ -29,15 +29,19 @@ import {
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
-import useDebounce from "../../../hooks/useDebounce";
-import useSweetAlert from "../../../hooks/useSweetAlert";
 import { theme } from "../../../theme/theme";
+import { Toaster, toast } from "sonner";
+
+import useDebounce from "../../../hooks/useDebounce";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 import { useLazyGetUnitsQuery } from "../../../features/ymir/ymirApi";
 import {
   useGetUnitQuery,
   useSyncUnitMutation,
 } from "../../../features/unit/unitApi";
+
+import { UnitErrorDialog } from "./UnitErrorDialog";
 
 const Unit = () => {
   const [status, setStatus] = useState("true");
@@ -46,8 +50,7 @@ const Unit = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
-
-  const { toast } = useSweetAlert();
+  const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetUnitQuery({
     Status: status,
@@ -60,7 +63,11 @@ const Unit = () => {
     useLazyGetUnitsQuery();
   const [
     syncUnits,
-    { isLoading: isUnitSyncLoading, isFetching: isUnitSyncFetching },
+    {
+      error: errorData,
+      isLoading: isUnitSyncLoading,
+      isFetching: isUnitSyncFetching,
+    },
   ] = useSyncUnitMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -117,12 +124,10 @@ const Unit = () => {
                   background: "#1d4b30",
                 });
               })
-              .catch(() => {
-                toast({
-                  icon: "error",
-                  title: "Error!",
-                  text: "Unit sync failed!",
-                });
+              .catch((error) => {
+                if (error.status === 400) {
+                  onToggle();
+                }
               });
           })
           .catch(() => {
@@ -389,6 +394,8 @@ const Unit = () => {
           onPageChange={onPageNumberChange}
           onRowsPerPageChange={onPageSizeChange}
         />
+
+        <UnitErrorDialog errorData={errorData} open={open} onClose={onClose} />
       </Stack>
     </Stack>
   );

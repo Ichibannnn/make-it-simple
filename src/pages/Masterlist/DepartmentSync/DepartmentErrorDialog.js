@@ -16,7 +16,7 @@ import React from "react";
 import { theme } from "../../../theme/theme";
 import { GppBadOutlined } from "@mui/icons-material";
 
-export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
+export const DepartmentErrorDialog = ({ errorData, open, onClose }) => {
   const onCloseAction = () => {
     onClose();
   };
@@ -50,14 +50,13 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                   fontSize: "13px",
                 }}
               >
-                Unsuccessful sync of business unit due to the following
-                error(s):
+                Unsuccessful sync of department due to the following error(s):
               </Typography>
             </Stack>
 
             <Stack sx={{ paddingTop: 5 }}>
               <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
-                Company information does not exist:{" "}
+                Business unit information does not exist:{" "}
               </Typography>
 
               <TableContainer>
@@ -83,8 +82,19 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                           fontSize: "10px",
                         }}
                       >
-                        BUSINESS UNIT CODE
+                        DEPARTMENT CODE
                       </TableCell>
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: theme.palette.text.secondary,
+                          fontWeight: 700,
+                          fontSize: "10px",
+                        }}
+                      >
+                        DEPARTMENT NAME
+                      </TableCell>
+
                       <TableCell
                         sx={{
                           background: "#1C2536",
@@ -95,22 +105,11 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                       >
                         BUSINESS UNIT NAME
                       </TableCell>
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: theme.palette.text.secondary,
-                          fontWeight: 700,
-                          fontSize: "10px",
-                        }}
-                      >
-                        COMPANY NAME
-                      </TableCell>
                     </TableRow>
                   </TableHead>
 
                   <TableBody>
-                    {errorData?.data?.value?.companyNotExist?.map(
+                    {errorData?.data?.value?.businessUnitNotExist?.map(
                       (item, index) => (
                         <TableRow key={index}>
                           <TableCell
@@ -129,7 +128,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                               fontSize: "12px",
                             }}
                           >
-                            {item.business_Code}
+                            {item.department_Code}
                           </TableCell>
 
                           <TableCell
@@ -138,7 +137,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                               fontSize: "12px",
                             }}
                           >
-                            {item.business_Name}
+                            {item.department_Name}
                           </TableCell>
 
                           <TableCell
@@ -147,7 +146,7 @@ export const BusinessErrorDialog = ({ errorData, open, onClose }) => {
                               fontSize: "12px",
                             }}
                           >
-                            {item.company_Name}
+                            {item.businessUnit_Name}
                           </TableCell>
                         </TableRow>
                       )

@@ -147,7 +147,7 @@ const theme = createTheme({
           fontWeight: "600px",
           borderRadius: "12px",
           textTransform: "capitalize",
-          boxShadow: "rgba(0, 0, 0, 0.24) 0px 1px 2px",
+          // boxShadow: "rgba(0, 0, 0, 0.24) 0px 1px 2px",
           boxSizing: "border-box",
         },
       },
