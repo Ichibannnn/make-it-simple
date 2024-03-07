@@ -145,39 +145,11 @@ const Roles = () => {
             <Stack justifyItems="left">
               <Typography variant="h4">Roles</Typography>
             </Stack>
-            <Stack justifyItems="space-between" direction="row">
-              <Button
-                size="small"
-                variant="text"
-                startIcon={<FileUploadOutlined />}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    color: theme.palette.text.secondary,
-                  }}
-                >
-                  Import
-                </Typography>
-              </Button>
-
-              <Button
-                size="small"
-                variant="text"
-                startIcon={<FileDownloadOutlined />}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    color: theme.palette.text.secondary,
-                  }}
-                >
-                  Export
-                </Typography>
-              </Button>
-            </Stack>
+            <Stack
+              justifyItems="space-between"
+              direction="row"
+              marginTop={1}
+            ></Stack>
           </Stack>
         </Stack>
       </Stack>

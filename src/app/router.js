@@ -17,6 +17,8 @@ import Department from "../pages/Masterlist/DepartmentSync/Department";
 import Unit from "../pages/Masterlist/UnitSync/Unit";
 import SubUnit from "../pages/Masterlist/SubUnitSync/SubUnit";
 import Location from "../pages/Masterlist/LocationSync/Location";
+import Category from "../pages/Masterlist/Category/Category";
+import SubCategory from "../pages/Masterlist/Sub-Category/SubCategory";
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +77,14 @@ export const router = createBrowserRouter([
           {
             path: "/masterlist/location",
             element: <Location />,
+          },
+          {
+            path: "/masterlist/category",
+            element: <Category />,
+          },
+          {
+            path: "/masterlist/sub-category",
+            element: <SubCategory />,
           },
         ],
       },

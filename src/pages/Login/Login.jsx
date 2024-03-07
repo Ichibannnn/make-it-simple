@@ -180,7 +180,7 @@ const LoginForm = () => {
       dispatch(signIn());
       dispatch(setUserDetails(user));
 
-      navigate("/user-management/user-account", { replace: true });
+      navigate("/overview", { replace: true });
       // window.location.reload(false);
       setAlertData({
         severity: "success",

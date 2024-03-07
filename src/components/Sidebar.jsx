@@ -204,6 +204,18 @@ const SidebarList = () => {
           path: "/masterlist/location",
           icon: "RoomOutlined",
         },
+        {
+          id: 7,
+          name: "Category",
+          path: "/masterlist/category",
+          icon: "CategoryOutlined",
+        },
+        {
+          id: 8,
+          name: "Sub Category",
+          path: "/masterlist/sub-category",
+          icon: "AutoAwesomeMotionOutlined",
+        },
       ],
     },
     {

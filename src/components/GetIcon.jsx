@@ -9,7 +9,9 @@ import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import {
   AccountTreeOutlined,
   AttachFileOutlined,
+  AutoAwesomeMotionOutlined,
   BallotOutlined,
+  CategoryOutlined,
   DomainAddOutlined,
   DynamicFeedOutlined,
   EqualizerOutlined,
@@ -46,6 +48,8 @@ export const getSubMenuIcon = (iconName) => {
     AccountTreeOutlined: <AccountTreeOutlined />,
     ListOutlined: <ListOutlined />,
     RoomOutlined: <RoomOutlined />,
+    CategoryOutlined: <CategoryOutlined />,
+    AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

@@ -36,6 +36,7 @@ const schema = yup.object().shape({
 });
 
 const parentCheckbox = [
+  "Overview",
   "User Management",
   "Masterlist",
   "Request",
@@ -51,6 +52,8 @@ const masterlistCheckbox = [
   "Unit",
   "Sub Unit",
   "Location",
+  "Category",
+  "Sub Category",
 ];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
