@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -39,7 +39,7 @@ import { useLazyGetUnitsQuery } from "../../../features/ymir/ymirApi";
 import {
   useGetUnitQuery,
   useSyncUnitMutation,
-} from "../../../features/unit/unitApi";
+} from "../../../features/api masterlist/unit/unitApi";
 
 import { UnitErrorDialog } from "./UnitErrorDialog";
 
@@ -140,6 +140,12 @@ const Unit = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack

@@ -18,13 +18,13 @@ import {
   Typography,
   capitalize,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 import {
   useGetUsersQuery,
   useResetUserPasswordMutation,
   useArchiveUserMutation,
-} from "../../../features/user/userApi";
+} from "../../../features/user_management_api/user/userApi";
 import useDebounce from "../../../hooks/useDebounce";
 
 import {
@@ -69,50 +69,83 @@ const UserAccounts = () => {
   };
 
   const onArchiveAction = (data) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will move this user to the archived tab.",
-      icon: "warning",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        archiveUser(data)
-          .unwrap()
-          .then(() => {
-            if (data.isActive === true) {
+    if (data.isActive === true) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move this user to the archived tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          archiveUser(data)
+            .unwrap()
+            .then(() => {
               toast.success("Success!", {
                 description: "Archive successfully.",
                 duration: 1500,
               });
-            } else {
+            })
+            .catch((error) => {
+              toast.error("Error!", {
+                description: "Unable to archive this user.",
+                duration: 1500,
+              });
+            });
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move this user to the active tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          archiveUser(data)
+            .unwrap()
+            .then(() => {
               toast.success("Success!", {
                 description: "Restore successfully.",
                 duration: 1500,
               });
-            }
-          })
-          .catch((error) => {
-            toast.error("Error!", {
-              description: "Unable to archive this user.",
-              duration: 1500,
+            })
+            .catch((error) => {
+              toast.error("Error!", {
+                description: "Unable to archive this user.",
+                duration: 1500,
+              });
             });
-          });
-      }
-    });
+        }
+      });
+    }
   };
 
   const onResetPasswordAction = (data) => {
@@ -158,6 +191,12 @@ const UserAccounts = () => {
   };
 
   console.log("Data: ", data);
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack

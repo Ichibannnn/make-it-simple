@@ -26,7 +26,7 @@ import misLogo from "../../assets/images/misLogo.png";
 
 import { signIn } from "../../features/auth/authSlice";
 import { useSignInMutation } from "../../features/login/loginSlice";
-import { setUserDetails } from "../../features/user/userSlice";
+import { setUserDetails } from "../../features/user_management_api/user/userSlice";
 
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

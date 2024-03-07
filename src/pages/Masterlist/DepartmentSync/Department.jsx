@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   CircularProgress,
@@ -31,7 +31,7 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import {
   useGetDepartmentQuery,
   useSyncDepartmentMutation,
-} from "../../../features/department/departmentApi";
+} from "../../../features/api masterlist/department/departmentApi";
 import { useLazyGetDepartmentsQuery } from "../../../features/ymir/ymirApi";
 
 import { DepartmentErrorDialog } from "./DepartmentErrorDialog";
@@ -131,6 +131,12 @@ const Department = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack

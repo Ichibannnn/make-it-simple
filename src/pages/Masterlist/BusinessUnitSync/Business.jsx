@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   CircularProgress,
@@ -31,7 +31,7 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import {
   useGetBusinessUnitQuery,
   useSyncBusinessUnitMutation,
-} from "../../../features/business-unit/businessUnitApi";
+} from "../../../features/api masterlist/business-unit/businessUnitApi";
 import { useLazyGetBusinessUnitsQuery } from "../../../features/ymir/ymirApi";
 
 import { BusinessErrorDialog } from "./BusinessErrorDialog";
@@ -130,6 +130,12 @@ const Business = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack

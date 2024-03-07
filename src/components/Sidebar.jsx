@@ -44,6 +44,7 @@ const Sidebar = () => {
             height: "100%",
             backgroundColor: theme.palette.bgForm.black2,
             width: "280px",
+            overflow: "auto",
           }}
         >
           <SidebarHeader />
@@ -123,11 +124,16 @@ const SidebarList = () => {
 
   const userPermission = useSelector((state) => state.user.permissions);
 
-  const { open: userManagementOpen, onToggle: userManagementOnToggle } =
-    useDisclosure(!!pathname.match(/user-management/gi));
-  const { open: masterListOpen, onToggle: masterListOnToggle } = useDisclosure(
-    !!pathname.match(/masterlist/gi)
-  );
+  const {
+    open: userManagementOpen,
+    onToggle: userManagementOnToggle,
+    onClose: userManagementOnClose,
+  } = useDisclosure(!!pathname.match(/user-management/gi));
+  const {
+    open: masterListOpen,
+    onToggle: masterListOnToggle,
+    onClose: masterlistOnClose,
+  } = useDisclosure(!!pathname.match(/masterlist/gi));
 
   const sidebarMenu = [
     {
@@ -142,7 +148,10 @@ const SidebarList = () => {
       path: "/user-management",
       icon: "PeopleOutlinedIcon",
       open: userManagementOpen,
-      onToggle: userManagementOnToggle,
+      onToggle: () => {
+        userManagementOnToggle();
+        masterlistOnClose();
+      },
       sub: [
         {
           id: 1,
@@ -166,7 +175,10 @@ const SidebarList = () => {
       path: "/masterlist",
       icon: "ChecklistOutlinedIcon",
       open: masterListOpen,
-      onToggle: masterListOnToggle,
+      onToggle: () => {
+        masterListOnToggle();
+        userManagementOnClose();
+      },
       sub: [
         {
           id: 1,

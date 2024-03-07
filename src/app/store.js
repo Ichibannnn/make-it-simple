@@ -2,21 +2,24 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
 import authReducer from "../features/auth/authSlice";
-import userReducer from "../features/user/userSlice";
+import userReducer from "../features/user_management_api/user/userSlice";
 import sidebarReducer from "../features/sidebar/sidebarSlice";
 
 import { loginApi } from "../features/login/loginSlice";
-import { userApi } from "../features/user/userApi";
-import { roleApi } from "../features/role/roleApi";
-import { companyApi } from "../features/company/companyApi";
-import { businessUnitApi } from "../features/business-unit/businessUnitApi";
-import { departmentApi } from "../features/department/departmentApi";
+
+import { roleApi } from "../features/user_management_api/role/roleApi";
+import { userApi } from "../features/user_management_api/user/userApi";
+
+import { companyApi } from "../features/api masterlist/company/companyApi";
+import { businessUnitApi } from "../features/api masterlist/business-unit/businessUnitApi";
+import { unitApi } from "../features/api masterlist/unit/unitApi";
+import { departmentApi } from "../features/api masterlist/department/departmentApi";
+import { subUnitApi } from "../features/api masterlist/sub-unit/subUnitApi";
+import { locationApi } from "../features/api masterlist/location/locationApi";
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
-import { unitApi } from "../features/unit/unitApi";
-import { subUnitApi } from "../features/sub-unit/subUnitApi";
-import { locationApi } from "../features/location/locationApi";
+import { categoryApi } from "../features/api masterlist/category_api/categoryApi";
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +38,7 @@ export const store = configureStore({
     [unitApi.reducerPath]: unitApi.reducer,
     [subUnitApi.reducerPath]: subUnitApi.reducer,
     [locationApi.reducerPath]: locationApi.reducer,
+    [categoryApi.reducerPath]: categoryApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -53,6 +57,7 @@ export const store = configureStore({
       unitApi.middleware,
       subUnitApi.middleware,
       locationApi.middleware,
+      categoryApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,

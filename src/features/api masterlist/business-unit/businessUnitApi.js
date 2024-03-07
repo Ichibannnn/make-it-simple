@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const businessUnitApi = createApi({
   reducerPath: "businessUnitApi",
-  tagTypes: ["Business Type"],
+  tagTypes: ["Business Unit"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
@@ -34,7 +34,7 @@ export const businessUnitApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Business Type"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Business Unit"]),
     }),
   }),
 });

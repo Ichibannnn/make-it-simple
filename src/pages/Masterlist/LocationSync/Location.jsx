@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   CircularProgress,
@@ -32,7 +32,7 @@ import { useLazyGetLocationsQuery } from "../../../features/ymir/ymirApi";
 import {
   useGetLocationQuery,
   useSyncLocationMutation,
-} from "../../../features/location/locationApi";
+} from "../../../features/api masterlist/location/locationApi";
 
 import LocationSubUnit from "./LocationSubUnit";
 import { LocationErrorDialog } from "./LocationErrorDialog";
@@ -135,6 +135,12 @@ const Location = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack

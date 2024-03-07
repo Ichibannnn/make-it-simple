@@ -18,7 +18,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { useLazyGetEmployeesQuery } from "../../../features/sedar/sedarApi";
-import { useLazyGetRolesQuery } from "../../../features/role/roleApi";
+import { useLazyGetRolesQuery } from "../../../features/user_management_api/role/roleApi";
 
 const schema = yup.object().shape({
   empId: yup.string().required().label("Employee ID"),
@@ -103,7 +103,7 @@ const UserAccountDialog = ({ open, onClose }) => {
             >
               Basic Information
             </Typography>
-            
+
             <Stack direction="row" gap={1}>
               <Controller
                 control={control}

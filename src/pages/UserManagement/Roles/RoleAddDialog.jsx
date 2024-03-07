@@ -27,7 +27,7 @@ import {
   useCreateRoleMutation,
   useUpdateRoleNameMutation,
   useUpdateRolePermissionMutation,
-} from "../../../features/role/roleApi";
+} from "../../../features/user_management_api/role/roleApi";
 import { Toaster, toast } from "sonner";
 
 const schema = yup.object().shape({
@@ -68,7 +68,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     watch,
     setValue,
     reset,
-    formState: { errors, isValid, isDirty },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -237,7 +237,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             marginBlockEnd: "5.28px",
           }}
         >
-          Add Role
+          {data ? "Edit Role" : "Add Role"}
         </DialogTitle>
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>

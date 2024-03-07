@@ -1,5 +1,12 @@
 import { LanOutlined } from "@mui/icons-material";
-import { IconButton, List, ListItem, ListItemText, Menu } from "@mui/material";
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
+  Tooltip,
+} from "@mui/material";
 
 import React, { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -11,7 +18,9 @@ const RolePermissions = ({ permissions }) => {
   return (
     <div>
       <IconButton ref={ref} onClick={onToggle}>
-        <LanOutlined />
+        <Tooltip title="View Permissions">
+          <LanOutlined />
+        </Tooltip>
       </IconButton>
 
       <Menu

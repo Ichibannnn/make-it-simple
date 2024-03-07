@@ -1,13 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
-  Chip,
   CircularProgress,
-  Divider,
   OutlinedInput,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -15,30 +10,21 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
-  capitalize,
 } from "@mui/material";
-import {
-  AddOutlined,
-  FileUploadOutlined,
-  FileDownloadOutlined,
-  Search,
-  SyncOutlined,
-} from "@mui/icons-material";
+import { Search, SyncOutlined } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
-import useDebounce from "../../../hooks/useDebounce";
-import useSweetAlert from "../../../hooks/useSweetAlert";
 import { theme } from "../../../theme/theme";
-
 import { Toaster, toast } from "sonner";
+
+import useDebounce from "../../../hooks/useDebounce";
 
 import {
   useGetCompanyQuery,
   useSyncCompanyMutation,
-} from "../../../features/company/companyApi";
+} from "../../../features/api masterlist/company/companyApi";
 import { useLazyGetCompaniesQuery } from "../../../features/ymir/ymirApi";
 
 const Company = () => {
@@ -75,6 +61,12 @@ const Company = () => {
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   const onSyncCompany = () => {
     Swal.fire({

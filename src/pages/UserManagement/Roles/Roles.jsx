@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -17,29 +16,24 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { AddOutlined, Search } from "@mui/icons-material";
+
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
+import { Toaster, toast } from "sonner";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import {
-  AddOutlined,
-  FileUploadOutlined,
-  FileDownloadOutlined,
-  Search,
-} from "@mui/icons-material";
-
-import RoleAction from "./RoleAction";
-
-import {
   useGetRolesQuery,
   useArchiveRoleMutation,
-} from "../../../features/role/roleApi";
+} from "../../../features/user_management_api/role/roleApi";
+
+import RoleAction from "./RoleAction";
 import RolePermissions from "./RolePermissions";
 import RoleAddDialog from "./RoleAddDialog";
-import { Toaster, toast } from "sonner";
 
 const Roles = () => {
   const [status, setStatus] = useState("true");
@@ -76,56 +70,97 @@ const Roles = () => {
   };
 
   const onArchiveAction = (data) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will move this role to the archived tab.",
-      icon: "warning",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("Data: ", data);
+    if (data.isActive === true) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move this role to the archived tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("Data: ", data);
 
-        archiveRole(data)
-          .unwrap()
-          .then(() => {
-            if (data.isActive === true) {
+          archiveRole(data)
+            .unwrap()
+            .then(() => {
               toast.success("Success!", {
                 description: "Role archived successfully!",
               });
-            } else {
+            })
+            .catch((error) => {
+              console.log("Error: ", error);
+              toast.error("Error!", {
+                description: error.data.error.message,
+              });
+            });
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the role to the active tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("Data: ", data);
+
+          archiveRole(data)
+            .unwrap()
+            .then(() => {
               toast.success("Success!", {
                 description: "Role restored successfully!",
               });
-            }
-          })
-          .catch((error) => {
-            console.log("Error: ", error);
-            toast.error("Error!", {
-              description: error.data.error.message,
+            })
+            .catch((error) => {
+              console.log("Error: ", error);
+              toast.error("Error!", {
+                description: error.data.error.message,
+              });
             });
-          });
-      }
-    });
+        }
+      });
+    }
   };
 
   const onEditAction = (data) => {
     onToggle();
     setEditData(data);
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack

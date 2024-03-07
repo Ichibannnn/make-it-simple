@@ -25,7 +25,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearUserDetails } from "../features/user/userSlice";
+import { clearUserDetails } from "../features/user_management_api/user/userSlice";
 import ReusableAlert from "../hooks/ReusableAlert";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
 
