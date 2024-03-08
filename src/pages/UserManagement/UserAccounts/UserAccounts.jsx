@@ -190,8 +190,6 @@ const UserAccounts = () => {
     });
   };
 
-  console.log("Data: ", data);
-
   useEffect(() => {
     if (searchValue) {
       setPageNumber(1);

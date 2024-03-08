@@ -2,9 +2,9 @@ import queryString from "query-string";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const categoryApi = createApi({
-  reducerPath: "categoryApi",
-  tagTypes: ["Category"],
+export const subCategoryApi = createApi({
+  reducerPath: "subCategoryApi",
+  tagTypes: ["Sub Category"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
@@ -20,37 +20,36 @@ export const categoryApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getCategory: builder.query({
+    getSubCategory: builder.query({
       query: (params) => ({
-        url: "category/page",
+        url: "sub-category/page",
         method: "GET",
         params: params,
       }),
-      providesTags: ["Category"],
+      providesTags: ["Sub Category"],
     }),
 
-    createEditCategory: builder.mutation({
+    createEditSubCategory: builder.mutation({
       query: (body) => ({
-        url: "category",
+        url: "sub-category",
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Category"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Sub Category"]),
     }),
 
-    archiveCategory: builder.mutation({
+    archiveSubCategory: builder.mutation({
       query: (id) => ({
-        url: `category/status/${id}`,
+        url: `sub-category/status/${id}`,
         method: "PATCH",
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Category"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Sub Category"]),
     }),
   }),
 });
 
 export const {
-  useGetCategoryQuery,
-  useLazyGetCategoryQuery,
-  useCreateEditCategoryMutation,
-  useArchiveCategoryMutation,
-} = categoryApi;
+  useGetSubCategoryQuery,
+  useCreateEditSubCategoryMutation,
+  useArchiveSubCategoryMutation,
+} = subCategoryApi;

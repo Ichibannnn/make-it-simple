@@ -28,12 +28,12 @@ import useDisclosure from "../../../hooks/useDisclosure";
 
 import { CategoryDialog } from "./CategoryDialog";
 import { CategoryActions } from "./CategoryActions";
+import { CategorySubCat } from "./CategorySubCat";
 
 import {
   useArchiveCategoryMutation,
   useGetCategoryQuery,
 } from "../../../features/api masterlist/category_api/categoryApi";
-import { CategorySubCat } from "./CategorySubCat";
 
 const Category = () => {
   const [status, setStatus] = useState("true");
@@ -74,7 +74,7 @@ const Category = () => {
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",
-        text: "This will move this category to the archived tab.",
+        text: "This will move the category to the archived tab.",
         icon: "warning",
         color: "white",
         showCancelButton: true,
@@ -156,6 +156,8 @@ const Category = () => {
     onToggle();
     setEditData(data);
   };
+
+  console.log(editData);
 
   useEffect(() => {
     if (searchValue) {

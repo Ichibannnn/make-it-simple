@@ -192,6 +192,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 description: "Role added successfully!",
                 duration: 1500,
               });
+              reset();
               onClose();
             })
             .catch((error) => {

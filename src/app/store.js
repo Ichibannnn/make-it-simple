@@ -16,10 +16,11 @@ import { unitApi } from "../features/api masterlist/unit/unitApi";
 import { departmentApi } from "../features/api masterlist/department/departmentApi";
 import { subUnitApi } from "../features/api masterlist/sub-unit/subUnitApi";
 import { locationApi } from "../features/api masterlist/location/locationApi";
+import { categoryApi } from "../features/api masterlist/category_api/categoryApi";
+import { subCategoryApi } from "../features/api masterlist/sub_category_api/subCategoryApi";
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
-import { categoryApi } from "../features/api masterlist/category_api/categoryApi";
 
 export const store = configureStore({
   reducer: {
@@ -39,6 +40,7 @@ export const store = configureStore({
     [subUnitApi.reducerPath]: subUnitApi.reducer,
     [locationApi.reducerPath]: locationApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer,
+    [subCategoryApi.reducerPath]: subCategoryApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -58,6 +60,7 @@ export const store = configureStore({
       subUnitApi.middleware,
       locationApi.middleware,
       categoryApi.middleware,
+      subCategoryApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,
