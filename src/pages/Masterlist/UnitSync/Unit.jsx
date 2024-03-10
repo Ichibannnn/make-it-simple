@@ -158,6 +158,7 @@ const Unit = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>

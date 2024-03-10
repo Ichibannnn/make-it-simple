@@ -135,3 +135,7 @@
   background-color: transparent;
   color: #1976d2;
 }
+
+.tabs-styling {
+  text-transform: capitalize !important;
+}

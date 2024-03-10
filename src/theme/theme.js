@@ -87,6 +87,9 @@ const theme = createTheme({
       marginInlineStart: "0px",
       marginInlineEnd: "0px",
     },
+    h5: {
+      fontWeight: "600",
+    },
     h4: {
       fontWeight: "700",
     },

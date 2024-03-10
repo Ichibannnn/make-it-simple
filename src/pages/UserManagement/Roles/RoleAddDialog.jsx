@@ -227,7 +227,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth open={open}>
         <DialogTitle
           sx={{

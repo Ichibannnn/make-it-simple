@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Chip,
   Divider,
   IconButton,
   ListItemIcon,
@@ -25,9 +26,13 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearUserDetails } from "../features/user_management_api/user/userSlice";
+import {
+  clearUserDetails,
+  user,
+} from "../features/user_management_api/user/userSlice";
 import ReusableAlert from "../hooks/ReusableAlert";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
+import { PermIdentityOutlined } from "@mui/icons-material";
 
 const Header = () => {
   const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -40,6 +45,7 @@ const Header = () => {
 
   const fullName = useSelector((state) => state.user.fullname);
   const userName = useSelector((state) => state.user.username);
+  const userRoleName = useSelector((state) => state.user.userRoleName);
 
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -127,7 +133,6 @@ const Header = () => {
           <MenuItem onClick={closeHandler}>
             <Box
               sx={{
-                display: "flex",
                 flexDirection: "column",
                 padding: "0px",
               }}
@@ -137,16 +142,30 @@ const Header = () => {
               >
                 {fullName}
               </Typography>
-              <Typography
-                sx={{
-                  fontSize: ".8rem",
-                  fontWeight: "400",
-                  lineWeight: "1.5",
-                  color: "#A0AEC0",
-                }}
-              >
-                {userName}
-              </Typography>
+
+              <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+                <Typography
+                  sx={{
+                    fontSize: ".8rem",
+                    fontWeight: "400",
+                    lineWeight: "1.5",
+                    color: "#A0AEC0",
+                  }}
+                >
+                  {userName}
+                </Typography>
+
+                {/* <Chip
+                  icon={<PermIdentityOutlined color="primary" />}
+                  label={userRoleName}
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                  sx={{
+                    color: "#fff",
+                  }}
+                /> */}
+              </Box>
             </Box>
           </MenuItem>
           <Divider color="#1C2536" variant="fullWidth" />

@@ -19,6 +19,7 @@ import SubUnit from "../pages/Masterlist/SubUnitSync/SubUnit";
 import Location from "../pages/Masterlist/LocationSync/Location";
 import Category from "../pages/Masterlist/Category/Category";
 import SubCategory from "../pages/Masterlist/Sub-Category/SubCategory";
+import RequestTickets from "../pages/Request/RequestTickets/RequestTickets";
 
 export const router = createBrowserRouter([
   {
@@ -87,6 +88,10 @@ export const router = createBrowserRouter([
             element: <SubCategory />,
           },
         ],
+      },
+      {
+        path: "/request",
+        element: <RequestTickets />,
       },
     ],
   },

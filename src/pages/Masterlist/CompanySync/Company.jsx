@@ -185,7 +185,7 @@ const Company = () => {
               // backgroundColor: "#111927",
             }}
           />
-          <Toaster richColors position="top-right" />
+          <Toaster richColors position="top-right" closeButton />
           <LoadingButton
             variant="contained"
             size="large"
