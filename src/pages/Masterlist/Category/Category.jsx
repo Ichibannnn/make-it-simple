@@ -176,7 +176,7 @@ const Category = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>
@@ -303,7 +303,7 @@ const Category = () => {
                   }}
                   align="center"
                 >
-                  SUB UNITS
+                  SUB CATEGORY
                 </TableCell>
 
                 <TableCell

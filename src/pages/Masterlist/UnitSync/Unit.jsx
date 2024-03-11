@@ -117,11 +117,8 @@ const Unit = () => {
             })
               .unwrap()
               .then(() => {
-                toast({
-                  icon: "success",
-                  title: "Success!",
-                  text: "Sync data successfully!",
-                  background: "#1d4b30",
+                toast.success("Success!", {
+                  description: "Sync data successfully!",
                 });
               })
               .catch((error) => {

@@ -39,4 +39,8 @@ export const locationApi = createApi({
   }),
 });
 
-export const { useGetLocationQuery, useSyncLocationMutation } = locationApi;
+export const {
+  useGetLocationQuery,
+  useSyncLocationMutation,
+  useLazyGetLocationQuery,
+} = locationApi;

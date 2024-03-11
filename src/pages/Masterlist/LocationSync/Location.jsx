@@ -270,7 +270,7 @@ const Location = () => {
                     fontSize: "12px",
                   }}
                 >
-                  SUB UNIT
+                  SUB UNITS
                 </TableCell>
               </TableRow>
             </TableHead>

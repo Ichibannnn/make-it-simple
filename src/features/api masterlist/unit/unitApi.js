@@ -39,4 +39,5 @@ export const unitApi = createApi({
   }),
 });
 
-export const { useGetUnitQuery, useSyncUnitMutation } = unitApi;
+export const { useGetUnitQuery, useSyncUnitMutation, useLazyGetUnitQuery } =
+  unitApi;

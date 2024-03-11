@@ -48,7 +48,9 @@ const UserAccounts = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { open, onToggle } = useDisclosure();
+  const [editData, setEditData] = useState(null);
+
+  const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetUsersQuery({
     Status: status,
@@ -66,6 +68,11 @@ const UserAccounts = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+  };
+
+  const onDialogClose = () => {
+    setEditData(null);
+    onClose();
   };
 
   const onArchiveAction = (data) => {
@@ -527,7 +534,11 @@ const UserAccounts = () => {
           onRowsPerPageChange={onPageSizeChange}
         />
 
-        <UserAccountDialog open={open} onClose={onToggle} />
+        <UserAccountDialog
+          open={open}
+          onClose={onDialogClose}
+          isSuccess={isSuccess}
+        />
       </Stack>
     </Stack>
   );

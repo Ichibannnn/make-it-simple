@@ -39,4 +39,8 @@ export const companyApi = createApi({
   }),
 });
 
-export const { useGetCompanyQuery, useSyncCompanyMutation } = companyApi;
+export const {
+  useGetCompanyQuery,
+  useSyncCompanyMutation,
+  useLazyGetCompanyQuery,
+} = companyApi;
