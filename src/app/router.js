@@ -19,7 +19,11 @@ import SubUnit from "../pages/Masterlist/SubUnitSync/SubUnit";
 import Location from "../pages/Masterlist/LocationSync/Location";
 import Category from "../pages/Masterlist/Category/Category";
 import SubCategory from "../pages/Masterlist/Sub-Category/SubCategory";
+
+import RequestsPage from "../pages/Request/RequestsPage";
 import RequestTickets from "../pages/Request/RequestTickets/RequestTickets";
+import Tickets from "../pages/Request/Tickets/Tickets";
+import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
 
 export const router = createBrowserRouter([
   {
@@ -91,7 +95,21 @@ export const router = createBrowserRouter([
       },
       {
         path: "/request",
-        element: <RequestTickets />,
+        element: <RequestsPage />,
+        children: [
+          {
+            path: "/request/tickets",
+            element: <Tickets />,
+          },
+          {
+            path: "/request/requested-tickets",
+            element: <RequestTickets />,
+          },
+          {
+            path: "/request/concerns",
+            element: <ConcernTickets />,
+          },
+        ],
       },
     ],
   },

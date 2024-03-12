@@ -11,7 +11,10 @@ import {
   AttachFileOutlined,
   AutoAwesomeMotionOutlined,
   BallotOutlined,
+  BookmarkAddOutlined,
   CategoryOutlined,
+  ConfirmationNumberOutlined,
+  DiscountOutlined,
   DomainAddOutlined,
   DynamicFeedOutlined,
   EqualizerOutlined,
@@ -50,6 +53,11 @@ export const getSubMenuIcon = (iconName) => {
     RoomOutlined: <RoomOutlined />,
     CategoryOutlined: <CategoryOutlined />,
     AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined />,
+
+    // Request
+    ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
+    BookmarkAddOutlined: <BookmarkAddOutlined />,
+    DiscountOutlined: <DiscountOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

@@ -134,6 +134,11 @@ const SidebarList = () => {
     onToggle: masterListOnToggle,
     onClose: masterlistOnClose,
   } = useDisclosure(!!pathname.match(/masterlist/gi));
+  const {
+    open: requestOpen,
+    onToggle: requestOnToggle,
+    onClose: requestOnClose,
+  } = useDisclosure(!!pathname.match(/request/gi));
 
   const sidebarMenu = [
     {
@@ -151,6 +156,7 @@ const SidebarList = () => {
       onToggle: () => {
         userManagementOnToggle();
         masterlistOnClose();
+        requestOnClose();
       },
       sub: [
         {
@@ -178,6 +184,7 @@ const SidebarList = () => {
       onToggle: () => {
         masterListOnToggle();
         userManagementOnClose();
+        requestOnClose();
       },
       sub: [
         {
@@ -235,6 +242,32 @@ const SidebarList = () => {
       name: "Request",
       path: "/request",
       icon: "DynamicFeedOutlined",
+      open: requestOpen,
+      onToggle: () => {
+        requestOnToggle();
+        userManagementOnClose();
+        masterlistOnClose();
+      },
+      sub: [
+        {
+          id: 1,
+          name: "Tickets",
+          path: "/request/tickets",
+          icon: "ConfirmationNumberOutlined",
+        },
+        {
+          id: 2,
+          name: "Requested Tickets",
+          path: "/request/requested-tickets",
+          icon: "BookmarkAddOutlined",
+        },
+        {
+          id: 3,
+          name: "Concerns",
+          path: "/request/concerns",
+          icon: "DiscountOutlined",
+        },
+      ],
     },
     {
       id: 5,

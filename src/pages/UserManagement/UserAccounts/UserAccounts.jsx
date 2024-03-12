@@ -39,6 +39,7 @@ import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { Toaster, toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
@@ -49,6 +50,9 @@ const UserAccounts = () => {
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
+
+  const userRole = useSelector((state) => state.user.userRoleName);
+  console.log("User Role: ", userRole);
 
   const { open, onToggle, onClose } = useDisclosure();
 
@@ -198,6 +202,8 @@ const UserAccounts = () => {
   };
 
   const onEditAction = (data) => {
+    console.log("Data: ", data);
+
     onToggle();
     setEditData(data);
   };

@@ -134,33 +134,82 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      setValue("id", data?.id);
+      if (employeeIsSuccess) getEmployees();
+      // getOptionLabel={(option) =>
+      //   `${option.department_Code} - ${option.department_Name}`
+      // }
+      // isOptionEqualToValue={(option, value) =>
+      //   option.id === value.id
+      // }
+
       setValue("empId", {
-        id: data?.categoryId,
-        category_Description: data?.category_Description,
+        general_info: {
+          full_id_number: data?.empId,
+        },
       });
       setValue("fullname", data?.fullname);
       setValue("username", data?.username);
-      // setValue("categoryId", {
-      //   id: data?.categoryId,
-      //   category_Description: data?.category_Description,
-      // });
-      // setValue("subCategory_Description", data?.subCategory_Description);
+      setValue("userRoleId", {
+        id: data?.userRoleId,
+        user_Role_Name: data?.user_Role_Name,
+      });
+      setValue("companyId", {
+        id: data?.companyId,
+        company_Code: data?.company_Code,
+        company_Name: data?.company_Name,
+      });
+      setValue("businessUnitId", {
+        id: data?.businessUnitId,
+        business_Code: data?.businessUnit_Code,
+        business_Name: data?.businessUnit_Name,
+      });
+      setValue("businessUnitId", {
+        id: data?.businessUnitId,
+        business_Code: data?.businessUnit_Code,
+        business_Name: data?.businessUnit_Name,
+      });
+      setValue("departmentId", {
+        id: data?.departmentId,
+        department_Code: data?.department_Code,
+        department_Name: data?.department_Name,
+      });
+      setValue("unitId", {
+        id: data?.unitId,
+        unit_Code: data?.unit_Code,
+        unit_Name: data?.unit_Name,
+      });
+      setValue("subUnitId", {
+        id: data?.subUnitId,
+        subUnit_Code: data?.subUnit_Code,
+        subUnit_Name: data?.subUnit_Name,
+      });
+      setValue("locationId", {
+        id: data?.locationId,
+        location_Code: data?.location_Code,
+        location_Name: data?.location_Name,
+      });
     }
   }, [data]);
 
-  const onSubmitHandler = (data) => {
+  // console.log("Data: ", data);
+  // console.log("Employee Data: ", employeeData);
+
+  // console.log("Employee Id: ", watch("empId"));
+
+  const onSubmitHandler = (formData) => {
+    console.log("formData: ", formData.locationId.subUnits[0].locationId);
+
     const submitUser = {
-      empId: data.empId.general_info.full_id_number,
-      fullname: data.empId.general_info.full_name,
-      username: data.username,
-      userRoleId: data.userRoleId.id,
-      departmentId: data.departmentId.id,
-      subUnitId: data.subUnitId.id,
-      unitId: data.unitId.id,
-      companyId: data.companyId.id,
-      locationId: data.locationId.id,
-      businessUnitId: data.businessUnitId.id,
+      empId: formData.empId.general_info.full_id_number,
+      fullname: formData.empId.general_info.full_name,
+      username: formData.username,
+      userRoleId: formData.userRoleId.id,
+      departmentId: formData.departmentId.id,
+      subUnitId: formData.subUnitId.id,
+      unitId: formData.unitId.id,
+      companyId: formData.companyId.id,
+      locationId: formData.locationId.id,
+      businessUnitId: formData.businessUnitId.id,
     };
 
     Swal.fire({
@@ -184,6 +233,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        console.log("Submit: ", submitUser);
         createUser(submitUser)
           .unwrap()
           .then(() => {
@@ -207,21 +257,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     reset();
     onClose();
   };
-
-  // console.log("Role Data: ", roleData);
-  // console.log("EmployeeId: ", watch("empId"));
-  // console.log("Fullname: ", watch("fullname"));
-  // console.log("Username: ", watch("username"));
-  // console.log("Role Id: ", watch("userRoleId"));
-
-  // console.log("Company Data: ", companyData);
-  // console.log("Business Data: ", businessUnitData);
-  // console.log("Department Data: ", departmentData);
-  // console.log("Unit Data: ", unitData);
-  // console.log("Sub Unit Data: ", subUnitData);
-  // console.log("Location: ", locationData);
-
-  // console.log("error: ", errors);
 
   return (
     <>
