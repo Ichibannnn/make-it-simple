@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
-const UserAccountAction = ({ data, onReset, onArchive }) => {
+const UserAccountAction = ({ data, onReset, onArchive, onUpdate }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -31,6 +31,11 @@ const UserAccountAction = ({ data, onReset, onArchive }) => {
     });
   };
 
+  const onUpdateAction = (data) => {
+    onToggle();
+    onUpdate(data);
+  };
+
   return (
     <>
       <IconButton ref={ref} onClick={onToggle}>
@@ -39,7 +44,7 @@ const UserAccountAction = ({ data, onReset, onArchive }) => {
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
         {data?.is_Active && (
-          <MenuItem onClick={onToggle}>
+          <MenuItem onClick={() => onUpdateAction(data)}>
             <ListItemIcon>
               <EditOutlined fontSize="small" />
             </ListItemIcon>

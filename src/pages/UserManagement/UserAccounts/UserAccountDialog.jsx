@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -25,7 +25,7 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationQuery } from "../../../features/api masterlist/location/locationApi";
-import { useCreateUsersMutation } from "../../../features/user_management_api/user/userApi";
+import { useCreateUserMutation } from "../../../features/user_management_api/user/userApi";
 import Swal from "sweetalert2";
 import { Toaster, toast } from "sonner";
 
@@ -42,8 +42,8 @@ const schema = yup.object().shape({
   locationId: yup.object().required().label("Location"),
 });
 
-const UserAccountDialog = ({ open, onClose, isSuccess }) => {
-  const [createUser] = useCreateUsersMutation();
+const UserAccountDialog = ({ data, open, onClose }) => {
+  const [createUser] = useCreateUserMutation();
 
   const [
     getEmployees,
@@ -132,6 +132,23 @@ const UserAccountDialog = ({ open, onClose, isSuccess }) => {
     },
   });
 
+  useEffect(() => {
+    if (data) {
+      setValue("id", data?.id);
+      setValue("empId", {
+        id: data?.categoryId,
+        category_Description: data?.category_Description,
+      });
+      setValue("fullname", data?.fullname);
+      setValue("username", data?.username);
+      // setValue("categoryId", {
+      //   id: data?.categoryId,
+      //   category_Description: data?.category_Description,
+      // });
+      // setValue("subCategory_Description", data?.subCategory_Description);
+    }
+  }, [data]);
+
   const onSubmitHandler = (data) => {
     const submitUser = {
       empId: data.empId.general_info.full_id_number,
@@ -174,7 +191,6 @@ const UserAccountDialog = ({ open, onClose, isSuccess }) => {
               description: "User added successfully!",
             });
             reset();
-            // isSuccess();
             onClose();
           })
           .catch((error) => {
@@ -209,12 +225,7 @@ const UserAccountDialog = ({ open, onClose, isSuccess }) => {
 
   return (
     <>
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={open}
-        // onClose={handleClose}
-      >
+      <Dialog fullWidth maxWidth="md" open={open}>
         <Toaster richColors position="top-right" closeButton />
         <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>
           Create User Account

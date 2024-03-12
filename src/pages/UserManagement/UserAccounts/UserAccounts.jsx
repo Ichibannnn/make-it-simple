@@ -197,6 +197,11 @@ const UserAccounts = () => {
     });
   };
 
+  const onEditAction = (data) => {
+    onToggle();
+    setEditData(data);
+  };
+
   useEffect(() => {
     if (searchValue) {
       setPageNumber(1);
@@ -484,6 +489,7 @@ const UserAccounts = () => {
                         status={status}
                         onReset={onResetPasswordAction}
                         onArchive={onArchiveAction}
+                        onUpdate={onEditAction}
                       />
                     </TableCell>
                   </TableRow>
@@ -538,6 +544,8 @@ const UserAccounts = () => {
           open={open}
           onClose={onDialogClose}
           isSuccess={isSuccess}
+          data={editData}
+          // setPageNumber={setPage}
         />
       </Stack>
     </Stack>

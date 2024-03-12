@@ -28,13 +28,13 @@ export const userApi = createApi({
       }),
       providesTags: ["Users"],
     }),
-    createUsers: builder.mutation({
+    createUser: builder.mutation({
       query: (body) => ({
         url: "User/AddNewUser",
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Category"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
     resetUserPassword: builder.mutation({
       query: (body) => ({
@@ -57,7 +57,7 @@ export const userApi = createApi({
 
 export const {
   useGetUsersQuery,
-  useCreateUsersMutation,
+  useCreateUserMutation,
   useResetUserPasswordMutation,
   useArchiveUserMutation,
 } = userApi;
