@@ -25,9 +25,13 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationQuery } from "../../../features/api masterlist/location/locationApi";
-import { useCreateUserMutation } from "../../../features/user_management_api/user/userApi";
+import {
+  useCreateUserMutation,
+  useUpdateUserMutation,
+} from "../../../features/user_management_api/user/userApi";
 import Swal from "sweetalert2";
 import { Toaster, toast } from "sonner";
+import { theme } from "../../../theme/theme";
 
 const schema = yup.object().shape({
   empId: yup.object().required().label("Employee ID"),
@@ -44,6 +48,7 @@ const schema = yup.object().shape({
 
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [createUser] = useCreateUserMutation();
+  const [updateUser] = useUpdateUserMutation();
 
   const [
     getEmployees,
@@ -135,13 +140,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       if (employeeIsSuccess) getEmployees();
-      // getOptionLabel={(option) =>
-      //   `${option.department_Code} - ${option.department_Name}`
-      // }
-      // isOptionEqualToValue={(option, value) =>
-      //   option.id === value.id
-      // }
-
       setValue("empId", {
         general_info: {
           full_id_number: data?.empId,
@@ -153,6 +151,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         id: data?.userRoleId,
         user_Role_Name: data?.user_Role_Name,
       });
+
       setValue("companyId", {
         id: data?.companyId,
         company_Code: data?.company_Code,
@@ -193,64 +192,117 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   // console.log("Data: ", data);
   // console.log("Employee Data: ", employeeData);
-
-  // console.log("Employee Id: ", watch("empId"));
+  console.log("Employee Id: ", watch("username"));
 
   const onSubmitHandler = (formData) => {
-    console.log("formData: ", formData.locationId.subUnits[0].locationId);
+    console.log("Form data: ", formData);
 
-    const submitUser = {
-      empId: formData.empId.general_info.full_id_number,
-      fullname: formData.empId.general_info.full_name,
-      username: formData.username,
-      userRoleId: formData.userRoleId.id,
-      departmentId: formData.departmentId.id,
-      subUnitId: formData.subUnitId.id,
-      unitId: formData.unitId.id,
-      companyId: formData.companyId.id,
-      locationId: formData.locationId.id,
-      businessUnitId: formData.businessUnitId.id,
-    };
+    if (data) {
+      const submitUpdateUser = {
+        id: data.id,
+        userRoleId: formData.userRoleId.id,
+        username: formData.userName,
+        departmentId: formData.departmentId.id,
+        subUnitId: formData.subUnitId.id,
+        unitId: formData.unitId.id,
+        companyId: formData.companyId.id,
+        businessUnitId: formData.businessUnitId.id,
+        locationCode: formData.locationId.location_Code,
+      };
 
-    Swal.fire({
-      title: "Information",
-      text: "Are you sure you want to add this user?",
-      icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("Submit: ", submitUser);
-        createUser(submitUser)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "User added successfully!",
+      Swal.fire({
+        title: "Information",
+        text: "Are you sure you want to update this user?",
+        icon: "info",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("Edit user: ", submitUpdateUser);
+          updateUser(submitUpdateUser)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "User updated successfully!",
+              });
+              reset();
+              onClose();
+            })
+            .catch((error) => {
+              console.log("Error : ", error);
+              toast.error("Error!", {
+                description: error.data.error.message,
+              });
             });
-            reset();
-            onClose();
-          })
-          .catch((error) => {
-            console.log("Error : ", error);
-            toast.error("Error!", {
-              description: error.data.error.message,
-            });
-          });
-      }
-    });
+        }
+      });
+    } else {
+      const submitAddUser = {
+        empId: formData.empId.general_info.full_id_number,
+        fullname: formData.empId.general_info.full_name,
+        username: formData.username,
+        userRoleId: formData.userRoleId.id,
+        departmentId: formData.departmentId.id,
+        subUnitId: formData.subUnitId.id,
+        unitId: formData.unitId.id,
+        companyId: formData.companyId.id,
+        locationCode: formData.locationId.location_Code,
+        businessUnitId: formData.businessUnitId.id,
+      };
+
+      Swal.fire({
+        title: "Information",
+        text: "Are you sure you want to add this user?",
+        icon: "info",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("Add user: ", submitAddUser);
+          // createUser(submitAddUser)
+          //   .unwrap()
+          //   .then(() => {
+          //     toast.success("Success!", {
+          //       description: "User added successfully!",
+          //     });
+          //     reset();
+          //     onClose();
+          //   })
+          //   .catch((error) => {
+          //     console.log("Error : ", error);
+          //     toast.error("Error!", {
+          //       description: error.data.error.message,
+          //     });
+          //   });
+        }
+      });
+    }
   };
 
   const onCloseHandler = () => {
@@ -323,6 +375,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                         option.general_info.full_id_number ===
                         value.general_info.full_id_number
                       }
+                      disabled={data ? true : false}
                       sx={{
                         flex: 1,
                       }}
@@ -345,6 +398,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       value={value}
                       label="Fullname"
                       onChange={onChange}
+                      disabled={data ? true : false}
                       inputProps={{
                         readOnly: true,
                       }}
@@ -674,7 +728,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       `${option.location_Code} - ${option.location_Name}`
                     }
                     isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
+                      option.location_Code === value.location_Code
                     }
                     sx={{
                       flex: 2,
@@ -690,7 +744,28 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button type="submit" form="user" variant="contained">
+          <Button
+            type="submit"
+            form="user"
+            variant="contained"
+            disabled={
+              !watch("empId") ||
+              !watch("username") ||
+              !watch("userRoleId") ||
+              !watch("companyId") ||
+              !watch("businessUnitId") ||
+              !watch("departmentId") ||
+              !watch("unitId") ||
+              !watch("subUnitId") ||
+              !watch("locationId")
+            }
+            sx={{
+              ":disabled": {
+                backgroundColor: theme.palette.secondary.main,
+                color: "black",
+              },
+            }}
+          >
             Save
           </Button>
           <Button onClick={onCloseHandler}>Close</Button>

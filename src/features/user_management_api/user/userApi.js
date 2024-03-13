@@ -36,6 +36,14 @@ export const userApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
+    updateUser: builder.mutation({
+      query: (body) => ({
+        url: "User/UpdateUser",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+    }),
     resetUserPassword: builder.mutation({
       query: (body) => ({
         url: "User/UserResetPassword",
@@ -58,6 +66,7 @@ export const userApi = createApi({
 export const {
   useGetUsersQuery,
   useCreateUserMutation,
+  useUpdateUserMutation,
   useResetUserPasswordMutation,
   useArchiveUserMutation,
 } = userApi;

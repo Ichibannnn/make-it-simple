@@ -192,7 +192,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                 />
               </Stack>
 
-              <Stack sx={{ padding: "5px", gap: 1 }}>
+              <Stack sx={{ gap: 1 }}>
                 <FormLabel
                   sx={{
                     color: theme.palette.text.main,
@@ -216,35 +216,35 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                 />
               </Stack>
             </Stack>
+
+            <Stack
+              direction="row"
+              justifyContent="right"
+              alignItems="center"
+              sx={{ paddingTop: 2, gap: 1 }}
+            >
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                disabled={
+                  !watch("categoryId") || !watch("subCategory_Description")
+                }
+                sx={{
+                  ":disabled": {
+                    backgroundColor: theme.palette.secondary.main,
+                    color: "black",
+                  },
+                }}
+              >
+                Save
+              </LoadingButton>
+              <LoadingButton variant="outlined" onClick={onCloseAction}>
+                Close
+              </LoadingButton>
+            </Stack>
           </Box>
 
-          <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
-
-          <Stack
-            direction="row"
-            justifyContent="right"
-            alignItems="center"
-            sx={{ padding: 2, gap: 1 }}
-          >
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              disabled={
-                !watch("categoryId") || !watch("subCategory_Description")
-              }
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
-            >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
-            </LoadingButton>
-          </Stack>
+          {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
         </form>
       </Drawer>
     </>

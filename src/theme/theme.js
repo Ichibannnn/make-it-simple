@@ -116,6 +116,9 @@ const theme = createTheme({
           "& input::placeholder": {
             color: "#EDF2F7",
           },
+          "& .MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled": {
+            color: "#EDF2F7",
+          },
         },
       },
     },
@@ -129,9 +132,15 @@ const theme = createTheme({
           "&:active .MuiOutlinedInput-notchedOutline": {
             borderColor: "#9e77ed",
           },
-          // "& input::placeholder": {
-          //   color: "green",
-          // },
+          "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#69717b",
+          },
+        },
+        input: {
+          "&.MuiOutlinedInput-input.Mui-disabled": {
+            color: "red",
+            "-webkit-text-fill-color": "#69717b",
+          },
         },
       },
     },
@@ -139,6 +148,16 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: black[400],
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "#EDF2F7",
+          "&.Mui-disabled": {
+            color: "#69717b",
+          },
         },
       },
     },
