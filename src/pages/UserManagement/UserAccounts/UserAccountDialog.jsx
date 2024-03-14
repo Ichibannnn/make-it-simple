@@ -139,7 +139,14 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      if (employeeIsSuccess) getEmployees();
+      // if (employeeIsSuccess) getEmployees();
+      if (!companyIsSuccess) getCompany();
+      if (!businessUnitIsSuccess) getBusinessUnit();
+      if (!departmentIsSuccess) getDepartment();
+      if (!unitIsSuccess) getUnit();
+      if (!subUnitIsSuccess) getSubUnit();
+      if (!locationIsSuccess) getLocation();
+
       setValue("empId", {
         general_info: {
           full_id_number: data?.empId,
@@ -183,7 +190,15 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         location_Name: data?.location_Name,
       });
     }
-  }, [data]);
+  }, [
+    data,
+    companyIsLoading,
+    businessUnitIsLoading,
+    departmentIsLoading,
+    unitIsLoading,
+    subUnitIsLoading,
+    locationIsLoading,
+  ]);
 
   // console.log("Data: ", data);
   // console.log("Employee Data: ", employeeData);

@@ -14,10 +14,14 @@ import {
   BookmarkAddOutlined,
   CategoryOutlined,
   ConfirmationNumberOutlined,
+  ContactsOutlined,
   DiscountOutlined,
   DomainAddOutlined,
   DynamicFeedOutlined,
   EqualizerOutlined,
+  GroupsOutlined,
+  HubOutlined,
+  KeyboardCommandKeyOutlined,
   LanOutlined,
   ListOutlined,
   NumbersOutlined,
@@ -58,6 +62,11 @@ export const getSubMenuIcon = (iconName) => {
     ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
     BookmarkAddOutlined: <BookmarkAddOutlined />,
     DiscountOutlined: <DiscountOutlined />,
+
+    // Channel Setup
+    ContactsOutlined: <ContactsOutlined />,
+    HubOutlined: <HubOutlined />,
+    GroupsOutlined: <GroupsOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

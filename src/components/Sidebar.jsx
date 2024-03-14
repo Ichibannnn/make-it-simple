@@ -139,6 +139,11 @@ const SidebarList = () => {
     onToggle: requestOnToggle,
     onClose: requestOnClose,
   } = useDisclosure(!!pathname.match(/request/gi));
+  const {
+    open: channelOpen,
+    onToggle: channelOnToggle,
+    onClose: channelOnClose,
+  } = useDisclosure(!!pathname.match(/channel/gi));
 
   const sidebarMenu = [
     {
@@ -157,6 +162,7 @@ const SidebarList = () => {
         userManagementOnToggle();
         masterlistOnClose();
         requestOnClose();
+        channelOnClose();
       },
       sub: [
         {
@@ -185,6 +191,7 @@ const SidebarList = () => {
         masterListOnToggle();
         userManagementOnClose();
         requestOnClose();
+        channelOnClose();
       },
       sub: [
         {
@@ -239,6 +246,39 @@ const SidebarList = () => {
     },
     {
       id: 4,
+      name: "Channel Setup",
+      path: "/channel-setup",
+      icon: "NumbersOutlined",
+      open: channelOpen,
+      onToggle: () => {
+        channelOnToggle();
+        userManagementOnClose();
+        masterlistOnClose();
+        requestOnClose();
+      },
+      sub: [
+        {
+          id: 1,
+          name: "Receiver",
+          path: "/channel-setup/receiver",
+          icon: "ContactsOutlined",
+        },
+        {
+          id: 2,
+          name: "Channel",
+          path: "/channel-setup/channel",
+          icon: "HubOutlined",
+        },
+        {
+          id: 3,
+          name: "Approver",
+          path: "/channel-setup/approver",
+          icon: "GroupsOutlined",
+        },
+      ],
+    },
+    {
+      id: 5,
       name: "Request",
       path: "/request",
       icon: "DynamicFeedOutlined",
@@ -270,19 +310,13 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 5,
-      name: "Channel",
-      path: "/channel",
-      icon: "NumbersOutlined",
-    },
-    {
-      id: 6,
+      id: 7,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 7,
+      id: 8,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",

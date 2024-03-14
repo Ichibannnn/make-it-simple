@@ -25,6 +25,11 @@ import RequestTickets from "../pages/Request/RequestTickets/RequestTickets";
 import Tickets from "../pages/Request/Tickets/Tickets";
 import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
 
+import ChannelPage from "../pages/ChannelSetup/ChannelPage";
+import Receiver from "../pages/ChannelSetup/Receiver/Receiver";
+import Channel from "../pages/ChannelSetup/Channel/Channel";
+import Approver from "../pages/ChannelSetup/Approver/Approver";
+
 export const router = createBrowserRouter([
   {
     path: "*",
@@ -90,6 +95,24 @@ export const router = createBrowserRouter([
           {
             path: "/masterlist/sub-category",
             element: <SubCategory />,
+          },
+        ],
+      },
+      {
+        path: "/channel-setup",
+        element: <ChannelPage />,
+        children: [
+          {
+            path: "/channel-setup/receiver",
+            element: <Receiver />,
+          },
+          {
+            path: "/channel-setup/channel",
+            element: <Channel />,
+          },
+          {
+            path: "/channel-setup/approver",
+            element: <Approver />,
           },
         ],
       },

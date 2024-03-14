@@ -40,7 +40,7 @@ const parentCheckbox = [
   "User Management",
   "Masterlist",
   "Request",
-  "Channel",
+  "Channel Setup",
   "Filing",
   "Generate",
 ];
@@ -55,6 +55,7 @@ const masterlistCheckbox = [
   "Category",
   "Sub Category",
 ];
+const channelCheckbox = ["Receiver", "Channel", "Approver"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
   const [createRole] = useCreateRoleMutation();
@@ -221,6 +222,12 @@ const RoleAddDialog = ({ data, open, onClose }) => {
         watch("permissions").filter(
           (item) => !masterlistCheckbox.includes(item)
         )
+      );
+    }
+    if (!e.target.checked && e.target.value === "Channel Setup") {
+      setValue(
+        "permissions",
+        watch("permissions").filter((item) => !channelCheckbox.includes(item))
       );
     }
   };
@@ -445,6 +452,69 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
+
+              {/* CHANNEL SETUP */}
+              {watch("permissions")?.includes("Channel Setup") && (
+                <FormControl
+                  component="fieldset"
+                  variant="standard"
+                  sx={{
+                    border: "1px solid #2D3748",
+                    borderRadius: "10px",
+                    padding: 2,
+                  }}
+                >
+                  <FormLabel
+                    component="legend"
+                    sx={{
+                      padding: "0 20px",
+                    }}
+                  >
+                    Channel Setup
+                  </FormLabel>
+
+                  <FormGroup>
+                    <Stack direction="row" flexWrap="wrap">
+                      {channelCheckbox.map((item, index) => (
+                        <Controller
+                          key={index}
+                          control={control}
+                          name="permissions"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <FormControlLabel
+                                sx={{
+                                  flex: 1,
+                                  flexBasis: "40%",
+                                }}
+                                control={
+                                  <Checkbox
+                                    ref={ref}
+                                    value={item}
+                                    checked={value?.includes(item)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        onChange([...value, e.target.value]);
+                                      } else {
+                                        onChange([
+                                          ...value.filter(
+                                            (item) => item !== e.target.value
+                                          ),
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={item}
+                              />
+                            );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </FormGroup>
+                </FormControl>
+              )}
             </Stack>
           </DialogContent>
 
@@ -463,6 +533,11 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 (watch("permissions").includes("Masterlist")
                   ? !watch("permissions").some((item) =>
                       masterlistCheckbox.includes(item)
+                    )
+                  : false) ||
+                (watch("permissions").includes("Channel Setup")
+                  ? !watch("permissions").some((item) =>
+                      channelCheckbox.includes(item)
                     )
                   : false)
               }
