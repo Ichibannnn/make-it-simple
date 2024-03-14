@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Box,
   Chip,
   Divider,
@@ -115,7 +116,9 @@ const Header = () => {
       <Box>
         <IconButton>
           <Tooltip title="Notification">
-            <NotificationsNoneOutlinedIcon />
+            <Badge badgeContent={1} color="primary">
+              <NotificationsNoneOutlinedIcon />
+            </Badge>
           </Tooltip>
         </IconButton>
 

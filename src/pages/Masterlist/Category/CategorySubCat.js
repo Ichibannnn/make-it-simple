@@ -1,5 +1,6 @@
 import { LanOutlined } from "@mui/icons-material";
 import {
+  Badge,
   IconButton,
   List,
   ListItem,
@@ -19,7 +20,9 @@ export const CategorySubCat = ({ subCategories }) => {
     <div>
       <IconButton ref={ref} onClick={onToggle}>
         <Tooltip title="View Permissions">
-          <LanOutlined />
+          <Badge badgeContent={subCategories.length} color="primary">
+            <LanOutlined />
+          </Badge>
         </Tooltip>
       </IconButton>
 

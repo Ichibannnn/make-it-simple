@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { LanOutlined } from "@mui/icons-material";
 
 import {
+  Badge,
   IconButton,
   List,
   ListItem,
@@ -21,7 +22,9 @@ const LocationSubUnit = ({ subUnits }) => {
     <div>
       <IconButton ref={ref} onClick={onToggle}>
         <Tooltip title="View Sub Units">
-          <LanOutlined />
+          <Badge badgeContent={subUnits.length} color="primary">
+            <LanOutlined />
+          </Badge>
         </Tooltip>
       </IconButton>
 

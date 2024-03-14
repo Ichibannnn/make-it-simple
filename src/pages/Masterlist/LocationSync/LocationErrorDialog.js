@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Dialog,
   DialogActions,
@@ -200,7 +201,9 @@ export const LocationSubUnitError = ({ subUnits }) => {
     <div>
       <IconButton ref={ref} onClick={onToggle}>
         <Tooltip title="View Sub units">
-          <LanOutlined />
+          <Badge badgeContent={subUnits.length} color="primary">
+            <LanOutlined />
+          </Badge>
         </Tooltip>
       </IconButton>
 

@@ -1,5 +1,6 @@
 import { LanOutlined } from "@mui/icons-material";
 import {
+  Badge,
   IconButton,
   List,
   ListItem,
@@ -15,11 +16,15 @@ const RolePermissions = ({ permissions }) => {
   const ref = useRef();
   const { open, onToggle } = useDisclosure();
 
+  console.log("Permissions: ", permissions);
+
   return (
     <div>
       <IconButton ref={ref} onClick={onToggle}>
         <Tooltip title="View Permissions">
-          <LanOutlined />
+          <Badge badgeContent={permissions.length} color="primary">
+            <LanOutlined />
+          </Badge>
         </Tooltip>
       </IconButton>
 

@@ -162,11 +162,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         business_Code: data?.businessUnit_Code,
         business_Name: data?.businessUnit_Name,
       });
-      setValue("businessUnitId", {
-        id: data?.businessUnitId,
-        business_Code: data?.businessUnit_Code,
-        business_Name: data?.businessUnit_Name,
-      });
       setValue("departmentId", {
         id: data?.departmentId,
         department_Code: data?.department_Code,
@@ -192,7 +187,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   // console.log("Data: ", data);
   // console.log("Employee Data: ", employeeData);
-  console.log("Employee Id: ", watch("username"));
+  console.log("Location: ", watch("locationId"));
 
   const onSubmitHandler = (formData) => {
     console.log("Form data: ", formData);
@@ -201,7 +196,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       const submitUpdateUser = {
         id: data.id,
         userRoleId: formData.userRoleId.id,
-        username: formData.userName,
+        username: formData.username,
         departmentId: formData.departmentId.id,
         subUnitId: formData.subUnitId.id,
         unitId: formData.unitId.id,
@@ -285,21 +280,21 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       }).then((result) => {
         if (result.isConfirmed) {
           console.log("Add user: ", submitAddUser);
-          // createUser(submitAddUser)
-          //   .unwrap()
-          //   .then(() => {
-          //     toast.success("Success!", {
-          //       description: "User added successfully!",
-          //     });
-          //     reset();
-          //     onClose();
-          //   })
-          //   .catch((error) => {
-          //     console.log("Error : ", error);
-          //     toast.error("Error!", {
-          //       description: error.data.error.message,
-          //     });
-          //   });
+          createUser(submitAddUser)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "User added successfully!",
+              });
+              reset();
+              onClose();
+            })
+            .catch((error) => {
+              console.log("Error : ", error);
+              toast.error("Error!", {
+                description: error.data.error.message,
+              });
+            });
         }
       });
     }
@@ -728,7 +723,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       `${option.location_Code} - ${option.location_Name}`
                     }
                     isOptionEqualToValue={(option, value) =>
-                      option.location_Code === value.location_Code
+                      option.id === value.id
                     }
                     sx={{
                       flex: 2,
