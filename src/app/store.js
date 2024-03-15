@@ -19,9 +19,11 @@ import { locationApi } from "../features/api masterlist/location/locationApi";
 import { categoryApi } from "../features/api masterlist/category_api/categoryApi";
 import { subCategoryApi } from "../features/api masterlist/sub_category_api/subCategoryApi";
 
+import { receiverApi } from "../features/api_channel_setup/receiver/receiverApi";
+
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
-import { receiverApi } from "../features/api_channel_setup/receiver/receiverApi";
+import { channelApi } from "../features/api_channel_setup/channel/channelApi";
 
 export const store = configureStore({
   reducer: {
@@ -44,6 +46,7 @@ export const store = configureStore({
     [subCategoryApi.reducerPath]: subCategoryApi.reducer,
 
     [receiverApi.reducerPath]: receiverApi.reducer,
+    [channelApi.reducerPath]: channelApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -66,6 +69,7 @@ export const store = configureStore({
       subCategoryApi.middleware,
 
       receiverApi.middleware,
+      channelApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,

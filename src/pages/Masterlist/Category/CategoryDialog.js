@@ -100,10 +100,10 @@ export const CategoryDialog = ({ data, open, onClose }) => {
         });
     }
   };
-  console.log(watch("id"));
-  console.log(watch("category_Description"));
+  // console.log(watch("id"));
+  // console.log(watch("category_Description"));
 
-  console.log("Error: ", errors);
+  // console.log("Error: ", errors);
 
   return (
     <>

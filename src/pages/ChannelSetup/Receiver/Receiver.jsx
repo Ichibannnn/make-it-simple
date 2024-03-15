@@ -35,7 +35,7 @@ import {
   useGetReceiverQuery,
 } from "../../../features/api_channel_setup/receiver/receiverApi";
 
-const Category = () => {
+const Receiver = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -459,4 +459,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Receiver;

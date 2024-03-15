@@ -26,25 +26,29 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useCreateEditSubCategoryMutation } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import {
+  useCreateChannelMutation,
+  useUpdateChannelMutation,
+} from "../../../features/api_channel_setup/channel/channelApi";
+import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
-  subCategory_Description: yup.string().required().label("Sub Category"),
-  categoryId: yup.object().required().label("Category"),
+  channel_Name: yup.string().required().label("Channel Name"),
+  subUnitId: yup.object().required().label("Sub Unit"),
 });
 
-export const SubCategoryDialog = ({ data, open, onClose }) => {
-  const [createEditSubCategory] = useCreateEditSubCategoryMutation();
+const ChannelDrawer = ({ data, open, onClose }) => {
+  const [createChannel] = useCreateChannelMutation();
+  const [updateChannel] = useUpdateChannelMutation();
   const [
-    getCategory,
+    getSubUnit,
     {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
+      data: subUnitData,
+      isLoading: subUnitIsLoading,
+      isSuccess: subUnitIsSuccess,
     },
-  ] = useLazyGetCategoryQuery();
+  ] = useLazyGetSubUnitQuery();
 
   const {
     control,
@@ -58,19 +62,22 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       id: null,
-      categoryId: null,
-      subCategory_Description: "",
+      channel_Name: "",
+      subUnitId: null,
     },
   });
+
+  //   console.log(watch("subUnitId"));
 
   useEffect(() => {
     if (data) {
       setValue("id", data?.id);
-      setValue("categoryId", {
-        // id: data?.categoryId,
-        category_Description: data?.category_Description,
+      setValue("channel_Name", data?.channel_Name);
+      setValue("subUnitId", {
+        id: data?.subUnitId,
+        subUnit_Code: data?.subUnit_Code,
+        subUnit_Name: data?.subUnit_Name,
       });
-      setValue("subCategory_Description", data?.subCategory_Description);
     }
   }, [data]);
 
@@ -80,16 +87,18 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = (formData) => {
+    console.log("FormData: ", formData);
+
     if (formData.id) {
-      createEditSubCategory({
+      updateChannel({
         id: formData.id,
-        subCategory_Description: formData.subCategory_Description,
-        categoryId: formData.categoryId.id,
+        channel_Name: formData.channel_Name,
+        subUnitId: formData.subUnitId.id,
       })
         .unwrap()
         .then(() => {
           toast.success("Success!", {
-            description: "Updated category! ",
+            description: "Updated channel! ",
             duration: 1500,
           });
           reset();
@@ -103,14 +112,14 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
           });
         });
     } else {
-      createEditSubCategory({
-        subCategory_Description: formData.subCategory_Description,
-        categoryId: formData.categoryId.id,
+      createChannel({
+        channel_Name: formData.channel_Name,
+        subUnitId: formData.subUnitId.id,
       })
         .unwrap()
         .then(() => {
           toast.success("Success!", {
-            description: "Category added successsfully!",
+            description: "Channel added successsfully!",
             duration: 1500,
           });
           reset();
@@ -126,19 +135,22 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
     }
   };
 
-  console.log("Category Data: ", categoryData);
+  //   console.log("Channel Name", watch("channel_Name"));
+  //   console.log("Sub Unit", watch("subUnitId"));
+  //   console.log("SubUnit Data: ", subUnitData);
+  console.log("Edit Data: ", data);
 
   return (
     <>
       <Toaster richColors position="top-right" />
-      <Drawer anchor="right" open={open} onClose={onClose}>
+      <Drawer anchor="right" open={open}>
         <Stack sx={{ padding: 3 }}>
           <Typography
             sx={{
               fontWeight: "bold",
             }}
           >
-            Sub Category Form
+            Channel Form
           </Typography>
         </Stack>
 
@@ -156,44 +168,22 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                     lineHeight: "1.4375em",
                   }}
                 >
-                  Category
+                  Channel Name
                 </FormLabel>
 
-                <Controller
-                  control={control}
-                  name="categoryId"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={categoryData?.value?.category || []}
-                        loading={categoryIsLoading}
-                        renderInput={(params) => <TextField {...params} />}
-                        onOpen={() => {
-                          if (!categoryIsSuccess)
-                            getCategory({
-                              Status: true,
-                            });
-                        }}
-                        onChange={(_, value) => onChange(value)}
-                        getOptionLabel={(option) => option.category_Description}
-                        isOptionEqualToValue={(option, value) =>
-                          option.id === value.id
-                        }
-                        sx={{
-                          flex: 2,
-                        }}
-                        fullWidth
-                        disablePortal
-                      />
-                    );
-                  }}
+                <TextField
+                  {...register("channel_Name")}
+                  size="small"
+                  variant="outlined"
+                  helperText={errors?.channel_Name?.message}
+                  error={!!errors?.channel_Name?.message}
+                  sx={{ borderColor: "primary" }}
+                  fullWidth
+                  autoComplete="off"
                 />
               </Stack>
 
-              <Stack sx={{ gap: 1 }}>
+              <Stack sx={{ width: "100%", gap: 1 }}>
                 <FormLabel
                   sx={{
                     color: theme.palette.text.main,
@@ -202,18 +192,43 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                     lineHeight: "1.4375em",
                   }}
                 >
-                  Sub Category
+                  Sub Unit
                 </FormLabel>
 
-                <TextField
-                  {...register("subCategory_Description")}
-                  size="small"
-                  variant="outlined"
-                  helperText={errors?.subCategory_Description?.message}
-                  error={!!errors?.subCategory_Description?.message}
-                  sx={{ borderColor: "primary" }}
-                  fullWidth
-                  autoComplete="off"
+                <Controller
+                  control={control}
+                  name="subUnitId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={subUnitData?.value?.subUnit || []}
+                        loading={subUnitIsLoading}
+                        renderInput={(params) => <TextField {...params} />}
+                        onOpen={() => {
+                          if (!subUnitIsSuccess)
+                            getSubUnit({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => onChange(value)}
+                        getOptionLabel={(option) =>
+                          `${option.subUnit_Code} - ${option.subUnit_Name}`
+                        }
+                        isOptionEqualToValue={(option, value) =>
+                          option.subUnitId === value.subUnitId
+                        }
+                        sx={{
+                          flex: 2,
+                        }}
+                        disabled={data ? true : false}
+                        fullWidth
+                        disablePortal
+                      />
+                    );
+                  }}
                 />
               </Stack>
             </Stack>
@@ -227,9 +242,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={
-                  !watch("categoryId") || !watch("subCategory_Description")
-                }
+                disabled={!watch("channel_Name") || !watch("subUnitId")}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,
@@ -239,6 +252,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
               >
                 Save
               </LoadingButton>
+
               <LoadingButton variant="outlined" onClick={onCloseAction}>
                 Close
               </LoadingButton>
@@ -251,3 +265,5 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
     </>
   );
 };
+
+export default ChannelDrawer;

@@ -185,7 +185,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         subUnit_Name: data?.subUnit_Name,
       });
       setValue("locationId", {
-        id: data?.locationId,
         location_Code: data?.location_Code,
         location_Name: data?.location_Name,
       });
@@ -200,9 +199,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     locationIsLoading,
   ]);
 
-  // console.log("Data: ", data);
+  console.log("Location Data: ", locationData);
   // console.log("Employee Data: ", employeeData);
-  console.log("Location: ", watch("locationId"));
+  // console.log("Sub Unit: ", watch("subUnitId"));
+  // console.log("Location: ", watch("locationId"));
 
   const onSubmitHandler = (formData) => {
     console.log("Form data: ", formData);
@@ -738,7 +738,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       `${option.location_Code} - ${option.location_Name}`
                     }
                     isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
+                      option.location_Code === value.location_Code
                     }
                     sx={{
                       flex: 2,
