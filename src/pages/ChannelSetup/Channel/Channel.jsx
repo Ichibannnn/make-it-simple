@@ -27,7 +27,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 import ChannelMembers from "./ChannelMembers";
 import ChannelActions from "./ChannelActions";
-import ChannelDialog from "./ChannelDialog";
+import ChannelDialog, { ChannelMemberList } from "./ChannelDialog";
 import {
   useArchiveChannelMutation,
   useGetChannelsQuery,
@@ -66,6 +66,7 @@ const Channel = () => {
 
   const onDialogClose = () => {
     setEditData(null);
+
     onClose();
   };
 
@@ -94,12 +95,12 @@ const Channel = () => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveChannel(data.userId)
+          archiveChannel(data.id)
             .unwrap()
             .then(() => {
               console.log("Data: ", data);
               toast.success("Success!", {
-                description: "Receiver archived successfully!",
+                description: "Channel archived successfully!",
               });
             })
             .catch((error) => {
@@ -133,12 +134,12 @@ const Channel = () => {
         if (result.isConfirmed) {
           // console.log("Data: ", data);
 
-          archiveChannel(data.userId)
+          archiveChannel(data.id)
             .unwrap()
             .then(() => {
               console.log("Data: ", data);
               toast.success("Success!", {
-                description: "Sub Category restored successfully!",
+                description: "Channel restored successfully!",
               });
             })
             .catch((error) => {
@@ -474,7 +475,8 @@ const Channel = () => {
           onRowsPerPageChange={onPageSizeChange}
         />
 
-        <ChannelDrawer data={editData} open={open} onClose={onDialogClose} />
+        <ChannelDialog data={editData} open={open} onClose={onDialogClose} />
+        {/* <ChannelDrawer data={editData} open={open} onClose={onDialogClose} /> */}
       </Stack>
     </Stack>
   );

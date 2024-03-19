@@ -96,13 +96,11 @@ const ChannelDrawer = ({ data, open, onClose }) => {
         subUnitId: formData.subUnitId.id,
       })
         .unwrap()
-        .then(() => {
-          toast.success("Success!", {
-            description: "Updated channel! ",
-            duration: 1500,
-          });
-          reset();
-          onClose();
+        .then((response) => {
+          console.log("Response", response);
+
+          // reset();
+          // onClose();
         })
         .catch((error) => {
           console.log("error: ", error);
@@ -117,13 +115,18 @@ const ChannelDrawer = ({ data, open, onClose }) => {
         subUnitId: formData.subUnitId.id,
       })
         .unwrap()
-        .then(() => {
-          toast.success("Success!", {
-            description: "Channel added successsfully!",
-            duration: 1500,
-          });
-          reset();
-          onClose();
+        .then((response) => {
+          console.log("FormData ID: ", formData.channel_Name);
+          console.log("response add: ", response);
+
+          // if (response?.value?.channel_Name === formData.id)
+
+          // toast.success("Success!", {
+          //   description: "Channel added successsfully!",
+          //   duration: 1500,
+          // });
+          // reset();
+          // onClose();
         })
         .catch((error) => {
           console.log("Error: ", error);

@@ -38,6 +38,15 @@ export const channelApi = createApi({
       invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
     }),
 
+    createChannelValidation: builder.mutation({
+      query: (body) => ({
+        url: "channel/validation",
+        method: "POST",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
+    }),
+
     updateChannel: builder.mutation({
       query: ({ id, ...body }) => ({
         url: `channel/${id}`,
@@ -73,9 +82,10 @@ export const channelApi = createApi({
     }),
 
     createChannelMember: builder.mutation({
-      query: (id) => ({
+      query: ({ id, ...body }) => ({
         url: `channel/member/${id}`,
         method: "POST",
+        body: body,
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
     }),
@@ -85,9 +95,10 @@ export const channelApi = createApi({
 export const {
   useGetChannelsQuery,
   useCreateChannelMutation,
+  useCreateChannelValidationMutation,
   useUpdateChannelMutation,
   useArchiveChannelMutation,
   useDeleteChannelMutation,
-  useGetChannelMembersQuery,
+  useLazyGetChannelMembersQuery,
   useCreateChannelMemberMutation,
 } = channelApi;

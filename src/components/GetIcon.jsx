@@ -44,29 +44,26 @@ export const getMenuIcon = (iconName) => {
 
 export const getSubMenuIcon = (iconName) => {
   const iconMap = {
-    // User Management
-    PermIdentityOutlinedIcon: <PermIdentityOutlinedIcon />,
-    ManageAccountsOutlinedIcon: <ManageAccountsOutlinedIcon />,
-
-    // Masterlist
-    BusinessOutlinedIcon: <BusinessOutlinedIcon />,
-    LanOutlined: <LanOutlined />,
-    DomainAddOutlined: <DomainAddOutlined />,
-    AccountTreeOutlined: <AccountTreeOutlined />,
-    ListOutlined: <ListOutlined />,
-    RoomOutlined: <RoomOutlined />,
-    CategoryOutlined: <CategoryOutlined />,
-    AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined />,
-
-    // Request
-    ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
-    BookmarkAddOutlined: <BookmarkAddOutlined />,
-    DiscountOutlined: <DiscountOutlined />,
-
-    // Channel Setup
-    ContactsOutlined: <ContactsOutlined />,
-    HubOutlined: <HubOutlined />,
-    GroupsOutlined: <GroupsOutlined />,
+    // // User Management
+    // PermIdentityOutlinedIcon: <PermIdentityOutlinedIcon />,
+    // ManageAccountsOutlinedIcon: <ManageAccountsOutlinedIcon />,
+    // // Masterlist
+    // BusinessOutlinedIcon: <BusinessOutlinedIcon />,
+    // LanOutlined: <LanOutlined />,
+    // DomainAddOutlined: <DomainAddOutlined />,
+    // AccountTreeOutlined: <AccountTreeOutlined />,
+    // ListOutlined: <ListOutlined />,
+    // RoomOutlined: <RoomOutlined />,
+    // CategoryOutlined: <CategoryOutlined />,
+    // AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined />,
+    // // Request
+    // ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
+    // BookmarkAddOutlined: <BookmarkAddOutlined />,
+    // DiscountOutlined: <DiscountOutlined />,
+    // // Channel Setup
+    // ContactsOutlined: <ContactsOutlined />,
+    // HubOutlined: <HubOutlined />,
+    // GroupsOutlined: <GroupsOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

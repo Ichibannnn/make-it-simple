@@ -402,9 +402,9 @@ const SidebarList = () => {
                             selected={subItem.path === pathname}
                             sx={{ padding: "2px" }}
                           >
-                            <ListItemIcon>
+                            {/* <ListItemIcon>
                               {getSubMenuIcon(subItem.icon)}
-                            </ListItemIcon>
+                            </ListItemIcon> */}
 
                             <ListItemText
                               primary={subItem.name}
@@ -413,6 +413,7 @@ const SidebarList = () => {
                                 fontWeight: "600",
                                 lineHeight: "24px",
                                 mb: "2px",
+                                marginLeft: "35px",
                               }}
                             />
                           </ListItemButton>

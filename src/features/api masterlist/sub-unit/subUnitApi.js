@@ -41,6 +41,6 @@ export const subUnitApi = createApi({
 
 export const {
   useGetSubUnitQuery,
-  useSyncSubUnitMutation,
   useLazyGetSubUnitQuery,
+  useSyncSubUnitMutation,
 } = subUnitApi;

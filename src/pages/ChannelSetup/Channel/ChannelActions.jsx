@@ -2,7 +2,6 @@ import {
   ArchiveOutlined,
   EditOutlined,
   MoreHoriz,
-  RefreshOutlined,
   RestoreOutlined,
 } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
@@ -16,6 +15,7 @@ const ChannelActions = ({ data, onArchive, onUpdate }) => {
   const { open, onToggle } = useDisclosure();
 
   const onArchiveAction = (data) => {
+    console.log("Data: ", data);
     onToggle();
     onArchive({
       id: data.id,
