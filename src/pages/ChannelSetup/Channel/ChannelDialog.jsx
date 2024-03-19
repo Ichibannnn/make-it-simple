@@ -336,6 +336,7 @@ const memberSchema = yup.object().shape({
 
 const ChannelDialog = ({ data, open, onClose }) => {
   const [members, setMembers] = useState([]);
+  const [disabled, setDisabled] = useState(false);
 
   const [
     createChannelValidation,
@@ -451,10 +452,17 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
   const onCloseAction = () => {
     onClose();
+    setDisabled(false);
     setMembers([]);
     channelFormReset();
     memberFormReset();
   };
+
+  useEffect(() => {
+    if (members.length) {
+      setDisabled(true);
+    }
+  }, [members]);
 
   return (
     <>
@@ -467,7 +475,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
         PaperProps={{ style: { overflow: "unset" } }}
       >
         <DialogContent sx={{ paddingBottom: 10 }}>
-          <Stack direction="column" sx={{ padding: "5px", minHeight: "700px" }}>
+          <Stack direction="column" sx={{ padding: "5px" }}>
             <Stack>
               <Stack direction="row" gap={0.5}>
                 <Typography
@@ -508,12 +516,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       label="Channel Name"
                       onChange={onChange}
                       onBlur={onValidateChannelName}
-                      // disabled={channelName ? true : false}
-                      // inputProps={{
-                      //   readOnly: true,
-                      // }}
                       error={errorValidationIsError}
                       helperText={errorValidation?.data?.error?.message}
+                      disabled={disabled}
                       sx={{
                         flex: 2,
                       }}
@@ -545,8 +550,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         onChange(value);
                         console.log(value);
 
-                        // setValue("userId", null);
-
                         getSubUnitMembers({
                           SubUnitId: value.id,
                         });
@@ -559,7 +562,8 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       }
                       disabled={
                         !channelFormWatch("channel_Name") ||
-                        errorValidationIsError
+                        errorValidationIsError ||
+                        disabled
                       }
                       sx={{
                         flex: 2,
@@ -643,7 +647,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   size="small"
                   sx={{
                     borderBottom: "none",
-                    // minHeight: "400px",
                   }}
                 >
                   <TableHead>
