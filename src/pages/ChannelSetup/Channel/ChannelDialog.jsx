@@ -32,7 +32,7 @@ import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
-import { CloseOutlined, DeleteOutlineOutlined } from "@mui/icons-material";
+import { DeleteOutlineOutlined } from "@mui/icons-material";
 
 import {
   useCreateChannelMemberMutation,
@@ -42,287 +42,6 @@ import {
   useUpdateChannelMutation,
 } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
-import useDisclosure from "../../../hooks/useDisclosure";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { ReactSortable } from "react-sortablejs";
-
-// const schema = yup.object().shape({
-//   id: yup.string().nullable(),
-//   channel_Name: yup.string().required().label("Channel Name"),
-// });
-
-// const ChannelDialog = ({ data, open, onClose }) => {
-//   const [createChannelValidation] = useCreateChannelValidationMutation();
-//   const {
-//     open: openMemberDialog,
-//     onToggle: onToggleMemberDialog,
-//     onClose: onCloseMemberDialog,
-//   } = useDisclosure();
-
-//   const [channelName, setChannelName] = useState("");
-
-//   const {
-//     control,
-//     handleSubmit,
-//     register,
-//     watch,
-//     setValue,
-//     reset,
-//     formState: { errors },
-//   } = useForm({
-//     resolver: yupResolver(schema),
-//     defaultValues: {
-//       id: null,
-//       channel_Name: "",
-//       subUnitId: null,
-//     },
-//   });
-
-//   console.log("Error: ", errors);
-
-//   const onSubmitAction = (formData) => {
-//     console.log("FormData: ", formData);
-
-//     createChannelValidation({
-//       channel_Name: formData.channel_Name,
-//     })
-//       .unwrap()
-//       .then(() => {
-//         setChannelName(formData.channel_Name);
-//         onClose();
-//         onToggleMemberDialog();
-//       })
-//       .catch((error) => {
-//         toast.error("Error!", {
-//           description: error.data.error.message,
-//           duration: 1500,
-//         });
-//       });
-
-//     // if (formData.id) {
-//     //   updateChannel({
-//     //     id: formData.id,
-//     //     channel_Name: formData.channel_Name,
-//     //     subUnitId: formData.subUnitId.id,
-//     //   })
-//     //     .unwrap()
-//     //     .then((response) => {
-//     //       console.log("Response", response);
-
-//     //       toast.success("Success!", {
-//     //         description: "Updated channel! ",
-//     //         duration: 1500,
-//     //       });
-//     //       reset();
-//     //       onClose();
-//     //     })
-//     //     .catch((error) => {
-//     //       console.log("error: ", error);
-//     //       toast.error("Error!", {
-//     //         description: error.data.error.message,
-//     //         duration: 1500,
-//     //       });
-//     //     });
-//     // } else {
-//     //   createChannel({
-//     //     channel_Name: formData.channel_Name,
-//     //     subUnitId: formData.subUnitId.id,
-//     //   })
-//     //     .unwrap()
-//     //     .then((response) => {
-//     //       console.log("FormData ID: ", formData.channel_Name);
-//     //       console.log("response add: ", response);
-
-//     //       // if (response?.value?.channel_Name === formData.id)
-
-//     //       toast.success("Success!", {
-//     //         description: "Channel added successsfully!",
-//     //         duration: 1500,
-//     //       });
-//     //       reset();
-//     //       onClose();
-//     //     })
-//     //     .catch((error) => {
-//     //       console.log("Error: ", error);
-//     //       toast.error("Error!", {
-//     //         description: error.data.error.message,
-//     //         duration: 1500,
-//     //       });
-//     //     });
-//     // }
-//   };
-
-//   const onCloseAction = () => {
-//     reset();
-//     onClose();
-//   };
-
-//   return (
-//     <>
-//       <Toaster richColors position="top-right" closeButton />
-//       <Dialog open={open} PaperProps={{ style: { overflow: "unset" } }}>
-//         <DialogTitle
-//           sx={{
-//             display: "flex",
-//             flexDirection: "column",
-//             justifyContent: "left",
-//             paddingTop: 0,
-//             paddingBottom: 0,
-//             marginBlockEnd: "5.28px",
-//           }}
-//         >
-//           <Stack>
-//             <Stack direction="row" gap={0.5}>
-//               <Typography
-//                 sx={{
-//                   fontSize: "20px",
-//                   fontWeight: 700,
-//                 }}
-//               >
-//                 Channel Form
-//               </Typography>
-//             </Stack>
-
-//             <Typography
-//               sx={{
-//                 color: theme.palette.text.secondary,
-//                 fontSize: "12px",
-//               }}
-//             >
-//               Create channel before adding members.
-//             </Typography>
-//           </Stack>
-//         </DialogTitle>
-
-//         <IconButton
-//           onClick={onCloseAction}
-//           sx={{
-//             position: "absolute",
-//             right: 8,
-//             top: 8,
-//             color: (theme) => theme.palette.grey[500],
-//           }}
-//         >
-//           <CloseOutlined />
-//         </IconButton>
-
-//         <DialogContent>
-//           <Stack sx={{ padding: "5px", gap: 1.5, width: "400px" }}>
-//             <form onSubmit={handleSubmit(onSubmitAction)}>
-//               <Stack sx={{ gap: 1 }}>
-//                 <Stack sx={{ width: "90%", gap: 1 }}>
-//                   <FormLabel
-//                     sx={{
-//                       color: theme.palette.text.main,
-//                       fontSize: "13px",
-//                       fontWeight: 500,
-//                       lineHeight: "1.4375em",
-//                     }}
-//                   >
-//                     Channel Name
-//                   </FormLabel>
-
-//                   <TextField
-//                     {...register("channel_Name")}
-//                     size="small"
-//                     variant="outlined"
-//                     helperText={errors?.channel_Name?.message}
-//                     error={!!errors?.channel_Name?.message}
-//                     sx={{ borderColor: "primary" }}
-//                     fullWidth
-//                     autoComplete="off"
-//                   />
-//                 </Stack>
-
-//                 {/* <Stack sx={{ width: "100%", gap: 1 }}>
-//                   <FormLabel
-//                     sx={{
-//                       color: theme.palette.text.main,
-//                       fontSize: "13px",
-//                       fontWeight: 500,
-//                       lineHeight: "1.4375em",
-//                     }}
-//                   >
-//                     Sub Unit
-//                   </FormLabel>
-
-//                   <Controller
-//                     control={control}
-//                     name="subUnitId"
-//                     render={({ field: { ref, value, onChange } }) => {
-//                       return (
-//                         <Autocomplete
-//                           ref={ref}
-//                           size="small"
-//                           value={value}
-//                           options={subUnitData?.value?.subUnit || []}
-//                           loading={subUnitIsLoading}
-//                           renderInput={(params) => (
-//                             <TextField {...params} size="small" />
-//                           )}
-//                           onOpen={() => {
-//                             if (!subUnitIsSuccess)
-//                               getSubUnit({
-//                                 Status: true,
-//                               });
-//                           }}
-//                           onChange={(_, value) => onChange(value)}
-//                           getOptionLabel={(option) =>
-//                             `${option.subUnit_Code} - ${option.subUnit_Name}`
-//                           }
-//                           isOptionEqualToValue={(option, value) =>
-//                             option.subUnitId === value.subUnitId
-//                           }
-//                           sx={{
-//                             flex: 2,
-//                           }}
-//                           disabled={data ? true : false}
-//                           fullWidth
-//                           disablePortal
-//                         />
-//                       );
-//                     }}
-//                   />
-//                 </Stack> */}
-//               </Stack>
-
-//               <DialogActions>
-//                 <Stack
-//                   direction="row"
-//                   justifyContent="right"
-//                   alignItems="center"
-//                   sx={{ paddingTop: 2, gap: 1 }}
-//                 >
-//                   <LoadingButton
-//                     type="submit"
-//                     variant="contained"
-//                     disabled={!watch("channel_Name")}
-//                     sx={{
-//                       ":disabled": {
-//                         backgroundColor: theme.palette.secondary.main,
-//                         color: "black",
-//                       },
-//                     }}
-//                   >
-//                     Next
-//                   </LoadingButton>
-//                 </Stack>
-//               </DialogActions>
-//             </form>
-//           </Stack>
-//         </DialogContent>
-//       </Dialog>
-
-//       <ChannelMemberList
-//         channelName={channelName}
-//         openMemberDialog={openMemberDialog}
-//         onCloseMemberDialog={onCloseMemberDialog}
-//       />
-//     </>
-//   );
-// };
-
-// export default ChannelDialog;
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -367,6 +86,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const {
     control: channelFormControl,
     handleSubmit: channelFormHandleSubmit,
+    setValue: channelFormSetValue,
     watch: channelFormWatch,
     reset: channelFormReset,
     formState: { errors },
@@ -383,6 +103,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
     control: memberFormControl,
     handleSubmit: memberFormHandlerSubmit,
     reset: memberFormReset,
+    setValue: memberFormSetValue,
     watch: memberFormWatch,
     formState: { errors: membersFormError },
   } = useForm({
@@ -393,46 +114,77 @@ const ChannelDialog = ({ data, open, onClose }) => {
   });
 
   const onValidateChannelName = async (e) => {
-    try {
-      await createChannelValidation({
-        channel_Name: e.target.value,
-      }).unwrap();
-    } catch (error) {
-      console.log("Error: ", error);
+    if (!data) {
+      try {
+        await createChannelValidation({
+          channel_Name: e.target.value,
+        }).unwrap();
+      } catch (error) {}
     }
   };
 
-  const onChannelFormSubmit = async (data) => {
-    try {
-      const response = await createChannel({
-        channel_Name: data.channel_Name,
-        subUnitId: data.subUnitId.id,
-      }).unwrap();
+  const onChannelFormSubmit = async (formData) => {
+    console.log("Submit Data: ", data);
 
-      await createChannelMember({
-        id: response.value.id,
-        members: members,
-      }).unwrap();
-      toast.success("Success!", {
-        description: "Channel added successfully!",
-        duration: 1500,
-      });
-      setMembers([]);
-      channelFormReset();
-      memberFormReset();
-      onClose();
-    } catch (error) {
-      console.log(error);
-      toast.error("Error!", {
-        description: error.data.error.message,
-        duration: 1500,
-      });
+    console.log("Form Data: ", formData);
+
+    if (!data) {
+      try {
+        const response = await createChannel({
+          channel_Name: formData.channel_Name,
+          subUnitId: formData.subUnitId.id,
+        }).unwrap();
+
+        await createChannelMember({
+          id: response.value.id,
+          members: members,
+        }).unwrap();
+        toast.success("Success!", {
+          description: "Channel added successfully!",
+          duration: 1500,
+        });
+        setMembers([]);
+        channelFormReset();
+        memberFormReset();
+        onClose();
+      } catch (error) {
+        toast.error("Error!", {
+          description: error.data.error.message,
+          duration: 1500,
+        });
+      }
+    } else {
+      try {
+        const response = await updateChannel({
+          id: data.id,
+          channel_Name: formData.channel_Name,
+          subUnitId: formData.subUnitId.id,
+        }).unwrap();
+
+        await createChannelMember({
+          id: response.value.id,
+          members: members,
+        }).unwrap();
+        toast.success("Success!", {
+          description: "Channel added successfully!",
+          duration: 1500,
+        });
+        setMembers([]);
+        channelFormReset();
+        memberFormReset();
+        onClose();
+
+        console.log("Response: ", response);
+      } catch (error) {
+        toast.error("Error!", {
+          description: error.data.error.message,
+          duration: 1500,
+        });
+      }
     }
   };
 
   const onMemberFormSubmit = (data) => {
-    console.log("Members Data: ", data);
-
     setMembers((currentValue) => [
       ...currentValue,
       {
@@ -459,17 +211,41 @@ const ChannelDialog = ({ data, open, onClose }) => {
   };
 
   useEffect(() => {
-    if (members.length) {
+    if (members.length > 0 || !!data) {
       setDisabled(true);
+    } else {
+      setDisabled(false);
     }
   }, [members]);
+
+  useEffect(() => {
+    if (data) {
+      channelFormSetValue("channel_Name", data.channel_Name);
+      channelFormSetValue("subUnitId", {
+        id: data?.subUnitId,
+        subUnit_Code: data?.subUnit_Code,
+        subUnit_Name: data?.subUnit_Name,
+      });
+
+      const editMemberList = data?.channelUsers?.map((item) => ({
+        userId: item.userId,
+        fullName: item.fullname,
+      }));
+
+      setMembers(editMemberList);
+    }
+
+    if (data?.subUnitId) getSubUnitMembers({ SubUnitId: data?.subUnitId });
+  }, [data]);
+
+  console.log("data : ", data);
 
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
       <Dialog
         fullWidth
-        maxWidth="md"
+        maxWidth="sm"
         open={open}
         sx={{ borderRadius: "none", padding: 0 }}
         PaperProps={{ style: { overflow: "unset" } }}
@@ -480,11 +256,12 @@ const ChannelDialog = ({ data, open, onClose }) => {
               <Stack direction="row" gap={0.5}>
                 <Typography
                   sx={{
-                    fontSize: "20px",
+                    fontSize: "18px",
                     fontWeight: 700,
+                    color: "#48BB78",
                   }}
                 >
-                  Member Form
+                  Channel Form
                 </Typography>
               </Stack>
 
@@ -494,7 +271,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   fontSize: "12px",
                 }}
               >
-                Add members to the newly added channel.
+                Create a channel
               </Typography>
             </Stack>
 
@@ -502,7 +279,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
               id="channelForm"
               component="form"
               onSubmit={channelFormHandleSubmit(onChannelFormSubmit)}
-              sx={{ paddingTop: 5, gap: 2 }}
+              sx={{ paddingTop: 2, gap: 2 }}
             >
               <Controller
                 control={channelFormControl}
@@ -518,7 +295,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       onBlur={onValidateChannelName}
                       error={errorValidationIsError}
                       helperText={errorValidation?.data?.error?.message}
-                      disabled={disabled}
+                      disabled={disabled && !data}
                       sx={{
                         flex: 2,
                       }}
@@ -548,7 +325,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       }}
                       onChange={(_, value) => {
                         onChange(value);
-                        console.log(value);
 
                         getSubUnitMembers({
                           SubUnitId: value.id,
@@ -563,7 +339,8 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       disabled={
                         !channelFormWatch("channel_Name") ||
                         errorValidationIsError ||
-                        disabled
+                        // disabled ||
+                        members.length > 0
                       }
                       sx={{
                         flex: 2,
@@ -575,6 +352,29 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   );
                 }}
               />
+            </Stack>
+
+            <Stack>
+              <Stack direction="row" gap={0.5} paddingTop={3}>
+                <Typography
+                  sx={{
+                    fontSize: "18px",
+                    fontWeight: 700,
+                    color: "#48BB78",
+                  }}
+                >
+                  Member Form
+                </Typography>
+              </Stack>
+
+              <Typography
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: "12px",
+                }}
+              >
+                Tagging of member(s) after creating a channel
+              </Typography>
             </Stack>
 
             <Stack sx={{ paddingTop: 2, gap: 2 }}>
@@ -647,6 +447,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   size="small"
                   sx={{
                     borderBottom: "none",
+                    // minHeight: "50px",
                   }}
                 >
                   <TableHead>

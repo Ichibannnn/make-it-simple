@@ -1,6 +1,7 @@
 import {
   ArchiveOutlined,
   EditOutlined,
+  GroupsOutlined,
   MoreHoriz,
   RestoreOutlined,
 } from "@mui/icons-material";
@@ -15,7 +16,6 @@ const ChannelActions = ({ data, onArchive, onUpdate }) => {
   const { open, onToggle } = useDisclosure();
 
   const onArchiveAction = (data) => {
-    console.log("Data: ", data);
     onToggle();
     onArchive({
       id: data.id,
@@ -38,9 +38,9 @@ const ChannelActions = ({ data, onArchive, onUpdate }) => {
         {data?.is_Active && (
           <MenuItem onClick={() => onUpdateAction(data)}>
             <ListItemIcon>
-              <EditOutlined fontSize="small" />
+              <GroupsOutlined fontSize="small" />
             </ListItemIcon>
-            Edit
+            Manage Channel
           </MenuItem>
         )}
 

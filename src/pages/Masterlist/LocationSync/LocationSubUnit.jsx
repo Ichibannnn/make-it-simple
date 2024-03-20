@@ -16,8 +16,6 @@ const LocationSubUnit = ({ subUnits }) => {
   const ref = useRef();
   const { open, onToggle } = useDisclosure();
 
-  console.log("Sub units: ", subUnits);
-
   return (
     <div>
       <IconButton ref={ref} onClick={onToggle}>

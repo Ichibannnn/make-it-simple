@@ -54,6 +54,8 @@ const Location = () => {
       PageSize: pageSize,
     });
 
+  console.log("Location: ", data);
+
   const [
     getLocations,
     { isLoading: isLocationLoading, isFetching: isLocationFetching },
