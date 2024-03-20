@@ -240,7 +240,7 @@ const Receiver = () => {
         >
           <OutlinedInput
             flex="1"
-            placeholder="Search sub category"
+            placeholder="Search receiver"
             startAdornment={
               <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
             }

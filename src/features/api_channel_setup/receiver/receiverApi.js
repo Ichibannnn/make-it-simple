@@ -38,6 +38,15 @@ export const receiverApi = createApi({
       providesTags: ["Receiver"],
     }),
 
+    getReceiverBusinessList: builder.query({
+      query: (params) => ({
+        url: "receiver/receiver-business-unit",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Receiver"],
+    }),
+
     createEditReceiver: builder.mutation({
       query: (body) => ({
         url: "receiver",
@@ -48,8 +57,8 @@ export const receiverApi = createApi({
     }),
 
     archiveReceiver: builder.mutation({
-      query: (userId) => ({
-        url: `receiver/status/${userId}`,
+      query: (UserId) => ({
+        url: `receiver/status/${UserId}`,
         method: "PUT",
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
@@ -60,6 +69,7 @@ export const receiverApi = createApi({
 export const {
   useGetReceiverQuery,
   useLazyGetReceiverListQuery,
+  useLazyGetReceiverBusinessListQuery,
   useCreateEditReceiverMutation,
   useArchiveReceiverMutation,
 } = receiverApi;

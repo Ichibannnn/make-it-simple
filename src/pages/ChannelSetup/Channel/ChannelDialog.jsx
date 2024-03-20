@@ -1,18 +1,10 @@
 import {
   Autocomplete,
-  Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
   IconButton,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -57,13 +49,13 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const [members, setMembers] = useState([]);
   const [disabled, setDisabled] = useState(false);
 
+  // console.log("Table: ", data);
+
   const [
     createChannelValidation,
     { error: errorValidation, isError: errorValidationIsError },
   ] = useCreateChannelValidationMutation();
   const [createChannel] = useCreateChannelMutation();
-  const [createChannelMember] = useCreateChannelMemberMutation();
-  const [updateChannel] = useUpdateChannelMutation();
 
   const [
     getSubUnit,
@@ -123,68 +115,120 @@ const ChannelDialog = ({ data, open, onClose }) => {
     }
   };
 
-  const onChannelFormSubmit = async (formData) => {
-    console.log("Submit Data: ", data);
-
-    console.log("Form Data: ", formData);
-
+  const onChannelFormSubmit = (formData) => {
     if (!data) {
-      try {
-        const response = await createChannel({
-          channel_Name: formData.channel_Name,
-          subUnitId: formData.subUnitId.id,
-        }).unwrap();
+      const addPayload = {
+        channel_Name: formData.channel_Name,
+        subUnitId: formData.subUnitId.id,
+        channelUserByIds: members?.map((item) => ({
+          userId: item.userId,
+        })),
+      };
 
-        await createChannelMember({
-          id: response.value.id,
-          members: members,
-        }).unwrap();
-        toast.success("Success!", {
-          description: "Channel added successfully!",
-          duration: 1500,
+      console.log("Add payload: ", addPayload);
+
+      createChannel(addPayload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Channel added successfully!",
+            duration: 1500,
+          });
+          setMembers([]);
+          channelFormReset();
+          memberFormReset();
+          onClose();
+        })
+        .catch((error) => {
+          toast.error("Error!", {
+            description: error.data.error.message,
+            duration: 1500,
+          });
         });
-        setMembers([]);
-        channelFormReset();
-        memberFormReset();
-        onClose();
-      } catch (error) {
-        toast.error("Error!", {
-          description: error.data.error.message,
-          duration: 1500,
-        });
-      }
+
+      // try {
+      //   const response = await createChannel({
+      //     channel_Name: formData.channel_Name,
+      //     subUnitId: formData.subUnitId.id,
+      //   }).unwrap();
+
+      //   await createChannelMember({
+      //     id: response.value.id,
+      //     members: members,
+      //   }).unwrap();
+      //   toast.success("Success!", {
+      //     description: "Channel added successfully!",
+      //     duration: 1500,
+      //   });
+      //   setMembers([]);
+      //   channelFormReset();
+      //   memberFormReset();
+      //   onClose();
+      // } catch (error) {
+      //   toast.error("Error!", {
+      //     description: error.data.error.message,
+      //     duration: 1500,
+      //   });
+      // }
     } else {
-      try {
-        const response = await updateChannel({
-          id: data.id,
-          channel_Name: formData.channel_Name,
-          subUnitId: formData.subUnitId.id,
-        }).unwrap();
+      const editPayload = {
+        channelId: data.id,
+        channel_Name: formData.channel_Name,
+        subUnitId: formData.subUnitId.id,
+        channelUserByIds: members?.map((item) => ({
+          userId: item.userId,
+        })),
+      };
 
-        await createChannelMember({
-          id: response.value.id,
-          members: members,
-        }).unwrap();
-        toast.success("Success!", {
-          description: "Channel added successfully!",
-          duration: 1500,
+      createChannel(editPayload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Updated successfully!",
+            duration: 1500,
+          });
+          setMembers([]);
+          channelFormReset();
+          memberFormReset();
+          onClose();
+        })
+        .catch((error) => {
+          toast.error("Error!", {
+            description: error.data.error.message,
+            duration: 1500,
+          });
         });
-        setMembers([]);
-        channelFormReset();
-        memberFormReset();
-        onClose();
-
-        console.log("Response: ", response);
-      } catch (error) {
-        toast.error("Error!", {
-          description: error.data.error.message,
-          duration: 1500,
-        });
-      }
+      // try {
+      //   const response = await updateChannel({
+      //     id: data.id,
+      //     channel_Name: formData.channel_Name,
+      //     subUnitId: formData.subUnitId.id,
+      //   }).unwrap();
+      //   await createChannelMember({
+      //     id: response.value.id,
+      //     members: members,
+      //   }).unwrap();
+      //   toast.success("Success!", {
+      //     description: "Channel added successfully!",
+      //     duration: 1500,
+      //   });
+      //   setMembers([]);
+      //   channelFormReset();
+      //   memberFormReset();
+      //   onClose();
+      //   console.log("Response: ", response);
+      // } catch (error) {
+      //   toast.error("Error!", {
+      //     description: error.data.error.message,
+      //     duration: 1500,
+      //   });
+      // }
     }
   };
 
   const onMemberFormSubmit = (data) => {
+    console.log("Member Data: ", data);
+
     setMembers((currentValue) => [
       ...currentValue,
       {
@@ -228,6 +272,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
       });
 
       const editMemberList = data?.channelUsers?.map((item) => ({
+        channelUserId: item.channelUserId,
         userId: item.userId,
         fullName: item.fullname,
       }));
@@ -238,7 +283,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
     if (data?.subUnitId) getSubUnitMembers({ SubUnitId: data?.subUnitId });
   }, [data]);
 
-  console.log("data : ", data);
+  console.log("Sub Unit", subUnitData);
 
   return (
     <>

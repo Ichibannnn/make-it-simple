@@ -16,8 +16,6 @@ const ReceiverBusinessUnit = ({ businessUnits }) => {
   const ref = useRef();
   const { open, onToggle } = useDisclosure();
 
-  console.log("Business Units: ", businessUnits);
-
   return (
     <div>
       <IconButton ref={ref} onClick={onToggle}>

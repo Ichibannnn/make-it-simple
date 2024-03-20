@@ -200,9 +200,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   ]);
 
   console.log("Location Data: ", locationData);
-  // console.log("Employee Data: ", employeeData);
-  // console.log("Sub Unit: ", watch("subUnitId"));
-  // console.log("Location: ", watch("locationId"));
 
   const onSubmitHandler = (formData) => {
     console.log("Form data: ", formData);

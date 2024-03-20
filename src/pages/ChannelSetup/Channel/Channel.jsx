@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Chip,
   CircularProgress,
@@ -17,22 +18,22 @@ import {
   Typography,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
-
 import React, { useEffect, useState } from "react";
+
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { Toaster, toast } from "sonner";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-import ChannelMembers from "./ChannelMembers";
+
 import ChannelActions from "./ChannelActions";
-import ChannelDialog, { ChannelMemberList } from "./ChannelDialog";
+import ChannelDialog from "./ChannelDialog";
+
 import {
   useArchiveChannelMutation,
   useGetChannelsQuery,
 } from "../../../features/api_channel_setup/channel/channelApi";
-import ChannelDrawer from "./ChannelDrawer";
 
 const Channel = () => {
   const [status, setStatus] = useState("true");
@@ -162,6 +163,8 @@ const Channel = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  console.log("Table: ", data);
 
   return (
     <Stack
@@ -313,7 +316,7 @@ const Channel = () => {
                   }}
                   align="center"
                 >
-                  MEMBERS
+                  NO. OF MEMBERS
                 </TableCell>
 
                 <TableCell
@@ -386,7 +389,7 @@ const Channel = () => {
                       }}
                       align="center"
                     >
-                      <ChannelMembers members={item.channelUsers} />
+                      {item.channelUsers.length}
                     </TableCell>
 
                     <TableCell
@@ -476,7 +479,6 @@ const Channel = () => {
         />
 
         <ChannelDialog data={editData} open={open} onClose={onDialogClose} />
-        {/* <ChannelDrawer data={editData} open={open} onClose={onDialogClose} /> */}
       </Stack>
     </Stack>
   );
