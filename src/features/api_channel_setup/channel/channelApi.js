@@ -64,14 +64,6 @@ export const channelApi = createApi({
       invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
     }),
 
-    deleteChannel: builder.mutation({
-      query: (id) => ({
-        url: `channel/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
-    }),
-
     getChannelMembers: builder.query({
       query: (params) => ({
         url: "channel/member-list",
@@ -98,7 +90,6 @@ export const {
   useCreateChannelValidationMutation,
   useUpdateChannelMutation,
   useArchiveChannelMutation,
-  useDeleteChannelMutation,
   useLazyGetChannelMembersQuery,
   useCreateChannelMemberMutation,
 } = channelApi;

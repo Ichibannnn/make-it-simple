@@ -334,7 +334,7 @@ const Receiver = () => {
                 !isLoading &&
                 !isFetching &&
                 data?.value?.receiver?.map((item, index) => (
-                  <TableRow key={item}>
+                  <TableRow key={index}>
                     <TableCell
                       sx={{
                         color: "#EDF2F7",

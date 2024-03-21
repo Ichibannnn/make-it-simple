@@ -17,14 +17,13 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-import { Controller, Form, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
-import { CloseFullscreen, DeleteOutlineOutlined } from "@mui/icons-material";
+import { DeleteOutlineOutlined } from "@mui/icons-material";
 import {
   useCreateEditReceiverMutation,
   useLazyGetReceiverBusinessListQuery,
@@ -42,7 +41,6 @@ const businessUnitSchema = yup.object().shape({
 
 const ReceiverDialog = ({ data, open, onClose }) => {
   const [businessUnits, setBusinessUnits] = useState([]);
-  const [disabled, setDisabled] = useState(false);
 
   const [createEditReceiver] = useCreateEditReceiverMutation();
 
@@ -169,19 +167,10 @@ const ReceiverDialog = ({ data, open, onClose }) => {
 
   const onCloseAction = () => {
     onClose();
-    setDisabled(false);
     setBusinessUnits([]);
     receiverFormReset();
     businessUnitFormReset();
   };
-
-  useEffect(() => {
-    if (businessUnits.length > 0 || !!data) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
-    }
-  }, [businessUnits]);
 
   useEffect(() => {
     if (data) {
@@ -201,13 +190,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("Edit Data: ", data);
-  // console.log("Business uNit: ", businessUnitData);
-  // console.log("Table: ", businessUnits);
-
   console.log("Table: ", businessUnits);
-
-  // console.log("Receiver Data: ", receiverData);
 
   return (
     <>
@@ -279,7 +262,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                       isOptionEqualToValue={(option, value) =>
                         option.userId === value.userId
                       }
-                      disabled={disabled && !data}
+                      disabled={data ? true : false}
                       sx={{
                         flex: 2,
                       }}
@@ -437,22 +420,25 @@ const ReceiverDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button
-            type="submit"
-            variant="contained"
-            form="receiverForm"
-            sx={{
-              ":disabled": {
-                backgroundColor: theme.palette.secondary.main,
-                color: "black",
-              },
-            }}
-          >
-            Submit
-          </Button>
-          <Button variant="text" onClick={onCloseAction}>
-            Close
-          </Button>
+          <Stack direction="row" paddingBottom={1} gap={1}>
+            <Button
+              type="submit"
+              variant="contained"
+              form="receiverForm"
+              disabled={!receiverFormWatch("userId") || !businessUnits.length}
+              sx={{
+                ":disabled": {
+                  backgroundColor: theme.palette.secondary.main,
+                  color: "black",
+                },
+              }}
+            >
+              Save
+            </Button>
+            <Button variant="text" onClick={onCloseAction}>
+              Close
+            </Button>
+          </Stack>
         </DialogActions>
       </Dialog>
     </>

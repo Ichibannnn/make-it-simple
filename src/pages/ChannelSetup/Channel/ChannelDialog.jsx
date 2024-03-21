@@ -555,27 +555,29 @@ const ChannelDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button
-            type="submit"
-            variant="contained"
-            form="channelForm"
-            disabled={
-              !channelFormWatch("channel_Name") ||
-              !channelFormWatch("subUnitId") ||
-              !members.length
-            }
-            sx={{
-              ":disabled": {
-                backgroundColor: theme.palette.secondary.main,
-                color: "black",
-              },
-            }}
-          >
-            Save Changes
-          </Button>
-          <Button variant="text" onClick={onCloseAction}>
-            Close
-          </Button>
+          <Stack direction="row" paddingBottom={1} gap={1}>
+            <Button
+              type="submit"
+              variant="contained"
+              form="channelForm"
+              disabled={
+                !channelFormWatch("channel_Name") ||
+                !channelFormWatch("subUnitId") ||
+                !members.length
+              }
+              sx={{
+                ":disabled": {
+                  backgroundColor: theme.palette.secondary.main,
+                  color: "black",
+                },
+              }}
+            >
+              Save Changes
+            </Button>
+            <Button variant="text" onClick={onCloseAction}>
+              Close
+            </Button>
+          </Stack>
         </DialogActions>
       </Dialog>
     </>
