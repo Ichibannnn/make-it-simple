@@ -20,10 +20,11 @@ import { categoryApi } from "../features/api masterlist/category_api/categoryApi
 import { subCategoryApi } from "../features/api masterlist/sub_category_api/subCategoryApi";
 
 import { receiverApi } from "../features/api_channel_setup/receiver/receiverApi";
+import { channelApi } from "../features/api_channel_setup/channel/channelApi";
+import { approverApi } from "../features/api_channel_setup/approver/approverApi";
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
-import { channelApi } from "../features/api_channel_setup/channel/channelApi";
 
 export const store = configureStore({
   reducer: {
@@ -47,6 +48,7 @@ export const store = configureStore({
 
     [receiverApi.reducerPath]: receiverApi.reducer,
     [channelApi.reducerPath]: channelApi.reducer,
+    [approverApi.reducerPath]: approverApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -70,6 +72,7 @@ export const store = configureStore({
 
       receiverApi.middleware,
       channelApi.middleware,
+      approverApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,

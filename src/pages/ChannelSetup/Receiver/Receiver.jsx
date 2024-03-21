@@ -17,8 +17,8 @@ import {
   Typography,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
-
 import React, { useEffect, useState } from "react";
+
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { Toaster, toast } from "sonner";
@@ -252,7 +252,6 @@ const Receiver = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
           <Button

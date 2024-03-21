@@ -15,15 +15,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { DeleteOutlineOutlined } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
-
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
-import { DeleteOutlineOutlined } from "@mui/icons-material";
+
 import {
   useCreateEditReceiverMutation,
   useLazyGetReceiverBusinessListQuery,
@@ -123,8 +124,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
         })),
       };
 
-      console.log("Edit Payload: ", editPayload);
-
       createEditReceiver(editPayload)
         .unwrap()
         .then(() => {
@@ -189,8 +188,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
       setBusinessUnits(editBusinessUnitList);
     }
   }, [data]);
-
-  console.log("Table: ", businessUnits);
 
   return (
     <>
@@ -262,6 +259,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                       isOptionEqualToValue={(option, value) =>
                         option.userId === value.userId
                       }
+                      noOptionsText={"No receiver available"}
                       disabled={data ? true : false}
                       sx={{
                         flex: 2,
@@ -318,10 +316,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                               item.businessUnitId === option.businessUnitId
                           )
                         }
-                        // disabled={
-                        //   !channelFormWatch("channel_Name") ||
-                        //   errorValidationIsError
-                        // }
+                        noOptionsText={"No business unit available"}
                         sx={{
                           flex: 2,
                         }}
@@ -355,7 +350,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                   size="small"
                   sx={{
                     borderBottom: "none",
-                    // minHeight: "50px",
                   }}
                 >
                   <TableHead>
@@ -433,7 +427,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                 },
               }}
             >
-              Save
+              {data ? "Update" : "Save"}
             </Button>
             <Button variant="text" onClick={onCloseAction}>
               Close

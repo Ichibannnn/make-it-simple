@@ -108,7 +108,7 @@ export const CategoryDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog fullWidth open={open}>
+      <Dialog fullWidth maxWidth="xs" open={open}>
         <DialogTitle
           sx={{
             display: "flex",
@@ -116,6 +116,9 @@ export const CategoryDialog = ({ data, open, onClose }) => {
             paddingTop: 0,
             paddingBottom: 0,
             marginBlockEnd: "5.28px",
+            fontSize: "18px",
+            fontWeight: 700,
+            color: "#48BB78",
           }}
         >
           {data ? "Edit Category" : "Add Category"}
@@ -123,19 +126,10 @@ export const CategoryDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ padding: "5px", gap: 1.5 }}>
-              <FormLabel
-                sx={{
-                  color: theme.palette.text.main,
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  lineHeight: "1.4375em",
-                }}
-              >
-                Category name *
-              </FormLabel>
               <TextField
                 {...register("category_Description")}
                 variant="outlined"
+                label="Category Name"
                 helperText={errors?.category_Description?.message}
                 error={!!errors?.category_Description?.message}
                 sx={{ borderColor: "primary" }}

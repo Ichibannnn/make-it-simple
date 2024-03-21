@@ -16,7 +16,6 @@ const ReceiverActions = ({ data, onArchive, onUpdate }) => {
   const { open, onToggle } = useDisclosure();
 
   const onArchiveAction = (data) => {
-    console.log("Data: ", data);
     onToggle();
     onArchive({
       userId: data.userId,
@@ -41,7 +40,7 @@ const ReceiverActions = ({ data, onArchive, onUpdate }) => {
             <ListItemIcon>
               <EditOutlined fontSize="small" />
             </ListItemIcon>
-            Edit
+            Management Receiver
           </MenuItem>
         )}
 
