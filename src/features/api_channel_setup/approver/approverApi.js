@@ -56,14 +56,15 @@ export const approverApi = createApi({
     //   invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
     // }),
 
-    // archiveReceiver: builder.mutation({
-    //   query: (UserId) => ({
-    //     url: `receiver/status/${UserId}`,
-    //     method: "PUT",
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
-    // }),
+    archiveApprover: builder.mutation({
+      query: (body) => ({
+        url: `approver/status`,
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
+    }),
   }),
 });
 
-export const { useGetApproverQuery } = approverApi;
+export const { useGetApproverQuery, useArchiveApproverMutation } = approverApi;

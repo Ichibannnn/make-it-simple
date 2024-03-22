@@ -60,7 +60,7 @@ const theme = createTheme({
     text: {
       main: "#EDF2F7",
       secondary: "#A0AEC0",
-      accent: "#9e77ed",
+      accent: "#6E53A5",
     },
     primary: {
       main: "#9e77ed",

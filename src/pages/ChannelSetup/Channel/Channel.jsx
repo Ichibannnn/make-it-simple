@@ -164,8 +164,6 @@ const Channel = () => {
     }
   }, [searchValue]);
 
-  console.log("Table: ", data);
-
   return (
     <Stack
       sx={{

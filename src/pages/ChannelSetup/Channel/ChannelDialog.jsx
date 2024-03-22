@@ -1,6 +1,8 @@
 import {
   Autocomplete,
+  Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -34,6 +36,7 @@ import {
   useUpdateChannelMutation,
 } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
+import styled from "@emotion/styled";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -125,8 +128,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
         })),
       };
 
-      console.log("Add payload: ", addPayload);
-
       createChannel(addPayload)
         .unwrap()
         .then(() => {
@@ -145,31 +146,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
             duration: 1500,
           });
         });
-
-      // try {
-      //   const response = await createChannel({
-      //     channel_Name: formData.channel_Name,
-      //     subUnitId: formData.subUnitId.id,
-      //   }).unwrap();
-
-      //   await createChannelMember({
-      //     id: response.value.id,
-      //     members: members,
-      //   }).unwrap();
-      //   toast.success("Success!", {
-      //     description: "Channel added successfully!",
-      //     duration: 1500,
-      //   });
-      //   setMembers([]);
-      //   channelFormReset();
-      //   memberFormReset();
-      //   onClose();
-      // } catch (error) {
-      //   toast.error("Error!", {
-      //     description: error.data.error.message,
-      //     duration: 1500,
-      //   });
-      // }
     } else {
       const editPayload = {
         channelId: data.id,
@@ -198,42 +174,16 @@ const ChannelDialog = ({ data, open, onClose }) => {
             duration: 1500,
           });
         });
-      // try {
-      //   const response = await updateChannel({
-      //     id: data.id,
-      //     channel_Name: formData.channel_Name,
-      //     subUnitId: formData.subUnitId.id,
-      //   }).unwrap();
-      //   await createChannelMember({
-      //     id: response.value.id,
-      //     members: members,
-      //   }).unwrap();
-      //   toast.success("Success!", {
-      //     description: "Channel added successfully!",
-      //     duration: 1500,
-      //   });
-      //   setMembers([]);
-      //   channelFormReset();
-      //   memberFormReset();
-      //   onClose();
-      //   console.log("Response: ", response);
-      // } catch (error) {
-      //   toast.error("Error!", {
-      //     description: error.data.error.message,
-      //     duration: 1500,
-      //   });
-      // }
     }
   };
 
   const onMemberFormSubmit = (data) => {
-    console.log("Member Data: ", data);
-
     setMembers((currentValue) => [
       ...currentValue,
       {
         userId: data.userId.userId,
         fullName: data.userId.fullName,
+        userRole: data.userId.userRole,
       },
     ]);
 
@@ -275,6 +225,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
         channelUserId: item.channelUserId,
         userId: item.userId,
         fullName: item.fullname,
+        userRole: item.userRole,
       }));
 
       setMembers(editMemberList);
@@ -282,8 +233,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
     if (data?.subUnitId) getSubUnitMembers({ SubUnitId: data?.subUnitId });
   }, [data]);
-
-  console.log("Sub Unit", subUnitData);
 
   return (
     <>
@@ -440,8 +389,37 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={subUnitMembersData?.value || []}
                         loading={subUnitMembersIsLoading}
+                        // renderOption={(props, option) => (
+                        //   <Box component="li" {...props}>
+                        //     <Stack
+                        //       direction="row"
+                        //       justifyContent="space-between"
+                        //       padding={1}
+                        //     >
+                        //       <Box>{option.fullName}</Box>
+
+                        //       <Box>
+                        //         <Typography
+                        //           sx={{
+                        //             fontSize: "13px",
+                        //             color: theme.palette.primary.main,
+                        //           }}
+                        //         >
+                        //           {option.userRole}
+                        //         </Typography>
+                        //       </Box>
+                        //     </Stack>
+                        //   </Box>
+                        // )}
+                        groupBy={(option) => option.userRole}
                         renderInput={(params) => (
                           <TextField {...params} label="Members" size="small" />
+                        )}
+                        renderGroup={(params) => (
+                          <li key={params.key}>
+                            <GroupHeader>{params.group}</GroupHeader>
+                            <GroupItems>{params.children}</GroupItems>
+                          </li>
                         )}
                         onChange={(_, value) => {
                           onChange(value);
@@ -515,6 +493,17 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           fontWeight: 700,
                           fontSize: "10px",
                         }}
+                      >
+                        ROLE
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: theme.palette.text.secondary,
+                          fontWeight: 700,
+                          fontSize: "10px",
+                        }}
                         align="center"
                       >
                         ACTION
@@ -532,6 +521,15 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           }}
                         >
                           {item.fullName}
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "12px",
+                          }}
+                        >
+                          {item.userRole}
                         </TableCell>
 
                         <TableCell
@@ -585,3 +583,16 @@ const ChannelDialog = ({ data, open, onClose }) => {
 };
 
 export default ChannelDialog;
+
+const GroupHeader = styled("div")(({ theme }) => ({
+  position: "sticky",
+  top: "-8px",
+  fontSize: "12px",
+  padding: "4px 10px",
+  color: theme.palette.text.main,
+  backgroundColor: theme.palette.text.accent,
+}));
+
+export const GroupItems = styled("ul")({
+  padding: 0,
+});
