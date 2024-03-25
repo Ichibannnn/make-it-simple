@@ -271,7 +271,7 @@ const Channel = () => {
           <Table sx={{ borderBottom: "none" }}>
             <TableHead>
               <TableRow>
-                <TableCell
+                {/* <TableCell
                   sx={{
                     background: "#1C2536",
                     color: "#D65DB1",
@@ -281,7 +281,7 @@ const Channel = () => {
                   align="center"
                 >
                   LINE NO.
-                </TableCell>
+                </TableCell> */}
 
                 <TableCell
                   sx={{
@@ -348,7 +348,7 @@ const Channel = () => {
                 !isFetching &&
                 data?.value?.channel?.map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell
+                    {/* <TableCell
                       sx={{
                         color: "#EDF2F7",
                         fontSize: "14px",
@@ -357,7 +357,7 @@ const Channel = () => {
                       align="center"
                     >
                       {index + 1}
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell
                       sx={{

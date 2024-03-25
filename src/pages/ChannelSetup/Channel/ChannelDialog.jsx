@@ -527,6 +527,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           sx={{
                             color: theme.palette.primary.main,
                             fontSize: "12px",
+                            fontWeight: 700,
                           }}
                         >
                           {item.userRole}

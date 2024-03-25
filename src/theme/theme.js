@@ -277,15 +277,15 @@ const theme = createTheme({
         },
       },
     },
-    // MuiTextField: {
-    //   styleOverrides: {
-    //     root: {
-    //       "& input::placeholder": {
-    //         color: "green",
-    //       },
-    //     },
-    //   },
-    // },
+
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          color: "#EDF2F7",
+          backgroundColor: "#3f305f",
+        },
+      },
+    },
   },
 });
 

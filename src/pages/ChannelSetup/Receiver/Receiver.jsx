@@ -82,6 +82,7 @@ const Receiver = () => {
         showCancelButton: true,
         background: "#111927",
         confirmButtonColor: "#9e77ed",
+        confirmButtonText: "Yes",
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
@@ -120,6 +121,7 @@ const Receiver = () => {
         background: "#111927",
         confirmButtonColor: "#9e77ed",
         cancelButtonColor: "#1C2536",
+        confirmButtonText: "Yes",
         heightAuto: false,
         width: "30em",
         customClass: {
@@ -269,7 +271,7 @@ const Receiver = () => {
           <Table sx={{ borderBottom: "none" }}>
             <TableHead>
               <TableRow>
-                <TableCell
+                {/* <TableCell
                   sx={{
                     background: "#1C2536",
                     color: "#D65DB1",
@@ -279,7 +281,8 @@ const Receiver = () => {
                   align="center"
                 >
                   LINE NO.
-                </TableCell>
+                </TableCell> */}
+
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -334,7 +337,7 @@ const Receiver = () => {
                 !isFetching &&
                 data?.value?.receiver?.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell
+                    {/* <TableCell
                       sx={{
                         color: "#EDF2F7",
                         fontSize: "14px",
@@ -343,7 +346,7 @@ const Receiver = () => {
                       align="center"
                     >
                       {index + 1}
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell
                       sx={{
