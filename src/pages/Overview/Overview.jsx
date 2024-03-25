@@ -1,6 +1,9 @@
 import { Stack, Typography } from "@mui/material";
 import React from "react";
 import { theme } from "../../theme/theme";
+import { useChangeUserPasswordMutation } from "../../features/user_management_api/user/userApi";
+import { useEffect } from "react";
+import { Toaster, toast } from "sonner";
 
 const Overview = () => {
   return (
@@ -14,6 +17,7 @@ const Overview = () => {
         padding: "44px 94px 94px 94px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>

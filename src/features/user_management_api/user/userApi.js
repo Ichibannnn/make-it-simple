@@ -60,6 +60,14 @@ export const userApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
+    changeUserPassword: builder.mutation({
+      query: (body) => ({
+        url: "User/UserChangePassword",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+    }),
   }),
 });
 
@@ -69,4 +77,5 @@ export const {
   useUpdateUserMutation,
   useResetUserPasswordMutation,
   useArchiveUserMutation,
+  useChangeUserPasswordMutation,
 } = userApi;
