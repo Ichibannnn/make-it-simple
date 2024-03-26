@@ -40,7 +40,7 @@ const LocationSubUnit = ({ subUnits }) => {
         </Tooltip>
       </IconButton>
 
-      <Dialog fullWidth maxWidth="xs" open={open}>
+      <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{
             display: "flex",
@@ -68,6 +68,11 @@ const LocationSubUnit = ({ subUnits }) => {
               readOnly
               renderInput={(params) => (
                 <TextField {...params} label="Sub Units" />
+              )}
+              renderOption={(option) => (
+                <Tooltip title={option.subUnit_Code - option.subUnit_Name}>
+                  {option.subUnit_Code} - {option.subUnit_Name}
+                </Tooltip>
               )}
             />
           </Stack>

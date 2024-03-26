@@ -389,28 +389,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={subUnitMembersData?.value || []}
                         loading={subUnitMembersIsLoading}
-                        // renderOption={(props, option) => (
-                        //   <Box component="li" {...props}>
-                        //     <Stack
-                        //       direction="row"
-                        //       justifyContent="space-between"
-                        //       padding={1}
-                        //     >
-                        //       <Box>{option.fullName}</Box>
-
-                        //       <Box>
-                        //         <Typography
-                        //           sx={{
-                        //             fontSize: "13px",
-                        //             color: theme.palette.primary.main,
-                        //           }}
-                        //         >
-                        //           {option.userRole}
-                        //         </Typography>
-                        //       </Box>
-                        //     </Stack>
-                        //   </Box>
-                        // )}
                         groupBy={(option) => option.userRole}
                         renderInput={(params) => (
                           <TextField {...params} label="Members" size="small" />

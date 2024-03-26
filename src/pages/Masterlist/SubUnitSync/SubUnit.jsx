@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
-  Button,
+  Chip,
   CircularProgress,
+  Divider,
   OutlinedInput,
   Stack,
+  Tab,
   Table,
   TableBody,
   TableCell,
@@ -11,13 +13,16 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tabs,
   Typography,
 } from "@mui/material";
 import {
-  FileUploadOutlined,
-  FileDownloadOutlined,
   Search,
   SyncOutlined,
+  AddOutlined,
+  AddCircleOutline,
+  Sync,
+  Add,
 } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
@@ -28,13 +33,16 @@ import { Toaster, toast } from "sonner";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
+import { SubUnitErrorDialog } from "./SubUnitErrorDialog";
+import SubUnitAddDialog from "./SubUnitAddDialog";
+import SubActions from "./SubActions";
+
 import {
+  useArchiveSubUnitMutation,
   useGetSubUnitQuery,
   useSyncSubUnitMutation,
 } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetSubUnitsQuery } from "../../../features/ymir/ymirApi";
-
-import { SubUnitErrorDialog } from "./SubUnitErrorDialog";
 
 const SubUnit = () => {
   const [status, setStatus] = useState("true");
@@ -43,7 +51,16 @@ const SubUnit = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+
+  const [editData, setEditData] = useState(null);
+
   const { open, onToggle, onClose } = useDisclosure();
+
+  const {
+    open: addSubUnitOpen,
+    onToggle: addSubUnitOnToggle,
+    onClose: addSubUnitOnClose,
+  } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetSubUnitQuery({
@@ -57,6 +74,7 @@ const SubUnit = () => {
     getSubUnits,
     { isLoading: isSubUnitLoading, isFetching: isSubUnitFetching },
   ] = useLazyGetSubUnitsQuery();
+
   const [
     syncSubUnits,
     {
@@ -66,12 +84,94 @@ const SubUnit = () => {
     },
   ] = useSyncSubUnitMutation();
 
+  const [archiveSubUnit] = useArchiveSubUnitMutation();
+
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
   };
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+  };
+
+  const onArchiveAction = (data) => {
+    if (data.isActive === true) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the sub unit to the archived tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          archiveSubUnit(data.id)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "Archive successfully.",
+                duration: 1500,
+              });
+            })
+            .catch((error) => {
+              toast.error("Error!", {
+                description: "Unable to archive this sub unit.",
+                duration: 1500,
+              });
+            });
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the sub unit to the active tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          archiveSubUnit(data.id)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "Restore successfully.",
+                duration: 1500,
+              });
+            })
+            .catch((error) => {
+              toast.error("Error!", {
+                description: "Unable to archive this sub unit.",
+                duration: 1500,
+              });
+            });
+        }
+      });
+    }
   };
 
   const onSyncSubUnits = () => {
@@ -132,6 +232,15 @@ const SubUnit = () => {
     });
   };
 
+  const onAddSubUnitAction = () => {
+    addSubUnitOnToggle();
+  };
+
+  const onEditAction = (data) => {
+    addSubUnitOnToggle();
+    setEditData(data);
+  };
+
   useEffect(() => {
     if (searchValue) {
       setPageNumber(1);
@@ -150,12 +259,14 @@ const SubUnit = () => {
       }}
     >
       <Toaster richColors position="top-right" closeButton />
+
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>
             <Stack justifyItems="left">
               <Typography variant="h4">Sub Unit</Typography>
             </Stack>
+
             <Stack
               justifyItems="space-between"
               direction="row"
@@ -172,12 +283,46 @@ const SubUnit = () => {
           marginTop: "20px",
         }}
       >
+        <Stack direction="row" justifyContent="space-between">
+          <Tabs value={status} onChange={(_, value) => setStatus(value)}>
+            <Tab
+              value=""
+              label="All"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
+            <Tab
+              value="true"
+              label="Active"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
+            <Tab
+              value="false"
+              label="Archived"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
+          </Tabs>
+        </Stack>
+
+        <Divider
+          variant="fullWidth"
+          sx={{ background: "#2D3748", marginTop: "1px" }}
+        />
+
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
           sx={{ marginTop: "10px", padding: "20px" }}
-          gap={4}
+          gap={2}
         >
           <OutlinedInput
             flex="1"
@@ -193,12 +338,12 @@ const SubUnit = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
+
           <LoadingButton
             variant="contained"
-            size="large"
+            size="small"
             color="primary"
             startIcon={<SyncOutlined />}
             loadingPosition="start"
@@ -217,6 +362,23 @@ const SubUnit = () => {
             }}
           >
             Sync Sub Unit
+          </LoadingButton>
+
+          <LoadingButton
+            variant="outlined"
+            size="small"
+            color="primary"
+            startIcon={<AddOutlined />}
+            loadingPosition="start"
+            onClick={() => onAddSubUnitAction()}
+            sx={{
+              ":disabled": {
+                backgroundColor: theme.palette.secondary.main,
+                color: "black",
+              },
+            }}
+          >
+            Add Sub Unit
           </LoadingButton>
         </Stack>
 
@@ -268,6 +430,42 @@ const SubUnit = () => {
                 >
                   UNIT NAME
                 </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                  align="center"
+                >
+                  STATUS
+                </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                  align="center"
+                >
+                  ORIGIN
+                </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                  align="center"
+                >
+                  ACTIONS
+                </TableCell>
               </TableRow>
             </TableHead>
 
@@ -317,6 +515,87 @@ const SubUnit = () => {
                     >
                       {item.unit_Name}
                     </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
+                      <Chip
+                        variant="filled"
+                        size="30px"
+                        sx={{
+                          fontSize: "13px",
+                          backgroundColor: item.is_Active
+                            ? "#112C32"
+                            : "#2D2823",
+                          color: item.is_Active ? "#10B981" : "#D27D0E",
+                          fontWeight: 800,
+                        }}
+                        // color={item.is_Active ? "success" : "warning"}
+                        label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                      />
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
+                      <Chip
+                        variant="filled"
+                        size="30px"
+                        icon={
+                          item.subUnit_No === null ? (
+                            <Add color="warning" />
+                          ) : (
+                            <Sync color="success" />
+                          )
+                        }
+                        sx={{
+                          fontSize: "12px",
+                          backgroundColor: theme.palette.bgForm.black1,
+                          // borderColor: theme.palette.bgForm.black3,
+                          color: theme.palette.text.main,
+                          fontWeight: 800,
+                        }}
+                        // color={item.is_Active ? "success" : "warning"}
+                        label={item.subUnit_No === null ? "Manual" : "Syncing"}
+                      />
+                    </TableCell>
+
+                    {item.subUnit_No === null ? (
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        <SubActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
+                      </TableCell>
+                    ) : (
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      ></TableCell>
+                    )}
                   </TableRow>
                 ))}
 
@@ -369,6 +648,12 @@ const SubUnit = () => {
           errorData={errorData}
           open={open}
           onClose={onClose}
+        />
+
+        <SubUnitAddDialog
+          data={editData}
+          open={addSubUnitOpen}
+          onClose={addSubUnitOnClose}
         />
       </Stack>
     </Stack>
