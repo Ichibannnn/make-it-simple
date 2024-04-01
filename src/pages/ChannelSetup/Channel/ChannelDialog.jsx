@@ -35,13 +35,11 @@ import {
   useLazyGetChannelMembersQuery,
   useUpdateChannelMutation,
 } from "../../../features/api_channel_setup/channel/channelApi";
-import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import styled from "@emotion/styled";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
   channel_Name: yup.string().required().label("Channel Name"),
-  subUnitId: yup.object().required().label("Sub Unit"),
 });
 
 const memberSchema = yup.object().shape({
@@ -52,8 +50,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const [members, setMembers] = useState([]);
   const [disabled, setDisabled] = useState(false);
 
-  // console.log("Table: ", data);
-
   const [
     createChannelValidation,
     { error: errorValidation, isError: errorValidationIsError },
@@ -61,20 +57,11 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const [createChannel] = useCreateChannelMutation();
 
   const [
-    getSubUnit,
+    getMembers,
     {
-      data: subUnitData,
-      isLoading: subUnitIsLoading,
-      isSuccess: subUnitIsSuccess,
-    },
-  ] = useLazyGetSubUnitQuery();
-
-  const [
-    getSubUnitMembers,
-    {
-      data: subUnitMembersData,
-      isLoading: subUnitMembersIsLoading,
-      isSuccess: subUnitMembersIsSuccess,
+      data: memberData,
+      isLoading: memberIsLoading,
+      isSuccess: memberIsSuccess,
     },
   ] = useLazyGetChannelMembersQuery();
 
@@ -122,7 +109,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
     if (!data) {
       const addPayload = {
         channel_Name: formData.channel_Name,
-        subUnitId: formData.subUnitId.id,
         channelUserByIds: members?.map((item) => ({
           userId: item.userId,
         })),
@@ -150,7 +136,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
       const editPayload = {
         channelId: data.id,
         channel_Name: formData.channel_Name,
-        subUnitId: formData.subUnitId.id,
         channelUserByIds: members?.map((item) => ({
           userId: item.userId,
         })),
@@ -215,11 +200,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       channelFormSetValue("channel_Name", data.channel_Name);
-      channelFormSetValue("subUnitId", {
-        id: data?.subUnitId,
-        subUnit_Code: data?.subUnit_Code,
-        subUnit_Name: data?.subUnit_Name,
-      });
 
       const editMemberList = data?.channelUsers?.map((item) => ({
         channelUserId: item.channelUserId,
@@ -230,8 +210,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
       setMembers(editMemberList);
     }
-
-    if (data?.subUnitId) getSubUnitMembers({ SubUnitId: data?.subUnitId });
   }, [data]);
 
   return (
@@ -300,7 +278,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                 }}
               />
 
-              <Controller
+              {/* <Controller
                 control={channelFormControl}
                 name="subUnitId"
                 render={({ field: { ref, value, onChange } }) => {
@@ -320,7 +298,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       onChange={(_, value) => {
                         onChange(value);
 
-                        getSubUnitMembers({
+                        getMembers({
                           SubUnitId: value.id,
                         });
                       }}
@@ -345,7 +323,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                     />
                   );
                 }}
-              />
+              /> */}
             </Stack>
 
             <Stack>
@@ -387,8 +365,8 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         ref={ref}
                         size="small"
                         value={value}
-                        options={subUnitMembersData?.value || []}
-                        loading={subUnitMembersIsLoading}
+                        options={memberData?.value || []}
+                        loading={memberIsLoading}
                         groupBy={(option) => option.userRole}
                         renderInput={(params) => (
                           <TextField {...params} label="Members" size="small" />
@@ -399,6 +377,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
                             <GroupItems>{params.children}</GroupItems>
                           </li>
                         )}
+                        onOpen={() => {
+                          if (!memberIsSuccess) getMembers();
+                        }}
                         onChange={(_, value) => {
                           onChange(value);
                         }}
@@ -537,11 +518,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
               type="submit"
               variant="contained"
               form="channelForm"
-              disabled={
-                !channelFormWatch("channel_Name") ||
-                !channelFormWatch("subUnitId") ||
-                !members.length
-              }
+              disabled={!channelFormWatch("channel_Name") || !members.length}
               sx={{
                 ":disabled": {
                   backgroundColor: theme.palette.secondary.main,

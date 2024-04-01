@@ -417,14 +417,25 @@ const UserAccounts = () => {
                       {index + 1}
                     </TableCell>
 
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.fullname}
+                    <TableCell>
+                      <Typography
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {item.fullname}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {item.empId}
+                      </Typography>
                     </TableCell>
 
                     <TableCell
@@ -439,7 +450,7 @@ const UserAccounts = () => {
 
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
+                        color: theme.palette.success.main,
                         fontSize: "14px",
                         fontWeight: 500,
                       }}

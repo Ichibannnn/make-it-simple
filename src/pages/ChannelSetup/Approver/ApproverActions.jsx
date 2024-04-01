@@ -16,9 +16,11 @@ const ApproverActions = ({ data, onArchive, onUpdate }) => {
   const { open, onToggle } = useDisclosure();
 
   const onArchiveAction = (data) => {
+    // console.log("data: ", data);
+
     onToggle();
     onArchive({
-      userId: data.userId,
+      subUnitId: data.subUnitId,
       isActive: data.is_Active,
     });
   };
@@ -40,7 +42,7 @@ const ApproverActions = ({ data, onArchive, onUpdate }) => {
             <ListItemIcon>
               <EditOutlined fontSize="small" />
             </ListItemIcon>
-            Management Approvers
+            Manage Approver
           </MenuItem>
         )}
 

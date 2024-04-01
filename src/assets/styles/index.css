@@ -127,7 +127,7 @@
 
 .toast-confirm {
   background-color: #1976d2;
-  color: #ffffff;
+  color: #edf2f7;
   font-weight: 500;
 }
 
@@ -138,4 +138,35 @@
 
 .tabs-styling {
   text-transform: capitalize !important;
+}
+
+.column {
+  background-color: #1c2536;
+  color: #edf2f7;
+  border-radius: 5px;
+  padding: 15px;
+  width: 100%;
+  /* max-width: 700px; */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.style-draggable {
+  background-color: #111927;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  touch-action: none;
+  font-size: 14px;
+}
+
+.checkbox {
+  height: 20px;
+  width: 20px;
 }

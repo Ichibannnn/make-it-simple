@@ -15,7 +15,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DeleteOutlineOutlined } from "@mui/icons-material";
+import {
+  DeleteOutlineOutlined,
+  SaveOutlined,
+  SyncOutlined,
+} from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -43,7 +47,13 @@ const businessUnitSchema = yup.object().shape({
 const ReceiverDialog = ({ data, open, onClose }) => {
   const [businessUnits, setBusinessUnits] = useState([]);
 
-  const [createEditReceiver] = useCreateEditReceiverMutation();
+  const [
+    createEditReceiver,
+    {
+      isLoading: isCreateEditReceiverLoading,
+      isFetching: isCreateEditReceiverFetching,
+    },
+  ] = useCreateEditReceiverMutation();
 
   const [
     getReceiver,
@@ -102,6 +112,9 @@ const ReceiverDialog = ({ data, open, onClose }) => {
           businessUnitId: item.businessUnitId,
         })),
       };
+
+      console.log("Addpayload", addPayload);
+
       createEditReceiver(addPayload)
         .unwrap()
         .then(() => {
@@ -252,7 +265,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                         if (!receiverIsSuccess) getReceiver();
                       }}
                       onChange={(_, value) => {
-                        console.log(value);
                         onChange(value);
                       }}
                       getOptionLabel={(option) => option.fullName}
@@ -414,25 +426,28 @@ const ReceiverDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Stack direction="row" paddingBottom={1} gap={1}>
-            <Button
-              type="submit"
-              variant="contained"
-              form="receiverForm"
-              disabled={!receiverFormWatch("userId") || !businessUnits.length}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
-            >
-              {data ? "Update" : "Save"}
-            </Button>
-            <Button variant="text" onClick={onCloseAction}>
-              Close
-            </Button>
-          </Stack>
+          <LoadingButton
+            variant="contained"
+            size="large"
+            color="primary"
+            type="submit"
+            form="receiverForm"
+            disabled={!receiverFormWatch("userId") || !businessUnits.length}
+            loading={
+              isCreateEditReceiverLoading || isCreateEditReceiverFetching
+            }
+            sx={{
+              ":disabled": {
+                backgroundColor: theme.palette.secondary.main,
+                color: "black",
+              },
+            }}
+          >
+            Save
+          </LoadingButton>
+          <Button variant="text" onClick={onCloseAction}>
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </>

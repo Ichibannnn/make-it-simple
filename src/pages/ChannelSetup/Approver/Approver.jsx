@@ -70,12 +70,10 @@ const Approver = () => {
   };
 
   const onArchiveAction = (data) => {
-    console.log("Data: ", data);
-
     if (data.isActive === true) {
       Swal.fire({
-        title: "Archive this channel with approver(s)?",
-        text: "This will  move the  to the archived tab.",
+        title: "Archive this information?",
+        text: "This will move to the archived tab.",
         icon: "warning",
         color: "white",
         showCancelButton: true,
@@ -95,12 +93,20 @@ const Approver = () => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveApprover(data.userId)
+          const archivePayload = {
+            updateApproverStatusIds: [
+              {
+                subUnitId: data.subUnitId,
+              },
+            ],
+          };
+
+          archiveApprover(archivePayload)
             .unwrap()
             .then(() => {
               console.log("Data: ", data);
               toast.success("Success!", {
-                description: "Receiver archived successfully!",
+                description: "Data archived successfully!",
               });
             })
             .catch((error) => {
@@ -112,8 +118,8 @@ const Approver = () => {
       });
     } else {
       Swal.fire({
-        title: "Are you sure?",
-        text: "This will move the receiver to the active tab.",
+        title: "Restore this information?",
+        text: "This will move to the active tab.",
         icon: "warning",
         color: "white",
         showCancelButton: true,
@@ -133,14 +139,19 @@ const Approver = () => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          // console.log("Data: ", data);
+          const restorePayload = {
+            updateApproverStatusIds: [
+              {
+                subUnitId: data.subUnitId,
+              },
+            ],
+          };
 
-          archiveApprover(data.userId)
+          archiveApprover(restorePayload)
             .unwrap()
             .then(() => {
-              console.log("Data: ", data);
               toast.success("Success!", {
-                description: "Sub Category restored successfully!",
+                description: "Data restored successfully!",
               });
             })
             .catch((error) => {
@@ -163,6 +174,8 @@ const Approver = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  // console.log("Data: ", data);
 
   return (
     <Stack
@@ -291,7 +304,7 @@ const Approver = () => {
                     fontSize: "12px",
                   }}
                 >
-                  CHANNEL NAME
+                  SUB UNIT
                 </TableCell>
 
                 {/* <TableCell
@@ -355,19 +368,8 @@ const Approver = () => {
                         fontWeight: 500,
                       }}
                     >
-                      {item.channel_Name}
+                      {item.subUnit_Code} - {item.subUnit_Name}
                     </TableCell>
-
-                    {/* <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <ApproverChannels approvers={item.approvers} />
-                    </TableCell> */}
 
                     <TableCell
                       sx={{

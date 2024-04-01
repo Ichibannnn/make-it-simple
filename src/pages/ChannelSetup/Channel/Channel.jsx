@@ -17,7 +17,7 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import { AddOutlined, Search } from "@mui/icons-material";
+import { AddOutlined, GroupsOutlined, Search } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
@@ -301,17 +301,6 @@ const Channel = () => {
                     fontWeight: 700,
                     fontSize: "12px",
                   }}
-                >
-                  SUB UNIT
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
                   align="center"
                 >
                   NO. OF MEMBERS
@@ -367,16 +356,6 @@ const Channel = () => {
                       }}
                     >
                       {item.channel_Name}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {`${item.subUnit_Code} - ${item.subUnit_Name}`}
                     </TableCell>
 
                     <TableCell

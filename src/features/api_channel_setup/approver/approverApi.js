@@ -29,42 +29,54 @@ export const approverApi = createApi({
       providesTags: ["Approver"],
     }),
 
-    // getReceiverList: builder.query({
-    //   query: (params) => ({
-    //     url: "receiver/receiver-list",
-    //     method: "GET",
-    //     params: params,
-    //   }),
-    //   providesTags: ["Receiver"],
-    // }),
+    getSubUnitList: builder.query({
+      query: (params) => ({
+        url: "approver/subunit-approver",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Approver"],
+    }),
 
-    // getReceiverBusinessList: builder.query({
-    //   query: (params) => ({
-    //     url: "receiver/receiver-business-unit",
-    //     method: "GET",
-    //     params: params,
-    //   }),
-    //   providesTags: ["Receiver"],
-    // }),
+    getApproverList: builder.query({
+      query: ({ SubUnitId }) => ({
+        url: `approver/approver-user?${SubUnitId}`,
+        method: "GET",
+      }),
+      providesTags: ["Approver"],
+    }),
 
-    // createEditReceiver: builder.mutation({
-    //   query: (body) => ({
-    //     url: "receiver",
-    //     method: "POST",
-    //     body: body,
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
+    createEditApprover: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `approver/${id}`,
+        method: "POST",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Approver"]),
+    }),
+
+    // query: (body) => ({
+    //   url: "receiver",
+    //   method: "POST",
+    //   body: body,
     // }),
+    // invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
 
     archiveApprover: builder.mutation({
       query: (body) => ({
         url: `approver/status`,
-        method: "PUT",
+        method: "PATCH",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Approver"]),
     }),
   }),
 });
 
-export const { useGetApproverQuery, useArchiveApproverMutation } = approverApi;
+export const {
+  useGetApproverQuery,
+  useLazyGetSubUnitListQuery,
+  useLazyGetApproverListQuery,
+  useCreateEditApproverMutation,
+  useArchiveApproverMutation,
+} = approverApi;
