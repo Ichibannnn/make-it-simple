@@ -69,6 +69,12 @@ const Roles = () => {
     onClose();
   };
 
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
+
   const onArchiveAction = (data) => {
     if (data.isActive === true) {
       Swal.fire({

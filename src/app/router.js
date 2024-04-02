@@ -121,17 +121,17 @@ export const router = createBrowserRouter([
         element: <RequestsPage />,
         children: [
           {
-            path: "/request/tickets",
-            element: <Tickets />,
-          },
-          {
-            path: "/request/requested-tickets",
-            element: <RequestTickets />,
-          },
-          {
             path: "/request/concerns",
             element: <ConcernTickets />,
           },
+          // {
+          //   path: "/request/tickets",
+          //   element: <Tickets />,
+          // },
+          // {
+          //   path: "/request/requested-tickets",
+          //   element: <RequestTickets />,
+          // },
         ],
       },
     ],

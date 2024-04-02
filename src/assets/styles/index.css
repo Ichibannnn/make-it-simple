@@ -170,3 +170,11 @@
   height: 20px;
   width: 20px;
 }
+
+.ellipsis-styling {
+  display: block;
+  width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

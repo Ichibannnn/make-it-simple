@@ -56,6 +56,7 @@ const masterlistCheckbox = [
   "Sub Category",
 ];
 const channelCheckbox = ["Receiver", "Channel", "Approver"];
+const requestCheckbox = ["Concerns"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
   const [createRole] = useCreateRoleMutation();
@@ -228,6 +229,12 @@ const RoleAddDialog = ({ data, open, onClose }) => {
       setValue(
         "permissions",
         watch("permissions").filter((item) => !channelCheckbox.includes(item))
+      );
+    }
+    if (!e.target.checked && e.target.value === "Request") {
+      setValue(
+        "permissions",
+        watch("permissions").filter((item) => !requestCheckbox.includes(item))
       );
     }
   };
@@ -515,6 +522,69 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
+
+              {/* REQUEST */}
+              {watch("permissions")?.includes("Request") && (
+                <FormControl
+                  component="fieldset"
+                  variant="standard"
+                  sx={{
+                    border: "1px solid #2D3748",
+                    borderRadius: "10px",
+                    padding: 2,
+                  }}
+                >
+                  <FormLabel
+                    component="legend"
+                    sx={{
+                      padding: "0 20px",
+                    }}
+                  >
+                    Request
+                  </FormLabel>
+
+                  <FormGroup>
+                    <Stack direction="row" flexWrap="wrap">
+                      {requestCheckbox.map((item, index) => (
+                        <Controller
+                          key={index}
+                          control={control}
+                          name="permissions"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <FormControlLabel
+                                sx={{
+                                  flex: 1,
+                                  flexBasis: "40%",
+                                }}
+                                control={
+                                  <Checkbox
+                                    ref={ref}
+                                    value={item}
+                                    checked={value?.includes(item)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        onChange([...value, e.target.value]);
+                                      } else {
+                                        onChange([
+                                          ...value.filter(
+                                            (item) => item !== e.target.value
+                                          ),
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={item}
+                              />
+                            );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </FormGroup>
+                </FormControl>
+              )}
             </Stack>
           </DialogContent>
 
@@ -538,6 +608,11 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 (watch("permissions").includes("Channel Setup")
                   ? !watch("permissions").some((item) =>
                       channelCheckbox.includes(item)
+                    )
+                  : false) ||
+                (watch("permissions").includes("Request")
+                  ? !watch("permissions").some((item) =>
+                      requestCheckbox.includes(item)
                     )
                   : false)
               }

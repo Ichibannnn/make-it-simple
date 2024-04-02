@@ -30,7 +30,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 const Tickets = () => {
-  const [status, setStatus] = useState("true");
+  const [status, setStatus] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 

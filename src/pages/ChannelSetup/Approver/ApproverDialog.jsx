@@ -6,12 +6,6 @@ import {
   DialogContent,
   IconButton,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -56,12 +50,6 @@ const approverSchema = yup.object().shape({
 
 const ApproverDialog = ({ data, open, onClose }) => {
   const [approvers, setApprovers] = useState([]);
-
-  // const [tasks, setTasks] = useState([
-  //   { id: 1, title: "ITEM 1" },
-  //   { id: 2, title: "ITEM 2" },
-  //   { id: 3, title: "ITEM 3" },
-  // ]);
 
   const [createEditApprover] = useCreateEditApproverMutation();
 
@@ -253,9 +241,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
       setApprovers(editApproversList);
     }
   }, [data]);
-
-  // console.log("Edit Data: ", data);
-  // console.log("Sub Unit: ", subUnitFormWatch("subUnitId"));
 
   console.log("Table: ", approvers);
 

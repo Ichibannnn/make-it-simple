@@ -67,7 +67,6 @@ const Channel = () => {
 
   const onDialogClose = () => {
     setEditData(null);
-
     onClose();
   };
 

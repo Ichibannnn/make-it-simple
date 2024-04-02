@@ -561,11 +561,9 @@ const SubUnit = () => {
                         sx={{
                           fontSize: "12px",
                           backgroundColor: theme.palette.bgForm.black1,
-                          // borderColor: theme.palette.bgForm.black3,
                           color: theme.palette.text.main,
                           fontWeight: 800,
                         }}
-                        // color={item.is_Active ? "success" : "warning"}
                         label={item.subUnit_No === null ? "Manual" : "Syncing"}
                       />
                     </TableCell>
