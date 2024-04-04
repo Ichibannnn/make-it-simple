@@ -561,6 +561,7 @@ const UserAccounts = () => {
           open={open}
           onClose={onDialogClose}
           isSuccess={isSuccess}
+          isFetching={isFetching}
           data={editData}
           // setPageNumber={setPage}
         />

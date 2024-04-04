@@ -54,7 +54,11 @@ const ChannelDialog = ({ data, open, onClose }) => {
     createChannelValidation,
     { error: errorValidation, isError: errorValidationIsError },
   ] = useCreateChannelValidationMutation();
-  const [createChannel] = useCreateChannelMutation();
+
+  const [
+    createChannel,
+    { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching },
+  ] = useCreateChannelMutation();
 
   const [
     getMembers,
@@ -518,13 +522,8 @@ const ChannelDialog = ({ data, open, onClose }) => {
               type="submit"
               variant="contained"
               form="channelForm"
+              loading={createChannelIsLoading || createChannelIsFetching}
               disabled={!channelFormWatch("channel_Name") || !members.length}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
             >
               Save Changes
             </Button>

@@ -23,7 +23,7 @@ export const concernApi = createApi({
     // REQUESTOR ---------------
     getRequestorConcerns: builder.query({
       query: (params) => ({
-        url: "request-concern/requestor-page",
+        url: "request-concern/requestor-page?Requestor=Requestor",
         method: "GET",
         params: params,
       }),
@@ -34,6 +34,9 @@ export const concernApi = createApi({
       query: (body) => ({
         url: "request-concern/add-request-concern",
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: body,
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Concern"]),

@@ -436,12 +436,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
             loading={
               isCreateEditReceiverLoading || isCreateEditReceiverFetching
             }
-            sx={{
-              ":disabled": {
-                backgroundColor: theme.palette.secondary.main,
-                color: "black",
-              },
-            }}
           >
             Save
           </LoadingButton>

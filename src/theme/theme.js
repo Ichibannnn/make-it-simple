@@ -122,6 +122,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
@@ -151,6 +152,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiInputLabel: {
       styleOverrides: {
         root: {
@@ -161,6 +163,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiButton: {
       styleOverrides: {
         root: {
@@ -169,11 +172,15 @@ const theme = createTheme({
           fontWeight: "600px",
           borderRadius: "12px",
           textTransform: "capitalize",
-          // boxShadow: "rgba(0, 0, 0, 0.24) 0px 1px 2px",
           boxSizing: "border-box",
+          ":disabled": {
+            backgroundColor: "#3f305f",
+            color: "black",
+          },
         },
       },
     },
+
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -182,6 +189,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiMenuItem: {
       styleOverrides: {
         root: {
@@ -192,11 +200,13 @@ const theme = createTheme({
         },
       },
     },
+
     MuiListItemButton: {
       defaultProps: {
         disableTouchRipple: true,
       },
     },
+
     MuiIconButton: {
       styleOverrides: {
         root: {
@@ -207,6 +217,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiMenuList: {
       root: {
         color: "#A0AEC0",
@@ -217,6 +228,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiListItemButton: {
       styleOverrides: {
         root: {
@@ -234,6 +246,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiListItemIcon: {
       styleOverrides: {
         root: {
@@ -249,6 +262,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiTable: {
       styleOverrides: {
         root: {
@@ -256,6 +270,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiTableCell: {
       styleOverrides: {
         root: {
@@ -267,6 +282,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiTableRow: {
       styleOverrides: {
         root: {

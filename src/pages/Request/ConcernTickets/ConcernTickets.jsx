@@ -239,6 +239,7 @@ const ConcernTickets = () => {
                         fontWeight: 700,
                         fontSize: "12px",
                       }}
+                      align="center"
                     >
                       DATE CREATED
                     </TableCell>
@@ -313,6 +314,7 @@ const ConcernTickets = () => {
                               fontSize: "14px",
                               fontWeight: 500,
                             }}
+                            align="center"
                           >
                             <Chip
                               variant="filled"
@@ -437,6 +439,7 @@ const ConcernTickets = () => {
 
             <ConcernDialog
               data={editData}
+              isSuccess={isSuccess}
               open={open}
               onClose={onDialogClose}
             />

@@ -51,7 +51,13 @@ const approverSchema = yup.object().shape({
 const ApproverDialog = ({ data, open, onClose }) => {
   const [approvers, setApprovers] = useState([]);
 
-  const [createEditApprover] = useCreateEditApproverMutation();
+  const [
+    createEditApprover,
+    {
+      isLoading: createEditApproverIsLoading,
+      isFetching: createEditApproverIsFetching,
+    },
+  ] = useCreateEditApproverMutation();
 
   const [
     getSubUnitList,
@@ -417,15 +423,17 @@ const ApproverDialog = ({ data, open, onClose }) => {
               variant="contained"
               type="submit"
               form="approverForm"
+              loading={
+                createEditApproverIsLoading || createEditApproverIsFetching
+              }
               disabled={!subUnitFormWatch("subUnitId") || !approvers.length}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              // sx={{
+              //   ":disabled": {
+              //     backgroundColor: theme.palette.secondary.main,
+              //     color: "black",
+              //   },
+              // }}
             >
-              {/* {data ? "Update" : "Save"} */}
               Save
             </LoadingButton>
             <Button variant="text" onClick={onCloseAction}>

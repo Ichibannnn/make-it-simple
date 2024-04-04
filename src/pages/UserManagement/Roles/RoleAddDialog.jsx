@@ -59,9 +59,24 @@ const channelCheckbox = ["Receiver", "Channel", "Approver"];
 const requestCheckbox = ["Concerns"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
-  const [createRole] = useCreateRoleMutation();
-  const [updateRoleName] = useUpdateRoleNameMutation();
-  const [updateRolePermission] = useUpdateRolePermissionMutation();
+  const [
+    createRole,
+    { isLoading: createRoleIsLoading, isFetching: createRoleIsFetching },
+  ] = useCreateRoleMutation();
+  const [
+    updateRoleName,
+    {
+      isLoading: updateRoleNameIsLoading,
+      isFetching: updateRoleNameIsFetching,
+    },
+  ] = useUpdateRoleNameMutation();
+  const [
+    updateRolePermission,
+    {
+      isLoading: updateRolePermissionIsLoading,
+      isFetching: updateRolePermissionIsFetching,
+    },
+  ] = useUpdateRolePermissionMutation();
 
   const {
     control,
@@ -592,6 +607,14 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
+              loading={
+                createRoleIsLoading ||
+                createRoleIsFetching ||
+                updateRoleNameIsLoading ||
+                updateRoleNameIsFetching ||
+                updateRolePermissionIsLoading ||
+                updateRolePermissionIsFetching
+              }
               disabled={
                 !watch("user_Role_Name") ||
                 !watch("permissions").length ||
@@ -616,15 +639,10 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                     )
                   : false)
               }
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
             >
               Save
             </LoadingButton>
+
             <LoadingButton variant="outlined" onClick={onCloseAction}>
               Close
             </LoadingButton>

@@ -32,6 +32,7 @@ import {
 import Swal from "sweetalert2";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   empId: yup.object().required().label("Employee ID"),
@@ -47,8 +48,14 @@ const schema = yup.object().shape({
 });
 
 const UserAccountDialog = ({ data, open, onClose }) => {
-  const [createUser] = useCreateUserMutation();
-  const [updateUser] = useUpdateUserMutation();
+  const [
+    createUser,
+    { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching },
+  ] = useCreateUserMutation();
+  const [
+    updateUser,
+    { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching },
+  ] = useUpdateUserMutation();
 
   const [
     getEmployees,
@@ -751,10 +758,16 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button
+          <LoadingButton
             type="submit"
             form="user"
             variant="contained"
+            loading={
+              isCreateUserIsLoading ||
+              isCreateUserIsFetching ||
+              isUpdateUserIsLoading ||
+              isUpdateUserIsFetching
+            }
             disabled={
               !watch("empId") ||
               !watch("username") ||
@@ -766,15 +779,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               !watch("subUnitId") ||
               !watch("locationId")
             }
-            sx={{
-              ":disabled": {
-                backgroundColor: theme.palette.secondary.main,
-                color: "black",
-              },
-            }}
           >
             Save
-          </Button>
+          </LoadingButton>
           <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
