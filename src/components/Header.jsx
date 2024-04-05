@@ -35,6 +35,8 @@ import ReusableAlert from "../hooks/ReusableAlert";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
 import { PermIdentityOutlined } from "@mui/icons-material";
 
+import { concernApi } from "../features/api_request/concerns/concernApi";
+
 const Header = () => {
   const hideMenu = useMediaQuery("(max-width: 1069px)");
 
@@ -69,6 +71,9 @@ const Header = () => {
     try {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+
+      dispatch(concernApi.util.resetApiState());
+
       navigate("/");
 
       dispatch(clearUserDetails());

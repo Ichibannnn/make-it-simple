@@ -52,7 +52,6 @@ const UserAccounts = () => {
   const [editData, setEditData] = useState(null);
 
   const userRole = useSelector((state) => state.user.userRoleName);
-  console.log("User Role: ", userRole);
 
   const { open, onToggle, onClose } = useDisclosure();
 
@@ -202,8 +201,6 @@ const UserAccounts = () => {
   };
 
   const onEditAction = (data) => {
-    console.log("Data: ", data);
-
     onToggle();
     setEditData(data);
   };
@@ -503,7 +500,6 @@ const UserAccounts = () => {
                     >
                       <UserAccountAction
                         data={item}
-                        status={status}
                         onReset={onResetPasswordAction}
                         onArchive={onArchiveAction}
                         onUpdate={onEditAction}
@@ -560,8 +556,6 @@ const UserAccounts = () => {
         <UserAccountDialog
           open={open}
           onClose={onDialogClose}
-          isSuccess={isSuccess}
-          isFetching={isFetching}
           data={editData}
           // setPageNumber={setPage}
         />

@@ -390,7 +390,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
   return (
     <div>
       <Dialog fullWidth maxWidth="xs" open={open}>
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="top-right" closeButton />
         <IconButton
           aria-label="close"
           onClick={onCloseAction}

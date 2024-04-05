@@ -23,7 +23,7 @@ export const concernApi = createApi({
     // REQUESTOR ---------------
     getRequestorConcerns: builder.query({
       query: (params) => ({
-        url: "request-concern/requestor-page?Requestor=Requestor",
+        url: "request-concern/requestor-page?Requestor=Requestor&Status=true",
         method: "GET",
         params: params,
       }),
@@ -40,6 +40,15 @@ export const concernApi = createApi({
         body: body,
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+    }),
+
+    getRequestorAttachment: builder.query({
+      query: (params) => ({
+        url: `request-concern/request-attachment`,
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Concern"],
     }),
 
     // getReceiverList: builder.query({
@@ -82,4 +91,5 @@ export const concernApi = createApi({
 export const {
   useGetRequestorConcernsQuery,
   useCreateEditRequestorConcernMutation,
+  useGetRequestorAttachmentQuery,
 } = concernApi;

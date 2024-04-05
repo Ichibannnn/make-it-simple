@@ -186,5 +186,31 @@
   color: #a0aec0;
   justify-content: center;
   align-items: center !important;
-  min-height: 200px;
+  min-height: 100px;
 }
+
+.drop-zone {
+  width: 80%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #a0aec0;
+  background-color: #0e1320;
+  color: #a0aec0;
+}
+
+/* li {
+  position: relative;
+  font-weight: lighter;
+  color: #a0aec0;
+  margin-top: 10px;
+  border-bottom: #1976d2;
+} */
+
+/* .dropzone-delete {
+  width: 7px;
+  height: 7px;
+  border:
+} */

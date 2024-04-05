@@ -1,35 +1,24 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
   IconButton,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import {
-  BorderColor,
   CloseOutlined,
-  DeleteOutlineOutlined,
   DescriptionOutlined,
+  Image,
   InsertPhotoOutlined,
-  PanoramaOutlined,
+  OutboundOutlined,
   PictureAsPdfOutlined,
-  SaveOutlined,
-  SyncOutlined,
   WallpaperOutlined,
 } from "@mui/icons-material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -39,6 +28,7 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
 import { useCreateEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
+import Dropzone, { useDropzone } from "react-dropzone";
 
 const requestorSchema = yup.object().shape({
   RequestGeneratorId: yup.string().nullable(),
@@ -47,7 +37,7 @@ const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
-const ConcernDialog = ({ open, onClose, isSuccess }) => {
+const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -158,7 +148,7 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
+    console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
     const fileNames = newFiles.map((file) => file.name);
     setAttachments((prevFiles) => [...prevFiles, ...fileNames]);
@@ -218,8 +208,29 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
     setAttachments([]);
   };
 
-  // console.log("Attachments: ", attachments);
-  console.log("errors: ", errors);
+  const onDrop = useCallback((acceptedFiles) => {
+    // console.log("Accepted files: ", acceptedFiles);
+
+    if (acceptedFiles?.length) {
+      setAttachments((previousFiles) => [
+        ...previousFiles,
+        ...acceptedFiles.map((file) =>
+          Object.assign(file, { preview: URL.createObjectURL(file) })
+        ),
+      ]);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    // accept: { "image/*": [] },
+  });
+
+  const removeFile = (name) => {
+    setAttachments((file) => file.filter((file) => file.name !== name));
+  };
+
+  console.log("Attachments: ", attachments);
 
   return (
     <>
@@ -247,8 +258,6 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
                   </Typography>
                 </Stack>
               </Stack>
-
-              {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
 
               <Stack padding={5} gap={3}>
                 <Stack
@@ -296,16 +305,60 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
                 >
                   <Typography>Attachment*</Typography>
 
+                  {/* <div {...getRootProps()} className="drop-zone">
+                    <input style={{ display: "none" }} {...getInputProps} />
+
+                    {isDragActive ? (
+                      <p>Drop the files here </p>
+                    ) : (
+                      <p>
+                        Drag and drop some files here, or click to select files{" "}
+                      </p>
+                    )}
+                  </div> */}
+
+                  {/* UPLOADED FILES */}
+                  {/* {attachments.length ? (
+                    <div className="drop-zone">
+                      <h3>Attached Files</h3>
+                      <ul>
+                        {attachments?.map((file) => {
+                          <li key={file.name}>
+                            <image
+                              src={file.preview}
+                              alt={file.name}
+                              width={100}
+                              height={100}
+                              onLoad={() => {
+                                URL.revokeObjectURL(file.preview);
+                              }}
+                              className="dropzone-image"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeFile(file.name)}
+                            >
+                              <CloseOutlined />
+                            </button>
+                            <p>{file.name}</p>
+                          </li>;
+                        })}
+                      </ul>
+                    </div>
+                  ) : (
+                    ""
+                  )} */}
+
                   <Box
                     sx={{
                       width: "80%",
                       display: "flex",
-                      flexDirection: "column",
+                      flexDirection: "row",
                       alignItems: "flex-start",
                       backgroundColor: theme.palette.bgForm.black1,
                       border: "2px dashed  #2D3748 ",
                       borderRadius: "10px",
-                      minHeight: "200px",
+                      minHeight: "100px",
                       paddingLeft: 2,
                       paddingTop: 2,
                       cursor: "pointer",
@@ -320,12 +373,13 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
                         <Typography>Upload your attachments</Typography>
                       </Box>
                     ) : (
-                      <Box>
+                      <Box sx={{ display: "flex", gap: 2 }}>
                         {attachments.map((fileName, index) => (
                           <div
                             key={index}
                             style={{
                               display: "flex",
+                              flexDirection: "row",
                               alignItems: "center",
                               marginBottom: "2px",
                               padding: "5px",
@@ -335,24 +389,35 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
                               overflow: "hidden",
                             }}
                           >
-                            <Box marginRight={1}>{getFileIcon(fileName)}</Box>
-
                             <Stack
-                              width="100%"
-                              direction="row"
-                              justifyContent="space-between"
-                              alignItems="center"
+                              direction="column"
+                              // justifyContent="center"
+                              // alignItems="center"
                             >
+                              <Stack
+                                sx={{
+                                  width: "100%",
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Box />
+                                <IconButton
+                                  size="sm"
+                                  onClick={() => handleDeleteFile(fileName)}
+                                  style={{
+                                    marginLeft: "2px",
+                                    background: "none",
+                                  }}
+                                >
+                                  <CloseOutlined />
+                                </IconButton>
+                              </Stack>
+
+                              <Box marginRight={1}>{getFileIcon(fileName)}</Box>
                               <Typography size={{ fontSize: "5px" }}>
                                 {fileName}
                               </Typography>
-                              <IconButton
-                                aria-label="delete"
-                                onClick={() => handleDeleteFile(fileName)}
-                                style={{ marginLeft: "2px" }}
-                              >
-                                <CloseOutlined />
-                              </IconButton>
                             </Stack>
                           </div>
                         ))}
@@ -379,14 +444,6 @@ const ConcernDialog = ({ open, onClose, isSuccess }) => {
                       />
                     )}
                   />
-                  {/* <input
-                    ref={fileInputRef}
-                    accept=".png,.jpg,.jpeg,.docx,"
-                    style={{ display: "none" }}
-                    multiple
-                    type="file"
-                    onChange={handleAttachments}
-                  /> */}
                 </Stack>
 
                 <Box

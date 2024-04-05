@@ -3,7 +3,6 @@ import {
   Chip,
   CircularProgress,
   Divider,
-  Icon,
   OutlinedInput,
   Stack,
   Tab,
@@ -27,7 +26,7 @@ import {
   ClearAllOutlined,
   FiberManualRecord,
   PendingActionsOutlined,
-  ReplyAllOutlined,
+  RotateRightOutlined,
   Search,
 } from "@mui/icons-material";
 import moment from "moment";
@@ -37,9 +36,9 @@ import useDisclosure from "../../../hooks/useDisclosure";
 
 import { useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 
-import ConcernActions from "./ConcernActions";
 import ConcernDialog from "./ConcernDialog";
-import { deepPurple, green, pink, purple } from "@mui/material/colors";
+import ConcernViewDialog from "./ConcernViewDialog";
+import ConcernActions from "./ConcernActions";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -50,12 +49,22 @@ const ConcernTickets = () => {
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
+  const [viewData, setViewData] = useState(null);
 
-  const { open, onToggle, onClose } = useDisclosure();
+  const {
+    open: addConcernOpen,
+    onToggle: addConcernOnToggle,
+    onClose: addConcernOnClose,
+  } = useDisclosure();
+  const {
+    open: viewConcernOpen,
+    onToggle: viewConcernOnToggle,
+    onClose: viewConcernOnClose,
+  } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetRequestorConcernsQuery({
-      Status: status,
+      Concern_Status: status,
       Search: search,
       PageNumber: pageNumber,
       PageSize: pageSize,
@@ -71,12 +80,14 @@ const ConcernTickets = () => {
 
   const onDialogClose = () => {
     setEditData(null);
-    onClose();
+    setViewData(null);
+    addConcernOnClose();
+    viewConcernOnClose();
   };
 
-  const onEditAction = (data) => {
-    onToggle();
-    setEditData(data);
+  const onViewConcernAction = (data) => {
+    viewConcernOnToggle();
+    setViewData(data);
   };
 
   useEffect(() => {
@@ -84,6 +95,8 @@ const ConcernTickets = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  // console.log("Status: ", status);
 
   return (
     <Stack
@@ -108,7 +121,7 @@ const ConcernTickets = () => {
               size="large"
               color="primary"
               startIcon={<AddOutlined />}
-              onClick={onToggle}
+              onClick={addConcernOnToggle}
             >
               Add Concern
             </Button>
@@ -138,22 +151,12 @@ const ConcernTickets = () => {
                     fontWeight: 600,
                   }}
                 />
+
                 <Tab
-                  value="true"
+                  value="For Approval"
                   className="tabs-styling"
-                  label="Approval"
+                  label="For Approval"
                   icon={<PendingActionsOutlined />}
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                />
-                <Tab
-                  value="false"
-                  className="tabs-styling"
-                  label="Ongoing"
-                  icon={<ReplyAllOutlined />}
                   iconPosition="start"
                   sx={{
                     fontSize: "12px",
@@ -162,7 +165,19 @@ const ConcernTickets = () => {
                 />
 
                 <Tab
-                  //   value="false"
+                  value="Ongoing"
+                  className="tabs-styling"
+                  label="Ongoing"
+                  icon={<RotateRightOutlined />}
+                  iconPosition="start"
+                  sx={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                />
+
+                <Tab
+                  value="Done"
                   className="tabs-styling"
                   label="Done"
                   icon={<ChecklistRtlOutlined />}
@@ -251,7 +266,6 @@ const ConcernTickets = () => {
                         fontWeight: 700,
                         fontSize: "12px",
                       }}
-                      align="center"
                     >
                       STATUS
                     </TableCell>
@@ -341,7 +355,6 @@ const ConcernTickets = () => {
                               fontSize: "14px",
                               fontWeight: 500,
                             }}
-                            align="center"
                           >
                             <Chip
                               variant="filled"
@@ -386,7 +399,10 @@ const ConcernTickets = () => {
                             }}
                             align="center"
                           >
-                            <ConcernActions data={item} status={status} />
+                            <ConcernActions
+                              data={item}
+                              onView={onViewConcernAction}
+                            />
                           </TableCell>
                         </TableRow>
                       ))
@@ -439,8 +455,13 @@ const ConcernTickets = () => {
 
             <ConcernDialog
               data={editData}
-              isSuccess={isSuccess}
-              open={open}
+              open={addConcernOpen}
+              onClose={onDialogClose}
+            />
+
+            <ConcernViewDialog
+              viewData={viewData}
+              open={viewConcernOpen}
               onClose={onDialogClose}
             />
           </Stack>

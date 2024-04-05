@@ -3,20 +3,20 @@ import {
   EditOutlined,
   MoreHoriz,
   RefreshOutlined,
+  ReplyAllOutlined,
   RestoreOutlined,
   ViewAgendaOutlined,
+  VisibilityOutlined,
 } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import React, { useRef } from "react";
-import Swal from "sweetalert2";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
-const RoleAction = ({ data }) => {
+const ConcernActions = ({ data, onView }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
-  
 
   // const onArchiveAction = (data) => {
   //   onToggle();
@@ -26,10 +26,12 @@ const RoleAction = ({ data }) => {
   //   });
   // };
 
-  // const onUpdateAction = (data) => {
-  //   onToggle();
-  //   onUpdate(data);
-  // };
+  const onViewAction = (data) => {
+    console.log("Data: ", data);
+
+    onToggle();
+    onView(data);
+  };
 
   return (
     <>
@@ -38,29 +40,22 @@ const RoleAction = ({ data }) => {
       </IconButton>
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
-        {data?.is_Active && (
-          <MenuItem>
-            <ListItemIcon>
-              <ViewAgendaOutlined fontSize="small" />
-            </ListItemIcon>
-            View Details
-          </MenuItem>
-        )}
+        <MenuItem onClick={() => onViewAction(data)}>
+          <ListItemIcon>
+            <VisibilityOutlined fontSize="small" />
+          </ListItemIcon>
+          View Concerns
+        </MenuItem>
 
         <MenuItem>
           <ListItemIcon>
-            {data?.is_Active ? (
-              <ArchiveOutlined fontSize="small" />
-            ) : (
-              <RestoreOutlined fontSize="small" />
-            )}
+            <ReplyAllOutlined fontSize="small" />
           </ListItemIcon>
-
-          {data?.is_Active ? "Archive" : "Restore"}
+          Reply
         </MenuItem>
       </Menu>
     </>
   );
 };
 
-export default RoleAction;
+export default ConcernActions;

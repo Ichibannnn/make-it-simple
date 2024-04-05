@@ -427,12 +427,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
                 createEditApproverIsLoading || createEditApproverIsFetching
               }
               disabled={!subUnitFormWatch("subUnitId") || !approvers.length}
-              // sx={{
-              //   ":disabled": {
-              //     backgroundColor: theme.palette.secondary.main,
-              //     color: "black",
-              //   },
-              // }}
             >
               Save
             </LoadingButton>
