@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Divider,
   IconButton,
   Stack,
   TextField,
@@ -11,11 +12,14 @@ import {
 } from "@mui/material";
 import {
   CloseOutlined,
+  DeleteForeverOutlined,
+  DeleteOutlineRounded,
   DescriptionOutlined,
   Image,
   InsertPhotoOutlined,
   OutboundOutlined,
   PictureAsPdfOutlined,
+  RemoveCircleOutline,
   WallpaperOutlined,
 } from "@mui/icons-material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -69,7 +73,7 @@ const ConcernDialog = ({ open, onClose }) => {
   });
 
   const onConcernFormSubmit = (formData) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     const payload = new FormData();
 
     payload.append("Concern", formData.Concern);
@@ -80,27 +84,27 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }
 
-    console.log("Payload: ", payload);
+    // console.log("Payload: ", payload);
 
-    createEditRequestorConcern(payload)
-      .unwrap()
-      .then(() => {
-        toast.success("Success!", {
-          description: "Concern added successfully!",
-          duration: 1500,
-        });
-        setAttachments([]);
-        reset();
-        setIsLoading(false);
-        onClose();
-      })
-      .catch((err) => {
-        console.log("Error", err);
-        toast.error("Error!", {
-          description: err.data.error.message,
-          duration: 1500,
-        });
-      });
+    // createEditRequestorConcern(payload)
+    //   .unwrap()
+    //   .then(() => {
+    //     toast.success("Success!", {
+    //       description: "Concern added successfully!",
+    //       duration: 1500,
+    //     });
+    //     setAttachments([]);
+    //     reset();
+    //     setIsLoading(false);
+    //     onClose();
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error", err);
+    //     toast.error("Error!", {
+    //       description: err.data.error.message,
+    //       duration: 1500,
+    //     });
+    //   });
 
     // fetch("https://localhost:44355/api/request-concern/add-request-concern", {
     //   headers: {
@@ -150,7 +154,11 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleAttachments = (event) => {
     console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
-    const fileNames = newFiles.map((file) => file.name);
+
+    const fileNames = newFiles.map((file) => ({
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2),
+    }));
     setAttachments((prevFiles) => [...prevFiles, ...fileNames]);
   };
 
@@ -184,7 +192,11 @@ const ConcernDialog = ({ open, onClose }) => {
         const extension = file.name.split(".").pop().toLowerCase();
         return allowedExtensions.includes(`.${extension}`);
       })
-      .map((file) => file.name);
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
     const uniqueNewFiles = fileNames.filter(
       (fileName) => !attachments.includes(fileName)
     );
@@ -231,6 +243,7 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   console.log("Attachments: ", attachments);
+  console.log("RequestAttachmentsFiles: ", watch("RequestAttachmentsFiles"));
 
   return (
     <>
@@ -267,7 +280,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     paddingTop: 2,
                     gap: 2,
                     justifyContent: "space-between",
-                    alignItems: "center",
+                    alignItems: "flex-start",
                   }}
                 >
                   <Typography>Concern Details*</Typography>
@@ -279,7 +292,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       return (
                         <TextField
                           inputRef={ref}
-                          size="small"
+                          size="medium"
                           value={value}
                           placeholder="Ex. System Name - Concern"
                           onChange={onChange}
@@ -287,6 +300,8 @@ const ConcernDialog = ({ open, onClose }) => {
                             width: "80%",
                           }}
                           autoComplete="off"
+                          rows={6}
+                          multiline
                         />
                       );
                     }}
@@ -349,7 +364,122 @@ const ConcernDialog = ({ open, onClose }) => {
                     ""
                   )} */}
 
-                  <Box
+                  <Stack
+                    sx={{
+                      width: "80%",
+                      display: "flex",
+                      border: "2px dashed #2D3748",
+                      justifyContent: "left",
+                      padding: 1,
+                    }}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 1,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="warning"
+                        onClick={handleUploadButtonClick}
+                      >
+                        Choose file
+                      </Button>
+
+                      <Typography sx={{ color: theme.palette.text.secondary }}>
+                        or drop your files here...
+                      </Typography>
+                    </Box>
+
+                    <Divider
+                      variant="fullWidth"
+                      sx={{
+                        display: !attachments.length ? "none" : "flex",
+                        background: "#2D3748",
+                        marginTop: 1,
+                      }}
+                    />
+
+                    <Stack
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      {attachments.map((fileName, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            display: "flex",
+                            width: "100%",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            padding: 1,
+                            maxWidth: "100%",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              padding: 0.5,
+                              borderBottom: "1px solid #2D3748",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <Typography sx={{ fontWeight: 500 }}>
+                                {fileName.name}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontSize: 13,
+                                  fontWeight: 500,
+                                  color: theme.palette.text.secondary,
+                                }}
+                              >
+                                {fileName.size} Mb
+                              </Typography>
+                            </Box>
+
+                            <Divider
+                              variant="fullWidth"
+                              sx={{
+                                background: "#2D3748",
+                                marginTop: 1,
+                              }}
+                            />
+
+                            <IconButton
+                              size="sm"
+                              color="error"
+                              onClick={() => handleDeleteFile(fileName)}
+                              style={{
+                                background: "none",
+                              }}
+                            >
+                              <RemoveCircleOutline />
+                            </IconButton>
+                          </Box>
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Stack>
+
+                  {/* <Box
                     sx={{
                       width: "80%",
                       display: "flex",
@@ -406,7 +536,6 @@ const ConcernDialog = ({ open, onClose }) => {
                                   size="sm"
                                   onClick={() => handleDeleteFile(fileName)}
                                   style={{
-                                    marginLeft: "2px",
                                     background: "none",
                                   }}
                                 >
@@ -423,7 +552,7 @@ const ConcernDialog = ({ open, onClose }) => {
                         ))}
                       </Box>
                     )}
-                  </Box>
+                  </Box> */}
 
                   <Controller
                     control={control}
@@ -437,6 +566,7 @@ const ConcernDialog = ({ open, onClose }) => {
                         type="file"
                         onChange={(event) => {
                           handleAttachments(event);
+                          handleDrop(event);
 
                           const files = Array.from(event.target.files);
                           onChange(files);
@@ -446,7 +576,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   />
                 </Stack>
 
-                <Box
+                {/* <Box
                   width="100%"
                   sx={{
                     display: "flex",
@@ -462,7 +592,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   >
                     Choose file
                   </Button>
-                </Box>
+                </Box> */}
               </Stack>
             </Stack>
           </DialogContent>
