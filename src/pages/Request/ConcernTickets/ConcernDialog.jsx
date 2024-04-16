@@ -73,7 +73,6 @@ const ConcernDialog = ({ open, onClose }) => {
   });
 
   const onConcernFormSubmit = (formData) => {
-    // setIsLoading(true);
     const payload = new FormData();
 
     payload.append("Concern", formData.Concern);
@@ -86,25 +85,25 @@ const ConcernDialog = ({ open, onClose }) => {
 
     // console.log("Payload: ", payload);
 
-    // createEditRequestorConcern(payload)
-    //   .unwrap()
-    //   .then(() => {
-    //     toast.success("Success!", {
-    //       description: "Concern added successfully!",
-    //       duration: 1500,
-    //     });
-    //     setAttachments([]);
-    //     reset();
-    //     setIsLoading(false);
-    //     onClose();
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error", err);
-    //     toast.error("Error!", {
-    //       description: err.data.error.message,
-    //       duration: 1500,
-    //     });
-    //   });
+    createEditRequestorConcern(payload)
+      .unwrap()
+      .then(() => {
+        toast.success("Success!", {
+          description: "Concern added successfully!",
+          duration: 1500,
+        });
+        setAttachments([]);
+        reset();
+        setIsLoading(false);
+        onClose();
+      })
+      .catch((err) => {
+        console.log("Error", err);
+        toast.error("Error!", {
+          description: err.data.error.message,
+          duration: 1500,
+        });
+      });
 
     // fetch("https://localhost:44355/api/request-concern/add-request-concern", {
     //   headers: {
@@ -159,7 +158,13 @@ const ConcernDialog = ({ open, onClose }) => {
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
-    setAttachments((prevFiles) => [...prevFiles, ...fileNames]);
+
+    const uniqueNewFiles = fileNames.filter(
+      (newFile) =>
+        !attachments.some((existingFile) => existingFile.name === newFile.name)
+    );
+
+    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
 
   const handleUploadButtonClick = () => {
@@ -218,28 +223,6 @@ const ConcernDialog = ({ open, onClose }) => {
     onClose();
     reset();
     setAttachments([]);
-  };
-
-  const onDrop = useCallback((acceptedFiles) => {
-    // console.log("Accepted files: ", acceptedFiles);
-
-    if (acceptedFiles?.length) {
-      setAttachments((previousFiles) => [
-        ...previousFiles,
-        ...acceptedFiles.map((file) =>
-          Object.assign(file, { preview: URL.createObjectURL(file) })
-        ),
-      ]);
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    // accept: { "image/*": [] },
-  });
-
-  const removeFile = (name) => {
-    setAttachments((file) => file.filter((file) => file.name !== name));
   };
 
   console.log("Attachments: ", attachments);
@@ -319,50 +302,6 @@ const ConcernDialog = ({ open, onClose }) => {
                   }}
                 >
                   <Typography>Attachment*</Typography>
-
-                  {/* <div {...getRootProps()} className="drop-zone">
-                    <input style={{ display: "none" }} {...getInputProps} />
-
-                    {isDragActive ? (
-                      <p>Drop the files here </p>
-                    ) : (
-                      <p>
-                        Drag and drop some files here, or click to select files{" "}
-                      </p>
-                    )}
-                  </div> */}
-
-                  {/* UPLOADED FILES */}
-                  {/* {attachments.length ? (
-                    <div className="drop-zone">
-                      <h3>Attached Files</h3>
-                      <ul>
-                        {attachments?.map((file) => {
-                          <li key={file.name}>
-                            <image
-                              src={file.preview}
-                              alt={file.name}
-                              width={100}
-                              height={100}
-                              onLoad={() => {
-                                URL.revokeObjectURL(file.preview);
-                              }}
-                              className="dropzone-image"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeFile(file.name)}
-                            >
-                              <CloseOutlined />
-                            </button>
-                            <p>{file.name}</p>
-                          </li>;
-                        })}
-                      </ul>
-                    </div>
-                  ) : (
-                    ""
-                  )} */}
 
                   <Stack
                     sx={{
@@ -444,6 +383,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               <Typography sx={{ fontWeight: 500 }}>
                                 {fileName.name}
                               </Typography>
+
                               <Typography
                                 sx={{
                                   fontSize: 13,
@@ -452,6 +392,16 @@ const ConcernDialog = ({ open, onClose }) => {
                                 }}
                               >
                                 {fileName.size} Mb
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  fontSize: 13,
+                                  fontWeight: 500,
+                                  color: theme.palette.success.main,
+                                }}
+                              >
+                                Uploaded the file successfully
                               </Typography>
                             </Box>
 
@@ -464,7 +414,7 @@ const ConcernDialog = ({ open, onClose }) => {
                             />
 
                             <IconButton
-                              size="sm"
+                              size="small"
                               color="error"
                               onClick={() => handleDeleteFile(fileName)}
                               style={{
@@ -566,7 +516,7 @@ const ConcernDialog = ({ open, onClose }) => {
                         type="file"
                         onChange={(event) => {
                           handleAttachments(event);
-                          handleDrop(event);
+                          // handleDrop(event);
 
                           const files = Array.from(event.target.files);
                           onChange(files);
@@ -575,24 +525,6 @@ const ConcernDialog = ({ open, onClose }) => {
                     )}
                   />
                 </Stack>
-
-                {/* <Box
-                  width="100%"
-                  sx={{
-                    display: "flex",
-                    justifyContent: "right",
-                    paddingTop: 2,
-                  }}
-                >
-                  <Button
-                    size="small"
-                    variant="contained"
-                    color="warning"
-                    onClick={handleUploadButtonClick}
-                  >
-                    Choose file
-                  </Button>
-                </Box> */}
               </Stack>
             </Stack>
           </DialogContent>
