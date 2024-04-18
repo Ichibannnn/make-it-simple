@@ -51,45 +51,21 @@ export const concernApi = createApi({
       providesTags: ["Concern"],
     }),
 
-    // getReceiverList: builder.query({
-    //   query: (params) => ({
-    //     url: "receiver/receiver-list",
-    //     method: "GET",
-    //     params: params,
-    //   }),
-    //   providesTags: ["Receiver"],
-    // }),
-
-    // getReceiverBusinessList: builder.query({
-    //   query: (params) => ({
-    //     url: "receiver/receiver-business-unit",
-    //     method: "GET",
-    //     params: params,
-    //   }),
-    //   providesTags: ["Receiver"],
-    // }),
-
-    // createEditReceiver: builder.mutation({
-    //   query: (body) => ({
-    //     url: "receiver",
-    //     method: "POST",
-    //     body: body,
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
-    // }),
-
-    // archiveReceiver: builder.mutation({
-    //   query: (UserId) => ({
-    //     url: `receiver/status/${UserId}`,
-    //     method: "PUT",
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
-    // }),
+    deleteRequestorAttachment: builder.mutation({
+      query: (body) => ({
+        url: `request-concern/remove-attachment`,
+        method: "PUT",
+        body: body,
+      }),
+      providesTags: ["Concern"],
+    }),
   }),
 });
 
 export const {
   useGetRequestorConcernsQuery,
   useCreateEditRequestorConcernMutation,
+  useLazyGetRequestorAttachmentQuery,
   useGetRequestorAttachmentQuery,
+  useDeleteRequestorAttachmentMutation,
 } = concernApi;

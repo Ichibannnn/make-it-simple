@@ -291,22 +291,28 @@ const SidebarList = () => {
       sub: [
         {
           id: 1,
-          name: "Tickets",
-          path: "/request/tickets",
-          icon: "ConfirmationNumberOutlined",
+          name: "Requestor Concerns",
+          path: "/request/requestor-concerns",
+          icon: "DiscountOutlined",
         },
         {
           id: 2,
-          name: "Requested Tickets",
-          path: "/request/requested-tickets",
-          icon: "BookmarkAddOutlined",
-        },
-        {
-          id: 3,
-          name: "Concerns",
-          path: "/request/concerns",
+          name: "Receiver Concerns",
+          path: "/request/receiver-concerns",
           icon: "DiscountOutlined",
         },
+        // {
+        //   id: 1,
+        //   name: "Requestor Concerns",
+        //   path: "/request/concerns",
+        //   icon: "DiscountOutlined",
+        // },
+        // {
+        //   id: 1,
+        //   name: "Requestor Concerns",
+        //   path: "/request/concerns",
+        //   icon: "DiscountOutlined",
+        // },
       ],
     },
     {

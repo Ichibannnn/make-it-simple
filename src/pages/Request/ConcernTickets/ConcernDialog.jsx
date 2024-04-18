@@ -10,19 +10,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  CloseOutlined,
-  DeleteForeverOutlined,
-  DeleteOutlineRounded,
-  DescriptionOutlined,
-  Image,
-  InsertPhotoOutlined,
-  OutboundOutlined,
-  PictureAsPdfOutlined,
-  RemoveCircleOutline,
-  WallpaperOutlined,
-} from "@mui/icons-material";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { RemoveCircleOutline } from "@mui/icons-material";
+
+import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -32,7 +22,6 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
 import { useCreateEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
-import Dropzone, { useDropzone } from "react-dropzone";
 
 const requestorSchema = yup.object().shape({
   RequestGeneratorId: yup.string().nullable(),
@@ -83,8 +72,6 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }
 
-    // console.log("Payload: ", payload);
-
     createEditRequestorConcern(payload)
       .unwrap()
       .then(() => {
@@ -98,60 +85,14 @@ const ConcernDialog = ({ open, onClose }) => {
         onClose();
       })
       .catch((err) => {
-        console.log("Error", err);
         toast.error("Error!", {
           description: err.data.error.message,
           duration: 1500,
         });
       });
-
-    // fetch("https://localhost:44355/api/request-concern/add-request-concern", {
-    //   headers: {
-    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //   },
-    //   method: "POST",
-    //   body: payload,
-    // })
-    //   .then((res) => {
-    //     console.log("success: ", res);
-    //     toast.success("Success!", {
-    //       description: "Concern added successfully!",
-    //       duration: 1500,
-    //     });
-    //     setAttachments([]);
-    //     reset();
-    //     onClose();
-    //   })
-    //   .catch((err) => {
-    //     console.log("error: ", err);
-    //     toast.error("Error!", {
-    //       description: err.data,
-    //       duration: 1500,
-    //     });
-    //   });
-
-    //   createEditRequestorConcern(newData)
-    //     .unwrap()
-    //     .then(() => {
-    //       toast.success("Success!", {
-    //         description: "Concern added successfully!",
-    //         duration: 1500,
-    //       });
-    //       setAttachments([]);
-    //       reset();
-    //       onClose();
-    //     })
-    //     .catch((error) => {
-    //       console.log("errors: ", error);
-    //       toast.error("Error!", {
-    //         description: error.data,
-    //         duration: 1500,
-    //       });
-    //     });
   };
 
   const handleAttachments = (event) => {
-    console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -208,25 +149,11 @@ const ConcernDialog = ({ open, onClose }) => {
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
-  const getFileIcon = (fileName) => {
-    const extension = fileName.split(".").pop().toLowerCase();
-    const iconMap = {
-      png: <WallpaperOutlined />,
-      jpg: <InsertPhotoOutlined />,
-      pdf: <PictureAsPdfOutlined />,
-      docx: <DescriptionOutlined />,
-    };
-    return iconMap[extension] || null;
-  };
-
   const onCloseAction = () => {
     onClose();
     reset();
     setAttachments([]);
   };
-
-  console.log("Attachments: ", attachments);
-  console.log("RequestAttachmentsFiles: ", watch("RequestAttachmentsFiles"));
 
   return (
     <>
@@ -236,7 +163,7 @@ const ConcernDialog = ({ open, onClose }) => {
         maxWidth="md"
         open={open}
         sx={{ borderRadius: "none", padding: 0 }}
-        PaperProps={{ style: { overflow: "unset" } }}
+        PaperProps={{ style: { overflow: "auto" } }}
       >
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }}>
@@ -332,7 +259,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       </Button>
 
                       <Typography sx={{ color: theme.palette.text.secondary }}>
-                        or drop your files here...
+                        .docx, .jpg, .jpeg, .png, .pdf file
                       </Typography>
                     </Box>
 
@@ -349,6 +276,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       sx={{
                         display: "flex",
                         flexDirection: "column",
+                        maxHeight: 500,
                       }}
                     >
                       {attachments.map((fileName, index) => (
@@ -429,88 +357,13 @@ const ConcernDialog = ({ open, onClose }) => {
                     </Stack>
                   </Stack>
 
-                  {/* <Box
-                    sx={{
-                      width: "80%",
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "flex-start",
-                      backgroundColor: theme.palette.bgForm.black1,
-                      border: "2px dashed  #2D3748 ",
-                      borderRadius: "10px",
-                      minHeight: "100px",
-                      paddingLeft: 2,
-                      paddingTop: 2,
-                      cursor: "pointer",
-                      position: "relative",
-                      overflowY: "auto",
-                    }}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                  >
-                    {!attachments.length ? (
-                      <Box className="upload-file">
-                        <Typography>Upload your attachments</Typography>
-                      </Box>
-                    ) : (
-                      <Box sx={{ display: "flex", gap: 2 }}>
-                        {attachments.map((fileName, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              marginBottom: "2px",
-                              padding: "5px",
-                              background: theme.palette.bgForm.black2,
-                              borderRadius: "5px",
-                              maxWidth: "100%",
-                              overflow: "hidden",
-                            }}
-                          >
-                            <Stack
-                              direction="column"
-                              // justifyContent="center"
-                              // alignItems="center"
-                            >
-                              <Stack
-                                sx={{
-                                  width: "100%",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <Box />
-                                <IconButton
-                                  size="sm"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <CloseOutlined />
-                                </IconButton>
-                              </Stack>
-
-                              <Box marginRight={1}>{getFileIcon(fileName)}</Box>
-                              <Typography size={{ fontSize: "5px" }}>
-                                {fileName}
-                              </Typography>
-                            </Stack>
-                          </div>
-                        ))}
-                      </Box>
-                    )}
-                  </Box> */}
-
                   <Controller
                     control={control}
                     name="RequestAttachmentsFiles"
                     render={({ field: { onChange } }) => (
                       <input
                         ref={fileInputRef}
-                        accept=".png,.jpg,.jpeg,.docx,"
+                        accept=".png,.jpg,.jpeg,.docx"
                         style={{ display: "none" }}
                         multiple
                         type="file"

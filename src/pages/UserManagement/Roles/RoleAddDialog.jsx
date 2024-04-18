@@ -56,7 +56,7 @@ const masterlistCheckbox = [
   "Sub Category",
 ];
 const channelCheckbox = ["Receiver", "Channel", "Approver"];
-const requestCheckbox = ["Concerns"];
+const requestCheckbox = ["Requestor Concerns", "Receiver Concerns"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
   const [

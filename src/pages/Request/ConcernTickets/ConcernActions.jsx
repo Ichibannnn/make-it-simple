@@ -1,14 +1,10 @@
 import {
-  ArchiveOutlined,
-  EditOutlined,
   MoreHoriz,
-  RefreshOutlined,
   ReplyAllOutlined,
-  RestoreOutlined,
-  ViewAgendaOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+
 import React, { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -18,17 +14,7 @@ const ConcernActions = ({ data, onView }) => {
 
   const { open, onToggle } = useDisclosure();
 
-  // const onArchiveAction = (data) => {
-  //   onToggle();
-  //   onArchive({
-  //     id: data.id,
-  //     isActive: data.is_Active,
-  //   });
-  // };
-
   const onViewAction = (data) => {
-    console.log("Data: ", data);
-
     onToggle();
     onView(data);
   };

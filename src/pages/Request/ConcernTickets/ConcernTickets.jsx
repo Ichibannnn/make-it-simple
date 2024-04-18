@@ -17,8 +17,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { theme } from "../../../theme/theme";
 import {
   AddOutlined,
   CalendarMonthOutlined,
@@ -29,16 +27,19 @@ import {
   RotateRightOutlined,
   Search,
 } from "@mui/icons-material";
+
+import React, { useEffect, useState } from "react";
+import { theme } from "../../../theme/theme";
 import moment from "moment";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-import { useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
-
 import ConcernDialog from "./ConcernDialog";
 import ConcernViewDialog from "./ConcernViewDialog";
 import ConcernActions from "./ConcernActions";
+
+import { useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -49,13 +50,13 @@ const ConcernTickets = () => {
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
-  const [viewData, setViewData] = useState(null);
 
   const {
     open: addConcernOpen,
     onToggle: addConcernOnToggle,
     onClose: addConcernOnClose,
   } = useDisclosure();
+
   const {
     open: viewConcernOpen,
     onToggle: viewConcernOnToggle,
@@ -80,14 +81,12 @@ const ConcernTickets = () => {
 
   const onDialogClose = () => {
     setEditData(null);
-    setViewData(null);
     addConcernOnClose();
-    viewConcernOnClose();
   };
 
   const onViewConcernAction = (data) => {
     viewConcernOnToggle();
-    setViewData(data);
+    setEditData(data);
   };
 
   useEffect(() => {
@@ -95,8 +94,6 @@ const ConcernTickets = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
-
-  // console.log("Status: ", status);
 
   return (
     <Stack
@@ -233,7 +230,7 @@ const ConcernTickets = () => {
                       }}
                       align="center"
                     >
-                      LINE NO.
+                      CONCERN NO.
                     </TableCell>
 
                     <TableCell
@@ -288,125 +285,116 @@ const ConcernTickets = () => {
                   {isSuccess &&
                     !isLoading &&
                     !isFetching &&
-                    data?.value?.requestConcern?.map((item) =>
-                      item.requestConcerns?.map((subItem, index) => (
-                        <TableRow key={index}>
+                    data?.value?.requestConcern?.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          {"#"}
+                          {item.requestGeneratorId}
+                        </TableCell>
+
+                        <Tooltip title={item.concern} placement="bottom-start">
                           <TableCell
+                            className="ellipsis-styling"
                             sx={{
-                              color: theme.palette.text.secondary,
-                              fontSize: "14px",
-                              fontWeight: 500,
+                              color: "#EDF2F7",
+                              fontSize: "15px",
+                              fontWeight: 600,
+                              maxWidth: "500px",
                             }}
-                            align="center"
                           >
-                            {"#"}
-                            {index + 1}
+                            {item.concern}
                           </TableCell>
+                        </Tooltip>
 
-                          <Tooltip
-                            title={subItem.concern}
+                        <TableCell
+                          sx={{
+                            // color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={
+                              <CalendarMonthOutlined
+                                fontSize="small"
+                                color="primary"
+                              />
+                            }
                             sx={{
-                              top: 0,
+                              fontSize: "12px",
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
+                              fontWeight: 800,
                             }}
-                          >
-                            <TableCell
-                              className="ellipsis-styling"
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "15px",
-                                fontWeight: 600,
-                                maxWidth: "500px",
-                              }}
-                            >
-                              {subItem.concern}
-                            </TableCell>
-                          </Tooltip>
+                            label={moment(item.created_At).format("LL")}
+                          />
+                        </TableCell>
 
-                          <TableCell
-                            sx={{
-                              // color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
-                            <Chip
-                              variant="filled"
-                              size="30px"
-                              icon={
-                                <CalendarMonthOutlined
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={
+                              item.concern_Status === "For Approval" ? (
+                                <FiberManualRecord
                                   fontSize="small"
-                                  color="primary"
+                                  color="info"
                                 />
-                              }
-                              sx={{
-                                fontSize: "12px",
-                                backgroundColor: "#1D1F3B",
-                                color: theme.palette.primary.main,
-                                fontWeight: 800,
-                              }}
-                              label={moment(subItem.created_At).format("LL")}
-                            />
-                          </TableCell>
-
-                          <TableCell
+                              ) : item.concern_Status === "Ongoing" ? (
+                                <FiberManualRecord
+                                  fontSize="small"
+                                  color="warning"
+                                />
+                              ) : (
+                                <FiberManualRecord
+                                  fontSize="small"
+                                  color="success"
+                                />
+                              )
+                            }
                             sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
+                              fontSize: "12px",
+                              backgroundColor: theme.palette.bgForm.black1,
+                              color: theme.palette.text.main,
+                              fontWeight: 800,
                             }}
-                          >
-                            <Chip
-                              variant="filled"
-                              size="30px"
-                              icon={
-                                subItem.concern_Status === "For Approval" ? (
-                                  <FiberManualRecord
-                                    fontSize="small"
-                                    color="info"
-                                  />
-                                ) : subItem.concern_Status === "Ongoing" ? (
-                                  <FiberManualRecord
-                                    fontSize="small"
-                                    color="warning"
-                                  />
-                                ) : (
-                                  <FiberManualRecord
-                                    fontSize="small"
-                                    color="success"
-                                  />
-                                )
-                              }
-                              sx={{
-                                fontSize: "12px",
-                                backgroundColor: theme.palette.bgForm.black1,
-                                color: theme.palette.text.main,
-                                fontWeight: 800,
-                              }}
-                              label={
-                                subItem.concern_Status
-                                  ? subItem.concern_Status
-                                  : ""
-                              }
-                            />
-                          </TableCell>
+                            label={
+                              item.concern_Status ? item.concern_Status : ""
+                            }
+                          />
+                        </TableCell>
 
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
-                            <ConcernActions
-                              data={item}
-                              onView={onViewConcernAction}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <ConcernActions
+                            data={item}
+                            onView={onViewConcernAction}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
                   {isError && (
                     <TableRow>
@@ -453,16 +441,14 @@ const ConcernTickets = () => {
               onRowsPerPageChange={onPageSizeChange}
             />
 
-            <ConcernDialog
-              data={editData}
-              open={addConcernOpen}
-              onClose={onDialogClose}
-            />
+            <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />
 
             <ConcernViewDialog
-              viewData={viewData}
+              editData={editData}
               open={viewConcernOpen}
-              onClose={onDialogClose}
+              onClose={() => {
+                viewConcernOnClose(setEditData(null));
+              }}
             />
           </Stack>
         </Stack>

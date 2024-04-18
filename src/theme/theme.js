@@ -68,9 +68,7 @@ const theme = createTheme({
     secondary: {
       main: "#3f305f",
     },
-    success: {
-      main: "#48BB78",
-    },
+
     warning: {
       main: "#ff9800",
     },
@@ -145,6 +143,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiFormLabel: {
       styleOverrides: {
         root: {

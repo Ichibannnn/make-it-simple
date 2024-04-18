@@ -29,6 +29,7 @@ import ChannelPage from "../pages/ChannelSetup/ChannelPage";
 import Receiver from "../pages/ChannelSetup/Receiver/Receiver";
 import Channel from "../pages/ChannelSetup/Channel/Channel";
 import Approver from "../pages/ChannelSetup/Approver/Approver";
+import ReceiverConcerns from "../pages/Request/ConcernTickets_Receiver/ReceiverConcerns";
 
 export const router = createBrowserRouter([
   {
@@ -121,8 +122,12 @@ export const router = createBrowserRouter([
         element: <RequestsPage />,
         children: [
           {
-            path: "/request/concerns",
+            path: "/request/requestor-concerns",
             element: <ConcernTickets />,
+          },
+          {
+            path: "/request/receiver-concerns",
+            element: <ReceiverConcerns />,
           },
           // {
           //   path: "/request/tickets",

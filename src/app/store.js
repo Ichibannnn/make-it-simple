@@ -24,6 +24,7 @@ import { channelApi } from "../features/api_channel_setup/channel/channelApi";
 import { approverApi } from "../features/api_channel_setup/approver/approverApi";
 
 import { concernApi } from "../features/api_request/concerns/concernApi";
+import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
@@ -53,6 +54,7 @@ export const store = configureStore({
     [approverApi.reducerPath]: approverApi.reducer,
 
     [concernApi.reducerPath]: concernApi.reducer,
+    [concernReceiverApi.reducerPath]: concernReceiverApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -79,6 +81,7 @@ export const store = configureStore({
       approverApi.middleware,
 
       concernApi.middleware,
+      concernReceiverApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,
