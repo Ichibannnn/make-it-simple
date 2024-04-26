@@ -22,7 +22,7 @@ export const locationApi = createApi({
   endpoints: (builder) => ({
     getLocation: builder.query({
       query: (params) => ({
-        url: "location/page",
+        url: "location/page?Status=true",
         method: "GET",
         params: params,
       }),

@@ -30,7 +30,7 @@ const schema = yup.object().shape({
   locations: yup.array().required().label("Locations"),
 });
 
-const SubUnitAddDialog = ({ data, open, onClose }) => {
+const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   const [createEditSubUnit] = useCreateEditSubUnitMutation();
 
   const [
@@ -102,8 +102,6 @@ const SubUnitAddDialog = ({ data, open, onClose }) => {
         subUnit_Name: formData.subUnit_Name,
       };
 
-      console.log("Edit Payload: ", editPayload);
-
       createEditSubUnit(editPayload)
         .unwrap()
         .then(() => {
@@ -125,6 +123,7 @@ const SubUnitAddDialog = ({ data, open, onClose }) => {
 
   const onCloseAction = () => {
     reset();
+    setData(null);
     onClose();
   };
 
@@ -138,15 +137,15 @@ const SubUnitAddDialog = ({ data, open, onClose }) => {
       });
       setValue("subUnit_Code", data?.subUnit_Code);
       setValue("subUnit_Name", data?.subUnit_Name);
+      // setValue("locations", data?.)
     }
   }, [data]);
 
-  //   console.log("UNit: ", unitData);
-
+  //   console.log("Unit: ", unitData);
   //   console.log("Unit: ", watch("unitId"));
   //   console.log("Sub Code: ", watch("subUnit_Code"));
   //   console.log("Sub Unit Name: ", watch("subUnit_Name"));
-  //   console.log("Location: ", watch("locations"));
+  // console.log("Location: ", watch("locations"));
 
   console.log("Edit Data: ", data);
 
@@ -318,8 +317,8 @@ const SubUnitAddDialog = ({ data, open, onClose }) => {
                     disabled={
                       !watch("unitId") ||
                       !watch("subUnit_Code") ||
-                      !watch("subUnit_Code") ||
-                      !watch("locations")
+                      !watch("subUnit_Name") ||
+                      (!data ? watch("locations").length === 0 : false)
                     }
                     sx={{
                       ":disabled": {

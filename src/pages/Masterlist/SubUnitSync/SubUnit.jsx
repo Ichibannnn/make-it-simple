@@ -650,6 +650,7 @@ const SubUnit = () => {
 
         <SubUnitAddDialog
           data={editData}
+          setData={setEditData}
           open={addSubUnitOpen}
           onClose={addSubUnitOnClose}
         />

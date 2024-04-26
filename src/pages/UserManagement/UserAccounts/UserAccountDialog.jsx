@@ -206,7 +206,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     locationIsLoading,
   ]);
 
-  console.log("Location Data: ", locationData);
+  console.log("Department Data: ", departmentData);
 
   const onSubmitHandler = (formData) => {
     console.log("Form data: ", formData);
@@ -587,6 +587,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               control={control}
               name="departmentId"
               render={({ field: { ref, value, onChange } }) => {
+                console.log(watch("businessUnitId")?.id);
                 return (
                   <Autocomplete
                     ref={ref}

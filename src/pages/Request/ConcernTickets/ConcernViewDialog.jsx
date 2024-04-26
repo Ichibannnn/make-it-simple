@@ -220,16 +220,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
       console.log("res", res);
 
-      // console.log("Response", res);
-      // setValue(
-      //   "RequestAttachmentsFiles",
-      //   res?.value?.[0]?.attachments?.map((item) => ({
-      //     ticketAttachmentId: item.ticketAttachmentId,
-      //     name: item.fileName,
-      //     size: item.fileSize,
-      //   }))
-      // );
-
       setAttachments(
         res?.value?.[0]?.attachments?.map((item) => ({
           ticketAttachmentId: item.ticketAttachmentId,

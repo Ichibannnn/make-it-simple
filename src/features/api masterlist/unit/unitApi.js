@@ -22,7 +22,7 @@ export const unitApi = createApi({
   endpoints: (builder) => ({
     getUnit: builder.query({
       query: (params) => ({
-        url: "unit/page",
+        url: "unit/page?Status=true",
         method: "GET",
         params: params,
       }),

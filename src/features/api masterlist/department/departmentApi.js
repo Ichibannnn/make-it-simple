@@ -22,7 +22,7 @@ export const departmentApi = createApi({
   endpoints: (builder) => ({
     getDepartment: builder.query({
       query: (params) => ({
-        url: "department/page",
+        url: "department/page?Status=true",
         method: "GET",
         params: params,
       }),

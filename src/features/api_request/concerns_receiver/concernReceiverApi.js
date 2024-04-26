@@ -21,9 +21,9 @@ export const concernReceiverApi = createApi({
   }),
   endpoints: (builder) => ({
     // RECEIVER ---------------
-    getRequestorConcerns: builder.query({
+    getReceiverConcerns: builder.query({
       query: (params) => ({
-        url: "request-concern/page?Requestor=Requestor&Status=true",
+        url: "request-concern/page?Approval=false&Status=true&Reject=false&Approver=Approver",
         method: "GET",
         params: params,
       }),
@@ -32,4 +32,4 @@ export const concernReceiverApi = createApi({
   }),
 });
 
-export const { useGetRequestorConcernsQuery } = concernReceiverApi;
+export const { useGetReceiverConcernsQuery } = concernReceiverApi;

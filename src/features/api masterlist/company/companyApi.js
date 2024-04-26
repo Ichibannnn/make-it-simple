@@ -22,7 +22,7 @@ export const companyApi = createApi({
   endpoints: (builder) => ({
     getCompany: builder.query({
       query: (params) => ({
-        url: "company/page",
+        url: "company/page?Status=true",
         method: "GET",
         params: params,
       }),

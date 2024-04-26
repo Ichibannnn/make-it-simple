@@ -201,6 +201,10 @@
   color: #a0aec0;
 }
 
+.chip-styling {
+  font-weight: lighter;
+}
+
 /* li {
   position: relative;
   font-weight: lighter;

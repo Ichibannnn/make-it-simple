@@ -22,7 +22,7 @@ export const businessUnitApi = createApi({
   endpoints: (builder) => ({
     getBusinessUnit: builder.query({
       query: (params) => ({
-        url: "business-unit/page",
+        url: "business-unit/page?Status=true",
         method: "GET",
         params: params,
       }),
