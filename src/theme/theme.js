@@ -68,9 +68,11 @@ const theme = createTheme({
     secondary: {
       main: "#3f305f",
     },
-
     warning: {
       main: "#ff9800",
+    },
+    success: {
+      main: "#48BB78",
     },
     error: {
       main: "#ef5350",

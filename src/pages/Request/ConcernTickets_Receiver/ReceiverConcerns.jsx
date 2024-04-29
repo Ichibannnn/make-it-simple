@@ -48,6 +48,9 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { Link } from "react-router-dom";
 
 import { useGetReceiverConcernsQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
+import ReceiverAssignUsers from "./ReceiverAssignUsers";
+import { ReceiverConcernsActions } from "./ReceiverConcernsActions";
+import ReceiverConcernDialog from "./ReceiverConcernDialog";
 
 const ReceiverConcerns = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -56,7 +59,12 @@ const ReceiverConcerns = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const [editData, setEditData] = useState(null);
+  const [viewData, setViewData] = useState(null);
+  const isSmallScreen = useMediaQuery(
+    "(max-width: 1489px) and (max-height: 945px)"
+  );
+
+  const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetReceiverConcernsQuery({
@@ -73,7 +81,15 @@ const ReceiverConcerns = () => {
     setPageSize(e.target.value);
   };
 
-  console.log("Data: ", data);
+  const onViewAction = (data) => {
+    onToggle();
+    setViewData(data);
+  };
+
+  const onDialogClose = () => {
+    setViewData(null);
+    onClose();
+  };
 
   return (
     <Stack
@@ -81,9 +97,11 @@ const ReceiverConcerns = () => {
       height="100%"
       sx={{
         display: "flex",
+        flexDirection: "row",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
         padding: "0px 24px 24px 24px",
+        gap: 2,
       }}
     >
       <Paper
@@ -190,17 +208,6 @@ const ReceiverConcerns = () => {
                     }}
                     align="center"
                   >
-                    ASSIGN TO
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                    align="center"
-                  >
                     DATE CREATED
                   </TableCell>
 
@@ -219,109 +226,81 @@ const ReceiverConcerns = () => {
                 {isSuccess &&
                   !isLoading &&
                   !isFetching &&
-                  data?.value?.requestConcern?.map((item) =>
-                    item?.getRequestConcernByConcerns?.map((subItem, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
+                  data?.value?.requestConcern?.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Typography
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.empId}
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            color: "#fff",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.fullName}
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "13px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.department_Name}
+                        </Typography>
+                      </TableCell>
+
+                      <Tooltip title={item.concern} placement="bottom-start">
+                        <TableCell className="ellipsis-styling">
                           <Typography
                             sx={{
                               color: "#fff",
                               fontSize: "14px",
                               fontWeight: 500,
+                              maxWidth: 500,
                             }}
                           >
-                            {item.requestor_Name}
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              color: theme.palette.text.secondary,
-                              fontSize: "13px",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {item.department_Name}
+                            {item.concern}
                           </Typography>
                         </TableCell>
+                      </Tooltip>
 
-                        <Tooltip
-                          title={subItem.concern_Description}
-                          placement="bottom-start"
-                        >
-                          <TableCell
-                            className="ellipsis-styling"
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                              maxWidth: "500px",
-                            }}
-                          >
-                            {subItem.concern_Description}
-                          </TableCell>
-                        </Tooltip>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        {`Posted at ${moment(item.created_At).format("LLL")}`}
+                      </TableCell>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          Assign To
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            // color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          <Chip
-                            variant="filled"
-                            size="30px"
-                            icon={
-                              <CalendarMonthOutlined
-                                fontSize="small"
-                                color="primary"
-                              />
-                            }
-                            sx={{
-                              fontSize: "12px",
-                              backgroundColor: "#1D1F3B",
-                              color: theme.palette.primary.main,
-                              fontWeight: 800,
-                            }}
-                            label={moment(subItem.created_At).format("LLL")}
-                          />
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          <IconButton aria-label="delete" color="success">
-                            <DeleteForeverOutlined />
-                          </IconButton>
-
-                          <IconButton aria-label="delete" color="warning">
-                            <DeleteForeverOutlined />
-                          </IconButton>
-
-                          <IconButton aria-label="delete" color="error">
-                            <DeleteForeverOutlined />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        <ReceiverConcernsActions
+                          data={item}
+                          onView={onViewAction}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
                 {isError && (
                   <TableRow>
@@ -369,6 +348,23 @@ const ReceiverConcerns = () => {
           />
         </Stack>
       </Paper>
+
+      {/* <Paper
+        sx={{
+          width: isSmallScreen ? "100%" : "30%",
+          minHeight: "90vh", // -----------
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: theme.palette.bgForm.black3,
+          marginTop: 2,
+        }}
+      ></Paper> */}
+
+      <ReceiverConcernDialog
+        open={open}
+        onClose={onDialogClose}
+        data={viewData}
+      />
     </Stack>
   );
 };

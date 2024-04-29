@@ -23,7 +23,16 @@ export const concernReceiverApi = createApi({
     // RECEIVER ---------------
     getReceiverConcerns: builder.query({
       query: (params) => ({
-        url: "request-concern/page?Approval=false&Status=true&Reject=false&Approver=Approver",
+        url: "request-concern/requestor-page?Approver=Approver&Status=true",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Receiver Concern"],
+    }),
+
+    getReceiverAttachment: builder.query({
+      query: (params) => ({
+        url: `request-concern/request-attachment`,
         method: "GET",
         params: params,
       }),
@@ -32,4 +41,7 @@ export const concernReceiverApi = createApi({
   }),
 });
 
-export const { useGetReceiverConcernsQuery } = concernReceiverApi;
+export const {
+  useGetReceiverConcernsQuery,
+  useLazyGetReceiverAttachmentQuery,
+} = concernReceiverApi;
