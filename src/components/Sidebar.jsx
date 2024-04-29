@@ -28,7 +28,8 @@ import {
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
-  const hideSidebar = useMediaQuery("(max-width: 1069px)");
+  // const hideSidebar = useMediaQuery("(max-width: 1069px)");
+  const hideSidebar = useMediaQuery("(max-width: 1647px)");
 
   const dispatch = useDispatch();
 

@@ -27,6 +27,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import {
+  AccessTimeOutlined,
   AddOutlined,
   CalendarMonthOutlined,
   ChecklistRtlOutlined,
@@ -60,6 +61,8 @@ const ReceiverConcerns = () => {
   const search = useDebounce(searchValue, 500);
 
   const [viewData, setViewData] = useState(null);
+  const [addData, setAddData] = useState(null);
+
   const isSmallScreen = useMediaQuery(
     "(max-width: 1489px) and (max-height: 945px)"
   );
@@ -86,279 +89,259 @@ const ReceiverConcerns = () => {
     setViewData(data);
   };
 
+  const onAddAction = (data) => {
+    console.log("Add data: ", data);
+    setAddData(data);
+  };
+
   const onDialogClose = () => {
     setViewData(null);
     onClose();
   };
 
+  const onCloseAddAction = () => {
+    setAddData(null);
+  };
+
   return (
     <Stack
       width="100%"
-      height="100%"
+      // height="100%"
       sx={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
         padding: "0px 24px 24px 24px",
-        gap: 2,
       }}
     >
-      <Paper
-        sx={{
-          width: "100%",
-          minHeight: "90vh", // -----------
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: theme.palette.bgForm.black3,
-          marginTop: 2,
-        }}
-      >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          paddingTop={2}
-          paddingRight={4}
-          paddingLeft={4}
-          paddingBottom={1}
-        >
-          <Stack justifyItems="left">
-            <Typography variant="h5">Concerns</Typography>
-          </Stack>
-
-          <Stack justifyItems="space-between" direction="row">
-            <Button variant="contained" size="large" color="primary">
-              Compose
-            </Button>
+      <Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Stack>
+            <Stack justifyItems="left">
+              <Typography variant="h4">Concerns</Typography>
+            </Stack>
+            <Stack
+              justifyItems="space-between"
+              direction="row"
+              marginTop={1}
+            ></Stack>
           </Stack>
         </Stack>
+      </Stack>
 
-        <Divider
-          variant="fullWidth"
-          sx={{ background: "#2D3748", marginTop: "1px" }}
-        />
-
-        <Stack
-          width="100%"
+      <Stack sx={{ flexDirection: "row", gap: 2 }}>
+        <Paper
           sx={{
-            padding: "10px",
-            flexDirection: "row",
-            justifyContent: "space-between",
+            width: addData ? "70%" : "100%",
+            minHeight: "90vh", // -----------
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: theme.palette.bgForm.black3,
           }}
-          gap={1}
         >
-          <Stack />
-          <OutlinedInput
-            placeholder="Search"
-            startAdornment={
-              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-            }
-            // value={searchValue}
-            // onChange={(e) => setSearchValue(e.target.value)}
+          <Stack
+            width="100%"
             sx={{
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
+              padding: "10px",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
-          />
-        </Stack>
-
-        <Stack width="100%">
-          <TableContainer component={Paper}>
-            <Table
+            gap={1}
+          >
+            <Stack />
+            <OutlinedInput
+              placeholder="Search"
+              startAdornment={
+                <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
+              }
+              // value={searchValue}
+              // onChange={(e) => setSearchValue(e.target.value)}
               sx={{
-                borderBottom: "none",
+                borderRadius: "15px",
+                fontSize: "small",
+                fontWeight: 400,
+                lineHeight: "1.4375rem",
+                // backgroundColor: "#111927",
+              }}
+            />
+          </Stack>
+
+          <Stack padding={4} width="100%" gap={2}>
+            <Stack
+              sx={{
+                minHeight: "500px",
+                maxHeight: "115vh", // set a max height to prevent it from occupying too much space
+                overflowY: "auto", // make it scrollable vertically if content exceeds the height
+                gap: 2,
               }}
             >
-              <TableHead
-                sx={{
-                  borderRadius: "20px",
-                }}
-              >
-                <TableRow>
-                  <TableCell
+              {isSuccess &&
+                !isLoading &&
+                !isFetching &&
+                data?.value?.requestConcern?.map((item, index) => (
+                  <Stack
+                    key={index}
+                    onClick={() => onAddAction(item)}
                     sx={{
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                      width: "20%",
+                      border: "1px solid #2D3748",
+                      borderRadius: "20px",
+                      minHeight: "200px",
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: theme.palette.secondary.main,
+                      },
                     }}
                   >
-                    REQUESTOR
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                      width: "20%",
-                    }}
-                  >
-                    CONCERN DETAILS
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                    align="center"
-                  >
-                    DATE CREATED
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                    align="center"
-                  ></TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {isSuccess &&
-                  !isLoading &&
-                  !isFetching &&
-                  data?.value?.requestConcern?.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.empId}
-                        </Typography>
-
-                        <Typography
-                          sx={{
-                            color: "#fff",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
+                    <Stack
+                      sx={{
+                        flexDirection: "row",
+                        // border: "1px solid #2D3748",
+                        minHeight: "40px",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingLeft: 2,
+                        paddingRight: 2,
+                      }}
+                    >
+                      <Stack direction="row" gap={1} alignItems="center">
+                        <FiberManualRecord color="success" fontSize="65px" />
+                        <Typography sx={{ fontSize: "15px" }}>
                           {item.fullName}
                         </Typography>
+                      </Stack>
 
-                        <Typography
-                          sx={{
-                            color: theme.palette.primary.main,
-                            fontSize: "13px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.department_Name}
-                        </Typography>
-                      </TableCell>
-
-                      <Tooltip title={item.concern} placement="bottom-start">
-                        <TableCell className="ellipsis-styling">
-                          <Typography
-                            sx={{
-                              color: "#fff",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                              maxWidth: 500,
-                            }}
-                          >
-                            {item.concern}
-                          </Typography>
-                        </TableCell>
-                      </Tooltip>
-
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        {`Posted at ${moment(item.created_At).format("LLL")}`}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        <ReceiverConcernsActions
-                          data={item}
-                          onView={onViewAction}
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Chip
+                          variant="filled"
+                          color="primary"
+                          size="small"
+                          icon={
+                            <AccessTimeOutlined
+                              sx={{
+                                fontSize: "16px",
+                                color: theme.palette.text.secondary,
+                              }}
+                            />
+                          }
+                          label={`Posted at ${moment(item?.created_At).format(
+                            "LL"
+                          )}`}
                         />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                      </Stack>
+                    </Stack>
 
-                {isError && (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <Typography variant="h5" color="#EDF2F7">
-                        Something went wrong.
+                    <Stack
+                      sx={{
+                        border: "1px solid #2D3748",
+                        minHeight: "120px",
+                        padding: 2,
+                      }}
+                    >
+                      <Typography sx={{ fontSize: "15px" }}>
+                        {item.concern}
                       </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+                    </Stack>
 
-                {(isLoading || isFetching) && (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <CircularProgress />
-                      <Typography variant="h5" color="#EDF2F7">
-                        Please wait...
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+                    <Stack
+                      sx={{
+                        width: "100%",
+                        minHeight: "40px",
+                        alignItems: "end",
+                        paddingRight: 2,
+                        paddingLeft: 2,
+                      }}
+                    >
+                      <ReceiverConcernsActions
+                        data={item}
+                        onView={onViewAction}
+                      />
+                      {/* <Button variant="text">View Details</Button> */}
+                    </Stack>
+                  </Stack>
+                ))}
 
-                {isSuccess && !data?.value?.requestConcern.length && (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <Typography variant="h5" color="#EDF2F7">
-                        No records found.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              {(isLoading || isFetching) && (
+                <Stack
+                  width="100%"
+                  height="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <CircularProgress />
+                  <Typography variant="h4" color="#EDF2F7">
+                    Please wait...
+                  </Typography>
+                </Stack>
+              )}
 
-          <TablePagination
-            sx={{ color: "#A0AEC0", fontWeight: 400 }}
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={data?.value?.totalCount || 0}
-            rowsPerPage={data?.value?.pageSize || 5}
-            page={data?.value?.currentPage - 1 || 0}
-            onPageChange={onPageNumberChange}
-            onRowsPerPageChange={onPageSizeChange}
-          />
-        </Stack>
-      </Paper>
+              {isSuccess && !data?.value?.requestConcern.length && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    <Typography variant="h4" color="#EDF2F7">
+                      No records found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </Stack>
 
-      {/* <Paper
-        sx={{
-          width: isSmallScreen ? "100%" : "30%",
-          minHeight: "90vh", // -----------
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: theme.palette.bgForm.black3,
-          marginTop: 2,
-        }}
-      ></Paper> */}
+            <TablePagination
+              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data?.value?.totalCount || 0}
+              rowsPerPage={data?.value?.pageSize || 5}
+              page={data?.value?.currentPage - 1 || 0}
+              onPageChange={onPageNumberChange}
+              onRowsPerPageChange={onPageSizeChange}
+            />
+          </Stack>
+        </Paper>
+
+        <Paper
+          sx={{
+            width: "30%",
+            minHeight: "90vh",
+            display: addData ? "flex" : "none",
+            flexDirection: "column",
+            backgroundColor: theme.palette.bgForm.black3,
+            padding: 4,
+          }}
+        >
+          <Stack height="100%">
+            <Stack sx={{ minHeight: "70px", border: "1px solid #2D3748" }}>
+              <Typography variant="h5">Create Ticket</Typography>
+              <Typography
+                sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
+              >
+                Add issue handler details to create ticket from this concern{" "}
+              </Typography>
+            </Stack>
+
+            <Stack
+              sx={{ minHeight: "1000px", border: "1px solid #2D3748" }}
+            ></Stack>
+
+            <Stack
+              sx={{
+                flexDirection: "row",
+                gap: 2,
+                justifyContent: "right",
+                alignItems: "center",
+                minHeight: "70px",
+                border: "1px solid #2D3748",
+              }}
+            >
+              <Button variant="contained"> Submit </Button>
+              <Button variant="outlined" onClick={onCloseAddAction}>
+                {" "}
+                Close{" "}
+              </Button>
+            </Stack>
+          </Stack>
+        </Paper>
+      </Stack>
 
       <ReceiverConcernDialog
         open={open}

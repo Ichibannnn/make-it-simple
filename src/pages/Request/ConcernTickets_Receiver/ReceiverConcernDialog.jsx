@@ -27,7 +27,7 @@ import { useLazyGetReceiverAttachmentQuery } from "../../../features/api_request
 const ReceiverConcernDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
 
-  console.log("Attachment Data: ", attachments);
+  // console.log("Attachment Data: ", attachments);
 
   const [getReceiverAttachment, { data: attachmentData }] =
     useLazyGetReceiverAttachmentQuery();
@@ -36,7 +36,7 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
     try {
       const res = await getReceiverAttachment({ Id: id }).unwrap();
 
-      console.log("res", res);
+      // console.log("res", res);
 
       setAttachments(
         res?.value?.[0]?.attachments?.map((item) => ({
