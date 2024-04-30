@@ -55,14 +55,14 @@ export const ReceiverConcernsActions = ({ data, onView }) => {
           </Typography>
         </MenuItem>
 
-        <MenuItem>
+        {/* <MenuItem>
           <ListItemIcon>
             <BackspaceOutlined fontSize="small" color="error" />
           </ListItemIcon>
           <Typography sx={{ color: theme.palette.error.main }}>
             Reject
           </Typography>
-        </MenuItem>
+        </MenuItem> */}
       </Menu>
     </>
   );

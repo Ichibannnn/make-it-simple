@@ -50,6 +50,7 @@ export const subCategoryApi = createApi({
 
 export const {
   useGetSubCategoryQuery,
+  useLazyGetSubCategoryQuery,
   useCreateEditSubCategoryMutation,
   useArchiveSubCategoryMutation,
 } = subCategoryApi;
