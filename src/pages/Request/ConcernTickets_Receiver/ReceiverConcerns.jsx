@@ -1,5 +1,6 @@
 import {
   Autocomplete,
+  Box,
   Button,
   Chip,
   CircularProgress,
@@ -18,7 +19,9 @@ import {
 
 import {
   AccessTimeOutlined,
+  Add,
   FiberManualRecord,
+  GetAppOutlined,
   Search,
 } from "@mui/icons-material";
 
@@ -32,21 +35,28 @@ import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-import { useGetReceiverConcernsQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
-import { ReceiverConcernsActions } from "./ReceiverConcernsActions";
-import ReceiverConcernDialog from "./ReceiverConcernDialog";
+import {
+  useGetReceiverConcernsQuery,
+  useLazyGetReceiverAttachmentQuery,
+} from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
+
+import { ReceiverConcernsActions } from "./ReceiverConcernsActions";
+import ReceiverConcernDialog from "./ReceiverConcernDialog";
 
 const schema = yup.object().shape({
   RequestGeneratorId: yup.string().nullable(),
-  Department: yup.string().required().label("Department"),
-  EmpId: yup.string().required(),
-  FullName: yup.string().required().label("Full Name"),
-  Concern: yup.string().required().label("Concern Details"),
-  ChannelId: yup.object().required().label("Channel"),
+  // Department: yup.string().required().label("Department"),
+  // EmpId: yup.string().required(),
+  // FullName: yup.string().required().label("Full Name"),
+  // concern_Details: yup.string().required().label("Concern Details"),
   categoryId: yup.object().required().label("Category"),
   subCategoryId: yup.object().required().label("Sub category"),
+  ChannelId: yup.object().required().label("Channel"),
+  userId: yup.object().required().label("Issue handler"),
+  RequestConcernId: yup.string().nullable(),
   RequestConcernId: yup.string().nullable(),
   RequestAttachmentsFiles: yup.array().nullable(),
 });
@@ -61,7 +71,7 @@ const ReceiverConcerns = () => {
   const [viewData, setViewData] = useState(null);
   const [addData, setAddData] = useState(null);
 
-  const [subCategory, setSubCategory] = useState([]);
+  const [addAttachments, setAddAttachments] = useState([]);
 
   const isSmallScreen = useMediaQuery(
     "(max-width: 1489px) and (max-height: 945px)"
@@ -94,6 +104,27 @@ const ReceiverConcerns = () => {
     },
   ] = useLazyGetSubCategoryQuery();
 
+  const [
+    getChannel,
+    {
+      data: channelData,
+      isLoading: channelIsLoading,
+      isSuccess: channelIsSuccess,
+    },
+  ] = useLazyGetChannelsQuery();
+
+  const [
+    getIssueHandler,
+    {
+      data: issueHandlerData,
+      isLoading: issueHandlerIsLoading,
+      isSuccess: issueHandlerIsSuccess,
+    },
+  ] = useLazyGetChannelsQuery();
+
+  const [getAddReceiverAttachment, { data: attachmentData }] =
+    useLazyGetReceiverAttachmentQuery();
+
   const {
     control,
     handleSubmit,
@@ -105,17 +136,19 @@ const ReceiverConcerns = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       RequestGeneratorId: "",
-      Department: "",
-      EmpId: "",
-      FullName: "",
-      Concern: "",
+      // Department: "",
+      // EmpId: "",
+      // FullName: "",
+      // Concern: "",
       ChannelId: null,
+      userId: null,
       categoryId: null,
       subCategoryId: null,
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
     },
   });
+
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
   };
@@ -123,6 +156,29 @@ const ReceiverConcerns = () => {
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
   };
+
+  const getAddAttachmentData = async (id) => {
+    try {
+      const res = await getAddReceiverAttachment({ Id: id }).unwrap();
+
+      console.log("res", res);
+
+      setAddAttachments(
+        res?.value?.[0]?.attachments?.map((item) => ({
+          ticketAttachmentId: item.ticketAttachmentId,
+          name: item.fileName,
+          size: (item.fileSize / (1024 * 1024)).toFixed(2),
+          link: item.attachment,
+        }))
+      );
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (addData) {
+      getAddAttachmentData(addData.requestGeneratorId);
+    }
+  }, [addData]);
 
   const onViewAction = (data) => {
     onToggle();
@@ -152,14 +208,19 @@ const ReceiverConcerns = () => {
     }
   }, [addData]);
 
-  console.log("Category Data: ", categoryData);
-  console.log("Sub Category Data: ", subCategoryData);
-  console.log("watch cat id: ", watch("categoryId"));
+  // console.log("Category Data: ", categoryData);
+  // console.log("Sub Category Data: ", subCategoryData);
+  // console.log("watch cat id: ", watch("categoryId"));
+  // console.log("Add Attachments", addAttachments);
+  // console.log("Add Data: ", addData);
+
+  // console.log("Channel Data: ", channelData);
+  console.log("Channel Id: ", watch("ChannelId")?.id);
+  console.log("Issue Handler Data: ", issueHandlerData?.value?.channel);
 
   return (
     <Stack
       width="100%"
-      // height="100%"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -184,7 +245,7 @@ const ReceiverConcerns = () => {
       </Stack>
 
       <Stack sx={{ flexDirection: "row", gap: 2 }}>
-        {/* CONCERNS */}
+        {/* CONCERN TABLE */}
         <Paper
           sx={{
             width: addData ? "70%" : "100%",
@@ -192,6 +253,7 @@ const ReceiverConcerns = () => {
             display: "flex",
             flexDirection: "column",
             backgroundColor: theme.palette.bgForm.black3,
+            borderRadius: "20px",
           }}
         >
           <Stack
@@ -264,6 +326,7 @@ const ReceiverConcerns = () => {
                       <Stack direction="row" gap={1} alignItems="center">
                         <FiberManualRecord color="success" fontSize="65px" />
                         <Typography sx={{ fontSize: "15px" }}>
+                          Concern No. {item.requestGeneratorId} -{" "}
                           {item.fullName}
                         </Typography>
                       </Stack>
@@ -356,7 +419,7 @@ const ReceiverConcerns = () => {
           </Stack>
         </Paper>
 
-        {/* ADD TICKET CONCERN */}
+        {/* CREATE TICKET FORM */}
         <Paper
           sx={{
             width: "30%",
@@ -365,11 +428,14 @@ const ReceiverConcerns = () => {
             flexDirection: "column",
             backgroundColor: theme.palette.bgForm.black3,
             padding: 2,
+            borderRadius: "20px",
           }}
         >
           <Stack height="100%">
             <Stack sx={{ minHeight: "70px" }}>
-              <Typography variant="h5">Create Ticket</Typography>
+              <Typography sx={{ fontWeight: 600, fontSize: "18px" }}>
+                Create Ticket
+              </Typography>
               <Typography
                 sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
               >
@@ -382,11 +448,12 @@ const ReceiverConcerns = () => {
                 minHeight: "1100px",
               }}
             >
-              <Stack
+              {/* Requestor Details */}
+              {/* <Stack
                 sx={{
                   padding: 1,
                   marginTop: 2,
-                  minHeight: "500px",
+                  minHeight: "600px",
                   border: "1px solid #2D3748",
                   borderRadius: "20px",
                 }}
@@ -419,6 +486,9 @@ const ReceiverConcerns = () => {
                             onChange={onChange}
                             inputProps={{
                               readOnly: addData ? true : false,
+                              style: {
+                                fontSize: "14px",
+                              },
                             }}
                             sx={{
                               flex: 2,
@@ -451,6 +521,9 @@ const ReceiverConcerns = () => {
                             onChange={onChange}
                             inputProps={{
                               readOnly: addData ? true : false,
+                              style: {
+                                fontSize: "14px",
+                              },
                             }}
                             sx={{
                               flex: 2,
@@ -483,6 +556,9 @@ const ReceiverConcerns = () => {
                             onChange={onChange}
                             inputProps={{
                               readOnly: addData ? true : false,
+                              style: {
+                                fontSize: "14px",
+                              },
                             }}
                             sx={{
                               flex: 2,
@@ -516,6 +592,9 @@ const ReceiverConcerns = () => {
                             // disabled={addData ? true : false}
                             inputProps={{
                               readOnly: addData ? true : false,
+                              style: {
+                                fontSize: "14px",
+                              },
                             }}
                             sx={{
                               flex: 2,
@@ -529,6 +608,147 @@ const ReceiverConcerns = () => {
                     />
                   </Stack>
 
+                  <Stack gap={0.5}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Category:
+                    </Typography>
+                    <Controller
+                      control={control}
+                      name="categoryId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={categoryData?.value?.category || []}
+                            loading={categoryIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Category"
+                                InputProps={{
+                                  ...params.InputProps,
+                                  style: {
+                                    fontSize: "14px",
+                                  },
+                                }}
+                              />
+                            )}
+                            onOpen={() => {
+                              if (!categoryIsSuccess)
+                                getCategory({
+                                  Status: true,
+                                });
+                            }}
+                            onChange={(_, value) => {
+                              console.log("Value: ", value);
+                              onChange(value);
+
+                              setValue("subCategoryId", null);
+
+                              getSubCategory({
+                                Status: true,
+                              });
+                            }}
+                            getOptionLabel={(option) =>
+                              option.category_Description
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  <Stack gap={0.5}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Sub Category:
+                    </Typography>
+                    <Controller
+                      control={control}
+                      name="subCategoryId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              subCategoryData?.value?.subCategory.filter(
+                                (item) =>
+                                  item.categoryId === watch("categoryId")?.id
+                              ) || []
+                            }
+                            loading={subCategoryIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Sub Category"
+                                InputProps={{
+                                  ...params.InputProps,
+                                  style: {
+                                    fontSize: "14px",
+                                  },
+                                }}
+                              />
+                            )}
+                            onChange={(_, value) => {
+                              onChange(value || []);
+                            }}
+                            getOptionLabel={(option) =>
+                              `${option.subCategory_Description}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.subCategoryId === value.subCategoryId
+                            }
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack> */}
+
+              {/* Tickets Details */}
+              <Stack
+                sx={{
+                  padding: 1,
+                  marginTop: 2,
+                  minHeight: "200px",
+                  border: "1px solid #2D3748",
+                  borderRadius: "20px",
+                }}
+              >
+                <Typography
+                  sx={{ fontSize: "17px", color: theme.palette.success.main }}
+                >
+                  Set Ticket Details
+                </Typography>
+
+                <Stack padding={2} gap={1.5}>
                   <Stack gap={0.5}>
                     <Typography
                       sx={{
@@ -635,26 +855,292 @@ const ReceiverConcerns = () => {
                       }}
                     />
                   </Stack>
+
+                  <Stack gap={0.5}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Channel Name:
+                    </Typography>
+                    <Controller
+                      control={control}
+                      name="ChannelId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={channelData?.value?.channel || []}
+                            loading={channelIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Channel Name"
+                              />
+                            )}
+                            onOpen={() => {
+                              if (!channelIsSuccess)
+                                getChannel({
+                                  Status: true,
+                                });
+                            }}
+                            onChange={(_, value) => {
+                              console.log("value: ", value);
+                              onChange(value);
+
+                              setValue("userId", null);
+
+                              getIssueHandler({
+                                Status: true,
+                              });
+                            }}
+                            getOptionLabel={(option) => option.channel_Name}
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  <Stack gap={0.5}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Assign To:
+                    </Typography>
+                    <Controller
+                      control={control}
+                      name="userId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              channelData?.value?.channel?.find(
+                                (item) => item.id === watch("ChannelId")?.id
+                              ).channelUsers || []
+                            }
+                            loading={issueHandlerIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Issue Handler"
+                              />
+                            )}
+                            onChange={(_, value) => {
+                              console.log("Value: ", value);
+
+                              onChange(value || []);
+                            }}
+                            getOptionLabel={(option) => option.fullname}
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  <Stack gap={0.5}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Start Date:
+                    </Typography>
+                    <Controller
+                      control={control}
+                      name="subCategoryId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              subCategoryData?.value?.subCategory.filter(
+                                (item) =>
+                                  item.categoryId === watch("categoryId")?.id
+                              ) || []
+                            }
+                            loading={subCategoryIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Sub Category"
+                              />
+                            )}
+                            onChange={(_, value) => {
+                              onChange(value || []);
+                            }}
+                            getOptionLabel={(option) =>
+                              `${option.subCategory_Description}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.subCategoryId === value.subCategoryId
+                            }
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  <Stack gap={0.5}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Target Date:
+                    </Typography>
+                    <Controller
+                      control={control}
+                      name="subCategoryId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              subCategoryData?.value?.subCategory.filter(
+                                (item) =>
+                                  item.categoryId === watch("categoryId")?.id
+                              ) || []
+                            }
+                            loading={subCategoryIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Sub Category"
+                              />
+                            )}
+                            onChange={(_, value) => {
+                              onChange(value || []);
+                            }}
+                            getOptionLabel={(option) =>
+                              `${option.subCategory_Description}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.subCategoryId === value.subCategoryId
+                            }
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
                 </Stack>
               </Stack>
 
+              {/* Attachments */}
               <Stack
-                sx={{
-                  padding: 1,
-                  marginTop: 2,
-                  minHeight: "500px",
-                  border: "1px solid #2D3748",
-                  borderRadius: "20px",
-                }}
+                padding={2}
+                marginTop={3}
+                gap={1.5}
+                sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}
               >
-                <Typography
-                  sx={{ fontSize: "17px", color: theme.palette.success.main }}
-                >
-                  Set Ticket Details
-                </Typography>
+                <Stack direction="row" gap={1} alignItems="center">
+                  <GetAppOutlined
+                    sx={{ color: theme.palette.text.secondary }}
+                  />
 
-                <Stack padding={2} gap={1.5}>
-                  <Stack gap={0.5}></Stack>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Atachments:
+                  </Typography>
+
+                  <Button
+                    size="small"
+                    color="warning"
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    <Typography sx={{ fontSize: "12px" }}>Add</Typography>
+                  </Button>
+                </Stack>
+
+                <Stack sx={{ flexDirection: "column", maxHeight: 500 }}>
+                  {addAttachments?.map((fileName, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        width: "100%",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        padding: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: 0.5,
+                          borderBottom: "1px solid #2D3748",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <Typography sx={{ fontSize: "14px" }}>
+                            {fileName.name}
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                              color: theme.palette.text.secondary,
+                            }}
+                          >
+                            {fileName.size} Mb
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))}
                 </Stack>
               </Stack>
             </Stack>

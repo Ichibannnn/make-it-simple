@@ -92,6 +92,7 @@ const theme = createTheme({
     },
     h4: {
       fontWeight: "700",
+      // fontSize: "18px",
     },
     h1: {
       display: "block",

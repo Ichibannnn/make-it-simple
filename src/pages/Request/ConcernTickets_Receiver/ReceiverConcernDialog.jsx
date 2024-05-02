@@ -166,14 +166,14 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
                 Attachment(s):
               </Typography>
 
-              <Button
+              {/* <Button
                 size="small"
                 color="warning"
                 variant="contained"
                 startIcon={<Add />}
               >
                 <Typography sx={{ fontSize: "12px" }}>Add</Typography>
-              </Button>
+              </Button> */}
             </Stack>
 
             <Stack sx={{ flexDirection: "column", maxHeight: 500 }}>
