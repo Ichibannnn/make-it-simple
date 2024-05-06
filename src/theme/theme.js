@@ -304,6 +304,19 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          "&.MuiPickersDay-root": {
+            color: "#EDF2F7",
+          },
+          "&.MuiPickersDay-root.Mui-disabled:not(.Mui-selected)": {
+            color: "rgb(255 255 255 / 38%)",
+          },
+        },
+      },
+    },
   },
 });
 

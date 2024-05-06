@@ -288,6 +288,7 @@ const SidebarList = () => {
         requestOnToggle();
         userManagementOnClose();
         masterlistOnClose();
+        channelOnClose();
       },
       sub: [
         {

@@ -119,13 +119,13 @@ const Header = () => {
       </Box>
 
       <Box>
-        <IconButton>
+        {/* <IconButton>
           <Tooltip title="Notification">
             <Badge badgeContent={1} color="primary">
               <NotificationsNoneOutlinedIcon />
             </Badge>
           </Tooltip>
-        </IconButton>
+        </IconButton> */}
 
         <IconButton onClick={menuHandler}>
           <Tooltip title="Account">

@@ -45,18 +45,22 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 
 import { ReceiverConcernsActions } from "./ReceiverConcernsActions";
 import ReceiverConcernDialog from "./ReceiverConcernDialog";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LoadingButton } from "@mui/lab";
+import { Toaster, toast } from "sonner";
 
 const schema = yup.object().shape({
   RequestGeneratorId: yup.string().nullable(),
-  // Department: yup.string().required().label("Department"),
-  // EmpId: yup.string().required(),
-  // FullName: yup.string().required().label("Full Name"),
-  // concern_Details: yup.string().required().label("Concern Details"),
   categoryId: yup.object().required().label("Category"),
   subCategoryId: yup.object().required().label("Sub category"),
   ChannelId: yup.object().required().label("Channel"),
   userId: yup.object().required().label("Issue handler"),
-  RequestConcernId: yup.string().nullable(),
+  startDate: yup.date().required("Start date is required"),
+  targetDate: yup
+    .date()
+    .min(yup.ref("startDate"), "Target date cannot be earlier than start date")
+    .required("Target date is required"),
   RequestConcernId: yup.string().nullable(),
   RequestAttachmentsFiles: yup.array().nullable(),
 });
@@ -72,6 +76,7 @@ const ReceiverConcerns = () => {
   const [addData, setAddData] = useState(null);
 
   const [addAttachments, setAddAttachments] = useState([]);
+  const [startDateValidation, setStartDateValidation] = useState(null);
 
   const isSmallScreen = useMediaQuery(
     "(max-width: 1489px) and (max-height: 945px)"
@@ -131,19 +136,17 @@ const ReceiverConcerns = () => {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       RequestGeneratorId: "",
-      // Department: "",
-      // EmpId: "",
-      // FullName: "",
-      // Concern: "",
-      ChannelId: null,
-      userId: null,
       categoryId: null,
       subCategoryId: null,
+      ChannelId: null,
+      userId: null,
+      startDate: null,
+      targetDate: null,
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
     },
@@ -155,6 +158,12 @@ const ReceiverConcerns = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+  };
+
+  const onSubmitAction = (formData) => {
+    console.log("FormData: ", formData);
+
+    const payload = new FormData();
   };
 
   const getAddAttachmentData = async (id) => {
@@ -174,19 +183,12 @@ const ReceiverConcerns = () => {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    if (addData) {
-      getAddAttachmentData(addData.requestGeneratorId);
-    }
-  }, [addData]);
-
   const onViewAction = (data) => {
     onToggle();
     setViewData(data);
   };
 
   const onAddAction = (data) => {
-    // console.log("Add data: ", data);
     setAddData(data);
   };
 
@@ -201,22 +203,35 @@ const ReceiverConcerns = () => {
 
   useEffect(() => {
     if (addData) {
-      setValue("Department", addData?.department_Name);
-      setValue("EmpId", addData?.empId);
-      setValue("FullName", addData?.fullName);
+      console.log("Add Data: ", addData);
+
       setValue("Concern", addData?.concern);
+
+      getAddAttachmentData(addData.requestGeneratorId);
     }
   }, [addData]);
 
-  // console.log("Category Data: ", categoryData);
-  // console.log("Sub Category Data: ", subCategoryData);
-  // console.log("watch cat id: ", watch("categoryId"));
-  // console.log("Add Attachments", addAttachments);
-  // console.log("Add Data: ", addData);
+  //
+  useEffect(() => {
+    if (watch("targetDate") < startDateValidation && watch("targetDate")) {
+      toast.error("Error!", {
+        description: "Target date cannot be earlier than start date.",
+        duration: 1500,
+      });
+    }
+  }, [startDateValidation, watch("targetDate")]);
 
-  // console.log("Channel Data: ", channelData);
-  console.log("Channel Id: ", watch("ChannelId")?.id);
-  console.log("Issue Handler Data: ", issueHandlerData?.value?.channel);
+  // console.log("Start Date: ", moment(watch("startDate")).format("YYYY-MM-DD"));
+  // console.log(
+  //   "Target Date: ",
+  //   moment(watch("targetDate")).format("YYYY-MM-DD")
+  // );
+
+  const today = moment();
+
+  console.log("error: ", errors);
+
+  console.log("Validation", startDateValidation);
 
   return (
     <Stack
@@ -229,6 +244,7 @@ const ReceiverConcerns = () => {
         padding: "0px 24px 24px 24px",
       }}
     >
+      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>
@@ -432,24 +448,25 @@ const ReceiverConcerns = () => {
           }}
         >
           <Stack height="100%">
-            <Stack sx={{ minHeight: "70px" }}>
-              <Typography sx={{ fontWeight: 600, fontSize: "18px" }}>
-                Create Ticket
-              </Typography>
-              <Typography
-                sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
-              >
-                Add issue handler details to create ticket from this concern.{" "}
-              </Typography>
-            </Stack>
+            <form onSubmit={handleSubmit(onSubmitAction)}>
+              <Stack sx={{ minHeight: "70px" }}>
+                <Typography sx={{ fontWeight: 600, fontSize: "18px" }}>
+                  Create Ticket
+                </Typography>
+                <Typography
+                  sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
+                >
+                  Add issue handler details to create ticket from this concern.{" "}
+                </Typography>
+              </Stack>
 
-            <Stack
-              sx={{
-                minHeight: "1100px",
-              }}
-            >
-              {/* Requestor Details */}
-              {/* <Stack
+              <Stack
+                sx={{
+                  minHeight: "1100px",
+                }}
+              >
+                {/* Requestor Details */}
+                {/* <Stack
                 sx={{
                   padding: 1,
                   marginTop: 2,
@@ -732,434 +749,436 @@ const ReceiverConcerns = () => {
                 </Stack>
               </Stack> */}
 
-              {/* Tickets Details */}
-              <Stack
-                sx={{
-                  padding: 1,
-                  marginTop: 2,
-                  minHeight: "200px",
-                  border: "1px solid #2D3748",
-                  borderRadius: "20px",
-                }}
-              >
-                <Typography
-                  sx={{ fontSize: "17px", color: theme.palette.success.main }}
+                {/* Tickets Details */}
+                <Stack
+                  sx={{
+                    padding: 1,
+                    marginTop: 2,
+                    minHeight: "200px",
+                    border: "1px solid #2D3748",
+                    borderRadius: "20px",
+                  }}
                 >
-                  Set Ticket Details
-                </Typography>
-
-                <Stack padding={2} gap={1.5}>
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Category:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="categoryId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={categoryData?.value?.category || []}
-                            loading={categoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField {...params} placeholder="Category" />
-                            )}
-                            onOpen={() => {
-                              if (!categoryIsSuccess)
-                                getCategory({
-                                  Status: true,
-                                });
-                            }}
-                            onChange={(_, value) => {
-                              console.log("Value: ", value);
-                              onChange(value);
-
-                              setValue("subCategoryId", null);
-
-                              getSubCategory({
-                                Status: true,
-                              });
-                            }}
-                            getOptionLabel={(option) =>
-                              option.category_Description
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Sub Category:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="subCategoryId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={
-                              subCategoryData?.value?.subCategory.filter(
-                                (item) =>
-                                  item.categoryId === watch("categoryId")?.id
-                              ) || []
-                            }
-                            loading={subCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Sub Category"
-                              />
-                            )}
-                            onChange={(_, value) => {
-                              onChange(value || []);
-                            }}
-                            getOptionLabel={(option) =>
-                              `${option.subCategory_Description}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.subCategoryId === value.subCategoryId
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Channel Name:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="ChannelId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={channelData?.value?.channel || []}
-                            loading={channelIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Channel Name"
-                              />
-                            )}
-                            onOpen={() => {
-                              if (!channelIsSuccess)
-                                getChannel({
-                                  Status: true,
-                                });
-                            }}
-                            onChange={(_, value) => {
-                              console.log("value: ", value);
-                              onChange(value);
-
-                              setValue("userId", null);
-
-                              getIssueHandler({
-                                Status: true,
-                              });
-                            }}
-                            getOptionLabel={(option) => option.channel_Name}
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Assign To:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="userId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={
-                              channelData?.value?.channel?.find(
-                                (item) => item.id === watch("ChannelId")?.id
-                              ).channelUsers || []
-                            }
-                            loading={issueHandlerIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Issue Handler"
-                              />
-                            )}
-                            onChange={(_, value) => {
-                              console.log("Value: ", value);
-
-                              onChange(value || []);
-                            }}
-                            getOptionLabel={(option) => option.fullname}
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Start Date:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="subCategoryId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={
-                              subCategoryData?.value?.subCategory.filter(
-                                (item) =>
-                                  item.categoryId === watch("categoryId")?.id
-                              ) || []
-                            }
-                            loading={subCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Sub Category"
-                              />
-                            )}
-                            onChange={(_, value) => {
-                              onChange(value || []);
-                            }}
-                            getOptionLabel={(option) =>
-                              `${option.subCategory_Description}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.subCategoryId === value.subCategoryId
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Target Date:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="subCategoryId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={
-                              subCategoryData?.value?.subCategory.filter(
-                                (item) =>
-                                  item.categoryId === watch("categoryId")?.id
-                              ) || []
-                            }
-                            loading={subCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Sub Category"
-                              />
-                            )}
-                            onChange={(_, value) => {
-                              onChange(value || []);
-                            }}
-                            getOptionLabel={(option) =>
-                              `${option.subCategory_Description}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.subCategoryId === value.subCategoryId
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-                </Stack>
-              </Stack>
-
-              {/* Attachments */}
-              <Stack
-                padding={2}
-                marginTop={3}
-                gap={1.5}
-                sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}
-              >
-                <Stack direction="row" gap={1} alignItems="center">
-                  <GetAppOutlined
-                    sx={{ color: theme.palette.text.secondary }}
-                  />
-
                   <Typography
-                    sx={{
-                      fontSize: "14px",
-                    }}
+                    sx={{ fontSize: "17px", color: theme.palette.success.main }}
                   >
-                    Atachments:
+                    Set Ticket Details
                   </Typography>
 
-                  <Button
-                    size="small"
-                    color="warning"
-                    variant="contained"
-                    startIcon={<Add />}
-                  >
-                    <Typography sx={{ fontSize: "12px" }}>Add</Typography>
-                  </Button>
+                  <Stack padding={2} gap={1.5}>
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Category:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="categoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={categoryData?.value?.category || []}
+                              loading={categoryIsLoading}
+                              renderInput={(params) => (
+                                <TextField {...params} placeholder="Category" />
+                              )}
+                              onOpen={() => {
+                                if (!categoryIsSuccess)
+                                  getCategory({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                console.log("Value: ", value);
+                                onChange(value);
+
+                                setValue("subCategoryId", null);
+
+                                getSubCategory({
+                                  Status: true,
+                                });
+                              }}
+                              getOptionLabel={(option) =>
+                                option.category_Description
+                              }
+                              isOptionEqualToValue={(option, value) =>
+                                option.id === value.id
+                              }
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Sub Category:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="subCategoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={
+                                subCategoryData?.value?.subCategory.filter(
+                                  (item) =>
+                                    item.categoryId === watch("categoryId")?.id
+                                ) || []
+                              }
+                              loading={subCategoryIsLoading}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Sub Category"
+                                />
+                              )}
+                              onChange={(_, value) => {
+                                onChange(value || []);
+                              }}
+                              getOptionLabel={(option) =>
+                                `${option.subCategory_Description}`
+                              }
+                              isOptionEqualToValue={(option, value) =>
+                                option.subCategoryId === value.subCategoryId
+                              }
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Channel Name:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="ChannelId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={channelData?.value?.channel || []}
+                              loading={channelIsLoading}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Channel Name"
+                                />
+                              )}
+                              onOpen={() => {
+                                if (!channelIsSuccess)
+                                  getChannel({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                console.log("value: ", value);
+                                onChange(value);
+
+                                setValue("userId", null);
+
+                                getIssueHandler({
+                                  Status: true,
+                                });
+                              }}
+                              getOptionLabel={(option) => option.channel_Name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.id === value.id
+                              }
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Assign To:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="userId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={
+                                channelData?.value?.channel?.find(
+                                  (item) => item.id === watch("ChannelId")?.id
+                                )?.channelUsers || []
+                              }
+                              loading={issueHandlerIsLoading}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Issue Handler"
+                                />
+                              )}
+                              onChange={(_, value) => {
+                                console.log("Value: ", value);
+
+                                onChange(value || []);
+                              }}
+                              getOptionLabel={(option) => option.fullname}
+                              isOptionEqualToValue={(option, value) =>
+                                option.id === value.id
+                              }
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Start Date:
+                      </Typography>
+
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="startDate"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => {
+                                field.onChange(newValue);
+                                setStartDateValidation(newValue);
+                              }}
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                              minDate={today}
+                            />
+                          )}
+                        />
+                        {errors.startDate && <p>{errors.startDate.message}</p>}
+                      </LocalizationProvider>
+
+                      {/* <LocalizationProvider dateAdapter={AdapterMoment}>
+                      <DatePicker
+                        // minDate={today}
+                        onChange={(newValue) =>
+                          setStartDate(moment(newValue).format("yyyy-MM-DD"))
+                        }
+                        sx={{ color: "#ffff" }}
+                      />
+                    </LocalizationProvider> */}
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Target Date:
+                      </Typography>
+
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="targetDate"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => field.onChange(newValue)}
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                              minDate={startDateValidation}
+                              error={!!errors.targetDate}
+                              helperText={
+                                errors.targetDate
+                                  ? errors.targetDate.message
+                                  : null
+                              }
+                              disabled={!watch("startDate")}
+                            />
+                          )}
+                        />
+                        {errors.targetDate && (
+                          <Typography>{errors.targetDate.message}</Typography>
+                        )}
+                      </LocalizationProvider>
+
+                      {/* <LocalizationProvider dateAdapter={AdapterMoment}>
+                      <DatePicker
+                        onChange={(newValue) =>
+                          setTargetDate(moment(newValue).format("yyyy-MM-DD"))
+                        }
+                        sx={{ color: "#fff" }}
+                      />
+                    </LocalizationProvider> */}
+                    </Stack>
+                  </Stack>
                 </Stack>
 
-                <Stack sx={{ flexDirection: "column", maxHeight: 500 }}>
-                  {addAttachments?.map((fileName, index) => (
-                    <Box
-                      key={index}
+                {/* Attachments */}
+                <Stack
+                  padding={2}
+                  marginTop={3}
+                  gap={1.5}
+                  sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}
+                >
+                  <Stack direction="row" gap={1} alignItems="center">
+                    <GetAppOutlined
+                      sx={{ color: theme.palette.text.secondary }}
+                    />
+
+                    <Typography
                       sx={{
-                        display: "flex",
-                        width: "100%",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        padding: 1,
+                        fontSize: "14px",
                       }}
                     >
+                      Atachments:
+                    </Typography>
+
+                    <Button
+                      size="small"
+                      color="warning"
+                      variant="contained"
+                      startIcon={<Add />}
+                    >
+                      <Typography sx={{ fontSize: "12px" }}>Add</Typography>
+                    </Button>
+                  </Stack>
+
+                  <Stack sx={{ flexDirection: "column", maxHeight: 500 }}>
+                    {addAttachments?.map((fileName, index) => (
                       <Box
+                        key={index}
                         sx={{
                           display: "flex",
-                          flexDirection: "row",
+                          width: "100%",
+                          flexDirection: "column",
                           justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: 0.5,
-                          borderBottom: "1px solid #2D3748",
+                          padding: 1,
                         }}
                       >
                         <Box
                           sx={{
                             display: "flex",
-                            flexDirection: "column",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: 0.5,
+                            borderBottom: "1px solid #2D3748",
                           }}
                         >
-                          <Typography sx={{ fontSize: "14px" }}>
-                            {fileName.name}
-                          </Typography>
-
-                          <Typography
+                          <Box
                             sx={{
-                              fontSize: "14px",
-                              color: theme.palette.text.secondary,
+                              display: "flex",
+                              flexDirection: "column",
                             }}
                           >
-                            {fileName.size} Mb
-                          </Typography>
+                            <Typography sx={{ fontSize: "14px" }}>
+                              {fileName.name}
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                fontSize: "14px",
+                                color: theme.palette.text.secondary,
+                              }}
+                            >
+                              {fileName.size} Mb
+                            </Typography>
+                          </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  ))}
+                    ))}
+                  </Stack>
                 </Stack>
               </Stack>
-            </Stack>
 
-            <Stack
-              sx={{
-                flexDirection: "row",
-                gap: 1,
-                justifyContent: "right",
-                alignItems: "center",
-                minHeight: "70px",
-              }}
-            >
-              <Button variant="contained"> Submit </Button>
-              <Button variant="outlined" onClick={onCloseAddAction}>
-                {" "}
-                Close{" "}
-              </Button>
-            </Stack>
+              <Stack
+                sx={{
+                  flexDirection: "row",
+                  gap: 1,
+                  justifyContent: "right",
+                  alignItems: "center",
+                  minHeight: "70px",
+                }}
+              >
+                <LoadingButton
+                  variant="contained"
+                  type="submit"
+                  disabled={
+                    !watch("categoryId") ||
+                    !watch("subCategoryId") ||
+                    !watch("ChannelId") ||
+                    !watch("userId") ||
+                    !watch("startDate") ||
+                    !watch("targetDate") ||
+                    !addAttachments.length ||
+                    watch("targetDate") < startDateValidation
+                  }
+                >
+                  {" "}
+                  Submit{" "}
+                </LoadingButton>
+                <Button variant="outlined" onClick={onCloseAddAction}>
+                  {" "}
+                  Close{" "}
+                </Button>
+              </Stack>
+            </form>
           </Stack>
         </Paper>
       </Stack>
