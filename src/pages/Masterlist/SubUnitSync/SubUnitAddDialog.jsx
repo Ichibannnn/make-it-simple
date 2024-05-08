@@ -137,7 +137,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
       });
       setValue("subUnit_Code", data?.subUnit_Code);
       setValue("subUnit_Name", data?.subUnit_Name);
-      // setValue("locations", data?.)
     }
   }, [data]);
 

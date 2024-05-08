@@ -136,15 +136,20 @@ const SidebarList = () => {
     onClose: masterlistOnClose,
   } = useDisclosure(!!pathname.match(/masterlist/gi));
   const {
+    open: channelOpen,
+    onToggle: channelOnToggle,
+    onClose: channelOnClose,
+  } = useDisclosure(!!pathname.match(/channel/gi));
+  const {
     open: requestOpen,
     onToggle: requestOnToggle,
     onClose: requestOnClose,
   } = useDisclosure(!!pathname.match(/request/gi));
   const {
-    open: channelOpen,
-    onToggle: channelOnToggle,
-    onClose: channelOnClose,
-  } = useDisclosure(!!pathname.match(/channel/gi));
+    open: receiverOpen,
+    onToggle: receiverOnToggle,
+    onClose: receiverOnClose,
+  } = useDisclosure(!!pathname.match(/receiver/gi));
 
   const sidebarMenu = [
     {
@@ -193,6 +198,7 @@ const SidebarList = () => {
         userManagementOnClose();
         requestOnClose();
         channelOnClose();
+        receiverOnClose();
       },
       sub: [
         {
@@ -256,6 +262,7 @@ const SidebarList = () => {
         userManagementOnClose();
         masterlistOnClose();
         requestOnClose();
+        receiverOnClose();
       },
       sub: [
         {
@@ -280,8 +287,8 @@ const SidebarList = () => {
     },
     {
       id: 5,
-      name: "Request",
-      path: "/request",
+      name: "Requestor",
+      path: "/requestor",
       icon: "DynamicFeedOutlined",
       open: requestOpen,
       onToggle: () => {
@@ -289,32 +296,37 @@ const SidebarList = () => {
         userManagementOnClose();
         masterlistOnClose();
         channelOnClose();
+        receiverOnClose();
       },
       sub: [
         {
           id: 1,
           name: "Requestor Concerns",
-          path: "/request/requestor-concerns",
+          path: "/requestor/requestor-concerns",
           icon: "DiscountOutlined",
         },
+      ],
+    },
+    {
+      id: 6,
+      name: "Receiver",
+      path: "/receiver",
+      icon: "DynamicFeedOutlined",
+      open: receiverOpen,
+      onToggle: () => {
+        receiverOnToggle();
+        requestOnClose();
+        userManagementOnClose();
+        masterlistOnClose();
+        channelOnClose();
+      },
+      sub: [
         {
-          id: 2,
+          id: 1,
           name: "Receiver Concerns",
-          path: "/request/receiver-concerns",
+          path: "/receiver/receiver-concerns",
           icon: "DiscountOutlined",
         },
-        // {
-        //   id: 1,
-        //   name: "Requestor Concerns",
-        //   path: "/request/concerns",
-        //   icon: "DiscountOutlined",
-        // },
-        // {
-        //   id: 1,
-        //   name: "Requestor Concerns",
-        //   path: "/request/concerns",
-        //   icon: "DiscountOutlined",
-        // },
       ],
     },
     {

@@ -38,10 +38,23 @@ export const concernReceiverApi = createApi({
       }),
       providesTags: ["Receiver Concern"],
     }),
+
+    createEditReceiverConcern: builder.mutation({
+      query: (body) => ({
+        url: "request-concern/add-ticket-concern",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Receiver Concern"]),
+    }),
   }),
 });
 
 export const {
   useGetReceiverConcernsQuery,
+  useCreateEditReceiverConcernMutation,
   useLazyGetReceiverAttachmentQuery,
 } = concernReceiverApi;

@@ -107,6 +107,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
+    console.log("Payload Entries: ", [...payload.entries()]);
+
     createEditRequestorConcern(payload)
       .unwrap()
       .then(() => {
@@ -182,8 +184,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     } catch (error) {}
   };
 
-  console.log(watch("RequestAttachmentsFiles"));
-
   const handleDragOver = (event) => {
     event.preventDefault();
   };
@@ -245,6 +245,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   // console.log(watch("RequestAttachmentsFiles"));
 
   // console.log(editData);
+
+  console.log("Attachments: ", watch("RequestAttachmentsFiles"));
 
   return (
     <>
@@ -309,6 +311,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   />
                 </Stack>
 
+                {/* Attachments */}
                 <Stack
                   direction="row"
                   width="100%"

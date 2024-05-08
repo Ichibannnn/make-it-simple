@@ -4,6 +4,7 @@ import {
   Button,
   Chip,
   CircularProgress,
+  IconButton,
   OutlinedInput,
   Paper,
   Stack,
@@ -13,6 +14,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -20,12 +22,16 @@ import {
 import {
   AccessTimeOutlined,
   Add,
+  CheckOutlined,
   FiberManualRecord,
+  FileDownloadOutlined,
+  FileUploadOutlined,
   GetAppOutlined,
+  RemoveCircleOutline,
   Search,
 } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -36,6 +42,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import {
+  useCreateEditReceiverConcernMutation,
   useGetReceiverConcernsQuery,
   useLazyGetReceiverAttachmentQuery,
 } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
@@ -49,18 +56,19 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
+import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 
 const schema = yup.object().shape({
   RequestGeneratorId: yup.string().nullable(),
+  Requestor_By: yup.string().nullable(),
+  concern_Details: yup.array().nullable(),
+  ticketConcernId: yup.array().nullable(),
   categoryId: yup.object().required().label("Category"),
   subCategoryId: yup.object().required().label("Sub category"),
   ChannelId: yup.object().required().label("Channel"),
-  userId: yup.object().required().label("Issue handler"),
+  userId: yup.array().required().label("Issue handler"),
   startDate: yup.date().required("Start date is required"),
-  targetDate: yup
-    .date()
-    .min(yup.ref("startDate"), "Target date cannot be earlier than start date")
-    .required("Target date is required"),
+  targetDate: yup.date().required("Target date is required"),
   RequestConcernId: yup.string().nullable(),
   RequestAttachmentsFiles: yup.array().nullable(),
 });
@@ -76,7 +84,10 @@ const ReceiverConcerns = () => {
   const [addData, setAddData] = useState(null);
 
   const [addAttachments, setAddAttachments] = useState([]);
+  const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
   const [startDateValidation, setStartDateValidation] = useState(null);
+
+  const fileInputRef = useRef();
 
   const isSmallScreen = useMediaQuery(
     "(max-width: 1489px) and (max-height: 945px)"
@@ -127,6 +138,22 @@ const ReceiverConcerns = () => {
     },
   ] = useLazyGetChannelsQuery();
 
+  const [
+    createEditReceiverConcern,
+    {
+      isLoading: isCreateEditReceiverConcernLoading,
+      isFetching: isCreateEditReceiverConcernFetching,
+    },
+  ] = useCreateEditReceiverConcernMutation();
+
+  const [
+    deleteRequestorAttachment,
+    {
+      isLoading: isDeleteRequestorAttachmentLoading,
+      isFetching: isDeleteRequestorAttachmentFetching,
+    },
+  ] = useDeleteRequestorAttachmentMutation();
+
   const [getAddReceiverAttachment, { data: attachmentData }] =
     useLazyGetReceiverAttachmentQuery();
 
@@ -136,17 +163,23 @@ const ReceiverConcerns = () => {
     setValue,
     watch,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       RequestGeneratorId: "",
+      Requestor_By: "",
+      concern_Details: [],
+      ticketConcernId: [],
+
       categoryId: null,
       subCategoryId: null,
+
       ChannelId: null,
-      userId: null,
+      userId: [],
       startDate: null,
       targetDate: null,
+
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
     },
@@ -164,6 +197,179 @@ const ReceiverConcerns = () => {
     console.log("FormData: ", formData);
 
     const payload = new FormData();
+
+    payload.append("RequestGeneratorId", formData.RequestGeneratorId);
+    payload.append("Requestor_By", formData.Requestor_By);
+
+    // ConcernDetails
+    const concernDetails = formData.concern_Details;
+    for (let i = 0; i < concernDetails.length; i++) {
+      payload.append(
+        `AddRequestConcernbyConcerns[${i}].concern_Details`,
+        concernDetails[i]
+      );
+    }
+    // Category
+    const category = [formData.categoryId?.id];
+    for (let i = 0; i < category.length; i++) {
+      payload.append(
+        `AddRequestConcernbyConcerns[${i}].categoryId`,
+        category[i]
+      );
+    }
+    // SubCategory
+    const subcategory = [formData.subCategoryId?.id];
+    for (let i = 0; i < subcategory.length; i++) {
+      payload.append(
+        `AddRequestConcernbyConcerns[${i}].subCategoryId`,
+        subcategory[i]
+      );
+    }
+    // IssueHandler
+    const assignto = formData.userId?.map((item) => item.userId);
+    for (let i = 0; i < assignto.length; i++) {
+      payload.append(`AddRequestConcernbyConcerns[${i}].userId`, assignto[i]);
+    }
+    // StartDate
+    const startdate = [moment(formData.startDate).format("YYYY-MM-DD")];
+    for (let i = 0; i < startdate.length; i++) {
+      payload.append(
+        `AddRequestConcernbyConcerns[${i}].startDate`,
+        startdate[i]
+      );
+    }
+    // TargetDate
+    const targetdate = [moment(formData.targetDate).format("YYYY-MM-DD")];
+    for (let i = 0; i < targetdate.length; i++) {
+      payload.append(
+        `AddRequestConcernbyConcerns[${i}].targetDate`,
+        targetdate[i]
+      );
+    }
+
+    // TicketConcernId
+    const ticketconcernid = formData.ticketConcernId;
+    for (let i = 0; i < ticketconcernid.length; i++) {
+      payload.append(
+        `AddRequestConcernbyConcerns[${i}].ticketConcernId`,
+        ticketconcernid[i] || ""
+      );
+    }
+
+    const files = formData.RequestAttachmentsFiles;
+    for (let i = 0; i < files.length; i++) {
+      payload.append(
+        `RequestAttachmentsFiles[${i}].ticketAttachmentId`,
+        files[i].ticketAttachmentId || ""
+      );
+      payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
+    }
+
+    if (files.length === 0) {
+      payload.append(`ConcernAttachments[0].ticketAttachmentId`, "");
+      payload.append(`ConcernAttachments[0].attachment`, "");
+    }
+
+    console.log("Payload Entries: ", [...payload.entries()]);
+
+    createEditReceiverConcern(payload)
+      .unwrap()
+      .then(() => {
+        toast.success("Success!", {
+          description: "Concern added successfully!",
+          duration: 1500,
+        });
+        setAddAttachments([]);
+        reset();
+        onClose();
+      })
+      .catch((err) => {
+        console.log("Error", err);
+        toast.error("Error!", {
+          description: err.data.error.message,
+          duration: 1500,
+        });
+      });
+  };
+
+  const handleAttachments = (event) => {
+    // console.log("event: ", event);
+    const newFiles = Array.from(event.target.files);
+
+    const fileNames = newFiles.map((file) => ({
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2),
+    }));
+
+    const uniqueNewFiles = fileNames.filter(
+      (newFile) =>
+        !addAttachments.some(
+          (existingFile) => existingFile.name === newFile.name
+        )
+    );
+
+    setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+  };
+
+  const handleUploadButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleUpdateFile = (id) => {
+    setTicketAttachmentId(id);
+    fileInputRef.current.click();
+  };
+
+  const handleDeleteFile = async (fileNameToDelete) => {
+    console.log("File name: ", fileNameToDelete);
+
+    try {
+      if (fileNameToDelete.ticketAttachmentId) {
+        const deletePayload = {
+          removeAttachments: [
+            {
+              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+            },
+          ],
+        };
+        await deleteRequestorAttachment(deletePayload).unwrap();
+      }
+
+      setAddAttachments((prevFiles) =>
+        prevFiles.filter((fileName) => fileName !== fileNameToDelete)
+      );
+
+      setValue(
+        "RequestAttachmentsFiles",
+        watch("RequestAttachmentsFiles").filter(
+          (file) => file.name !== fileNameToDelete.name
+        )
+      );
+    } catch (error) {}
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const fileList = event.dataTransfer.files;
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
+    const fileNames = Array.from(fileList)
+      .filter((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        return allowedExtensions.includes(`.${extension}`);
+      })
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
+    const uniqueNewFiles = fileNames.filter(
+      (fileName) => !addAttachments.includes(fileName)
+    );
+    setAddAttachments([...addAttachments, ...uniqueNewFiles]);
   };
 
   const getAddAttachmentData = async (id) => {
@@ -199,19 +405,32 @@ const ReceiverConcerns = () => {
 
   const onCloseAddAction = () => {
     setAddData(null);
+    reset();
   };
 
   useEffect(() => {
     if (addData) {
-      console.log("Add Data: ", addData);
+      const ticketConcernIdArray = addData?.ticketRequestConcerns?.map((item) =>
+        item?.ticketConcerns?.map((item2) => {
+          return {
+            ticketConcernId: item2?.ticketConcernId,
+          };
+        })
+      );
 
-      setValue("Concern", addData?.concern);
+      setValue("RequestGeneratorId", addData?.requestGeneratorId);
+      setValue("Requestor_By", addData?.userId);
+
+      setValue("concern_Details", [addData?.concern]);
+      setValue(
+        "ticketConcernId",
+        ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
+      );
 
       getAddAttachmentData(addData.requestGeneratorId);
     }
   }, [addData]);
 
-  //
   useEffect(() => {
     if (watch("targetDate") < startDateValidation && watch("targetDate")) {
       toast.error("Error!", {
@@ -221,17 +440,18 @@ const ReceiverConcerns = () => {
     }
   }, [startDateValidation, watch("targetDate")]);
 
-  // console.log("Start Date: ", moment(watch("startDate")).format("YYYY-MM-DD"));
-  // console.log(
-  //   "Target Date: ",
-  //   moment(watch("targetDate")).format("YYYY-MM-DD")
-  // );
+  console.log("Add data: ", addData);
+  // console.log("Errors: ", errors);
+  // console.log("Sub Category: ", subCategoryData);
+
+  console.log(
+    "Ticket Concern Id: ",
+    addData?.ticketRequestConcerns?.map((item) =>
+      item?.ticketConcerns?.map((item2) => item2.ticketConcernId)
+    )
+  );
 
   const today = moment();
-
-  console.log("error: ", errors);
-
-  console.log("Validation", startDateValidation);
 
   return (
     <Stack
@@ -465,290 +685,6 @@ const ReceiverConcerns = () => {
                   minHeight: "1100px",
                 }}
               >
-                {/* Requestor Details */}
-                {/* <Stack
-                sx={{
-                  padding: 1,
-                  marginTop: 2,
-                  minHeight: "600px",
-                  border: "1px solid #2D3748",
-                  borderRadius: "20px",
-                }}
-              >
-                <Typography
-                  sx={{ fontSize: "17px", color: theme.palette.success.main }}
-                >
-                  Requestor Details
-                </Typography>
-
-                <Stack padding={2} gap={1.5}>
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Department:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="Department"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <TextField
-                            inputRef={ref}
-                            size="small"
-                            value={value}
-                            placeholder="Department"
-                            onChange={onChange}
-                            inputProps={{
-                              readOnly: addData ? true : false,
-                              style: {
-                                fontSize: "14px",
-                              },
-                            }}
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Employee ID:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="EmpId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <TextField
-                            inputRef={ref}
-                            size="small"
-                            value={value}
-                            placeholder="Employee ID"
-                            onChange={onChange}
-                            inputProps={{
-                              readOnly: addData ? true : false,
-                              style: {
-                                fontSize: "14px",
-                              },
-                            }}
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Fullname:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="FullName"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <TextField
-                            inputRef={ref}
-                            size="small"
-                            value={value}
-                            placeholder="Fullname"
-                            onChange={onChange}
-                            inputProps={{
-                              readOnly: addData ? true : false,
-                              style: {
-                                fontSize: "14px",
-                              },
-                            }}
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Concern:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="Concern"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <TextField
-                            inputRef={ref}
-                            size="small"
-                            value={value}
-                            placeholder="Concern"
-                            onChange={onChange}
-                            // disabled={addData ? true : false}
-                            inputProps={{
-                              readOnly: addData ? true : false,
-                              style: {
-                                fontSize: "14px",
-                              },
-                            }}
-                            sx={{
-                              flex: 2,
-                            }}
-                            rows={6}
-                            multiline
-                            // fullWidth
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Category:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="categoryId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={categoryData?.value?.category || []}
-                            loading={categoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Category"
-                                InputProps={{
-                                  ...params.InputProps,
-                                  style: {
-                                    fontSize: "14px",
-                                  },
-                                }}
-                              />
-                            )}
-                            onOpen={() => {
-                              if (!categoryIsSuccess)
-                                getCategory({
-                                  Status: true,
-                                });
-                            }}
-                            onChange={(_, value) => {
-                              console.log("Value: ", value);
-                              onChange(value);
-
-                              setValue("subCategoryId", null);
-
-                              getSubCategory({
-                                Status: true,
-                              });
-                            }}
-                            getOptionLabel={(option) =>
-                              option.category_Description
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-
-                  <Stack gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Sub Category:
-                    </Typography>
-                    <Controller
-                      control={control}
-                      name="subCategoryId"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={
-                              subCategoryData?.value?.subCategory.filter(
-                                (item) =>
-                                  item.categoryId === watch("categoryId")?.id
-                              ) || []
-                            }
-                            loading={subCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Sub Category"
-                                InputProps={{
-                                  ...params.InputProps,
-                                  style: {
-                                    fontSize: "14px",
-                                  },
-                                }}
-                              />
-                            )}
-                            onChange={(_, value) => {
-                              onChange(value || []);
-                            }}
-                            getOptionLabel={(option) =>
-                              `${option.subCategory_Description}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.subCategoryId === value.subCategoryId
-                            }
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                          />
-                        );
-                      }}
-                    />
-                  </Stack>
-                </Stack>
-              </Stack> */}
-
                 {/* Tickets Details */}
                 <Stack
                   sx={{
@@ -795,7 +731,6 @@ const ReceiverConcerns = () => {
                                   });
                               }}
                               onChange={(_, value) => {
-                                console.log("Value: ", value);
                                 onChange(value);
 
                                 setValue("subCategoryId", null);
@@ -853,14 +788,17 @@ const ReceiverConcerns = () => {
                                 />
                               )}
                               onChange={(_, value) => {
+                                console.log("Value ", value);
+
                                 onChange(value || []);
                               }}
                               getOptionLabel={(option) =>
                                 `${option.subCategory_Description}`
                               }
                               isOptionEqualToValue={(option, value) =>
-                                option.subCategoryId === value.subCategoryId
+                                option.id === value.id
                               }
+                              noOptionsText={"No sub category available"}
                               sx={{
                                 flex: 2,
                               }}
@@ -905,14 +843,19 @@ const ReceiverConcerns = () => {
                                   });
                               }}
                               onChange={(_, value) => {
-                                console.log("value: ", value);
                                 onChange(value);
 
-                                setValue("userId", null);
+                                setValue("userId", []);
 
-                                getIssueHandler({
-                                  Status: true,
-                                });
+                                if (
+                                  watch("ChannelId")?.id !==
+                                  watch("ChannelId")?.id
+                                ) {
+                                  setValue("userId", null);
+                                  getIssueHandler({
+                                    Status: true,
+                                  });
+                                }
                               }}
                               getOptionLabel={(option) => option.channel_Name}
                               isOptionEqualToValue={(option, value) =>
@@ -944,6 +887,7 @@ const ReceiverConcerns = () => {
                         render={({ field: { ref, value, onChange } }) => {
                           return (
                             <Autocomplete
+                              multiple
                               ref={ref}
                               size="small"
                               value={value}
@@ -959,21 +903,28 @@ const ReceiverConcerns = () => {
                                   placeholder="Issue Handler"
                                 />
                               )}
+                              onOpen={() => {
+                                if (!issueHandlerIsSuccess) getIssueHandler();
+                              }}
                               onChange={(_, value) => {
-                                console.log("Value: ", value);
-
-                                onChange(value || []);
+                                onChange(value);
                               }}
                               getOptionLabel={(option) => option.fullname}
                               isOptionEqualToValue={(option, value) =>
-                                option.id === value.id
+                                option.channelUserId === value.channelUserId
+                              }
+                              getOptionDisabled={(option) =>
+                                watch("userId")?.some(
+                                  (item) =>
+                                    item.channelUserId === option.channelUserId
+                                )
                               }
                               sx={{
                                 flex: 2,
                               }}
                               fullWidth
                               disablePortal
-                              disableClearable
+                              // disableClearable
                             />
                           );
                         }}
@@ -1000,9 +951,7 @@ const ReceiverConcerns = () => {
                                 field.onChange(newValue);
                                 setStartDateValidation(newValue);
                               }}
-                              renderInput={(params) => (
-                                <TextField {...params} />
-                              )}
+                              slotProps={{ textField: { variant: "outlined" } }}
                               minDate={today}
                             />
                           )}
@@ -1038,9 +987,7 @@ const ReceiverConcerns = () => {
                             <DatePicker
                               value={field.value ? moment(field.value) : null}
                               onChange={(newValue) => field.onChange(newValue)}
-                              renderInput={(params) => (
-                                <TextField {...params} />
-                              )}
+                              slotProps={{ textField: { variant: "outlined" } }}
                               minDate={startDateValidation}
                               error={!!errors.targetDate}
                               helperText={
@@ -1076,7 +1023,13 @@ const ReceiverConcerns = () => {
                   gap={1.5}
                   sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}
                 >
-                  <Stack direction="row" gap={1} alignItems="center">
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    alignItems="center"
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                  >
                     <GetAppOutlined
                       sx={{ color: theme.palette.text.secondary }}
                     />
@@ -1091,9 +1044,10 @@ const ReceiverConcerns = () => {
 
                     <Button
                       size="small"
-                      color="warning"
                       variant="contained"
+                      color="warning"
                       startIcon={<Add />}
+                      onClick={handleUploadButtonClick}
                     >
                       <Typography sx={{ fontSize: "12px" }}>Add</Typography>
                     </Button>
@@ -1139,12 +1093,147 @@ const ReceiverConcerns = () => {
                             >
                               {fileName.size} Mb
                             </Typography>
+
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: 13,
+                                  fontWeight: 500,
+                                  color: !!fileName.ticketAttachmentId
+                                    ? theme.palette.success.main
+                                    : theme.palette.primary.main,
+                                }}
+                              >
+                                {!!fileName.ticketAttachmentId
+                                  ? "Attached file"
+                                  : "Uploaded the file successfully"}
+                              </Typography>
+
+                              {!!fileName.ticketAttachmentId && (
+                                <CheckOutlined
+                                  color="success"
+                                  fontSize="small"
+                                />
+                              )}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            <Tooltip title="Remove">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDeleteFile(fileName)}
+                                style={{
+                                  background: "none",
+                                }}
+                              >
+                                <RemoveCircleOutline />
+                              </IconButton>
+                            </Tooltip>
+
+                            {!!fileName.ticketAttachmentId && (
+                              <Tooltip title="Upload">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleUpdateFile(
+                                      fileName.ticketAttachmentId
+                                    )
+                                  }
+                                  style={{
+                                    background: "none",
+                                  }}
+                                >
+                                  <FileUploadOutlined />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+
+                            {!!fileName.ticketAttachmentId && (
+                              <Tooltip title="Download">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => {
+                                    window.location = fileName.link;
+                                  }}
+                                  style={{
+                                    background: "none",
+                                  }}
+                                >
+                                  <FileDownloadOutlined />
+                                </IconButton>
+                              </Tooltip>
+                            )}
                           </Box>
                         </Box>
                       </Box>
                     ))}
                   </Stack>
                 </Stack>
+
+                <Controller
+                  control={control}
+                  name="RequestAttachmentsFiles"
+                  render={({ field: { onChange, value } }) => (
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.docx"
+                      onChange={(event) => {
+                        if (ticketAttachmentId) {
+                          const files = Array.from(event.target.files);
+                          files[0].ticketAttachmentId = ticketAttachmentId;
+
+                          onChange([
+                            ...files,
+                            ...value.filter(
+                              (item) =>
+                                item.ticketAttachmentId !== ticketAttachmentId
+                            ),
+                          ]);
+
+                          setAddAttachments((prevFiles) => [
+                            ...prevFiles.filter(
+                              (item) =>
+                                item.ticketAttachmentId !== ticketAttachmentId
+                            ),
+                            {
+                              ticketAttachmentId: ticketAttachmentId,
+                              name: files[0].name,
+                              size: (files[0].size / (1024 * 1024)).toFixed(2),
+                            },
+                          ]);
+
+                          fileInputRef.current.value = "";
+                          setTicketAttachmentId(null);
+                        } else {
+                          handleAttachments(event);
+                          const files = Array.from(event.target.files);
+
+                          const uniqueNewFiles = files.filter(
+                            (item) =>
+                              !value.some((file) => file.name === item.name)
+                          );
+
+                          onChange([...value, ...uniqueNewFiles]);
+                          fileInputRef.current.value = "";
+                        }
+                      }}
+                      hidden
+                      multiple={!!ticketAttachmentId}
+                    />
+                  )}
+                />
               </Stack>
 
               <Stack
@@ -1159,6 +1248,10 @@ const ReceiverConcerns = () => {
                 <LoadingButton
                   variant="contained"
                   type="submit"
+                  loading={
+                    isCreateEditReceiverConcernLoading ||
+                    isCreateEditReceiverConcernFetching
+                  }
                   disabled={
                     !watch("categoryId") ||
                     !watch("subCategoryId") ||

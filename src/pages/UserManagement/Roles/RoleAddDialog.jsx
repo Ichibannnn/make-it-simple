@@ -39,7 +39,8 @@ const parentCheckbox = [
   "Overview",
   "User Management",
   "Masterlist",
-  "Request",
+  "Requestor",
+  "Receiver",
   "Channel Setup",
   "Filing",
   "Generate",
@@ -56,7 +57,8 @@ const masterlistCheckbox = [
   "Sub Category",
 ];
 const channelCheckbox = ["Receiver", "Channel", "Approver"];
-const requestCheckbox = ["Requestor Concerns", "Receiver Concerns"];
+const requestCheckbox = ["Requestor Concerns"];
+const receiverCheckbox = ["Receiver Concerns"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
   const [
@@ -246,10 +248,16 @@ const RoleAddDialog = ({ data, open, onClose }) => {
         watch("permissions").filter((item) => !channelCheckbox.includes(item))
       );
     }
-    if (!e.target.checked && e.target.value === "Request") {
+    if (!e.target.checked && e.target.value === "Requestor") {
       setValue(
         "permissions",
         watch("permissions").filter((item) => !requestCheckbox.includes(item))
+      );
+    }
+    if (!e.target.checked && e.target.value === "Receiver") {
+      setValue(
+        "permissions",
+        watch("permissions").filter((item) => !receiverCheckbox.includes(item))
       );
     }
   };
@@ -538,8 +546,8 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* REQUEST */}
-              {watch("permissions")?.includes("Request") && (
+              {/* REQUESTOR */}
+              {watch("permissions")?.includes("Requestor") && (
                 <FormControl
                   component="fieldset"
                   variant="standard"
@@ -555,12 +563,75 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                       padding: "0 20px",
                     }}
                   >
-                    Request
+                    Requestor
                   </FormLabel>
 
                   <FormGroup>
                     <Stack direction="row" flexWrap="wrap">
                       {requestCheckbox.map((item, index) => (
+                        <Controller
+                          key={index}
+                          control={control}
+                          name="permissions"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <FormControlLabel
+                                sx={{
+                                  flex: 1,
+                                  flexBasis: "40%",
+                                }}
+                                control={
+                                  <Checkbox
+                                    ref={ref}
+                                    value={item}
+                                    checked={value?.includes(item)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        onChange([...value, e.target.value]);
+                                      } else {
+                                        onChange([
+                                          ...value.filter(
+                                            (item) => item !== e.target.value
+                                          ),
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={item}
+                              />
+                            );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </FormGroup>
+                </FormControl>
+              )}
+
+              {/* RECEIVER */}
+              {watch("permissions")?.includes("Receiver") && (
+                <FormControl
+                  component="fieldset"
+                  variant="standard"
+                  sx={{
+                    border: "1px solid #2D3748",
+                    borderRadius: "10px",
+                    padding: 2,
+                  }}
+                >
+                  <FormLabel
+                    component="legend"
+                    sx={{
+                      padding: "0 20px",
+                    }}
+                  >
+                    Receiver
+                  </FormLabel>
+
+                  <FormGroup>
+                    <Stack direction="row" flexWrap="wrap">
+                      {receiverCheckbox.map((item, index) => (
                         <Controller
                           key={index}
                           control={control}
@@ -633,9 +704,14 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                       channelCheckbox.includes(item)
                     )
                   : false) ||
-                (watch("permissions").includes("Request")
+                (watch("permissions").includes("Requestor")
                   ? !watch("permissions").some((item) =>
                       requestCheckbox.includes(item)
+                    )
+                  : false) ||
+                (watch("permissions").includes("Receiver")
+                  ? !watch("permissions").some((item) =>
+                      receiverCheckbox.includes(item)
                     )
                   : false)
               }
