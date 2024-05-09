@@ -146,7 +146,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      // console.log("Data: ",)
+      console.log("Data: ", data);
 
       // if (employeeIsSuccess) getEmployees();
       if (!companyIsSuccess) getCompany();

@@ -198,31 +198,39 @@ const ReceiverConcerns = () => {
 
     const payload = new FormData();
 
+    // USER LENGTH
+    const userIdsLength =
+      formData.userId?.map((item) => item.userId).length || 0;
+
+    console.log("User length: ", userIdsLength);
+    console.log("User length: ", formData.concern_Details);
+
     payload.append("RequestGeneratorId", formData.RequestGeneratorId);
     payload.append("Requestor_By", formData.Requestor_By);
+    payload.append("ChannelId", formData.ChannelId.id);
 
     // ConcernDetails
     const concernDetails = formData.concern_Details;
-    for (let i = 0; i < concernDetails.length; i++) {
+    for (let i = 0; i < userIdsLength; i++) {
       payload.append(
         `AddRequestConcernbyConcerns[${i}].concern_Details`,
-        concernDetails[i]
+        concernDetails[i % concernDetails.length]
       );
     }
     // Category
     const category = [formData.categoryId?.id];
-    for (let i = 0; i < category.length; i++) {
+    for (let i = 0; i < userIdsLength; i++) {
       payload.append(
         `AddRequestConcernbyConcerns[${i}].categoryId`,
-        category[i]
+        category[i % category.length]
       );
     }
     // SubCategory
     const subcategory = [formData.subCategoryId?.id];
-    for (let i = 0; i < subcategory.length; i++) {
+    for (let i = 0; i < userIdsLength; i++) {
       payload.append(
         `AddRequestConcernbyConcerns[${i}].subCategoryId`,
-        subcategory[i]
+        subcategory[i % subcategory.length]
       );
     }
     // IssueHandler
@@ -232,18 +240,18 @@ const ReceiverConcerns = () => {
     }
     // StartDate
     const startdate = [moment(formData.startDate).format("YYYY-MM-DD")];
-    for (let i = 0; i < startdate.length; i++) {
+    for (let i = 0; i < userIdsLength; i++) {
       payload.append(
-        `AddRequestConcernbyConcerns[${i}].startDate`,
-        startdate[i]
+        `AddRequestConcernbyConcerns[${i}].start_Date`,
+        startdate[i % startdate.length]
       );
     }
     // TargetDate
     const targetdate = [moment(formData.targetDate).format("YYYY-MM-DD")];
-    for (let i = 0; i < targetdate.length; i++) {
+    for (let i = 0; i < userIdsLength; i++) {
       payload.append(
-        `AddRequestConcernbyConcerns[${i}].targetDate`,
-        targetdate[i]
+        `AddRequestConcernbyConcerns[${i}].target_Date`,
+        targetdate[i % targetdate.length]
       );
     }
 
@@ -256,13 +264,14 @@ const ReceiverConcerns = () => {
       );
     }
 
+    // Attachments
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
       payload.append(
-        `RequestAttachmentsFiles[${i}].ticketAttachmentId`,
+        `ConcernAttachments[${i}].ticketAttachmentId`,
         files[i].ticketAttachmentId || ""
       );
-      payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
+      payload.append(`ConcernAttachments[${i}].attachment`, files[i]);
     }
 
     if (files.length === 0) {
@@ -276,11 +285,12 @@ const ReceiverConcerns = () => {
       .unwrap()
       .then(() => {
         toast.success("Success!", {
-          description: "Concern added successfully!",
+          description: "Concern transferred successfully!",
           duration: 1500,
         });
         setAddAttachments([]);
         reset();
+        setAddData(null);
         onClose();
       })
       .catch((err) => {
@@ -410,6 +420,11 @@ const ReceiverConcerns = () => {
 
   useEffect(() => {
     if (addData) {
+      if (!categoryIsSuccess) getCategory();
+      if (!subCategoryIsSuccess) getSubCategory();
+      if (!channelIsSuccess) getChannel();
+      if (!issueHandlerIsSuccess) getIssueHandler();
+
       const ticketConcernIdArray = addData?.ticketRequestConcerns?.map((item) =>
         item?.ticketConcerns?.map((item2) => {
           return {
@@ -418,10 +433,69 @@ const ReceiverConcerns = () => {
         })
       );
 
+      const bindData = addData?.ticketRequestConcerns?.map((item) => ({
+        categoryId: item?.categoryId,
+        category_Description: item?.category_Description,
+        subCategoryId: item?.subCategoryId,
+        subCategory_Description: item?.subCategory_Description,
+        channelId: item?.channelId,
+        channel_Name: item?.channel_Name,
+        start_Date: moment(item?.start_Date),
+        target_Date: moment(item?.target_Date),
+      }));
+
+      const bindIssueHandler = addData?.ticketRequestConcerns?.map((item) =>
+        item?.ticketConcerns?.map((item2) => ({
+          fullname: item2?.issue_Handler,
+          userId: item2?.userId,
+        }))
+      );
+
+      console.log("Issue Handler: ", bindIssueHandler);
+
       setValue("RequestGeneratorId", addData?.requestGeneratorId);
       setValue("Requestor_By", addData?.userId);
-
       setValue("concern_Details", [addData?.concern]);
+
+      setValue("categoryId", {
+        id: bindData?.[0]?.categoryId ? bindData?.[0]?.categoryId : "",
+        category_Description: bindData?.[0]?.category_Description
+          ? bindData?.[0]?.category_Description
+          : "",
+      });
+
+      setValue("subCategoryId", {
+        id: bindData?.[0]?.subCategoryId ? bindData?.[0]?.subCategoryId : "",
+        subCategory_Description: bindData?.[0]?.subCategory_Description
+          ? bindData?.[0]?.subCategory_Description
+          : "",
+      });
+
+      setValue("ChannelId", {
+        id: bindData?.[0]?.channelId ? bindData?.[0]?.channelId : "",
+        channel_Name: bindData?.[0]?.channel_Name
+          ? bindData?.[0]?.channel_Name
+          : "",
+      });
+
+      setValue(
+        "userId",
+        bindIssueHandler.flat().map((item) => ({
+          fullname: item?.fullname,
+          userId: item?.userId,
+        }))
+      );
+
+      setValue("startDate", {
+        start_Date: bindData?.[0]?.start_Date ? bindData?.[0]?.start_Date : "",
+      });
+
+      setValue("targetDate", {
+        target_Date: bindData?.[0]?.target_Date
+          ? bindData?.[0]?.target_Date
+          : "",
+      });
+
       setValue(
         "ticketConcernId",
         ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
@@ -441,15 +515,15 @@ const ReceiverConcerns = () => {
   }, [startDateValidation, watch("targetDate")]);
 
   console.log("Add data: ", addData);
-  // console.log("Errors: ", errors);
+  console.log("Errors: ", errors);
   // console.log("Sub Category: ", subCategoryData);
 
-  console.log(
-    "Ticket Concern Id: ",
-    addData?.ticketRequestConcerns?.map((item) =>
-      item?.ticketConcerns?.map((item2) => item2.ticketConcernId)
-    )
-  );
+  // console.log(
+  //   "Ticket Concern Id: ",
+  //   addData?.ticketRequestConcerns?.map((item) =>
+  //     item?.ticketConcerns?.map((item2) => item2.ticketConcernId)
+  //   )
+  // );
 
   const today = moment();
 
@@ -507,8 +581,8 @@ const ReceiverConcerns = () => {
               startAdornment={
                 <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
               }
-              // value={searchValue}
-              // onChange={(e) => setSearchValue(e.target.value)}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               sx={{
                 borderRadius: "15px",
                 fontSize: "small",
@@ -847,15 +921,15 @@ const ReceiverConcerns = () => {
 
                                 setValue("userId", []);
 
-                                if (
-                                  watch("ChannelId")?.id !==
-                                  watch("ChannelId")?.id
-                                ) {
-                                  setValue("userId", null);
-                                  getIssueHandler({
-                                    Status: true,
-                                  });
-                                }
+                                // if (
+                                //   watch("ChannelId")?.id !==
+                                //   watch("ChannelId")?.id
+                                // ) {
+                                //   setValue("userId", null);
+                                //   getIssueHandler({
+                                //     Status: true,
+                                //   });
+                                // }
                               }}
                               getOptionLabel={(option) => option.channel_Name}
                               isOptionEqualToValue={(option, value) =>
@@ -911,12 +985,11 @@ const ReceiverConcerns = () => {
                               }}
                               getOptionLabel={(option) => option.fullname}
                               isOptionEqualToValue={(option, value) =>
-                                option.channelUserId === value.channelUserId
+                                option.userId === value.userId
                               }
                               getOptionDisabled={(option) =>
                                 watch("userId")?.some(
-                                  (item) =>
-                                    item.channelUserId === option.channelUserId
+                                  (item) => item.userId === option.userId
                                 )
                               }
                               sx={{
