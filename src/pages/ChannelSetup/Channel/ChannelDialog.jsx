@@ -36,10 +36,12 @@ import {
   useUpdateChannelMutation,
 } from "../../../features/api_channel_setup/channel/channelApi";
 import styled from "@emotion/styled";
+import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
   channel_Name: yup.string().required().label("Channel Name"),
+  deparmentId: yup.array().required().label("Deparment"),
 });
 
 const memberSchema = yup.object().shape({
@@ -59,6 +61,15 @@ const ChannelDialog = ({ data, open, onClose }) => {
     createChannel,
     { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching },
   ] = useCreateChannelMutation();
+
+  const [
+    getDepartment,
+    {
+      data: departmentData,
+      isLoading: departmentIsLoading,
+      isSuccess: departmentIsSuccess,
+    },
+  ] = useLazyGetDepartmentQuery();
 
   const [
     getMembers,
@@ -81,7 +92,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
     defaultValues: {
       id: null,
       channel_Name: "",
-      subUnitId: null,
+      deparmentId: [],
     },
   });
 
@@ -216,6 +227,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
+  // console.log("department: ", channelFormWatch("deparmentId"));
+  console.log("Members Data:", memberData);
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -282,41 +296,51 @@ const ChannelDialog = ({ data, open, onClose }) => {
                 }}
               />
 
-              {/* <Controller
+              <Controller
                 control={channelFormControl}
-                name="subUnitId"
+                name="deparmentId"
                 render={({ field: { ref, value, onChange } }) => {
                   return (
                     <Autocomplete
+                      multiple
                       ref={ref}
                       size="small"
                       value={value}
-                      options={subUnitData?.value?.subUnit || []}
-                      loading={subUnitIsLoading}
+                      options={departmentData?.value?.department || []}
+                      loading={departmentIsLoading}
                       renderInput={(params) => (
-                        <TextField {...params} label="Sub Unit" size="small" />
+                        <TextField
+                          {...params}
+                          label="Department"
+                          size="small"
+                        />
                       )}
                       onOpen={() => {
-                        if (!subUnitIsSuccess) getSubUnit();
+                        if (!departmentIsSuccess) getDepartment();
                       }}
                       onChange={(_, value) => {
                         onChange(value);
 
+                        const departmentIdParams = value?.map(
+                          (department) => department.id
+                        );
+
+                        console.log("departmentIdParams", departmentIdParams);
+
                         getMembers({
-                          SubUnitId: value.id,
+                          DepartmentId: departmentIdParams,
                         });
                       }}
                       getOptionLabel={(option) =>
-                        `${option.subUnit_Code} - ${option.subUnit_Name}`
+                        `${option.department_Code} - ${option.department_Name}`
                       }
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                       }
-                      disabled={
-                        !channelFormWatch("channel_Name") ||
-                        errorValidationIsError ||
-                        // disabled ||
-                        members.length > 0
+                      getOptionDisabled={(option) =>
+                        channelFormWatch("deparmentId")?.some(
+                          (item) => item.id === option.id
+                        )
                       }
                       sx={{
                         flex: 2,
@@ -327,7 +351,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                     />
                   );
                 }}
-              /> */}
+              />
             </Stack>
 
             <Stack>

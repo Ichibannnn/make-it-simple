@@ -65,11 +65,15 @@ export const channelApi = createApi({
     }),
 
     getChannelMembers: builder.query({
-      query: (params) => ({
-        url: "channel/member-list",
-        method: "GET",
-        params: params,
-      }),
+      query: ({ DepartmentId }) => {
+        const departmentArray = DepartmentId.map(
+          (id) => `DepartmentId=${id}`
+        ).join(`&`);
+        return {
+          url: `channel/member-list?${departmentArray}`,
+          method: "GET",
+        };
+      },
       providesTags: ["Channel"],
     }),
 

@@ -27,19 +27,13 @@ import {
 } from "../../../features/user_management_api/user/userApi";
 import useDebounce from "../../../hooks/useDebounce";
 
-import {
-  AddOutlined,
-  FileUploadOutlined,
-  FileDownloadOutlined,
-  Search,
-} from "@mui/icons-material";
+import { AddOutlined, Search } from "@mui/icons-material";
 import UserAccountAction from "./UserAccountAction";
 import Swal from "sweetalert2";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { Toaster, toast } from "sonner";
-import { useSelector } from "react-redux";
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
@@ -50,8 +44,6 @@ const UserAccounts = () => {
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
-
-  const userRole = useSelector((state) => state.user.userRoleName);
 
   const { open, onToggle, onClose } = useDisclosure();
 
@@ -71,6 +63,13 @@ const UserAccounts = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+    setPageNumber(1);
+  };
+
+  const onStatusChange = (_, newValue) => {
+    setStatus(newValue);
+    setPageNumber(1);
+    setPageSize(5);
   };
 
   const onDialogClose = () => {
@@ -79,6 +78,12 @@ const UserAccounts = () => {
   };
 
   const onArchiveAction = (data) => {
+    const userJson = localStorage.getItem("user");
+    const user = JSON.parse(userJson);
+    const userId = user.id;
+
+    console.log("user: ", userId);
+
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",
@@ -101,20 +106,29 @@ const UserAccounts = () => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveUser(data)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Archive successfully.",
-                duration: 1500,
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: "Unable to archive this user.",
-                duration: 1500,
-              });
+          console.log("Data: ", data?.id);
+
+          if (userId === data?.id) {
+            toast.error("Archive Error!", {
+              description: "The logged-in user cannot be archived.",
+              duration: 1500,
             });
+          } else {
+            archiveUser(data)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Archive successfully.",
+                  duration: 1500,
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: "Unable to archive this user.",
+                  duration: 1500,
+                });
+              });
+          }
         }
       });
     } else {
@@ -246,7 +260,7 @@ const UserAccounts = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={(_, value) => setStatus(value)}>
+          <Tabs value={status} onChange={onStatusChange}>
             <Tab
               value=""
               label="All"
@@ -485,7 +499,6 @@ const UserAccounts = () => {
                           color: item.is_Active ? "#10B981" : "#D27D0E",
                           fontWeight: 800,
                         }}
-                        // color={item.is_Active ? "success" : "warning"}
                         label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                       />
                     </TableCell>
@@ -557,7 +570,6 @@ const UserAccounts = () => {
           open={open}
           onClose={onDialogClose}
           data={editData}
-          // setPageNumber={setPage}
         />
       </Stack>
     </Stack>

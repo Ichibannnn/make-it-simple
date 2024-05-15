@@ -63,6 +63,13 @@ const Channel = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+    setPageNumber(1);
+  };
+
+  const onStatusChange = (_, newValue) => {
+    setStatus(newValue);
+    setPageNumber(1);
+    setPageSize(5);
   };
 
   const onDialogClose = () => {
@@ -198,7 +205,7 @@ const Channel = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={(_, value) => setStatus(value)}>
+          <Tabs value={status} onChange={onStatusChange}>
             <Tab
               value=""
               label="All"

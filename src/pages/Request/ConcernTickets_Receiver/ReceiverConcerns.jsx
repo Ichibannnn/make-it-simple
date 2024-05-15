@@ -204,8 +204,8 @@ const ReceiverConcerns = () => {
     const userIdsLength =
       formData.userId?.map((item) => item.userId).length || 0;
 
-    console.log("User length: ", userIdsLength);
-    console.log("User length: ", formData.concern_Details);
+    // console.log("User length: ", userIdsLength);
+    // console.log("User length: ", formData.concern_Details);
 
     payload.append("RequestGeneratorId", formData.RequestGeneratorId);
     payload.append("Requestor_By", formData.Requestor_By);
@@ -436,7 +436,13 @@ const ReceiverConcerns = () => {
 
   useEffect(() => {
     if (addData) {
-      // console.log("Bind Data: ", bindData);
+      const ticketConcernIdArray = addData?.ticketRequestConcerns?.map((item) =>
+        item?.ticketConcerns?.map((item2) => {
+          return {
+            ticketConcernId: item2?.ticketConcernId,
+          };
+        })
+      );
 
       const bindIssueHandler = addData?.ticketRequestConcerns?.map((item) =>
         item?.ticketConcerns?.map((item2) => ({
@@ -449,49 +455,10 @@ const ReceiverConcerns = () => {
       setValue("Requestor_By", addData?.userId);
       setValue("concern_Details", [addData?.concern]);
 
-      // setValue("categoryId", {
-      //   id: bindData?.[0]?.categoryId ? bindData?.[0]?.categoryId : "",
-      //   category_Description: bindData?.[0]?.category_Description
-      //     ? bindData?.[0]?.category_Description
-      //     : "",
-      // });
-
-      // setValue("subCategoryId", {
-      //   id: bindData?.[0]?.subCategoryId ? bindData?.[0]?.subCategoryId : "",
-      //   subCategory_Description: bindData?.[0]?.subCategory_Description
-      //     ? bindData?.[0]?.subCategory_Description
-      //     : "",
-      // });
-
-      // setValue("ChannelId", {
-      //   id: bindData?.[0]?.channelId ? bindData?.[0]?.channelId : "",
-      //   channel_Name: bindData?.[0]?.channel_Name
-      //     ? bindData?.[0]?.channel_Name
-      //     : "",
-      // });
-
-      // setValue(
-      //   "userId",
-      //   bindIssueHandler.flat().map((item) => ({
-      //     fullname: item?.fullname,
-      //     userId: item?.userId,
-      //   }))
-      // );
-
-      // setValue("startDate", {
-      //   start_Date: bindData?.[0]?.start_Date ? bindData?.[0]?.start_Date : "",
-      // });
-
-      // setValue("targetDate", {
-      //   target_Date: bindData?.[0]?.target_Date
-      //     ? bindData?.[0]?.target_Date
-      //     : "",
-      // });
-
-      // setValue(
-      //   "ticketConcernId",
-      //   ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
-      // );
+      setValue(
+        "ticketConcernId",
+        ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
+      );
 
       getAddAttachmentData(addData.requestGeneratorId);
     }
@@ -531,6 +498,8 @@ const ReceiverConcerns = () => {
         }))
       );
 
+      console.log("Bind Data: ", bindData);
+
       setValue("RequestGeneratorId", editData?.requestGeneratorId);
       setValue("Requestor_By", editData?.userId);
       setValue("concern_Details", [editData?.concern]);
@@ -564,20 +533,15 @@ const ReceiverConcerns = () => {
         }))
       );
 
-      setValue("startDate", {
-        start_Date: bindData?.[0]?.start_Date ? bindData?.[0]?.start_Date : "",
-      });
-
-      setValue("targetDate", {
-        target_Date: bindData?.[0]?.target_Date
-          ? bindData?.[0]?.target_Date
-          : "",
-      });
+      setValue("startDate", bindData?.[0]?.start_Date);
+      setValue("targetDate", bindData?.[0]?.target_Date);
 
       setValue(
         "ticketConcernId",
         ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
       );
+
+      getAddAttachmentData(editData.requestGeneratorId);
     }
   }, [editData]);
 
@@ -590,9 +554,12 @@ const ReceiverConcerns = () => {
     }
   }, [startDateValidation, watch("targetDate")]);
 
-  console.log("Add data: ", addData);
+  // console.log("Add data: ", addData);
   // console.log("Edit data: ", editData);
   // console.log("Errors: ", errors);
+
+  console.log("Start Date: ", watch("startDate"));
+  console.log("Target Date: ", watch("targetDate"));
 
   return (
     <Stack
@@ -760,6 +727,23 @@ const ReceiverConcerns = () => {
                     </Stack>
                   </Stack>
                 ))}
+
+              {isError && (
+                <Stack
+                  width="100%"
+                  height="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <Typography variant="h4" color="#EDF2F7">
+                        Something went wrong.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </Stack>
+              )}
 
               {(isLoading || isFetching) && (
                 <Stack
@@ -1010,16 +994,6 @@ const ReceiverConcerns = () => {
                                   onChange(value);
 
                                   setValue("userId", []);
-
-                                  // if (
-                                  //   watch("ChannelId")?.id !==
-                                  //   watch("ChannelId")?.id
-                                  // ) {
-                                  //   setValue("userId", null);
-                                  //   getIssueHandler({
-                                  //     Status: true,
-                                  //   });
-                                  // }
                                 }}
                                 getOptionLabel={(option) => option.channel_Name}
                                 isOptionEqualToValue={(option, value) =>
@@ -1111,7 +1085,10 @@ const ReceiverConcerns = () => {
                               <DatePicker
                                 value={field.value ? moment(field.value) : null}
                                 onChange={(newValue) => {
-                                  field.onChange(newValue);
+                                  const formattedValue = newValue
+                                    ? moment(newValue).format("YYYY-MM-DD")
+                                    : null;
+                                  field.onChange(formattedValue);
                                   setStartDateValidation(newValue);
                                 }}
                                 slotProps={{
@@ -1153,9 +1130,12 @@ const ReceiverConcerns = () => {
                             render={({ field }) => (
                               <DatePicker
                                 value={field.value ? moment(field.value) : null}
-                                onChange={(newValue) =>
-                                  field.onChange(newValue)
-                                }
+                                onChange={(newValue) => {
+                                  const formattedValue = newValue
+                                    ? moment(newValue).format("YYYY-MM-DD")
+                                    : null;
+                                  field.onChange(formattedValue);
+                                }}
                                 slotProps={{
                                   textField: { variant: "outlined" },
                                 }}
@@ -1738,7 +1718,11 @@ const ReceiverConcerns = () => {
                               <DatePicker
                                 value={field.value ? moment(field.value) : null}
                                 onChange={(newValue) => {
-                                  field.onChange(newValue);
+                                  const formattedValue = newValue
+                                    ? moment(newValue).format("YYYY-MM-DD")
+                                    : null;
+
+                                  field.onChange(formattedValue);
                                   setStartDateValidation(newValue);
                                 }}
                                 slotProps={{
@@ -1752,16 +1736,6 @@ const ReceiverConcerns = () => {
                             <p>{errors.startDate.message}</p>
                           )}
                         </LocalizationProvider>
-
-                        {/* <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
-                          // minDate={today}
-                          onChange={(newValue) =>
-                            setStartDate(moment(newValue).format("yyyy-MM-DD"))
-                          }
-                          sx={{ color: "#ffff" }}
-                        />
-                      </LocalizationProvider> */}
                       </Stack>
 
                       <Stack gap={0.5}>
@@ -1780,9 +1754,12 @@ const ReceiverConcerns = () => {
                             render={({ field }) => (
                               <DatePicker
                                 value={field.value ? moment(field.value) : null}
-                                onChange={(newValue) =>
-                                  field.onChange(newValue)
-                                }
+                                onChange={(newValue) => {
+                                  const formattedValue = newValue
+                                    ? moment(newValue).format("YYYY-MM-DD")
+                                    : null;
+                                  field.onChange(formattedValue);
+                                }}
                                 slotProps={{
                                   textField: { variant: "outlined" },
                                 }}

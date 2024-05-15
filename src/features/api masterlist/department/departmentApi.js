@@ -41,6 +41,6 @@ export const departmentApi = createApi({
 
 export const {
   useGetDepartmentQuery,
-  useSyncDepartmentMutation,
   useLazyGetDepartmentQuery,
+  useSyncDepartmentMutation,
 } = departmentApi;
