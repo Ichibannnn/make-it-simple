@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const concernReceiverApi = createApi({
   reducerPath: "concernReceiverApi",
-  tagTypes: ["Receiver Concern"],
+  tagTypes: ["Concern Receiver"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
@@ -27,7 +27,7 @@ export const concernReceiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Receiver Concern"],
+      providesTags: ["Concern Receiver"],
     }),
 
     getReceiverAttachment: builder.query({
@@ -36,7 +36,7 @@ export const concernReceiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Receiver Concern"],
+      providesTags: ["Concern Receiver"],
     }),
 
     createEditReceiverConcern: builder.mutation({
@@ -48,7 +48,7 @@ export const concernReceiverApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Receiver Concern"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
     }),
   }),
 });

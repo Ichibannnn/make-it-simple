@@ -41,6 +41,8 @@ import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+
 import {
   useCreateEditReceiverConcernMutation,
   useGetReceiverConcernsQuery,
@@ -159,6 +161,14 @@ const ReceiverConcerns = () => {
   const [getAddReceiverAttachment, { data: attachmentData }] =
     useLazyGetReceiverAttachmentQuery();
 
+  const onPageNumberChange = (_, page) => {
+    setPageNumber(page + 1);
+  };
+
+  const onPageSizeChange = (e) => {
+    setPageSize(e.target.value);
+  };
+
   const {
     control,
     handleSubmit,
@@ -186,14 +196,6 @@ const ReceiverConcerns = () => {
       RequestAttachmentsFiles: [],
     },
   });
-
-  const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
-  };
-
-  const onPageSizeChange = (e) => {
-    setPageSize(e.target.value);
-  };
 
   const onSubmitAction = (formData) => {
     console.log("FormData: ", formData);
@@ -554,12 +556,18 @@ const ReceiverConcerns = () => {
     }
   }, [startDateValidation, watch("targetDate")]);
 
+  console.log(
+    "length: ",
+    data?.value?.ticketRequestConcerns?.ticketConcerns?.length
+  );
+
   // console.log("Add data: ", addData);
   // console.log("Edit data: ", editData);
+  console.log(" data: ", data);
   // console.log("Errors: ", errors);
 
-  console.log("Start Date: ", watch("startDate"));
-  console.log("Target Date: ", watch("targetDate"));
+  // console.log("Start Date: ", watch("startDate"));
+  // console.log("Target Date: ", watch("targetDate"));
 
   return (
     <Stack
@@ -639,9 +647,9 @@ const ReceiverConcerns = () => {
               {isSuccess &&
                 !isLoading &&
                 !isFetching &&
-                data?.value?.requestConcern?.map((item, index) => (
+                data?.value?.requestConcern?.map((item) => (
                   <Stack
-                    key={index}
+                    key={item.requestGeneratorId}
                     sx={{
                       border: "1px solid #2D3748",
                       borderRadius: "20px",
@@ -671,10 +679,8 @@ const ReceiverConcerns = () => {
                       }}
                     >
                       <Stack direction="row" gap={1} alignItems="center">
-                        <FiberManualRecord color="success" fontSize="65px" />
-                        <Typography sx={{ fontSize: "15px" }}>
-                          Concern No. {item.requestGeneratorId} -{" "}
-                          {item.fullName}
+                        <Typography sx={{ fontSize: "15px", fontWeight: 500 }}>
+                          {item.fullName} - {item.department_Name}
                         </Typography>
                       </Stack>
 
@@ -706,20 +712,55 @@ const ReceiverConcerns = () => {
                         padding: 2,
                       }}
                     >
-                      <Typography sx={{ fontSize: "15px" }}>
-                        {item.concern}
-                      </Typography>
+                      <Stack direction="row" gap={1} alignItems="center">
+                        <Typography
+                          sx={{
+                            fontSize: "15px",
+                            fontWeight: 500,
+                            textDecoration: "",
+                          }}
+                        >
+                          CONCERN NO. {item.requestGeneratorId} -{" "}
+                        </Typography>
+                      </Stack>
+
+                      <Stack direction="row" gap={1} alignItems="center">
+                        <FiberManualRecord color="success" fontSize="65px" />
+
+                        <Typography
+                          className="ellipsis-styling"
+                          sx={{
+                            fontSize: "15px",
+                            color: theme.palette.text.secondary,
+                          }}
+                        >
+                          {item.concern}
+                        </Typography>
+                      </Stack>
                     </Stack>
 
                     <Stack
                       sx={{
                         width: "100%",
                         minHeight: "40px",
-                        alignItems: "end",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                         paddingRight: 2,
                         paddingLeft: 2,
                       }}
                     >
+                      <Stack>
+                        <Typography
+                          sx={{
+                            fontSize: "13px",
+                            // color: theme.palette.primary.main,
+                          }}
+                        >
+                          {/* Issue Handler(s) assigned to this concern: */}
+                        </Typography>
+                      </Stack>
+
                       <ReceiverConcernsActions
                         data={item}
                         onView={onViewAction}
@@ -745,6 +786,30 @@ const ReceiverConcerns = () => {
                 </Stack>
               )}
 
+              {isSuccess && !data?.value?.requestConcern?.length && (
+                <Stack
+                  marginTop={4}
+                  width="100%"
+                  height="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                  // sx={{
+                  //   backgroundColor: theme.palette.bgForm.black1,
+                  // }}
+                >
+                  <img
+                    src={noRecordsFound}
+                    alt="No Records Found"
+                    className="norecords-found"
+                  />
+                  <Stack marginLeft={6} marginTop={1}>
+                    <Typography color="#EDF2F7" variant="h5">
+                      No records found.
+                    </Typography>
+                  </Stack>
+                </Stack>
+              )}
+
               {(isLoading || isFetching) && (
                 <Stack
                   width="100%"
@@ -758,35 +823,20 @@ const ReceiverConcerns = () => {
                   </Typography>
                 </Stack>
               )}
-
-              {isSuccess && !data?.value?.requestConcern.length && (
-                <Stack
-                  width="100%"
-                  height="100%"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <Typography variant="h4" color="#EDF2F7">
-                        No records found.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                </Stack>
-              )}
             </Stack>
 
-            <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
-              onPageChange={onPageNumberChange}
-              onRowsPerPageChange={onPageSizeChange}
-            />
+            {isSuccess && data?.value?.requestConcern?.length && (
+              <TablePagination
+                sx={{ color: "#A0AEC0", fontWeight: 400 }}
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={data?.value?.totalCount || 0}
+                rowsPerPage={data?.value?.pageSize || 5}
+                page={data?.value?.currentPage - 1 || 0}
+                onPageChange={onPageNumberChange}
+                onRowsPerPageChange={onPageSizeChange}
+              />
+            )}
           </Stack>
         </Paper>
 

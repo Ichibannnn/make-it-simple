@@ -144,7 +144,7 @@ const SidebarList = () => {
     open: requestOpen,
     onToggle: requestOnToggle,
     onClose: requestOnClose,
-  } = useDisclosure(!!pathname.match(/request/gi));
+  } = useDisclosure(!!pathname.match(/requestor/gi));
   const {
     open: receiverOpen,
     onToggle: receiverOnToggle,

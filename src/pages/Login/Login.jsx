@@ -83,7 +83,7 @@ const Login = () => {
             <Typography color="white" fontSize="sm">
               One TEAM One RDF
             </Typography>
-            <img src={background} alt="background" className="login-svg" />
+            <img src={background} alt="background" className="svg-styling" />
           </Box>
         </Paper>
         <Paper

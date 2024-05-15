@@ -10,12 +10,22 @@
   ) !important;
 }
 
-.login-svg {
+.svg-styling {
   width: 320px;
   height: 320px;
-  object-fit: "fill";
+  object-fit: fill;
   border-style: none;
-  z-index: -1;
+  z-index: 1;
+  top: 0;
+}
+
+.norecords-found {
+  width: 300px;
+  height: 300px;
+  object-fit: fill;
+  border-style: none;
+  background: none;
+  z-index: 1;
   top: 0;
 }
 
@@ -173,7 +183,7 @@
 
 .ellipsis-styling {
   display: block;
-  width: 500px;
+  width: 100px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -36,6 +36,7 @@ import { toggleSidebar } from "../features/sidebar/sidebarSlice";
 import { PermIdentityOutlined } from "@mui/icons-material";
 
 import { concernApi } from "../features/api_request/concerns/concernApi";
+import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
 
 const Header = () => {
   const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -73,6 +74,7 @@ const Header = () => {
       localStorage.removeItem("user");
 
       dispatch(concernApi.util.resetApiState());
+      dispatch(concernReceiverApi.util.resetApiState());
 
       navigate("/");
 
