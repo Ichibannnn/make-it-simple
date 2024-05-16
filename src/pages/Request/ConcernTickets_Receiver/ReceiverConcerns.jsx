@@ -2,8 +2,10 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Chip,
   CircularProgress,
+  FormControlLabel,
   IconButton,
   OutlinedInput,
   Paper,
@@ -31,7 +33,7 @@ import {
   Search,
 } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { startTransition, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -88,7 +90,12 @@ const ReceiverConcerns = () => {
 
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
+
   const [startDateValidation, setStartDateValidation] = useState(null);
+
+  const [minEditStartDate, setMinStartDate] = useState(null);
+  const [selectedConcerns, setSelectedConcerns] = useState([]);
+  const [selectAllConcerns, setSelectAllConcerns] = useState(false);
 
   const fileInputRef = useRef();
   const today = moment();
@@ -197,113 +204,236 @@ const ReceiverConcerns = () => {
     },
   });
 
+  const selectAllSelectedConcerns = data?.value?.requestConcern?.map(
+    (requestConcern) =>
+      requestConcern?.ticketRequestConcerns.map((ticketRequestConcerns) =>
+        ticketRequestConcerns?.ticketConcerns?.map((ticketConcerns) => ({
+          issue_Handler: ticketConcerns?.issue_Handler,
+        }))
+      )
+  );
+
+  console.log("selectAllSelectedConcerns", selectAllSelectedConcerns);
+
+  const handleSelectAllConcerns = () => {
+    // if (selectAll) {
+    //   setSelectedConcerns([])
+    // } else {
+    //   setSelectedConcerns(data?.value?.)
+    // }
+  };
+
   const onSubmitAction = (formData) => {
     console.log("FormData: ", formData);
-
     const payload = new FormData();
 
-    // USER LENGTH
-    const userIdsLength =
-      formData.userId?.map((item) => item.userId).length || 0;
+    if (editData) {
+      // USER LENGTH
+      const userIdsLength =
+        formData.userId?.map((item) => item.userId).length || 0;
 
-    // console.log("User length: ", userIdsLength);
-    // console.log("User length: ", formData.concern_Details);
+      payload.append("RequestGeneratorId", formData.RequestGeneratorId);
+      payload.append("Requestor_By", formData.Requestor_By);
+      payload.append("ChannelId", formData.ChannelId.id);
 
-    payload.append("RequestGeneratorId", formData.RequestGeneratorId);
-    payload.append("Requestor_By", formData.Requestor_By);
-    payload.append("ChannelId", formData.ChannelId.id);
+      // ConcernDetails
+      const concernDetails = formData.concern_Details;
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].concern_Details`,
+          concernDetails[i % concernDetails.length]
+        );
+      }
+      // Category
+      const category = [formData.categoryId?.id];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].categoryId`,
+          category[i % category.length]
+        );
+      }
+      // SubCategory
+      const subcategory = [formData.subCategoryId?.id];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].subCategoryId`,
+          subcategory[i % subcategory.length]
+        );
+      }
+      // IssueHandler
+      const assignto = formData.userId?.map((item) => item.userId);
+      for (let i = 0; i < assignto.length; i++) {
+        payload.append(`AddRequestConcernbyConcerns[${i}].userId`, assignto[i]);
+      }
+      // StartDate
+      const startdate = [moment(formData.startDate).format("YYYY-MM-DD")];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].start_Date`,
+          startdate[i % startdate.length]
+        );
+      }
+      // TargetDate
+      const targetdate = [moment(formData.targetDate).format("YYYY-MM-DD")];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].target_Date`,
+          targetdate[i % targetdate.length]
+        );
+      }
 
-    // ConcernDetails
-    const concernDetails = formData.concern_Details;
-    for (let i = 0; i < userIdsLength; i++) {
-      payload.append(
-        `AddRequestConcernbyConcerns[${i}].concern_Details`,
-        concernDetails[i % concernDetails.length]
-      );
-    }
-    // Category
-    const category = [formData.categoryId?.id];
-    for (let i = 0; i < userIdsLength; i++) {
-      payload.append(
-        `AddRequestConcernbyConcerns[${i}].categoryId`,
-        category[i % category.length]
-      );
-    }
-    // SubCategory
-    const subcategory = [formData.subCategoryId?.id];
-    for (let i = 0; i < userIdsLength; i++) {
-      payload.append(
-        `AddRequestConcernbyConcerns[${i}].subCategoryId`,
-        subcategory[i % subcategory.length]
-      );
-    }
-    // IssueHandler
-    const assignto = formData.userId?.map((item) => item.userId);
-    for (let i = 0; i < assignto.length; i++) {
-      payload.append(`AddRequestConcernbyConcerns[${i}].userId`, assignto[i]);
-    }
-    // StartDate
-    const startdate = [moment(formData.startDate).format("YYYY-MM-DD")];
-    for (let i = 0; i < userIdsLength; i++) {
-      payload.append(
-        `AddRequestConcernbyConcerns[${i}].start_Date`,
-        startdate[i % startdate.length]
-      );
-    }
-    // TargetDate
-    const targetdate = [moment(formData.targetDate).format("YYYY-MM-DD")];
-    for (let i = 0; i < userIdsLength; i++) {
-      payload.append(
-        `AddRequestConcernbyConcerns[${i}].target_Date`,
-        targetdate[i % targetdate.length]
-      );
-    }
+      // TicketConcernId
+      const ticketconcernid = formData.ticketConcernId;
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].ticketConcernId`,
+          ticketconcernid[i] || ""
+        );
+      }
 
-    // TicketConcernId
-    const ticketconcernid = formData.ticketConcernId;
-    for (let i = 0; i < ticketconcernid.length; i++) {
-      payload.append(
-        `AddRequestConcernbyConcerns[${i}].ticketConcernId`,
-        ticketconcernid[i] || ""
-      );
-    }
+      if (ticketconcernid.length === 0) {
+        payload.append(`AddRequestConcernbyConcerns[0].ticketConcernId`, "");
+      }
 
-    // Attachments
-    const files = formData.RequestAttachmentsFiles;
-    for (let i = 0; i < files.length; i++) {
-      payload.append(
-        `ConcernAttachments[${i}].ticketAttachmentId`,
-        files[i].ticketAttachmentId || ""
-      );
-      payload.append(`ConcernAttachments[${i}].attachment`, files[i]);
-    }
+      // Attachments
+      const files = formData.RequestAttachmentsFiles;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(
+          `ConcernAttachments[${i}].ticketAttachmentId`,
+          files[i].ticketAttachmentId || ""
+        );
+        payload.append(`ConcernAttachments[${i}].attachment`, files[i]);
+      }
 
-    if (files.length === 0) {
-      payload.append(`ConcernAttachments[0].ticketAttachmentId`, "");
-      payload.append(`ConcernAttachments[0].attachment`, "");
-    }
+      if (files.length === 0) {
+        payload.append(`ConcernAttachments[0].ticketAttachmentId`, "");
+        payload.append(`ConcernAttachments[0].attachment`, "");
+      }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+      console.log("Payload Entries: ", [...payload.entries()]);
 
-    createEditReceiverConcern(payload)
-      .unwrap()
-      .then(() => {
-        toast.success("Success!", {
-          description: "Concern transferred successfully!",
-          duration: 1500,
+      createEditReceiverConcern(payload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Concern transferred successfully!",
+            duration: 1500,
+          });
+          setAddAttachments([]);
+          reset();
+          setAddData(null);
+          setEditData(null);
+          onClose();
+        })
+        .catch((err) => {
+          console.log("Error", err);
+          toast.error("Error!", {
+            description: err.data.error.message,
+            duration: 1500,
+          });
         });
-        setAddAttachments([]);
-        reset();
-        setAddData(null);
-        onClose();
-      })
-      .catch((err) => {
-        console.log("Error", err);
-        toast.error("Error!", {
-          description: err.data.error.message,
-          duration: 1500,
+    } else {
+      // USER LENGTH
+      const userIdsLength =
+        formData.userId?.map((item) => item.userId).length || 0;
+
+      payload.append("RequestGeneratorId", formData.RequestGeneratorId);
+      payload.append("Requestor_By", formData.Requestor_By);
+      payload.append("ChannelId", formData.ChannelId.id);
+
+      // ConcernDetails
+      const concernDetails = formData.concern_Details;
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].concern_Details`,
+          concernDetails[i % concernDetails.length]
+        );
+      }
+      // Category
+      const category = [formData.categoryId?.id];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].categoryId`,
+          category[i % category.length]
+        );
+      }
+      // SubCategory
+      const subcategory = [formData.subCategoryId?.id];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].subCategoryId`,
+          subcategory[i % subcategory.length]
+        );
+      }
+      // IssueHandler
+      const assignto = formData.userId?.map((item) => item.userId);
+      for (let i = 0; i < assignto.length; i++) {
+        payload.append(`AddRequestConcernbyConcerns[${i}].userId`, assignto[i]);
+      }
+      // StartDate
+      const startdate = [moment(formData.startDate).format("YYYY-MM-DD")];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].start_Date`,
+          startdate[i % startdate.length]
+        );
+      }
+      // TargetDate
+      const targetdate = [moment(formData.targetDate).format("YYYY-MM-DD")];
+      for (let i = 0; i < userIdsLength; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].target_Date`,
+          targetdate[i % targetdate.length]
+        );
+      }
+
+      // TicketConcernId
+      const ticketconcernid = formData.ticketConcernId;
+      for (let i = 0; i < ticketconcernid.length; i++) {
+        payload.append(
+          `AddRequestConcernbyConcerns[${i}].ticketConcernId`,
+          ticketconcernid[i] || ""
+        );
+      }
+
+      // Attachments
+      const files = formData.RequestAttachmentsFiles;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(
+          `ConcernAttachments[${i}].ticketAttachmentId`,
+          files[i].ticketAttachmentId || ""
+        );
+        payload.append(`ConcernAttachments[${i}].attachment`, files[i]);
+      }
+
+      if (files.length === 0) {
+        payload.append(`ConcernAttachments[0].ticketAttachmentId`, "");
+        payload.append(`ConcernAttachments[0].attachment`, "");
+      }
+
+      // console.log("Payload Entries: ", [...payload.entries()]);
+
+      createEditReceiverConcern(payload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Concern transferred successfully!",
+            duration: 1500,
+          });
+          setAddAttachments([]);
+          reset();
+          setAddData(null);
+          setEditData(null);
+          onClose();
+        })
+        .catch((err) => {
+          console.log("Error", err);
+          toast.error("Error!", {
+            description: err.data.error.message,
+            duration: 1500,
+          });
         });
-      });
+    }
   };
 
   const handleAttachments = (event) => {
@@ -335,7 +465,7 @@ const ReceiverConcerns = () => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    console.log("File name: ", fileNameToDelete);
+    // console.log("File name: ", fileNameToDelete);
 
     try {
       if (fileNameToDelete.ticketAttachmentId) {
@@ -416,10 +546,13 @@ const ReceiverConcerns = () => {
     // console.log("bindFunction: ", bindFunction?.[0]?.categoryId);
 
     if (bindFunction?.[0]?.categoryId === null) {
+      reset();
+      setMinStartDate(null);
+      setStartDateValidation(null);
       setAddData(data);
       setEditData(null);
-      reset();
     } else {
+      setMinStartDate(null);
       setEditData(data);
       setAddData(null);
     }
@@ -444,13 +577,6 @@ const ReceiverConcerns = () => {
             ticketConcernId: item2?.ticketConcernId,
           };
         })
-      );
-
-      const bindIssueHandler = addData?.ticketRequestConcerns?.map((item) =>
-        item?.ticketConcerns?.map((item2) => ({
-          fullname: item2?.issue_Handler,
-          userId: item2?.userId,
-        }))
       );
 
       setValue("RequestGeneratorId", addData?.requestGeneratorId);
@@ -489,18 +615,20 @@ const ReceiverConcerns = () => {
         subCategory_Description: item?.subCategory_Description,
         channelId: item?.channelId,
         channel_Name: item?.channel_Name,
-        start_Date: moment(item?.start_Date).format("YYYY-MM-DD"),
-        target_Date: moment(item?.target_Date).format("YYYY-MM-DD"),
+        start_Date: moment(item?.start_Date),
+        target_Date: moment(item?.target_Date),
       }));
 
       const bindIssueHandler = editData?.ticketRequestConcerns?.map((item) =>
-        item?.ticketConcerns?.map((item2) => ({
-          fullname: item2?.issue_Handler,
-          userId: item2?.userId,
-        }))
+        item?.ticketConcerns
+          ?.filter((item) => item.isActive === true)
+          ?.map((item2) => ({
+            fullname: item2?.issue_Handler,
+            userId: item2?.userId,
+          }))
       );
 
-      console.log("Bind Data: ", bindData);
+      // console.log("bindData: ", bindData);
 
       setValue("RequestGeneratorId", editData?.requestGeneratorId);
       setValue("Requestor_By", editData?.userId);
@@ -536,6 +664,8 @@ const ReceiverConcerns = () => {
       );
 
       setValue("startDate", bindData?.[0]?.start_Date);
+      setMinStartDate(bindData?.[0]?.start_Date);
+
       setValue("targetDate", bindData?.[0]?.target_Date);
 
       setValue(
@@ -547,27 +677,40 @@ const ReceiverConcerns = () => {
     }
   }, [editData]);
 
-  useEffect(() => {
-    if (watch("targetDate") < startDateValidation && watch("targetDate")) {
-      toast.error("Error!", {
-        description: "Target date cannot be earlier than start date.",
-        duration: 1500,
-      });
-    }
-  }, [startDateValidation, watch("targetDate")]);
+  // useEffect(() => {
+  //   if (
+  //     addData &&
+  //     watch("targetDate") < moment(startDateValidation).format("YYYY-MM-DD") &&
+  //     watch("targetDate")
+  //   ) {
+  //     toast.error("Error!", {
+  //       description: "Target date cannot be earlier than start date.",
+  //       duration: 1500,
+  //     });
+  //   }
+  // }, [addData, startDateValidation, watch("targetDate")]);
 
-  console.log(
-    "length: ",
-    data?.value?.ticketRequestConcerns?.ticketConcerns?.length
-  );
+  // console.log(
+  //   "length: ",
+  //   data?.value?.ticketRequestConcerns?.ticketConcerns?.length
+  // );
 
   // console.log("Add data: ", addData);
   // console.log("Edit data: ", editData);
-  console.log(" data: ", data);
+  // console.log(" data: ", data);
   // console.log("Errors: ", errors);
 
-  // console.log("Start Date: ", watch("startDate"));
-  // console.log("Target Date: ", watch("targetDate"));
+  // console.log("Start Date: ", moment(watch("targetDate")).format("YYYY-MM-DD"));
+  // console.log(
+  //   "Target Date: ",
+  //   moment(watch("targetDate")).format("YYYY-MM-DD")
+  // );
+
+  // console.log("Validation Date: ", startDateValidation);
+
+  // console.log("Users: ", watch("userId"));
+
+  console.log("data: ", data);
 
   return (
     <Stack
@@ -635,7 +778,18 @@ const ReceiverConcerns = () => {
             />
           </Stack>
 
-          <Stack padding={4} width="100%" gap={2}>
+          <Stack padding={4} width="100%" gap={1}>
+            <Stack paddingLeft={2} paddingRight={2} width="20">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                  // checked={selectAll}
+                  // onChange={handleSelectAll}
+                  />
+                }
+                label="Select All"
+              />
+            </Stack>
             <Stack
               sx={{
                 minHeight: "500px",
@@ -655,16 +809,16 @@ const ReceiverConcerns = () => {
                       borderRadius: "20px",
                       minHeight: "200px",
                       cursor: "pointer",
-                      backgroundColor:
-                        addData?.requestGeneratorId === item?.requestGeneratorId
-                          ? "#5f478e"
-                          : editData?.requestGeneratorId ===
-                            item?.requestGeneratorId
-                          ? "#5f478e"
-                          : "",
-                      "&:hover": {
-                        backgroundColor: theme.palette.secondary.main,
-                      },
+                      // backgroundColor:
+                      //   addData?.requestGeneratorId === item?.requestGeneratorId
+                      //     ? "#5f478e"
+                      //     : editData?.requestGeneratorId ===
+                      //       item?.requestGeneratorId
+                      //     ? "#5f478e"
+                      //     : "",
+                      // "&:hover": {
+                      //   backgroundColor: theme.palette.secondary.main,
+                      // },
                     }}
                   >
                     <Stack
@@ -678,7 +832,17 @@ const ReceiverConcerns = () => {
                         paddingRight: 2,
                       }}
                     >
-                      <Stack direction="row" gap={1} alignItems="center">
+                      <Stack direction="row" gap={0} alignItems="center">
+                        <FormControlLabel
+                          // key={user.id}
+                          control={
+                            <Checkbox
+                            // checked={selectedUsers.includes(user.id)}
+                            // onChange={() => handleSelectUser(user.id)}
+                            />
+                          }
+                          // label={user.name}
+                        />
                         <Typography sx={{ fontSize: "15px", fontWeight: 500 }}>
                           {item.fullName} - {item.department_Name}
                         </Typography>
@@ -715,12 +879,11 @@ const ReceiverConcerns = () => {
                       <Stack direction="row" gap={1} alignItems="center">
                         <Typography
                           sx={{
-                            fontSize: "15px",
+                            fontSize: "14px",
                             fontWeight: 500,
-                            textDecoration: "",
                           }}
                         >
-                          CONCERN NO. {item.requestGeneratorId} -{" "}
+                          CONCERN NO. {item.requestGeneratorId}
                         </Typography>
                       </Stack>
 
@@ -728,10 +891,10 @@ const ReceiverConcerns = () => {
                         <FiberManualRecord color="success" fontSize="65px" />
 
                         <Typography
-                          className="ellipsis-styling"
+                          // className="ellipsis-styling2"
                           sx={{
-                            fontSize: "15px",
-                            color: theme.palette.text.secondary,
+                            fontSize: "14px",
+                            // color: theme.palette.text.secondary,
                           }}
                         >
                           {item.concern}
@@ -1152,16 +1315,6 @@ const ReceiverConcerns = () => {
                             <p>{errors.startDate.message}</p>
                           )}
                         </LocalizationProvider>
-
-                        {/* <LocalizationProvider dateAdapter={AdapterMoment}>
-                      <DatePicker
-                        // minDate={today}
-                        onChange={(newValue) =>
-                          setStartDate(moment(newValue).format("yyyy-MM-DD"))
-                        }
-                        sx={{ color: "#ffff" }}
-                      />
-                    </LocalizationProvider> */}
                       </Stack>
 
                       <Stack gap={0.5}>
@@ -1204,15 +1357,6 @@ const ReceiverConcerns = () => {
                             <Typography>{errors.targetDate.message}</Typography>
                           )}
                         </LocalizationProvider>
-
-                        {/* <LocalizationProvider dateAdapter={AdapterMoment}>
-                      <DatePicker
-                        onChange={(newValue) =>
-                          setTargetDate(moment(newValue).format("yyyy-MM-DD"))
-                        }
-                        sx={{ color: "#fff" }}
-                      />
-                    </LocalizationProvider> */}
                       </Stack>
                     </Stack>
                   </Stack>
@@ -1327,20 +1471,22 @@ const ReceiverConcerns = () => {
                             </Box>
 
                             <Box>
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip>
+                              {!fileName.ticketAttachmentId && (
+                                <Tooltip title="Remove">
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleDeleteFile(fileName)}
+                                    style={{
+                                      background: "none",
+                                    }}
+                                  >
+                                    <RemoveCircleOutline />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
 
-                              {!!fileName.ticketAttachmentId && (
+                              {fileName.ticketAttachmentId === null && (
                                 <Tooltip title="Upload">
                                   <IconButton
                                     size="small"
@@ -1459,7 +1605,7 @@ const ReceiverConcerns = () => {
                       !watch("categoryId") ||
                       !watch("subCategoryId") ||
                       !watch("ChannelId") ||
-                      !watch("userId") ||
+                      watch("userId").length === 0 ||
                       !watch("startDate") ||
                       !watch("targetDate") ||
                       !addAttachments.length ||
@@ -1728,6 +1874,8 @@ const ReceiverConcerns = () => {
                                   if (!issueHandlerIsSuccess) getIssueHandler();
                                 }}
                                 onChange={(_, value) => {
+                                  console.log("Value: ", value);
+
                                   onChange(value);
                                 }}
                                 getOptionLabel={(option) => option.fullname}
@@ -1768,17 +1916,18 @@ const ReceiverConcerns = () => {
                               <DatePicker
                                 value={field.value ? moment(field.value) : null}
                                 onChange={(newValue) => {
+                                  console.log("New Value: ", newValue);
+
                                   const formattedValue = newValue
                                     ? moment(newValue).format("YYYY-MM-DD")
                                     : null;
-
                                   field.onChange(formattedValue);
                                   setStartDateValidation(newValue);
                                 }}
                                 slotProps={{
                                   textField: { variant: "outlined" },
                                 }}
-                                minDate={today}
+                                minDate={minEditStartDate} //Edit data start date
                               />
                             )}
                           />
@@ -1813,7 +1962,9 @@ const ReceiverConcerns = () => {
                                 slotProps={{
                                   textField: { variant: "outlined" },
                                 }}
-                                minDate={startDateValidation}
+                                minDate={
+                                  startDateValidation || minEditStartDate
+                                } // onChange Start Date
                                 error={!!errors.targetDate}
                                 helperText={
                                   errors.targetDate
@@ -1828,15 +1979,6 @@ const ReceiverConcerns = () => {
                             <Typography>{errors.targetDate.message}</Typography>
                           )}
                         </LocalizationProvider>
-
-                        {/* <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
-                          onChange={(newValue) =>
-                            setTargetDate(moment(newValue).format("yyyy-MM-DD"))
-                          }
-                          sx={{ color: "#fff" }}
-                        />
-                      </LocalizationProvider> */}
                       </Stack>
                     </Stack>
                   </Stack>
@@ -1951,20 +2093,22 @@ const ReceiverConcerns = () => {
                             </Box>
 
                             <Box>
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip>
+                              {!fileName.ticketAttachmentId && (
+                                <Tooltip title="Remove">
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleDeleteFile(fileName)}
+                                    style={{
+                                      background: "none",
+                                    }}
+                                  >
+                                    <RemoveCircleOutline />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
 
-                              {!!fileName.ticketAttachmentId && (
+                              {fileName.ticketAttachmentId === null && (
                                 <Tooltip title="Upload">
                                   <IconButton
                                     size="small"
@@ -2083,7 +2227,7 @@ const ReceiverConcerns = () => {
                       !watch("categoryId") ||
                       !watch("subCategoryId") ||
                       !watch("ChannelId") ||
-                      !watch("userId") ||
+                      watch("userId").length === 0 ||
                       !watch("startDate") ||
                       !watch("targetDate") ||
                       !addAttachments.length ||

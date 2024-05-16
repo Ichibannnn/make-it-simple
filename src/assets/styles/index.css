@@ -189,6 +189,15 @@
   text-overflow: ellipsis;
 }
 
+.ellipsis-styling2 {
+  display: block;
+  width: 1000px;
+  /* height: 100px; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .upload-file {
   width: 100%;
   display: flex;

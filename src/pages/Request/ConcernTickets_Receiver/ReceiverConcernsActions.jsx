@@ -25,10 +25,26 @@ export const ReceiverConcernsActions = ({ data, onView }) => {
   const ref = useRef(null);
   const { open, onToggle } = useDisclosure();
 
+  const [disabledButton, setDisabledButton] = useState(false);
+
   const onViewAction = (data) => {
     onToggle();
     onView(data);
   };
+
+  useEffect(() => {
+    if (data) {
+      const bindFunction = data?.ticketRequestConcerns?.map((item) => ({
+        categoryId: item?.categoryId,
+      }));
+
+      if (bindFunction?.[0]?.categoryId === null) {
+        setDisabledButton(true);
+      } else {
+        setDisabledButton(false);
+      }
+    }
+  }, [data]);
 
   return (
     <>
@@ -46,7 +62,7 @@ export const ReceiverConcernsActions = ({ data, onView }) => {
           </Typography>
         </MenuItem>
 
-        <MenuItem>
+        <MenuItem disabled={disabledButton}>
           <ListItemIcon>
             <DoneAllOutlined fontSize="small" color="success" />
           </ListItemIcon>
