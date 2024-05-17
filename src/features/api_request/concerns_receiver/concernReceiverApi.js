@@ -30,15 +30,6 @@ export const concernReceiverApi = createApi({
       providesTags: ["Concern Receiver"],
     }),
 
-    getReceiverAttachment: builder.query({
-      query: (params) => ({
-        url: `request-concern/request-attachment`,
-        method: "GET",
-        params: params,
-      }),
-      providesTags: ["Concern Receiver"],
-    }),
-
     createEditReceiverConcern: builder.mutation({
       query: (body) => ({
         url: "request-concern/add-ticket-concern",
@@ -50,6 +41,24 @@ export const concernReceiverApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
     }),
+
+    approveReceiverConcern: builder.mutation({
+      query: (body) => ({
+        url: "request-concern/approve-request",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
+    }),
+
+    getReceiverAttachment: builder.query({
+      query: (params) => ({
+        url: `request-concern/request-attachment`,
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Concern Receiver"],
+    }),
   }),
 });
 
@@ -57,4 +66,5 @@ export const {
   useGetReceiverConcernsQuery,
   useCreateEditReceiverConcernMutation,
   useLazyGetReceiverAttachmentQuery,
+  useApproveReceiverConcernMutation,
 } = concernReceiverApi;

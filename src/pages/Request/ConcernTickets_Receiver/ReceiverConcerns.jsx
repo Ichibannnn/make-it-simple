@@ -25,12 +25,14 @@ import {
   AccessTimeOutlined,
   Add,
   CheckOutlined,
+  DoneAllOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
   FileUploadOutlined,
   GetAppOutlined,
   RemoveCircleOutline,
   Search,
+  SyncOutlined,
 } from "@mui/icons-material";
 
 import React, { startTransition, useEffect, useRef, useState } from "react";
@@ -46,6 +48,7 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 
 import {
+  useApproveReceiverConcernMutation,
   useCreateEditReceiverConcernMutation,
   useGetReceiverConcernsQuery,
   useLazyGetReceiverAttachmentQuery,
@@ -61,6 +64,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
+import Swal from "sweetalert2";
 
 const schema = yup.object().shape({
   RequestGeneratorId: yup.string().nullable(),
@@ -87,15 +91,13 @@ const ReceiverConcerns = () => {
   const [viewData, setViewData] = useState(null);
   const [addData, setAddData] = useState(null);
   const [editData, setEditData] = useState(null);
+  const [disabledButton, setDisabledButton] = useState(false);
 
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [startDateValidation, setStartDateValidation] = useState(null);
-
   const [minEditStartDate, setMinStartDate] = useState(null);
-  const [selectedConcerns, setSelectedConcerns] = useState([]);
-  const [selectAllConcerns, setSelectAllConcerns] = useState(false);
 
   const fileInputRef = useRef();
   const today = moment();
@@ -203,25 +205,6 @@ const ReceiverConcerns = () => {
       RequestAttachmentsFiles: [],
     },
   });
-
-  const selectAllSelectedConcerns = data?.value?.requestConcern?.map(
-    (requestConcern) =>
-      requestConcern?.ticketRequestConcerns.map((ticketRequestConcerns) =>
-        ticketRequestConcerns?.ticketConcerns?.map((ticketConcerns) => ({
-          issue_Handler: ticketConcerns?.issue_Handler,
-        }))
-      )
-  );
-
-  console.log("selectAllSelectedConcerns", selectAllSelectedConcerns);
-
-  const handleSelectAllConcerns = () => {
-    // if (selectAll) {
-    //   setSelectedConcerns([])
-    // } else {
-    //   setSelectedConcerns(data?.value?.)
-    // }
-  };
 
   const onSubmitAction = (formData) => {
     console.log("FormData: ", formData);
@@ -678,6 +661,27 @@ const ReceiverConcerns = () => {
   }, [editData]);
 
   // useEffect(() => {
+  //   console.log("Data: ", data);
+
+  //   if (data) {
+  //     const approveBtnFunction =
+  //       data?.value?.requestConcern?.ticketRequestConcerns?.[0]?.map(
+  //         (item) => ({
+  //           categoryId: item?.categoryId,
+  //         })
+  //       );
+
+  //     if (approveBtnFunction?.[0]?.categoryId === null) {
+  //       setDisabledButton(true);
+  //     } else {
+  //       setDisabledButton(false);
+  //     }
+  //   }
+  // }, [data]);
+
+  console.log("Data: ", data);
+
+  // useEffect(() => {
   //   if (
   //     addData &&
   //     watch("targetDate") < moment(startDateValidation).format("YYYY-MM-DD") &&
@@ -710,7 +714,7 @@ const ReceiverConcerns = () => {
 
   // console.log("Users: ", watch("userId"));
 
-  console.log("data: ", data);
+  // console.log("data: ", data);
 
   return (
     <Stack
@@ -756,13 +760,13 @@ const ReceiverConcerns = () => {
             sx={{
               padding: "10px",
               flexDirection: "row",
-              justifyContent: "space-between",
+              justifyContent: "end",
             }}
             gap={1}
           >
-            <Stack />
             <OutlinedInput
-              placeholder="Search"
+              size="medium"
+              placeholder="Search by Requestor or Concern #"
               startAdornment={
                 <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
               }
@@ -773,23 +777,13 @@ const ReceiverConcerns = () => {
                 fontSize: "small",
                 fontWeight: 400,
                 lineHeight: "1.4375rem",
+                width: addData || editData ? "25%" : "20%",
                 // backgroundColor: "#111927",
               }}
             />
           </Stack>
 
           <Stack padding={4} width="100%" gap={1}>
-            <Stack paddingLeft={2} paddingRight={2} width="20">
-              <FormControlLabel
-                control={
-                  <Checkbox
-                  // checked={selectAll}
-                  // onChange={handleSelectAll}
-                  />
-                }
-                label="Select All"
-              />
-            </Stack>
             <Stack
               sx={{
                 minHeight: "500px",
@@ -809,96 +803,106 @@ const ReceiverConcerns = () => {
                       borderRadius: "20px",
                       minHeight: "200px",
                       cursor: "pointer",
-                      // backgroundColor:
-                      //   addData?.requestGeneratorId === item?.requestGeneratorId
-                      //     ? "#5f478e"
-                      //     : editData?.requestGeneratorId ===
-                      //       item?.requestGeneratorId
-                      //     ? "#5f478e"
-                      //     : "",
-                      // "&:hover": {
-                      //   backgroundColor: theme.palette.secondary.main,
-                      // },
                     }}
                   >
                     <Stack
                       sx={{
-                        flexDirection: "row",
-                        // border: "1px solid #2D3748",
-                        minHeight: "40px",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingLeft: 2,
-                        paddingRight: 2,
+                        borderTopLeftRadius: "20px",
+                        borderTopRightRadius: "20px",
+                        backgroundColor:
+                          addData?.requestGeneratorId ===
+                          item?.requestGeneratorId
+                            ? "#5f478e"
+                            : editData?.requestGeneratorId ===
+                              item?.requestGeneratorId
+                            ? "#5f478e"
+                            : "",
+                        "&:hover": {
+                          backgroundColor: theme.palette.secondary.main,
+                        },
                       }}
                     >
-                      <Stack direction="row" gap={0} alignItems="center">
-                        <FormControlLabel
-                          // key={user.id}
-                          control={
-                            <Checkbox
-                            // checked={selectedUsers.includes(user.id)}
-                            // onChange={() => handleSelectUser(user.id)}
-                            />
-                          }
-                          // label={user.name}
-                        />
-                        <Typography sx={{ fontSize: "15px", fontWeight: 500 }}>
-                          {item.fullName} - {item.department_Name}
-                        </Typography>
+                      <Stack
+                        sx={{
+                          flexDirection: "row",
+                          // border: "1px solid #2D3748",
+                          minHeight: "40px",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingLeft: 2,
+                          paddingRight: 2,
+                        }}
+                      >
+                        <Stack direction="row" gap={0} alignItems="center">
+                          <Typography
+                            sx={{ fontSize: "15px", fontWeight: 500 }}
+                          >
+                            {item.fullName} - {item.department_Name}
+                          </Typography>
+                        </Stack>
+
+                        <Stack direction="row" gap={0.5} alignItems="center">
+                          <Chip
+                            variant="filled"
+                            color="secondary"
+                            size="small"
+                            icon={
+                              <AccessTimeOutlined
+                                sx={{
+                                  fontSize: "16px",
+                                  color: theme.palette.text.secondary,
+                                }}
+                              />
+                            }
+                            label={`Posted at ${moment(item?.created_At).format(
+                              "LL"
+                            )}`}
+                          />
+
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={`Assigned`}
+                            sx={{
+                              backgroundColor: "#00913c",
+                              color: "#ffffffde",
+                            }}
+                          />
+                        </Stack>
                       </Stack>
 
-                      <Stack direction="row" gap={0.5} alignItems="center">
-                        <Chip
-                          variant="filled"
-                          color="primary"
-                          size="small"
-                          icon={
-                            <AccessTimeOutlined
-                              sx={{
-                                fontSize: "16px",
-                                color: theme.palette.text.secondary,
-                              }}
-                            />
-                          }
-                          label={`Posted at ${moment(item?.created_At).format(
-                            "LL"
-                          )}`}
-                        />
-                      </Stack>
-                    </Stack>
+                      <Stack
+                        onClick={() => onAddEditAction(item)}
+                        sx={{
+                          border: "1px solid #2D3748",
+                          minHeight: "120px",
+                          padding: 2,
+                        }}
+                      >
+                        <Stack direction="row" gap={1} alignItems="center">
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            CONCERN NO. {item.requestGeneratorId}
+                          </Typography>
+                        </Stack>
 
-                    <Stack
-                      onClick={() => onAddEditAction(item)}
-                      sx={{
-                        border: "1px solid #2D3748",
-                        minHeight: "120px",
-                        padding: 2,
-                      }}
-                    >
-                      <Stack direction="row" gap={1} alignItems="center">
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          CONCERN NO. {item.requestGeneratorId}
-                        </Typography>
-                      </Stack>
+                        <Stack direction="row" gap={1} alignItems="center">
+                          <FiberManualRecord color="success" fontSize="65px" />
 
-                      <Stack direction="row" gap={1} alignItems="center">
-                        <FiberManualRecord color="success" fontSize="65px" />
-
-                        <Typography
-                          // className="ellipsis-styling2"
-                          sx={{
-                            fontSize: "14px",
-                            // color: theme.palette.text.secondary,
-                          }}
-                        >
-                          {item.concern}
-                        </Typography>
+                          <Typography
+                            // className="ellipsis-styling2"
+                            sx={{
+                              fontSize: "14px",
+                              // color: theme.palette.text.secondary,
+                            }}
+                          >
+                            {item.concern}
+                          </Typography>
+                        </Stack>
                       </Stack>
                     </Stack>
 
@@ -924,9 +928,83 @@ const ReceiverConcerns = () => {
                         </Typography>
                       </Stack>
 
+                      {/* {item?.ticketRequestConcerns?.[0]?.categoryId === null ? (
+                        <LoadingButton
+                          variant="text"
+                          size="small"
+                          color="success"
+                          startIcon={<DoneAllOutlined />}
+                          loadingPosition="start"
+                          onClick={() => onApproveAction(item)}
+                          loading={
+                            isLoading ||
+                            isFetching ||
+                            approveReceiverConcernIsLoading ||
+                            approveReceiverConcernIsFetching
+                          }
+                          sx={{
+                            ":disabled": {
+                              backgroundColor: theme.palette.primary.main,
+                              color: "black",
+                            },
+                          }}
+                        >
+                          Approve
+                        </LoadingButton>
+                      ) : (
+                        <LoadingButton
+                          variant="text"
+                          size="small"
+                          color="success"
+                          startIcon={<DoneAllOutlined />}
+                          loadingPosition="start"
+                          onClick={() => onApproveAction(item)}
+                          loading={
+                            isLoading ||
+                            isFetching ||
+                            approveReceiverConcernIsLoading ||
+                            approveReceiverConcernIsFetching
+                          }
+                          disabled
+                          sx={{
+                            ":disabled": {
+                              backgroundColor: theme.palette.primary.main,
+                              color: "black",
+                            },
+                          }}
+                        >
+                          Approve
+                        </LoadingButton>
+                      )} */}
+
+                      {/* <LoadingButton
+                        variant="text"
+                        size="small"
+                        color="success"
+                        startIcon={<DoneAllOutlined />}
+                        loadingPosition="start"
+                        onClick={() => onApproveAction(item)}
+                        loading={
+                          isLoading ||
+                          isFetching ||
+                          approveReceiverConcernIsLoading ||
+                          approveReceiverConcernIsFetching
+                        }
+                        disabled
+                        sx={{
+                          ":disabled": {
+                            backgroundColor: theme.palette.primary.secondary,
+                            color: "black",
+                          },
+                        }}
+                      >
+                        Approve
+                      </LoadingButton> */}
+
                       <ReceiverConcernsActions
                         data={item}
                         onView={onViewAction}
+                        onClose={onClose}
                       />
                     </Stack>
                   </Stack>
