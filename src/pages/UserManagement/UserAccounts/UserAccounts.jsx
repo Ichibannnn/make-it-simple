@@ -5,6 +5,7 @@ import {
   CircularProgress,
   Divider,
   OutlinedInput,
+  Paper,
   Stack,
   Tab,
   Table,
@@ -328,232 +329,234 @@ const UserAccounts = () => {
           </Button>
         </Stack>
 
-        <TableContainer>
-          <Table sx={{ borderBottom: "none" }}>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  LINE NO.
-                </TableCell>
+        <Paper sx={{ width: "100%", overflow: "hidden" }}>
+          <TableContainer>
+            <Table stickyHeader sx={{ borderBottom: "none" }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                    align="center"
+                  >
+                    LINE NO.
+                  </TableCell>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  FULLNAME
-                </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    FULLNAME
+                  </TableCell>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  USERNAME
-                </TableCell>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  ROLE
-                </TableCell>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  ACCOUNT ACCESS
-                </TableCell>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  STATUS
-                </TableCell>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  ACTIONS
-                </TableCell>
-              </TableRow>
-            </TableHead>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    USERNAME
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    ROLE
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                    align="center"
+                  >
+                    ACCOUNT ACCESS
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                    align="center"
+                  >
+                    STATUS
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                    align="center"
+                  >
+                    ACTIONS
+                  </TableCell>
+                </TableRow>
+              </TableHead>
 
-            <TableBody>
-              {isSuccess &&
-                !isLoading &&
-                !isFetching &&
-                data?.value?.users?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      {index + 1}
-                    </TableCell>
+              <TableBody>
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.users?.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        {index + 1}
+                      </TableCell>
 
-                    <TableCell>
-                      <Typography
+                      <TableCell>
+                        <Typography
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.fullname}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.empId}
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell
                         sx={{
                           color: "#EDF2F7",
                           fontSize: "14px",
                           fontWeight: 500,
                         }}
                       >
-                        {item.fullname}
-                      </Typography>
-                      <Typography
+                        {item.username}
+                      </TableCell>
+
+                      <TableCell
                         sx={{
-                          color: theme.palette.text.secondary,
-                          fontSize: "12px",
+                          color: theme.palette.success.main,
+                          fontSize: "14px",
                           fontWeight: 500,
                         }}
                       >
-                        {item.empId}
+                        {item.user_Role_Name}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        <UserAccountPermissions permissions={item.permission} />
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        <Chip
+                          variant="filled"
+                          size="30px"
+                          sx={{
+                            fontSize: "13px",
+                            backgroundColor: item.is_Active
+                              ? "#112C32"
+                              : "#2D2823",
+                            color: item.is_Active ? "#10B981" : "#D27D0E",
+                            fontWeight: 800,
+                          }}
+                          label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                        />
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                        align="center"
+                      >
+                        <UserAccountAction
+                          data={item}
+                          onReset={onResetPasswordAction}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                {isError && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <Typography variant="h5" color="#EDF2F7">
+                        Something went wrong.
                       </Typography>
                     </TableCell>
+                  </TableRow>
+                )}
 
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.username}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: theme.palette.success.main,
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.user_Role_Name}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <UserAccountPermissions permissions={item.permission} />
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <Chip
-                        variant="filled"
-                        size="30px"
-                        sx={{
-                          fontSize: "13px",
-                          backgroundColor: item.is_Active
-                            ? "#112C32"
-                            : "#2D2823",
-                          color: item.is_Active ? "#10B981" : "#D27D0E",
-                          fontWeight: 800,
-                        }}
-                        label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                      />
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <UserAccountAction
-                        data={item}
-                        onReset={onResetPasswordAction}
-                        onArchive={onArchiveAction}
-                        onUpdate={onEditAction}
-                      />
+                {(isLoading || isFetching) && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <CircularProgress />
+                      <Typography variant="h5" color="#EDF2F7">
+                        Please wait...
+                      </Typography>
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
 
-              {isError && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
-                      Something went wrong.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {(isLoading || isFetching) && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <CircularProgress />
-                    <Typography variant="h5" color="#EDF2F7">
-                      Please wait...
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {isSuccess && !data?.value?.users.length && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
-                      No records found.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                {isSuccess && !data?.value?.users.length && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <Typography variant="h5" color="#EDF2F7">
+                        No records found.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
 
         <TablePagination
           sx={{ color: "#A0AEC0", fontWeight: 400 }}

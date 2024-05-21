@@ -22,7 +22,6 @@ import SubCategory from "../pages/Masterlist/Sub-Category/SubCategory";
 
 import RequestsPage from "../pages/Request/RequestsPage";
 import RequestTickets from "../pages/Request/RequestTickets/RequestTickets";
-import Tickets from "../pages/Request/Tickets/Tickets";
 import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
 
 import ChannelPage from "../pages/ChannelSetup/ChannelPage";
@@ -32,6 +31,9 @@ import Approver from "../pages/ChannelSetup/Approver/Approver";
 
 import ReceiverPage from "../pages/Request/ReceiverPage";
 import ReceiverConcerns from "../pages/Request/ConcernTickets_Receiver/ReceiverConcerns";
+
+import TicketingPage from "../pages/Tickets/TicketingPage";
+import IssueHandlerConcerns from "../pages/Tickets/IssueHandlerConcerns/IssueHandlerConcerns";
 
 export const router = createBrowserRouter([
   {
@@ -136,6 +138,16 @@ export const router = createBrowserRouter([
           {
             path: "/receiver/receiver-concerns",
             element: <ReceiverConcerns />,
+          },
+        ],
+      },
+      {
+        path: "/ticketing",
+        element: <TicketingPage />,
+        children: [
+          {
+            path: "/ticketing/issue-handler-concerns",
+            element: <IssueHandlerConcerns />,
           },
         ],
       },

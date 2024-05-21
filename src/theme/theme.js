@@ -296,14 +296,14 @@ const theme = createTheme({
       },
     },
 
-    // MuiChip: {
-    //   styleOverrides: {
-    //     root: {
-    //       color: "#EDF2F7",
-    //       backgroundColor: "#3f305f",
-    //     },
-    //   },
-    // },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          color: "#EDF2F7",
+          backgroundColor: "#3f305f",
+        },
+      },
+    },
 
     MuiButtonBase: {
       styleOverrides: {

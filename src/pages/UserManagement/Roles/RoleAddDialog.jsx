@@ -42,6 +42,7 @@ const parentCheckbox = [
   "Requestor",
   "Receiver",
   "Channel Setup",
+  "Ticketing",
   "Filing",
   "Generate",
 ];
@@ -59,6 +60,7 @@ const masterlistCheckbox = [
 const channelCheckbox = ["Receiver", "Channel", "Approver"];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
+const ticketingCheckbox = ["Concerns"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
   const [
@@ -258,6 +260,12 @@ const RoleAddDialog = ({ data, open, onClose }) => {
       setValue(
         "permissions",
         watch("permissions").filter((item) => !receiverCheckbox.includes(item))
+      );
+    }
+    if (!e.target.checked && e.target.value === "Ticketing") {
+      setValue(
+        "permissions",
+        watch("permissions").filter((item) => !ticketingCheckbox.includes(item))
       );
     }
   };
@@ -671,6 +679,69 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
+
+              {/* TICKETING */}
+              {watch("permissions")?.includes("Ticketing") && (
+                <FormControl
+                  component="fieldset"
+                  variant="standard"
+                  sx={{
+                    border: "1px solid #2D3748",
+                    borderRadius: "10px",
+                    padding: 2,
+                  }}
+                >
+                  <FormLabel
+                    component="legend"
+                    sx={{
+                      padding: "0 20px",
+                    }}
+                  >
+                    Ticketing
+                  </FormLabel>
+
+                  <FormGroup>
+                    <Stack direction="row" flexWrap="wrap">
+                      {ticketingCheckbox.map((item, index) => (
+                        <Controller
+                          key={index}
+                          control={control}
+                          name="permissions"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <FormControlLabel
+                                sx={{
+                                  flex: 1,
+                                  flexBasis: "40%",
+                                }}
+                                control={
+                                  <Checkbox
+                                    ref={ref}
+                                    value={item}
+                                    checked={value?.includes(item)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        onChange([...value, e.target.value]);
+                                      } else {
+                                        onChange([
+                                          ...value.filter(
+                                            (item) => item !== e.target.value
+                                          ),
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={item}
+                              />
+                            );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </FormGroup>
+                </FormControl>
+              )}
             </Stack>
           </DialogContent>
 
@@ -712,6 +783,11 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 (watch("permissions").includes("Receiver")
                   ? !watch("permissions").some((item) =>
                       receiverCheckbox.includes(item)
+                    )
+                  : false) ||
+                (watch("permissions").includes("Ticketing")
+                  ? !watch("permissions").some((item) =>
+                      ticketingCheckbox.includes(item)
                     )
                   : false)
               }

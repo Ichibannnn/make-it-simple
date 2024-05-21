@@ -150,6 +150,11 @@ const SidebarList = () => {
     onToggle: receiverOnToggle,
     onClose: receiverOnClose,
   } = useDisclosure(!!pathname.match(/receiver/gi));
+  const {
+    open: ticketingOpen,
+    onToggle: ticketingOnToggle,
+    onClose: ticketingOnClose,
+  } = useDisclosure(!!pathname.match(/ticketing/gi));
 
   const sidebarMenu = [
     {
@@ -169,6 +174,7 @@ const SidebarList = () => {
         masterlistOnClose();
         requestOnClose();
         channelOnClose();
+        ticketingOnClose();
       },
       sub: [
         {
@@ -199,6 +205,7 @@ const SidebarList = () => {
         requestOnClose();
         channelOnClose();
         receiverOnClose();
+        ticketingOnClose();
       },
       sub: [
         {
@@ -263,6 +270,7 @@ const SidebarList = () => {
         masterlistOnClose();
         requestOnClose();
         receiverOnClose();
+        ticketingOnClose();
       },
       sub: [
         {
@@ -297,6 +305,7 @@ const SidebarList = () => {
         masterlistOnClose();
         channelOnClose();
         receiverOnClose();
+        ticketingOnClose();
       },
       sub: [
         {
@@ -319,6 +328,7 @@ const SidebarList = () => {
         userManagementOnClose();
         masterlistOnClose();
         channelOnClose();
+        ticketingOnClose();
       },
       sub: [
         {
@@ -331,12 +341,35 @@ const SidebarList = () => {
     },
     {
       id: 7,
+      name: "Ticketing",
+      path: "/ticketing",
+      icon: "ConfirmationNumberOutlined",
+      open: ticketingOpen,
+      onToggle: () => {
+        ticketingOnToggle();
+        receiverOnClose();
+        requestOnClose();
+        userManagementOnClose();
+        masterlistOnClose();
+        channelOnClose();
+      },
+      sub: [
+        {
+          id: 1,
+          name: "Concerns",
+          path: "/ticketing/issue-handler-concerns",
+          icon: "ConfirmationNumberOutlined",
+        },
+      ],
+    },
+    {
+      id: 8,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 8,
+      id: 9,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",

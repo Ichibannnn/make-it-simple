@@ -29,6 +29,16 @@
   top: 0;
 }
 
+.something-went-wrong {
+  width: 300px;
+  height: 300px;
+  object-fit: fill;
+  border-style: none;
+  background: none;
+  z-index: 1;
+  top: 0;
+}
+
 .login-icon {
   width: 170px;
   object-fit: fill;

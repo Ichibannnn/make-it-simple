@@ -46,6 +46,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import SomethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import {
   useApproveReceiverConcernMutation,
@@ -795,140 +796,147 @@ const ReceiverConcerns = () => {
               {isSuccess &&
                 !isLoading &&
                 !isFetching &&
-                data?.value?.requestConcern?.map((item) => (
-                  <Stack
-                    key={item.requestGeneratorId}
-                    sx={{
-                      border: "1px solid #2D3748",
-                      borderRadius: "20px",
-                      minHeight: "200px",
-                      cursor: "pointer",
-                    }}
-                  >
+                data?.value?.requestConcern?.map((item) =>
+                  item?.ticketRequestConcerns?.map((subItem) => (
                     <Stack
+                      key={item.requestGeneratorId}
                       sx={{
-                        borderTopLeftRadius: "20px",
-                        borderTopRightRadius: "20px",
-                        backgroundColor:
-                          addData?.requestGeneratorId ===
-                          item?.requestGeneratorId
-                            ? "#5f478e"
-                            : editData?.requestGeneratorId ===
-                              item?.requestGeneratorId
-                            ? "#5f478e"
-                            : "",
-                        "&:hover": {
-                          backgroundColor: theme.palette.secondary.main,
-                        },
+                        border: "1px solid #2D3748",
+                        borderRadius: "20px",
+                        minHeight: "200px",
+                        cursor: "pointer",
                       }}
                     >
                       <Stack
                         sx={{
-                          flexDirection: "row",
-                          // border: "1px solid #2D3748",
-                          minHeight: "40px",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          paddingLeft: 2,
-                          paddingRight: 2,
+                          borderTopLeftRadius: "20px",
+                          borderTopRightRadius: "20px",
+                          backgroundColor:
+                            addData?.requestGeneratorId ===
+                            item?.requestGeneratorId
+                              ? "#5f478e"
+                              : editData?.requestGeneratorId ===
+                                item?.requestGeneratorId
+                              ? "#5f478e"
+                              : "",
+                          "&:hover": {
+                            backgroundColor: theme.palette.secondary.main,
+                          },
                         }}
                       >
-                        <Stack direction="row" gap={0} alignItems="center">
-                          <Typography
-                            sx={{ fontSize: "15px", fontWeight: 500 }}
-                          >
-                            {item.fullName} - {item.department_Name}
-                          </Typography>
-                        </Stack>
-
-                        <Stack direction="row" gap={0.5} alignItems="center">
-                          <Chip
-                            variant="filled"
-                            color="secondary"
-                            size="small"
-                            icon={
-                              <AccessTimeOutlined
-                                sx={{
-                                  fontSize: "16px",
-                                  color: theme.palette.text.secondary,
-                                }}
-                              />
-                            }
-                            label={`Posted at ${moment(item?.created_At).format(
-                              "LL"
-                            )}`}
-                          />
-
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={`Assigned`}
-                            sx={{
-                              backgroundColor: "#00913c",
-                              color: "#ffffffde",
-                            }}
-                          />
-                        </Stack>
-                      </Stack>
-
-                      <Stack
-                        onClick={() => onAddEditAction(item)}
-                        sx={{
-                          border: "1px solid #2D3748",
-                          minHeight: "120px",
-                          padding: 2,
-                        }}
-                      >
-                        <Stack direction="row" gap={1} alignItems="center">
-                          <Typography
-                            sx={{
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                          >
-                            CONCERN NO. {item.requestGeneratorId}
-                          </Typography>
-                        </Stack>
-
-                        <Stack direction="row" gap={1} alignItems="center">
-                          <FiberManualRecord color="success" fontSize="65px" />
-
-                          <Typography
-                            // className="ellipsis-styling2"
-                            sx={{
-                              fontSize: "14px",
-                              // color: theme.palette.text.secondary,
-                            }}
-                          >
-                            {item.concern}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-                    </Stack>
-
-                    <Stack
-                      sx={{
-                        width: "100%",
-                        minHeight: "40px",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingRight: 2,
-                        paddingLeft: 2,
-                      }}
-                    >
-                      <Stack>
-                        <Typography
+                        <Stack
                           sx={{
-                            fontSize: "13px",
-                            // color: theme.palette.primary.main,
+                            flexDirection: "row",
+                            // border: "1px solid #2D3748",
+                            minHeight: "40px",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            paddingLeft: 2,
+                            paddingRight: 2,
                           }}
                         >
-                          {/* Issue Handler(s) assigned to this concern: */}
-                        </Typography>
+                          <Stack direction="row" gap={0} alignItems="center">
+                            <Typography
+                              sx={{ fontSize: "15px", fontWeight: 500 }}
+                            >
+                              {item.fullName} - {item.department_Name}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Chip
+                              variant="filled"
+                              color="secondary"
+                              size="small"
+                              icon={
+                                <AccessTimeOutlined
+                                  sx={{
+                                    fontSize: "16px",
+                                    color: theme.palette.text.secondary,
+                                  }}
+                                />
+                              }
+                              label={`Posted at ${moment(
+                                item?.created_At
+                              ).format("LL")}`}
+                            />
+
+                            {subItem?.is_Assigned === true ? (
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                label={`Assigned`}
+                                sx={{
+                                  backgroundColor: "#00913c",
+                                  color: "#ffffffde",
+                                }}
+                              />
+                            ) : (
+                              ""
+                            )}
+                          </Stack>
+                        </Stack>
+
+                        <Stack
+                          onClick={() => onAddEditAction(item)}
+                          sx={{
+                            border: "1px solid #2D3748",
+                            minHeight: "120px",
+                            padding: 2,
+                          }}
+                        >
+                          <Stack direction="row" gap={1} alignItems="center">
+                            <Typography
+                              sx={{
+                                fontSize: "14px",
+                                fontWeight: 500,
+                              }}
+                            >
+                              CONCERN NO. {item.requestGeneratorId}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={1} alignItems="center">
+                            <FiberManualRecord
+                              color="success"
+                              fontSize="65px"
+                            />
+
+                            <Typography
+                              // className="ellipsis-styling2"
+                              sx={{
+                                fontSize: "14px",
+                              }}
+                            >
+                              {item.concern}
+                            </Typography>
+                          </Stack>
+                        </Stack>
                       </Stack>
 
-                      {/* {item?.ticketRequestConcerns?.[0]?.categoryId === null ? (
+                      <Stack
+                        sx={{
+                          width: "100%",
+                          minHeight: "40px",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingRight: 2,
+                          paddingLeft: 2,
+                        }}
+                      >
+                        <Stack>
+                          <Typography
+                            sx={{
+                              fontSize: "13px",
+                              // color: theme.palette.primary.main,
+                            }}
+                          >
+                            {/* Issue Handler(s) assigned to this concern: */}
+                          </Typography>
+                        </Stack>
+
+                        {/* {item?.ticketRequestConcerns?.[0]?.categoryId === null ? (
                         <LoadingButton
                           variant="text"
                           size="small"
@@ -977,7 +985,7 @@ const ReceiverConcerns = () => {
                         </LoadingButton>
                       )} */}
 
-                      {/* <LoadingButton
+                        {/* <LoadingButton
                         variant="text"
                         size="small"
                         color="success"
@@ -1001,14 +1009,15 @@ const ReceiverConcerns = () => {
                         Approve
                       </LoadingButton> */}
 
-                      <ReceiverConcernsActions
-                        data={item}
-                        onView={onViewAction}
-                        onClose={onClose}
-                      />
+                        <ReceiverConcernsActions
+                          data={item}
+                          onView={onViewAction}
+                          onClose={onClose}
+                        />
+                      </Stack>
                     </Stack>
-                  </Stack>
-                ))}
+                  ))
+                )}
 
               {isError && (
                 <Stack
@@ -1017,13 +1026,16 @@ const ReceiverConcerns = () => {
                   justifyContent="center"
                   alignItems="center"
                 >
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <Typography variant="h4" color="#EDF2F7">
-                        Something went wrong.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
+                  <img
+                    src={SomethingWentWrong}
+                    alt="Something Went Wrong"
+                    className="something-went-wrong"
+                  />
+                  <Stack marginLeft={1}>
+                    <Typography color="#EDF2F7" variant="h5">
+                      Something went wrong.
+                    </Typography>
+                  </Stack>
                 </Stack>
               )}
 

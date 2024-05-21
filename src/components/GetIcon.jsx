@@ -37,6 +37,7 @@ export const getMenuIcon = (iconName) => {
     NumbersOutlined: <NumbersOutlined />,
     AttachFileOutlined: <AttachFileOutlined />,
     BallotOutlined: <BallotOutlined />,
+    ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;
