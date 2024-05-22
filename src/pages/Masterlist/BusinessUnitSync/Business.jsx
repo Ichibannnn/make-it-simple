@@ -243,8 +243,9 @@ const Business = () => {
                     fontSize: "12px",
                   }}
                 >
-                  BUSINESS UNIT CODE
+                  COMPANY
                 </TableCell>
+
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -252,8 +253,9 @@ const Business = () => {
                     fontWeight: 700,
                     fontSize: "12px",
                   }}
+                  align="center"
                 >
-                  BUSINESS UNIT NAME
+                  BUSINESS UNIT CODE
                 </TableCell>
 
                 <TableCell
@@ -264,7 +266,7 @@ const Business = () => {
                     fontSize: "12px",
                   }}
                 >
-                  COMPANY NAME
+                  BUSINESS UNIT NAME
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -293,6 +295,17 @@ const Business = () => {
                         fontWeight: 500,
                       }}
                     >
+                      {item.companyId} - {item.company_Name}
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
                       {item.business_Code}
                     </TableCell>
 
@@ -304,16 +317,6 @@ const Business = () => {
                       }}
                     >
                       {item.business_Name}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.company_Name}
                     </TableCell>
                   </TableRow>
                 ))}

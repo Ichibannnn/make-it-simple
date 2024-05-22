@@ -406,6 +406,18 @@ const SubUnit = () => {
                     fontSize: "12px",
                   }}
                 >
+                  UNIT
+                </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                  align="center"
+                >
                   SUB UNIT CODE
                 </TableCell>
 
@@ -418,17 +430,6 @@ const SubUnit = () => {
                   }}
                 >
                   SUB UNIT NAME
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  UNIT NAME
                 </TableCell>
 
                 <TableCell
@@ -493,6 +494,17 @@ const SubUnit = () => {
                         fontWeight: 500,
                       }}
                     >
+                      {item.unit_Code} - {item.unit_Name}
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                      align="center"
+                    >
                       {item.subUnit_Code}
                     </TableCell>
 
@@ -504,16 +516,6 @@ const SubUnit = () => {
                       }}
                     >
                       {item.subUnit_Name}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.unit_Name}
                     </TableCell>
 
                     <TableCell

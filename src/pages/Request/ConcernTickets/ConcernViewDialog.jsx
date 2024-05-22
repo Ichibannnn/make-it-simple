@@ -35,7 +35,7 @@ import {
 } from "../../../features/api_request/concerns/concernApi";
 
 const requestorSchema = yup.object().shape({
-  RequestGeneratorId: yup.string().nullable(),
+  RequestTransactionId: yup.string().nullable(),
   Concern: yup.string().required().label("Concern Details"),
   RequestConcernId: yup.string().nullable(),
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -45,8 +45,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
-
-  console.log("Ticket Id: ", ticketAttachmentId);
 
   const fileInputRef = useRef();
 
@@ -79,7 +77,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   } = useForm({
     resolver: yupResolver(requestorSchema),
     defaultValues: {
-      RequestGeneratorId: "",
+      RequestTransactionId: "",
       Concern: "",
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
@@ -89,7 +87,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const onConcernFormSubmit = (formData) => {
     const payload = new FormData();
 
-    payload.append("RequestGeneratorId", formData.RequestGeneratorId);
+    payload.append("RequestTransactionId", formData.RequestTransactionId);
     payload.append("Concern", formData.Concern);
     payload.append("RequestConcernId", formData.RequestConcernId);
 
@@ -218,7 +216,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     try {
       const res = await getRequestorAttachment({ Id: id }).unwrap();
 
-      console.log("res", res);
+      // console.log("res", res);
 
       setAttachments(
         res?.value?.[0]?.attachments?.map((item) => ({
@@ -233,20 +231,14 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   useEffect(() => {
     if (editData) {
-      setValue("RequestGeneratorId", editData?.requestGeneratorId);
+      setValue("RequestTransactionId", editData?.requestTransactionId);
       setValue("RequestConcernId", editData?.requestConcernId);
       setValue("Concern", editData?.concern);
 
       // getRequestorAttachment({ Id: editData?.requestGeneratorId });
-      getAttachmentData(editData.requestGeneratorId);
+      getAttachmentData(editData.requestTransactionId);
     }
   }, [editData]);
-
-  // console.log(watch("RequestAttachmentsFiles"));
-
-  // console.log(editData);
-
-  console.log("Attachments: ", watch("RequestAttachmentsFiles"));
 
   return (
     <>
@@ -360,7 +352,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     <Divider
                       variant="fullWidth"
                       sx={{
-                        display: !attachments.length ? "none" : "flex",
+                        display: !attachments?.length ? "none" : "flex",
                         background: "#2D3748",
                         marginTop: 1,
                       }}
@@ -373,7 +365,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         maxHeight: 500,
                       }}
                     >
-                      {attachments.map((fileName, index) => (
+                      {attachments?.map((fileName, index) => (
                         <Box
                           key={index}
                           sx={{
@@ -572,7 +564,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 isCreateEditRequestorConcernFetching ||
                 isLoading
               }
-              disabled={!watch("Concern") || !attachments.length}
+              disabled={!watch("Concern") || !attachments?.length}
             >
               Save
             </LoadingButton>

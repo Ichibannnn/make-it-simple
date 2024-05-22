@@ -26,7 +26,7 @@ import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
-import { DeleteOutlineOutlined } from "@mui/icons-material";
+import { DeleteOutlineOutlined, Save } from "@mui/icons-material";
 
 import {
   useCreateChannelMemberMutation,
@@ -542,7 +542,26 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
         <DialogActions>
           <Stack direction="row" paddingBottom={1} gap={1}>
-            <Button
+            <LoadingButton
+              type="submit"
+              form="channelForm"
+              variant="contained"
+              size="large"
+              color="primary"
+              startIcon={<Save />}
+              loadingPosition="start"
+              loading={createChannelIsLoading || createChannelIsFetching}
+              disabled={!channelFormWatch("channel_Name") || !members.length}
+              sx={{
+                ":disabled": {
+                  backgroundColor: theme.palette.primary.main,
+                  color: "black",
+                },
+              }}
+            >
+              Save Changes
+            </LoadingButton>
+            {/* <Button
               type="submit"
               variant="contained"
               form="channelForm"
@@ -550,7 +569,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
               disabled={!channelFormWatch("channel_Name") || !members.length}
             >
               Save Changes
-            </Button>
+            </Button> */}
             <Button variant="text" onClick={onCloseAction}>
               Close
             </Button>

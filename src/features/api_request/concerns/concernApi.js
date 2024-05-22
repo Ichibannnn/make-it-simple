@@ -23,7 +23,7 @@ export const concernApi = createApi({
     // REQUESTOR ---------------
     getRequestorConcerns: builder.query({
       query: (params) => ({
-        url: "request-concern/requestor-page?Requestor=Requestor&Status=true",
+        url: "request-concern/requestor-page?UserType=Requestor&Status=true",
         method: "GET",
         params: params,
       }),

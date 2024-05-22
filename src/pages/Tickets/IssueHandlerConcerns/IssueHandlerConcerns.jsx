@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Chip,
@@ -35,8 +36,27 @@ import { Toaster, toast } from "sonner";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
+import { useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import moment from "moment";
 
 const IssueHandlerConcerns = () => {
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  const [searchValue, setSearchValue] = useState("");
+  const search = useDebounce(searchValue, 500);
+
+  const { open, onToggle, onClose } = useDisclosure();
+
+  const { data, isLoading, isFetching, isSuccess, isError } =
+    useGetIssueHandlerConcernsQuery({
+      Search: search,
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    });
+
+  console.log("Data: ", data);
+
   const dummyData = {
     concerns: [
       {
@@ -115,10 +135,10 @@ const IssueHandlerConcerns = () => {
 
   const [openCollapse, setOpenCollapse] = useState({});
 
-  const handleCollapseToggle = (concernId) => {
+  const handleCollapseToggle = (requestTransactionId) => {
     setOpenCollapse((prev) => ({
       ...prev,
-      [concernId]: !prev[concernId],
+      [requestTransactionId]: !prev[requestTransactionId],
     }));
   };
 
@@ -224,330 +244,346 @@ const IssueHandlerConcerns = () => {
               </TableHead>
 
               <TableBody>
-                {dummyData?.concerns?.map((item) => (
-                  <React.Fragment key={item.concernId}>
-                    <TableRow key={item.concernId}>
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        <IconButton
-                          size="small"
-                          onClick={() => handleCollapseToggle(item.concernId)}
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.closingTicket?.map((item) => (
+                    <React.Fragment key={item.requestTransactionId}>
+                      <TableRow key={item.requestTransactionId}>
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
                         >
-                          {openCollapse[item.concernId] ? (
-                            <KeyboardArrowUp />
-                          ) : (
-                            <KeyboardArrowDown />
-                          )}
-                        </IconButton>
-                      </TableCell>
+                          <IconButton
+                            size="small"
+                            onClick={() =>
+                              handleCollapseToggle(item.requestTransactionId)
+                            }
+                          >
+                            {openCollapse[item.requestTransactionId] ? (
+                              <KeyboardArrowUp />
+                            ) : (
+                              <KeyboardArrowDown />
+                            )}
+                          </IconButton>
+                        </TableCell>
 
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        {item.concernId}
-                      </TableCell>
-
-                      <TableCell
-                        className="ellipsis-styling"
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                          maxWidth: "700px",
-                        }}
-                      >
-                        {item.description}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.requestorName}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.department}
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell
-                        style={{ paddingBottom: 0, paddingTop: 0 }}
-                        colSpan={6}
-                      >
-                        <Collapse
-                          in={openCollapse[item.concernId]}
-                          timeout="auto"
-                          unmountOnExit
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
                         >
-                          <Box sx={{ margin: 1 }}>
-                            <Typography
-                              component="div"
-                              sx={{
-                                color: theme.palette.text.main,
-                                fontSize: "17px",
-                                fontWeight: 600,
-                              }}
-                            >
-                              <Stack
-                                direction="row"
-                                gap={0.5}
-                                alignItems="center"
+                          {item.requestTransactionId}
+                        </TableCell>
+
+                        <TableCell
+                          className="ellipsis-styling"
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                            maxWidth: "700px",
+                          }}
+                        >
+                          {item.description}
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.requestor_Name}
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.department_Name}
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow>
+                        <TableCell
+                          style={{ paddingBottom: 0, paddingTop: 0 }}
+                          colSpan={6}
+                        >
+                          <Collapse
+                            in={openCollapse[item.requestTransactionId]}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <Box sx={{ margin: 1 }}>
+                              <Typography
+                                component="div"
+                                sx={{
+                                  color: theme.palette.text.main,
+                                  fontSize: "17px",
+                                  fontWeight: 600,
+                                }}
                               >
-                                <ConfirmationNumberOutlined />
-                                TICKETS
-                              </Stack>
-                            </Typography>
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
+                                <Stack
+                                  direction="row"
+                                  gap={1}
+                                  alignItems="center"
+                                >
+                                  <Badge
+                                    badgeContent={item.openTicketCount}
+                                    color="primary"
                                   >
-                                    TICKET NO.
-                                  </TableCell>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    TICKET DESCRIPTION
-                                  </TableCell>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    <Stack
-                                      direction="row"
-                                      alignItems="center"
-                                      gap={0.5}
-                                    >
-                                      <AccessTimeOutlined
-                                        sx={{ fontSize: "16px" }}
-                                      />
-                                      START DATE
-                                    </Stack>
-                                  </TableCell>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    <Stack
-                                      direction="row"
-                                      alignItems="center"
-                                      gap={0.5}
-                                    >
-                                      <AccessTimeOutlined
-                                        sx={{ fontSize: "16px" }}
-                                      />
-                                      TARGET DATE
-                                    </Stack>
-                                  </TableCell>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    <Stack
-                                      direction="row"
-                                      alignItems="center"
-                                      gap={0.5}
-                                    >
-                                      <AccessTimeOutlined
-                                        sx={{ fontSize: "16px" }}
-                                      />
-                                      CLOSE DATE
-                                    </Stack>
-                                  </TableCell>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    REMARKS
-                                  </TableCell>
-                                  <TableCell
-                                    sx={{
-                                      background: "#1C2536",
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    STATUS
-                                  </TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {item.tickets.map((subItem) => (
-                                  <TableRow key={subItem.ticketNo}>
+                                    <ConfirmationNumberOutlined />
+                                  </Badge>
+                                  TICKETS
+                                </Stack>
+                              </Typography>
+                              <Table size="small">
+                                <TableHead>
+                                  <TableRow>
                                     <TableCell
                                       sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
                                         fontWeight: 500,
-                                        maxWidth: "700px",
                                       }}
                                     >
-                                      {subItem.ticketNo}
+                                      TICKET NO.
                                     </TableCell>
+                                    <TableCell
+                                      sx={{
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      TICKET DESCRIPTION
+                                    </TableCell>
+                                    <TableCell
+                                      sx={{
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={0.5}
+                                      >
+                                        <AccessTimeOutlined
+                                          sx={{ fontSize: "16px" }}
+                                        />
+                                        START DATE
+                                      </Stack>
+                                    </TableCell>
+                                    <TableCell
+                                      sx={{
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={0.5}
+                                      >
+                                        <AccessTimeOutlined
+                                          sx={{ fontSize: "16px" }}
+                                        />
+                                        TARGET DATE
+                                      </Stack>
+                                    </TableCell>
+
+                                    {/* <TableCell
+                                      sx={{
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={0.5}
+                                      >
+                                        <AccessTimeOutlined
+                                          sx={{ fontSize: "16px" }}
+                                        />
+                                        CLOSE DATE
+                                      </Stack>
+                                    </TableCell> */}
 
                                     <TableCell
                                       sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
                                         fontWeight: 500,
-                                        maxWidth: "700px",
                                       }}
                                     >
-                                      {subItem.ticketDescription}
+                                      REMARKS
                                     </TableCell>
-
                                     <TableCell
                                       sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
+                                        background: "#1C2536",
+                                        color: "#EDF2F7",
+                                        fontSize: "12px",
                                         fontWeight: 500,
-                                        maxWidth: "700px",
                                       }}
                                     >
-                                      {subItem.startDate}
-                                    </TableCell>
-
-                                    <TableCell
-                                      sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
-                                        fontWeight: 500,
-                                        maxWidth: "700px",
-                                      }}
-                                    >
-                                      {subItem.targetDate}
-                                    </TableCell>
-
-                                    <TableCell
-                                      sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
-                                        fontWeight: 500,
-                                        maxWidth: "700px",
-                                      }}
-                                    >
-                                      {subItem.dateClose}
-                                    </TableCell>
-
-                                    <TableCell
-                                      sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
-                                        fontWeight: 500,
-                                        maxWidth: "700px",
-                                      }}
-                                    >
-                                      <Chip
-                                        variant="filled"
-                                        size="small"
-                                        label={
-                                          subItem.remarks === "On-Time"
-                                            ? "On-Time"
-                                            : subItem.remarks === "Delayed"
-                                            ? "Delayed"
-                                            : ""
-                                        }
-                                        sx={{
-                                          backgroundColor:
-                                            subItem.remarks === "On-Time"
-                                              ? "#00913c"
-                                              : subItem.remarks === "Delayed"
-                                              ? "#a32421"
-                                              : "transparent",
-                                          color: "#ffffffde",
-                                          borderRadius: "none",
-                                        }}
-                                      />
-                                    </TableCell>
-
-                                    <TableCell
-                                      sx={{
-                                        color: theme.palette.text.secondary,
-                                        fontSize: "14px",
-                                        fontWeight: 500,
-                                        maxWidth: "700px",
-                                      }}
-                                    >
-                                      <Chip
-                                        variant="filled"
-                                        size="small"
-                                        label={
-                                          subItem.status === "Closed"
-                                            ? "Closed"
-                                            : subItem.status === "Open"
-                                            ? "Open"
-                                            : ""
-                                        }
-                                        sx={{
-                                          backgroundColor:
-                                            subItem.status === "Closed"
-                                              ? "#00913c"
-                                              : "#ec9d29",
-                                          color: "#ffffffde",
-                                          borderRadius: "none",
-                                        }}
-                                      />
+                                      STATUS
                                     </TableCell>
                                   </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                ))}
+                                </TableHead>
+                                <TableBody>
+                                  {item?.openTickets?.map((subItem) => (
+                                    <TableRow key={subItem.ticketConcernId}>
+                                      <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        {subItem.ticketConcernId}
+                                      </TableCell>
+
+                                      <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        {subItem.concern_Description}
+                                      </TableCell>
+
+                                      <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        {moment(subItem.start_Date).format(
+                                          "YYYY-MM-DD"
+                                        )}
+                                      </TableCell>
+
+                                      <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        {moment(subItem.target_Date).format(
+                                          "YYYY-MM-DD"
+                                        )}
+                                      </TableCell>
+
+                                      {/* <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        {subItem.dateClose}
+                                      </TableCell> */}
+
+                                      <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        <Chip
+                                          variant="filled"
+                                          size="small"
+                                          label={
+                                            subItem.remarks === "On-Time"
+                                              ? "On-Time"
+                                              : subItem.remarks === "Delayed"
+                                              ? "Delayed"
+                                              : ""
+                                          }
+                                          sx={{
+                                            backgroundColor:
+                                              subItem.remarks === "On-Time"
+                                                ? "#00913c"
+                                                : subItem.remarks === "Delayed"
+                                                ? "#a32421"
+                                                : "transparent",
+                                            color: "#ffffffde",
+                                            borderRadius: "none",
+                                          }}
+                                        />
+                                      </TableCell>
+
+                                      <TableCell
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: "14px",
+                                          fontWeight: 500,
+                                          maxWidth: "700px",
+                                        }}
+                                      >
+                                        <Chip
+                                          variant="filled"
+                                          size="small"
+                                          label={
+                                            subItem.status === "Closed"
+                                              ? "Closed"
+                                              : subItem.status === "Open"
+                                              ? "Open"
+                                              : ""
+                                          }
+                                          sx={{
+                                            backgroundColor:
+                                              subItem.status === "Closed"
+                                                ? "#00913c"
+                                                : "#ec9d29",
+                                            color: "#ffffffde",
+                                            borderRadius: "none",
+                                          }}
+                                        />
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>

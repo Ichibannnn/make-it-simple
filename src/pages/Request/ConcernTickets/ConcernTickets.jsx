@@ -3,6 +3,7 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  IconButton,
   OutlinedInput,
   Stack,
   Tab,
@@ -19,10 +20,14 @@ import {
 } from "@mui/material";
 import {
   AddOutlined,
+  ArrowDownward,
+  ArrowUpward,
   CalendarMonthOutlined,
   ChecklistRtlOutlined,
   ClearAllOutlined,
   FiberManualRecord,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
   PendingActionsOutlined,
   RotateRightOutlined,
   Search,
@@ -43,6 +48,7 @@ import { useGetRequestorConcernsQuery } from "../../../features/api_request/conc
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
+  const [ascending, setAscending] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -67,6 +73,7 @@ const ConcernTickets = () => {
     useGetRequestorConcernsQuery({
       Concern_Status: status,
       Search: search,
+      Ascending: ascending,
       PageNumber: pageNumber,
       PageSize: pageSize,
     });
@@ -230,7 +237,28 @@ const ConcernTickets = () => {
                       }}
                       align="center"
                     >
-                      CONCERN NO.
+                      <Stack
+                        direction="row"
+                        gap={0.2}
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        CONCERN NO.
+                        <IconButton
+                          size="small"
+                          onClick={() => setAscending(!ascending)}
+                        >
+                          {ascending === true ? (
+                            <ArrowUpward
+                              sx={{ color: "#D65DB1", fontSize: "20px" }}
+                            />
+                          ) : (
+                            <ArrowDownward
+                              sx={{ color: "#D65DB1", fontSize: "20px" }}
+                            />
+                          )}
+                        </IconButton>
+                      </Stack>
                     </TableCell>
 
                     <TableCell
@@ -296,7 +324,7 @@ const ConcernTickets = () => {
                           align="center"
                         >
                           {"#"}
-                          {item.requestGeneratorId}
+                          {item.requestTransactionId}
                         </TableCell>
 
                         <Tooltip title={item.concern} placement="bottom-start">
@@ -417,7 +445,7 @@ const ConcernTickets = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.requestConcern.length && (
+                  {isSuccess && !data?.value?.requestConcern?.length && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <Typography variant="h5" color="#EDF2F7">

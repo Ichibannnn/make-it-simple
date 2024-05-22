@@ -68,7 +68,7 @@ import { useDeleteRequestorAttachmentMutation } from "../../../features/api_requ
 import Swal from "sweetalert2";
 
 const schema = yup.object().shape({
-  RequestGeneratorId: yup.string().nullable(),
+  RequestTransactionId: yup.string().nullable(),
   Requestor_By: yup.string().nullable(),
   concern_Details: yup.array().nullable(),
   ticketConcernId: yup.array().nullable(),
@@ -189,7 +189,7 @@ const ReceiverConcerns = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      RequestGeneratorId: "",
+      RequestTransactionId: "",
       Requestor_By: "",
       concern_Details: [],
       ticketConcernId: [],
@@ -216,7 +216,7 @@ const ReceiverConcerns = () => {
       const userIdsLength =
         formData.userId?.map((item) => item.userId).length || 0;
 
-      payload.append("RequestGeneratorId", formData.RequestGeneratorId);
+      payload.append("RequestTransactionId", formData.RequestTransactionId);
       payload.append("Requestor_By", formData.Requestor_By);
       payload.append("ChannelId", formData.ChannelId.id);
 
@@ -321,7 +321,7 @@ const ReceiverConcerns = () => {
       const userIdsLength =
         formData.userId?.map((item) => item.userId).length || 0;
 
-      payload.append("RequestGeneratorId", formData.RequestGeneratorId);
+      payload.append("RequestTransactionId", formData.RequestTransactionId);
       payload.append("Requestor_By", formData.Requestor_By);
       payload.append("ChannelId", formData.ChannelId.id);
 
@@ -563,7 +563,7 @@ const ReceiverConcerns = () => {
         })
       );
 
-      setValue("RequestGeneratorId", addData?.requestGeneratorId);
+      setValue("RequestTransactionId", addData?.requestTransactionId);
       setValue("Requestor_By", addData?.userId);
       setValue("concern_Details", [addData?.concern]);
 
@@ -572,7 +572,7 @@ const ReceiverConcerns = () => {
         ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
       );
 
-      getAddAttachmentData(addData.requestGeneratorId);
+      getAddAttachmentData(addData.requestTransactionId);
     }
   }, [addData]);
 
@@ -614,7 +614,7 @@ const ReceiverConcerns = () => {
 
       // console.log("bindData: ", bindData);
 
-      setValue("RequestGeneratorId", editData?.requestGeneratorId);
+      setValue("RequestTransactionId", editData?.requestTransactionId);
       setValue("Requestor_By", editData?.userId);
       setValue("concern_Details", [editData?.concern]);
 
@@ -657,7 +657,7 @@ const ReceiverConcerns = () => {
         ticketConcernIdArray.flat().map((item) => item.ticketConcernId)
       );
 
-      getAddAttachmentData(editData.requestGeneratorId);
+      getAddAttachmentData(editData.requestTransactionId);
     }
   }, [editData]);
 
@@ -799,7 +799,7 @@ const ReceiverConcerns = () => {
                 data?.value?.requestConcern?.map((item) =>
                   item?.ticketRequestConcerns?.map((subItem) => (
                     <Stack
-                      key={item.requestGeneratorId}
+                      key={item.requestTransactionId}
                       sx={{
                         border: "1px solid #2D3748",
                         borderRadius: "20px",
@@ -812,11 +812,11 @@ const ReceiverConcerns = () => {
                           borderTopLeftRadius: "20px",
                           borderTopRightRadius: "20px",
                           backgroundColor:
-                            addData?.requestGeneratorId ===
-                            item?.requestGeneratorId
+                            addData?.requestTransactionId ===
+                            item?.requestTransactionId
                               ? "#5f478e"
-                              : editData?.requestGeneratorId ===
-                                item?.requestGeneratorId
+                              : editData?.requestTransactionId ===
+                                item?.requestTransactionId
                               ? "#5f478e"
                               : "",
                           "&:hover": {
@@ -892,7 +892,7 @@ const ReceiverConcerns = () => {
                                 fontWeight: 500,
                               }}
                             >
-                              CONCERN NO. {item.requestGeneratorId}
+                              CONCERN NO. {item.requestTransactionId}
                             </Typography>
                           </Stack>
 
@@ -903,7 +903,6 @@ const ReceiverConcerns = () => {
                             />
 
                             <Typography
-                              // className="ellipsis-styling2"
                               sx={{
                                 fontSize: "14px",
                               }}
@@ -929,86 +928,11 @@ const ReceiverConcerns = () => {
                           <Typography
                             sx={{
                               fontSize: "13px",
-                              // color: theme.palette.primary.main,
                             }}
                           >
                             {/* Issue Handler(s) assigned to this concern: */}
                           </Typography>
                         </Stack>
-
-                        {/* {item?.ticketRequestConcerns?.[0]?.categoryId === null ? (
-                        <LoadingButton
-                          variant="text"
-                          size="small"
-                          color="success"
-                          startIcon={<DoneAllOutlined />}
-                          loadingPosition="start"
-                          onClick={() => onApproveAction(item)}
-                          loading={
-                            isLoading ||
-                            isFetching ||
-                            approveReceiverConcernIsLoading ||
-                            approveReceiverConcernIsFetching
-                          }
-                          sx={{
-                            ":disabled": {
-                              backgroundColor: theme.palette.primary.main,
-                              color: "black",
-                            },
-                          }}
-                        >
-                          Approve
-                        </LoadingButton>
-                      ) : (
-                        <LoadingButton
-                          variant="text"
-                          size="small"
-                          color="success"
-                          startIcon={<DoneAllOutlined />}
-                          loadingPosition="start"
-                          onClick={() => onApproveAction(item)}
-                          loading={
-                            isLoading ||
-                            isFetching ||
-                            approveReceiverConcernIsLoading ||
-                            approveReceiverConcernIsFetching
-                          }
-                          disabled
-                          sx={{
-                            ":disabled": {
-                              backgroundColor: theme.palette.primary.main,
-                              color: "black",
-                            },
-                          }}
-                        >
-                          Approve
-                        </LoadingButton>
-                      )} */}
-
-                        {/* <LoadingButton
-                        variant="text"
-                        size="small"
-                        color="success"
-                        startIcon={<DoneAllOutlined />}
-                        loadingPosition="start"
-                        onClick={() => onApproveAction(item)}
-                        loading={
-                          isLoading ||
-                          isFetching ||
-                          approveReceiverConcernIsLoading ||
-                          approveReceiverConcernIsFetching
-                        }
-                        disabled
-                        sx={{
-                          ":disabled": {
-                            backgroundColor: theme.palette.primary.secondary,
-                            color: "black",
-                          },
-                        }}
-                      >
-                        Approve
-                      </LoadingButton> */}
-
                         <ReceiverConcernsActions
                           data={item}
                           onView={onViewAction}

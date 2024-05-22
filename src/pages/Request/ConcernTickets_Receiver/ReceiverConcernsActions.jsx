@@ -68,7 +68,7 @@ export const ReceiverConcernsActions = ({ data, onView, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        const requestGeneratorId = data?.requestGeneratorId;
+        const requestTransactionId = data?.requestTransactionId;
         const issueHandler =
           data?.ticketRequestConcerns[0]?.ticketConcerns?.map(
             (item) => item.userId
@@ -76,7 +76,7 @@ export const ReceiverConcernsActions = ({ data, onView, onClose }) => {
 
         const approvePayload = {
           concern: issueHandler?.map((item) => ({
-            requestGeneratorId: requestGeneratorId,
+            requestTransactionId: requestTransactionId,
             issueHandler: item,
           })),
         };

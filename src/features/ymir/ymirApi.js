@@ -5,7 +5,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const ymirApi = createApi({
   reducerPath: "ymirApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://10.10.10.17:8000/api",
+    // baseUrl: "http://10.10.10.17:8000/api",
+    baseUrl: "http://10.10.13.6:8080/api",
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
       headers.set(

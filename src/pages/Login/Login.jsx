@@ -187,7 +187,7 @@ const LoginForm = () => {
     try {
       const res = await logIn(data).unwrap();
 
-      // console.log("Response: ", res);
+      console.log("Response: ", res);
       const { token, ...user } = res.value;
 
       // console.log("Token: ", token);

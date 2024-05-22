@@ -250,6 +250,17 @@ const Unit = () => {
                     fontSize: "12px",
                   }}
                 >
+                  DEPARTMENT
+                </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
                   UNIT CODE
                 </TableCell>
 
@@ -262,17 +273,6 @@ const Unit = () => {
                   }}
                 >
                   UNIT NAME
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  DEPARTMENT
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -301,6 +301,16 @@ const Unit = () => {
                         fontWeight: 500,
                       }}
                     >
+                      {item.departmentId} - {item.department_Name}
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                    >
                       {item.unit_Code}
                     </TableCell>
 
@@ -312,16 +322,6 @@ const Unit = () => {
                       }}
                     >
                       {item.unit_Name}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.department_Name}
                     </TableCell>
                   </TableRow>
                 ))}

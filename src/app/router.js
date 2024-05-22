@@ -101,26 +101,38 @@ export const router = createBrowserRouter([
             path: "/masterlist/sub-category",
             element: <SubCategory />,
           },
-        ],
-      },
-      {
-        path: "/channel-setup",
-        element: <ChannelPage />,
-        children: [
           {
-            path: "/channel-setup/receiver",
+            path: "/masterlist/receiver-setup",
             element: <Receiver />,
           },
           {
-            path: "/channel-setup/channel",
+            path: "/masterlist/channel-setup",
             element: <Channel />,
           },
           {
-            path: "/channel-setup/approver",
+            path: "/masterlist/approver-setup",
             element: <Approver />,
           },
         ],
       },
+      // {
+      //   path: "/channel-setup",
+      //   element: <ChannelPage />,
+      //   children: [
+      //     {
+      //       path: "/channel-setup/receiver",
+      //       element: <Receiver />,
+      //     },
+      //     {
+      //       path: "/channel-setup/channel",
+      //       element: <Channel />,
+      //     },
+      //     {
+      //       path: "/channel-setup/approver",
+      //       element: <Approver />,
+      //     },
+      //   ],
+      // },
       {
         path: "/requestor",
         element: <RequestsPage />,

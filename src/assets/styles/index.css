@@ -1,6 +1,16 @@
 /* @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap"); */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap");
 
+/* @font-face {
+  font-family: "MyFont";
+  src: url("../font/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf")
+    format("truetype");
+}
+
+body {
+  font-family: "MyFont", sans-serif;
+} */
+
 .paper-color {
   background: radial-gradient(
     circle at 44% 42%,

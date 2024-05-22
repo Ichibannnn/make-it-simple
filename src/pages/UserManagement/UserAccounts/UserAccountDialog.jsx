@@ -375,7 +375,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                             .map((item) => item.at(0))
                             .join("")
                             .toLowerCase() +
-                            value?.general_info.last_name.toLowerCase()
+                            value?.general_info.last_name
+                              .split(" ")
+                              .join("")
+                              .toLowerCase()
                         );
 
                         onChange(value);

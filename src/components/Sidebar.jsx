@@ -135,11 +135,11 @@ const SidebarList = () => {
     onToggle: masterListOnToggle,
     onClose: masterlistOnClose,
   } = useDisclosure(!!pathname.match(/masterlist/gi));
-  const {
-    open: channelOpen,
-    onToggle: channelOnToggle,
-    onClose: channelOnClose,
-  } = useDisclosure(!!pathname.match(/channel/gi));
+  // const {
+  //   open: channelOpen,
+  //   onToggle: channelOnToggle,
+  //   onClose: channelOnClose,
+  // } = useDisclosure(!!pathname.match(/channel/gi));
   const {
     open: requestOpen,
     onToggle: requestOnToggle,
@@ -173,7 +173,7 @@ const SidebarList = () => {
         userManagementOnToggle();
         masterlistOnClose();
         requestOnClose();
-        channelOnClose();
+        // channelOnClose();
         ticketingOnClose();
       },
       sub: [
@@ -203,7 +203,7 @@ const SidebarList = () => {
         masterListOnToggle();
         userManagementOnClose();
         requestOnClose();
-        channelOnClose();
+        // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
       },
@@ -256,45 +256,63 @@ const SidebarList = () => {
           path: "/masterlist/sub-category",
           icon: "AutoAwesomeMotionOutlined",
         },
-      ],
-    },
-    {
-      id: 4,
-      name: "Channel Setup",
-      path: "/channel-setup",
-      icon: "NumbersOutlined",
-      open: channelOpen,
-      onToggle: () => {
-        channelOnToggle();
-        userManagementOnClose();
-        masterlistOnClose();
-        requestOnClose();
-        receiverOnClose();
-        ticketingOnClose();
-      },
-      sub: [
         {
-          id: 1,
-          name: "Receiver",
-          path: "/channel-setup/receiver",
+          id: 9,
+          name: "Receiver Setup",
+          path: "/masterlist/receiver-setup",
           icon: "ContactsOutlined",
         },
         {
-          id: 2,
-          name: "Channel",
-          path: "/channel-setup/channel",
+          id: 10,
+          name: "Channel Setup",
+          path: "/masterlist/channel-setup",
           icon: "HubOutlined",
         },
         {
-          id: 3,
-          name: "Approver",
-          path: "/channel-setup/approver",
+          id: 11,
+          name: "Approver Setup",
+          path: "/masterlist/approver-setup",
           icon: "GroupsOutlined",
         },
       ],
     },
+    // {
+    //   id: 4,
+    //   name: "Channel Setup",
+    //   path: "/channel-setup",
+    //   icon: "NumbersOutlined",
+    //   open: channelOpen,
+    //   onToggle: () => {
+    //     channelOnToggle();
+    //     userManagementOnClose();
+    //     masterlistOnClose();
+    //     requestOnClose();
+    //     receiverOnClose();
+    //     ticketingOnClose();
+    //   },
+    //   sub: [
+    //     {
+    //       id: 1,
+    //       name: "Receiver",
+    //       path: "/channel-setup/receiver",
+    //       icon: "ContactsOutlined",
+    //     },
+    //     {
+    //       id: 2,
+    //       name: "Channel",
+    //       path: "/channel-setup/channel",
+    //       icon: "HubOutlined",
+    //     },
+    //     {
+    //       id: 3,
+    //       name: "Approver",
+    //       path: "/channel-setup/approver",
+    //       icon: "GroupsOutlined",
+    //     },
+    //   ],
+    // },
     {
-      id: 5,
+      id: 4,
       name: "Requestor",
       path: "/requestor",
       icon: "DynamicFeedOutlined",
@@ -303,7 +321,7 @@ const SidebarList = () => {
         requestOnToggle();
         userManagementOnClose();
         masterlistOnClose();
-        channelOnClose();
+        // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
       },
@@ -317,7 +335,7 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 6,
+      id: 5,
       name: "Receiver",
       path: "/receiver",
       icon: "DynamicFeedOutlined",
@@ -327,7 +345,7 @@ const SidebarList = () => {
         requestOnClose();
         userManagementOnClose();
         masterlistOnClose();
-        channelOnClose();
+        // channelOnClose();
         ticketingOnClose();
       },
       sub: [
@@ -340,7 +358,7 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 7,
+      id: 6,
       name: "Ticketing",
       path: "/ticketing",
       icon: "ConfirmationNumberOutlined",
@@ -351,7 +369,7 @@ const SidebarList = () => {
         requestOnClose();
         userManagementOnClose();
         masterlistOnClose();
-        channelOnClose();
+        // channelOnClose();
       },
       sub: [
         {
@@ -363,13 +381,13 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 8,
+      id: 7,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 9,
+      id: 8,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",
@@ -388,95 +406,98 @@ const SidebarList = () => {
       >
         {sidebarMenu
           .filter((item) => userPermission.includes(item.name))
-          .map((item, i) => {
-            return (
-              <Fragment key={i}>
-                {item.sub?.length && (
-                  <ListItemButton
-                    onClick={item.onToggle}
-                    selected={item.path === pathname}
+          .map((item, i) => (
+            <Fragment key={i}>
+              {item.sub?.length ? (
+                <ListItemButton
+                  onClick={item.onToggle}
+                  selected={item.path === pathname}
+                >
+                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
+                  <ListItemText
+                    primary={item.name}
+                    primaryTypographyProps={{
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      lineHeight: "24px",
+                      mb: "2px",
+                    }}
+                  />
+                  {item.open ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+              ) : (
+                <ListItemButton
+                  onClick={() => navigate(item.path)}
+                  selected={item.path === pathname}
+                >
+                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
+                  <ListItemText
+                    primary={item.name}
+                    primaryTypographyProps={{
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      lineHeight: "24px",
+                      mb: "2px",
+                    }}
+                  />
+                </ListItemButton>
+              )}
+
+              {item.sub?.filter((subItem) =>
+                userPermission.includes(subItem.name)
+              ).length > 0 && (
+                <Collapse
+                  in={item.open}
+                  timeout="auto"
+                  unmountOnExit
+                  sx={{
+                    maxHeight: item.open ? "500px" : "0",
+                    overflowY: "auto",
+                    transition: "max-height 0.3s ease-in-out",
+                  }}
+                >
+                  <List
+                    sx={{
+                      marginTop: "4px",
+                      marginBottom: "4px",
+                      marginLeft: "25px",
+                      marginRight: "2px",
+                      padding: "0px",
+                      maxHeight: "500px", // Set max height
+                      overflowY: "auto", // Enable vertical scrolling
+                    }}
                   >
-                    <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-
-                    <ListItemText
-                      primary={item.name}
-                      primaryTypographyProps={{
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        lineHeight: "24px",
-                        mb: "2px",
-                      }}
-                    />
-
-                    {item.open ? <ExpandLess /> : <ExpandMore />}
-                  </ListItemButton>
-                )}
-
-                {!item.sub?.length && (
-                  <ListItemButton
-                    onClick={() => navigate(item.path)}
-                    selected={item.path === pathname}
-                  >
-                    <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-
-                    <ListItemText
-                      primary={item.name}
-                      primaryTypographyProps={{
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        lineHeight: "24px",
-                        mb: "2px",
-                      }}
-                    />
-                  </ListItemButton>
-                )}
-
-                {item.sub
-                  ?.filter((subItem) => userPermission.includes(subItem.name))
-                  .map((subItem, i) => {
-                    return (
-                      <Collapse
-                        in={item.open}
-                        timeout="auto"
-                        unmountOnExit
-                        key={i}
-                      >
-                        <List
-                          sx={{
-                            marginTop: "4px",
-                            marginBottom: "4px",
-                            marginLeft: "25px",
-                            marginRight: "2px",
-                            padding: "0px",
-                          }}
+                    {item.sub
+                      .filter((subItem) =>
+                        userPermission.includes(subItem.name)
+                      )
+                      .map((subItem, j) => (
+                        <ListItemButton
+                          key={j}
+                          onClick={() => navigate(subItem.path)}
+                          selected={subItem.path === pathname}
+                          sx={{ padding: "2px" }}
                         >
-                          <ListItemButton
-                            onClick={() => navigate(subItem.path)}
-                            selected={subItem.path === pathname}
-                            sx={{ padding: "2px" }}
-                          >
-                            {/* <ListItemIcon>
-                              {getSubMenuIcon(subItem.icon)}
-                            </ListItemIcon> */}
-
-                            <ListItemText
-                              primary={subItem.name}
-                              primaryTypographyProps={{
-                                fontSize: "14px",
-                                fontWeight: "600",
-                                lineHeight: "24px",
-                                mb: "2px",
-                                marginLeft: "35px",
-                              }}
-                            />
-                          </ListItemButton>
-                        </List>
-                      </Collapse>
-                    );
-                  })}
-              </Fragment>
-            );
-          })}
+                          {/* <ListItemIcon>
+                            {getSubMenuIcon(subItem.icon)}
+                          </ListItemIcon> */}
+                          <ListItemText
+                            primary={subItem.name}
+                            primaryTypographyProps={{
+                              fontSize: "14px",
+                              fontWeight: "600",
+                              lineHeight: "24px",
+                              mb: "2px",
+                              marginLeft: "35px",
+                            }}
+                          />
+                        </ListItemButton>
+                      ))}
+                  </List>
+                </Collapse>
+              )}
+            </Fragment>
+          ))}
       </List>
     </Stack>
   );

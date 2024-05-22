@@ -56,8 +56,11 @@ const masterlistCheckbox = [
   "Location",
   "Category",
   "Sub Category",
+  "Receiver Setup",
+  "Channel Setup",
+  "Approver Setup",
 ];
-const channelCheckbox = ["Receiver", "Channel", "Approver"];
+// const channelCheckbox = ["Receiver", "Channel", "Approver"];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
 const ticketingCheckbox = ["Concerns"];
@@ -244,12 +247,12 @@ const RoleAddDialog = ({ data, open, onClose }) => {
         )
       );
     }
-    if (!e.target.checked && e.target.value === "Channel Setup") {
-      setValue(
-        "permissions",
-        watch("permissions").filter((item) => !channelCheckbox.includes(item))
-      );
-    }
+    // if (!e.target.checked && e.target.value === "Channel Setup") {
+    //   setValue(
+    //     "permissions",
+    //     watch("permissions").filter((item) => !channelCheckbox.includes(item))
+    //   );
+    // }
     if (!e.target.checked && e.target.value === "Requestor") {
       setValue(
         "permissions",
@@ -364,7 +367,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </Stack>
                 </FormGroup>
               </FormControl>
-
               {/* USER MANAGEMENT */}
               {watch("permissions")?.includes("User Management") && (
                 <FormControl
@@ -427,7 +429,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
-
               {/* MASTERLIST */}
               {watch("permissions")?.includes("Masterlist") && (
                 <FormControl
@@ -490,9 +491,8 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
-
               {/* CHANNEL SETUP */}
-              {watch("permissions")?.includes("Channel Setup") && (
+              {/* {watch("permissions")?.includes("Channel Setup") && (
                 <FormControl
                   component="fieldset"
                   variant="standard"
@@ -552,8 +552,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                     </Stack>
                   </FormGroup>
                 </FormControl>
-              )}
-
+              )} */}
               {/* REQUESTOR */}
               {watch("permissions")?.includes("Requestor") && (
                 <FormControl
@@ -616,7 +615,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
-
               {/* RECEIVER */}
               {watch("permissions")?.includes("Receiver") && (
                 <FormControl
@@ -679,7 +677,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
-
               {/* TICKETING */}
               {watch("permissions")?.includes("Ticketing") && (
                 <FormControl
@@ -770,11 +767,11 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                       masterlistCheckbox.includes(item)
                     )
                   : false) ||
-                (watch("permissions").includes("Channel Setup")
-                  ? !watch("permissions").some((item) =>
-                      channelCheckbox.includes(item)
-                    )
-                  : false) ||
+                // (watch("permissions").includes("Channel Setup")
+                //   ? !watch("permissions").some((item) =>
+                //       channelCheckbox.includes(item)
+                //     )
+                //   : false) ||
                 (watch("permissions").includes("Requestor")
                   ? !watch("permissions").some((item) =>
                       requestCheckbox.includes(item)

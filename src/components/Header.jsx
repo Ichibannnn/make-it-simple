@@ -1,8 +1,5 @@
 import {
-  Avatar,
-  Badge,
   Box,
-  Chip,
   Divider,
   IconButton,
   ListItemIcon,
@@ -16,24 +13,23 @@ import {
 import React from "react";
 import { theme } from "../theme/theme";
 
-import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
-import PersonIcon from "@mui/icons-material/Person";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import { Password } from "@mui/icons-material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  clearUserDetails,
-  user,
-} from "../features/user_management_api/user/userSlice";
-import ReusableAlert from "../hooks/ReusableAlert";
+import { clearUserDetails } from "../features/user_management_api/user/userSlice";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
-import { PermIdentityOutlined } from "@mui/icons-material";
+
+import ReusableAlert from "../hooks/ReusableAlert";
+import useDisclosure from "../hooks/useDisclosure";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
 
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
@@ -49,9 +45,17 @@ const Header = () => {
 
   const fullName = useSelector((state) => state.user.fullname);
   const userName = useSelector((state) => state.user.username);
-  const userRoleName = useSelector((state) => state.user.userRoleName);
+  const userId = useSelector((state) => state.user.id);
+
+  // console.log("User Details: ", details);
 
   const [showSidebar, setShowSidebar] = useState(false);
+
+  const {
+    open: openChangePassword,
+    onToggle: changePasswordOnToggle,
+    onClose: changePasswordOnClose,
+  } = useDisclosure();
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({
@@ -97,6 +101,10 @@ const Header = () => {
     dispatch(toggleSidebar());
   };
 
+  const toggleChangePasswordHandler = () => {
+    changePasswordOnToggle();
+  };
+
   return (
     <Stack
       sx={{
@@ -121,14 +129,6 @@ const Header = () => {
       </Box>
 
       <Box>
-        {/* <IconButton>
-          <Tooltip title="Notification">
-            <Badge badgeContent={1} color="primary">
-              <NotificationsNoneOutlinedIcon />
-            </Badge>
-          </Tooltip>
-        </IconButton> */}
-
         <IconButton onClick={menuHandler}>
           <Tooltip title="Account">
             <PermIdentityOutlinedIcon />
@@ -164,33 +164,17 @@ const Header = () => {
                 >
                   {userName}
                 </Typography>
-
-                {/* <Chip
-                  icon={<PermIdentityOutlined color="primary" />}
-                  label={userRoleName}
-                  variant="outlined"
-                  size="small"
-                  color="primary"
-                  sx={{
-                    color: "#fff",
-                  }}
-                /> */}
               </Box>
             </Box>
           </MenuItem>
           <Divider color="#1C2536" variant="fullWidth" />
           <MenuItem onClick={closeHandler}>
             <ListItemIcon>
-              <PersonAdd fontSize="small" />
+              <Password fontSize="small" />
             </ListItemIcon>
-            <Typography>Add another account</Typography>
+            <Typography>Change Password</Typography>
           </MenuItem>
-          <MenuItem onClick={closeHandler}>
-            <ListItemIcon>
-              <Settings fontSize="small" />
-            </ListItemIcon>
-            <Typography>Settings</Typography>
-          </MenuItem>
+
           <MenuItem onClick={logoutHandler}>
             <ListItemIcon>
               <Logout fontSize="small" />
@@ -199,6 +183,7 @@ const Header = () => {
           </MenuItem>
         </Menu>
       </Box>
+
       {showAlert && (
         <ReusableAlert
           severity={alertData.severity}
@@ -207,8 +192,44 @@ const Header = () => {
           onClose={handleAlertClose}
         />
       )}
+
+      {/* <ChangePassword
+        userId={userId}
+        // userPassword={userPassword}
+        openChangePassword={openChangePassword}
+        changePasswordOnClose={changePasswordOnClose}
+      /> */}
     </Stack>
   );
 };
 
 export default Header;
+
+// const changePasswordSchema = yup.object().shape({
+//   id: yup.string().nullable(),
+//   current_Password: yup.string().required().label("Current Password"),
+//   new_Password: yup.string().required().label("New Password"),
+//   confirm_Password: yup.string().required().label("Confirm Password"),
+// });
+
+// const ChangePassword = ({ openChangePassword, changePasswordOnClose }) => {
+//   const {
+//     control,
+//     handleSubmit,
+//     register,
+//     watch,
+//     setValue,
+//     reset,
+//     formState: { errors },
+//   } = useForm({
+//     resolver: yupResolver(changePasswordSchema),
+//     defaultValues: {
+//       id: null,
+//       current_Password: "",
+//       new_Password: "",
+//       confirm_Password: "",
+//     },
+//   });
+
+//   return <div>Change Password</div>;
+// };

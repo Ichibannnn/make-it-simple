@@ -28,6 +28,7 @@ import { concernReceiverApi } from "../features/api_request/concerns_receiver/co
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
+import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 export const store = configureStore({
   reducer: {
@@ -56,6 +57,8 @@ export const store = configureStore({
     [concernApi.reducerPath]: concernApi.reducer,
     [concernReceiverApi.reducerPath]: concernReceiverApi.reducer,
 
+    [concernIssueHandlerApi.reducerPath]: concernIssueHandlerApi.reducer,
+
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
   },
@@ -82,6 +85,8 @@ export const store = configureStore({
 
       concernApi.middleware,
       concernReceiverApi.middleware,
+
+      concernIssueHandlerApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,

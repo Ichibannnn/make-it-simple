@@ -244,6 +244,17 @@ const Department = () => {
                     fontSize: "12px",
                   }}
                 >
+                  BUSINESS UNIT
+                </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
                   DEPARTMENT CODE
                 </TableCell>
 
@@ -256,17 +267,6 @@ const Department = () => {
                   }}
                 >
                   DEPARTMENT NAME
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  BUSINESS UNIT
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -295,6 +295,16 @@ const Department = () => {
                         fontWeight: 500,
                       }}
                     >
+                      {item.businessUnit_Code} - {item.businessUnit_Name}
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                    >
                       {item.department_Code}
                     </TableCell>
 
@@ -306,16 +316,6 @@ const Department = () => {
                       }}
                     >
                       {item.department_Name}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.businessUnit_Code} - {item.businessUnit_Name}
                     </TableCell>
                   </TableRow>
                 ))}

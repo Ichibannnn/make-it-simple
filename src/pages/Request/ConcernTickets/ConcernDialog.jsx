@@ -24,7 +24,7 @@ import { Toaster, toast } from "sonner";
 import { useCreateEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
 
 const requestorSchema = yup.object().shape({
-  RequestGeneratorId: yup.string().nullable(),
+  RequestTransactionId: yup.string().nullable(),
   Concern: yup.string().required().label("Concern Details"),
   RequestConcernId: yup.string().nullable(),
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -54,7 +54,7 @@ const ConcernDialog = ({ open, onClose }) => {
   } = useForm({
     resolver: yupResolver(requestorSchema),
     defaultValues: {
-      RequestGeneratorId: "",
+      RequestTransactionId: "",
       Concern: "",
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
