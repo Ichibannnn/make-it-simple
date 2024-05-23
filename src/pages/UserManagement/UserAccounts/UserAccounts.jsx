@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -17,7 +16,6 @@ import {
   TableRow,
   Tabs,
   Typography,
-  capitalize,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
@@ -26,15 +24,20 @@ import {
   useResetUserPasswordMutation,
   useArchiveUserMutation,
 } from "../../../features/user_management_api/user/userApi";
-import useDebounce from "../../../hooks/useDebounce";
 
-import { AddOutlined, Search } from "@mui/icons-material";
-import UserAccountAction from "./UserAccountAction";
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
+import useDebounce from "../../../hooks/useDebounce";
+import useDisclosure from "../../../hooks/useDisclosure";
+
 import Swal from "sweetalert2";
+import { Toaster, toast } from "sonner";
+import { AddOutlined, Search } from "@mui/icons-material";
+
+import UserAccountAction from "./UserAccountAction";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
-import useDisclosure from "../../../hooks/useDisclosure";
-import { Toaster, toast } from "sonner";
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
@@ -526,7 +529,12 @@ const UserAccounts = () => {
                 {isError && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
-                      <Typography variant="h5" color="#EDF2F7">
+                      <img
+                        src={somethingWentWrong}
+                        alt="Something Went Wrong"
+                        className="something-went-wrong-table"
+                      />
+                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
                       </Typography>
                     </TableCell>
@@ -547,7 +555,12 @@ const UserAccounts = () => {
                 {isSuccess && !data?.value?.users.length && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
-                      <Typography variant="h5" color="#EDF2F7">
+                      <img
+                        src={noRecordsFound}
+                        alt="No Records Found"
+                        className="norecords-found-table"
+                      />
+                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.
                       </Typography>
                     </TableCell>

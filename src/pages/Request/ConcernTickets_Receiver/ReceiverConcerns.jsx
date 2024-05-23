@@ -963,6 +963,26 @@ const ReceiverConcerns = () => {
                 </Stack>
               )}
 
+              {isError && (
+                <Stack
+                  width="100%"
+                  height="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <img
+                    src={SomethingWentWrong}
+                    alt="Something Went Wrong"
+                    className="something-went-wrong"
+                  />
+                  <Stack marginLeft={1}>
+                    <Typography color="#EDF2F7" variant="h5">
+                      Something went wrong.
+                    </Typography>
+                  </Stack>
+                </Stack>
+              )}
+
               {isSuccess && !data?.value?.requestConcern?.length && (
                 <Stack
                   marginTop={4}
@@ -970,9 +990,6 @@ const ReceiverConcerns = () => {
                   height="100%"
                   justifyContent="center"
                   alignItems="center"
-                  // sx={{
-                  //   backgroundColor: theme.palette.bgForm.black1,
-                  // }}
                 >
                   <img
                     src={noRecordsFound}
@@ -1002,18 +1019,16 @@ const ReceiverConcerns = () => {
               )}
             </Stack>
 
-            {isSuccess && data?.value?.requestConcern?.length && (
-              <TablePagination
-                sx={{ color: "#A0AEC0", fontWeight: 400 }}
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={data?.value?.totalCount || 0}
-                rowsPerPage={data?.value?.pageSize || 5}
-                page={data?.value?.currentPage - 1 || 0}
-                onPageChange={onPageNumberChange}
-                onRowsPerPageChange={onPageSizeChange}
-              />
-            )}
+            <TablePagination
+              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data?.value?.totalCount || 0}
+              rowsPerPage={data?.value?.pageSize || 5}
+              page={data?.value?.currentPage - 1 || 0}
+              onPageChange={onPageNumberChange}
+              onRowsPerPageChange={onPageSizeChange}
+            />
           </Stack>
         </Paper>
 

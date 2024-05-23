@@ -23,6 +23,9 @@ import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { Toaster, toast } from "sonner";
 
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
@@ -290,6 +293,7 @@ const Category = () => {
                 >
                   LINE NO.
                 </TableCell>
+
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -298,7 +302,7 @@ const Category = () => {
                     fontSize: "12px",
                   }}
                 >
-                  SUB CATEGORY NAME
+                  CATEGORY
                 </TableCell>
 
                 <TableCell
@@ -308,9 +312,8 @@ const Category = () => {
                     fontWeight: 700,
                     fontSize: "12px",
                   }}
-                  align="center"
                 >
-                  CATEGORY
+                  SUB CATEGORY NAME
                 </TableCell>
 
                 <TableCell
@@ -362,7 +365,7 @@ const Category = () => {
                         fontWeight: 500,
                       }}
                     >
-                      {item.subCategory_Description}
+                      {item.category_Description}
                     </TableCell>
 
                     <TableCell
@@ -371,9 +374,8 @@ const Category = () => {
                         fontSize: "14px",
                         fontWeight: 500,
                       }}
-                      align="center"
                     >
-                      {item.category_Description}
+                      {item.subCategory_Description}
                     </TableCell>
 
                     <TableCell
@@ -420,7 +422,12 @@ const Category = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
+                    <img
+                      src={somethingWentWrong}
+                      alt="Something Went Wrong"
+                      className="something-went-wrong-table"
+                    />
+                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
                     </Typography>
                   </TableCell>
@@ -441,7 +448,12 @@ const Category = () => {
               {isSuccess && !data?.value?.subCategory.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
+                    <img
+                      src={noRecordsFound}
+                      alt="No Records Found"
+                      className="norecords-found-table"
+                    />
+                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.
                     </Typography>
                   </TableCell>

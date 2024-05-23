@@ -21,6 +21,9 @@ import { Toaster, toast } from "sonner";
 
 import useDebounce from "../../../hooks/useDebounce";
 
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
 import {
   useGetCompanyQuery,
   useSyncCompanyMutation,
@@ -291,7 +294,12 @@ const Company = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
+                    <img
+                      src={somethingWentWrong}
+                      alt="Something Went Wrong"
+                      className="something-went-wrong-table"
+                    />
+                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
                     </Typography>
                   </TableCell>
@@ -312,7 +320,12 @@ const Company = () => {
               {isSuccess && !data?.value?.company.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
+                    <img
+                      src={noRecordsFound}
+                      alt="No Records Found"
+                      className="norecords-found-table"
+                    />
+                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.
                     </Typography>
                   </TableCell>

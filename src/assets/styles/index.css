@@ -39,9 +39,29 @@ body {
   top: 0;
 }
 
+.norecords-found-table {
+  width: 150px;
+  height: 150px;
+  object-fit: fill;
+  border-style: none;
+  background: none;
+  z-index: 1;
+  top: 0;
+}
+
 .something-went-wrong {
   width: 300px;
   height: 300px;
+  object-fit: fill;
+  border-style: none;
+  background: none;
+  z-index: 1;
+  top: 0;
+}
+
+.something-went-wrong-table {
+  width: 150px;
+  height: 150px;
   object-fit: fill;
   border-style: none;
   background: none;

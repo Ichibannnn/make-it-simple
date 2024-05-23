@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
-  Chip,
   CircularProgress,
-  Divider,
   OutlinedInput,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -15,22 +10,17 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
-  capitalize,
 } from "@mui/material";
-import {
-  AddOutlined,
-  FileUploadOutlined,
-  FileDownloadOutlined,
-  Search,
-  SyncOutlined,
-} from "@mui/icons-material";
+import { Search, SyncOutlined } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
 import { theme } from "../../../theme/theme";
 import { Toaster, toast } from "sonner";
+
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -329,7 +319,12 @@ const Unit = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <Typography variant="h5" color="#EDF2F7">
+                    <img
+                      src={somethingWentWrong}
+                      alt="Something Went Wrong"
+                      className="something-went-wrong-table"
+                    />
+                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
                     </Typography>
                   </TableCell>
@@ -339,9 +334,13 @@ const Unit = () => {
               {(isLoading || isFetching) && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <CircularProgress />
-                    <Typography variant="h5" color="#EDF2F7">
-                      Please wait...
+                    <img
+                      src={noRecordsFound}
+                      alt="No Records Found"
+                      className="norecords-found-table"
+                    />
+                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                      No records found.
                     </Typography>
                   </TableCell>
                 </TableRow>
