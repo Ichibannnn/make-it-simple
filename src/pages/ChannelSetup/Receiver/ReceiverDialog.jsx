@@ -269,7 +269,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                       }}
                       getOptionLabel={(option) => option.fullName}
                       isOptionEqualToValue={(option, value) =>
-                        option.userId === value.userId
+                        option.userId === value.userId || []
                       }
                       noOptionsText={"No receiver available"}
                       disabled={data ? true : false}

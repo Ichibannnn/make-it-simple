@@ -165,7 +165,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
   };
 
   const onApproverListFormAdd = (data) => {
-    console.log("Data: ", data);
+    // console.log("Data: ", data);
 
     setApprovers((currentValue) => [
       ...currentValue,
@@ -248,7 +248,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  console.log("Table: ", approvers);
+  // console.log("Table: ", approvers);
 
   return (
     <>
@@ -310,10 +310,12 @@ const ApproverDialog = ({ data, open, onClose }) => {
                         if (!subUnitListIsSuccess) getSubUnitList();
                       }}
                       onChange={(_, value) => {
+                        console.log("Value: ", value);
+
                         onChange(value);
 
                         getApproverList({
-                          SubUnitId: value.subUnitId,
+                          SubUnitId: value?.subUnitId,
                         });
                       }}
                       getOptionLabel={(option) =>

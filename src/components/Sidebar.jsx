@@ -151,6 +151,11 @@ const SidebarList = () => {
     onClose: receiverOnClose,
   } = useDisclosure(!!pathname.match(/receiver/gi));
   const {
+    open: approverOpen,
+    onToggle: approverOnToggle,
+    onClose: approverOnClose,
+  } = useDisclosure(!!pathname.match(/approver/gi));
+  const {
     open: ticketingOpen,
     onToggle: ticketingOnToggle,
     onClose: ticketingOnClose,
@@ -175,6 +180,7 @@ const SidebarList = () => {
         requestOnClose();
         // channelOnClose();
         ticketingOnClose();
+        approverOnClose();
       },
       sub: [
         {
@@ -206,6 +212,7 @@ const SidebarList = () => {
         // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
+        approverOnClose();
       },
       sub: [
         {
@@ -324,6 +331,7 @@ const SidebarList = () => {
         // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
+        approverOnClose();
       },
       sub: [
         {
@@ -347,6 +355,7 @@ const SidebarList = () => {
         masterlistOnClose();
         // channelOnClose();
         ticketingOnClose();
+        approverOnClose();
       },
       sub: [
         {
@@ -359,6 +368,28 @@ const SidebarList = () => {
     },
     {
       id: 6,
+      name: "Approver",
+      path: "/Approver",
+      icon: "CreditScoreOutlined",
+      open: approverOpen,
+      onToggle: () => {
+        approverOnToggle();
+        receiverOnClose();
+        requestOnClose();
+        userManagementOnClose();
+        masterlistOnClose();
+        ticketingOnClose();
+      },
+      sub: [
+        {
+          id: 1,
+          name: "Approval",
+          path: "/approver/approval",
+        },
+      ],
+    },
+    {
+      id: 7,
       name: "Ticketing",
       path: "/ticketing",
       icon: "ConfirmationNumberOutlined",
@@ -369,6 +400,7 @@ const SidebarList = () => {
         requestOnClose();
         userManagementOnClose();
         masterlistOnClose();
+        approverOnClose();
         // channelOnClose();
       },
       sub: [

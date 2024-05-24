@@ -227,8 +227,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("department: ", channelFormWatch("deparmentId"));
-  console.log("Members Data:", memberData);
+  console.log("Members data: ", memberData);
 
   return (
     <>
@@ -319,10 +318,11 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         if (!departmentIsSuccess) getDepartment();
                       }}
                       onChange={(_, value) => {
+                        console.log("Value: ", value);
                         onChange(value);
 
                         const departmentIdParams = value?.map(
-                          (department) => department.id
+                          (department) => department?.id
                         );
 
                         console.log("departmentIdParams", departmentIdParams);
@@ -395,16 +395,16 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={memberData?.value || []}
                         loading={memberIsLoading}
-                        groupBy={(option) => option.userRole}
+                        // groupBy={(option) => option.userRole}
                         renderInput={(params) => (
                           <TextField {...params} label="Members" size="small" />
                         )}
-                        renderGroup={(params) => (
-                          <li key={params.key}>
-                            <GroupHeader>{params.group}</GroupHeader>
-                            <GroupItems>{params.children}</GroupItems>
-                          </li>
-                        )}
+                        // renderGroup={(params) => (
+                        //   <li key={params.key}>
+                        //     <GroupHeader>{params.group}</GroupHeader>
+                        //     <GroupItems>{params.children}</GroupItems>
+                        //   </li>
+                        // )}
                         onOpen={() => {
                           if (!memberIsSuccess) getMembers();
                         }}
@@ -554,22 +554,13 @@ const ChannelDialog = ({ data, open, onClose }) => {
               disabled={!channelFormWatch("channel_Name") || !members.length}
               sx={{
                 ":disabled": {
-                  backgroundColor: theme.palette.primary.main,
+                  backgroundColor: theme.palette.primary.secondary,
                   color: "black",
                 },
               }}
             >
               Save Changes
             </LoadingButton>
-            {/* <Button
-              type="submit"
-              variant="contained"
-              form="channelForm"
-              loading={createChannelIsLoading || createChannelIsFetching}
-              disabled={!channelFormWatch("channel_Name") || !members.length}
-            >
-              Save Changes
-            </Button> */}
             <Button variant="text" onClick={onCloseAction}>
               Close
             </Button>

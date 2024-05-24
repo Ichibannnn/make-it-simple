@@ -41,6 +41,7 @@ const parentCheckbox = [
   "Masterlist",
   "Requestor",
   "Receiver",
+  "Approver",
   "Channel Setup",
   "Ticketing",
   "Filing",
@@ -63,6 +64,7 @@ const masterlistCheckbox = [
 // const channelCheckbox = ["Receiver", "Channel", "Approver"];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
+const approverCheckbox = ["Approval"];
 const ticketingCheckbox = ["Concerns"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
@@ -263,6 +265,12 @@ const RoleAddDialog = ({ data, open, onClose }) => {
       setValue(
         "permissions",
         watch("permissions").filter((item) => !receiverCheckbox.includes(item))
+      );
+    }
+    if (!e.target.checked && e.target.value === "Approver") {
+      setValue(
+        "permissions",
+        watch("permissions").filter((item) => !approverCheckbox.includes(item))
       );
     }
     if (!e.target.checked && e.target.value === "Ticketing") {
@@ -677,6 +685,70 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
+
+              {/* APPROVER */}
+              {watch("permissions")?.includes("Approver") && (
+                <FormControl
+                  component="fieldset"
+                  variant="standard"
+                  sx={{
+                    border: "1px solid #2D3748",
+                    borderRadius: "10px",
+                    padding: 2,
+                  }}
+                >
+                  <FormLabel
+                    component="legend"
+                    sx={{
+                      padding: "0 20px",
+                    }}
+                  >
+                    Approver
+                  </FormLabel>
+
+                  <FormGroup>
+                    <Stack direction="row" flexWrap="wrap">
+                      {approverCheckbox.map((item, index) => (
+                        <Controller
+                          key={index}
+                          control={control}
+                          name="permissions"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <FormControlLabel
+                                sx={{
+                                  flex: 1,
+                                  flexBasis: "40%",
+                                }}
+                                control={
+                                  <Checkbox
+                                    ref={ref}
+                                    value={item}
+                                    checked={value?.includes(item)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        onChange([...value, e.target.value]);
+                                      } else {
+                                        onChange([
+                                          ...value.filter(
+                                            (item) => item !== e.target.value
+                                          ),
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={item}
+                              />
+                            );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </FormGroup>
+                </FormControl>
+              )}
+
               {/* TICKETING */}
               {watch("permissions")?.includes("Ticketing") && (
                 <FormControl
@@ -780,6 +852,11 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 (watch("permissions").includes("Receiver")
                   ? !watch("permissions").some((item) =>
                       receiverCheckbox.includes(item)
+                    )
+                  : false) ||
+                (watch("permissions").includes("Approver")
+                  ? !watch("permissions").some((item) =>
+                      approverCheckbox.includes(item)
                     )
                   : false) ||
                 (watch("permissions").includes("Ticketing")

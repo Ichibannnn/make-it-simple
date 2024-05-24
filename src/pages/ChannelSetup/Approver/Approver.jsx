@@ -33,9 +33,9 @@ import {
   useArchiveApproverMutation,
   useGetApproverQuery,
 } from "../../../features/api_channel_setup/approver/approverApi";
+
 import ApproverActions from "./ApproverActions";
 import ApproverDialog from "./ApproverDialog";
-import ApproverChannels from "./ApproverChannels";
 
 const Approver = () => {
   const [status, setStatus] = useState("true");

@@ -23,7 +23,13 @@ import { theme } from "../../../theme/theme";
 import { Toaster, toast } from "sonner";
 import { useApproveReceiverConcernMutation } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 
-export const ReceiverConcernsActions = ({ data, onView, onClose }) => {
+export const ReceiverConcernsActions = ({
+  data,
+  onView,
+  onClose,
+  setAddData,
+  setEditData,
+}) => {
   const ref = useRef(null);
   const { open, onToggle } = useDisclosure();
 
@@ -88,8 +94,8 @@ export const ReceiverConcernsActions = ({ data, onView, onClose }) => {
               description: "Approve concern successfully!",
               duration: 1500,
             });
-            // setAddData(null);
-            // setEditData(null);
+            setAddData(null);
+            setEditData(null);
             onClose();
           })
           .catch((err) => {

@@ -15,6 +15,7 @@ import {
   CategoryOutlined,
   ConfirmationNumberOutlined,
   ContactsOutlined,
+  CreditScoreOutlined,
   DiscountOutlined,
   DomainAddOutlined,
   DynamicFeedOutlined,
@@ -38,6 +39,7 @@ export const getMenuIcon = (iconName) => {
     AttachFileOutlined: <AttachFileOutlined />,
     BallotOutlined: <BallotOutlined />,
     ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
+    CreditScoreOutlined: <CreditScoreOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

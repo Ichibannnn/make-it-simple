@@ -34,6 +34,8 @@ import ReceiverConcerns from "../pages/Request/ConcernTickets_Receiver/ReceiverC
 
 import TicketingPage from "../pages/Tickets/TicketingPage";
 import IssueHandlerConcerns from "../pages/Tickets/IssueHandlerConcerns/IssueHandlerConcerns";
+import ApproverPage from "../pages/Approver/ApproverPage";
+import Approval from "../pages/Approver/Approval/Approval";
 
 export const router = createBrowserRouter([
   {
@@ -150,6 +152,16 @@ export const router = createBrowserRouter([
           {
             path: "/receiver/receiver-concerns",
             element: <ReceiverConcerns />,
+          },
+        ],
+      },
+      {
+        path: "/approver",
+        element: <ApproverPage />,
+        children: [
+          {
+            path: "/approver/approval",
+            element: <Approval />,
           },
         ],
       },

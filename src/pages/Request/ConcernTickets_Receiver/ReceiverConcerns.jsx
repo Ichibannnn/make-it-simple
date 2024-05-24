@@ -937,31 +937,13 @@ const ReceiverConcerns = () => {
                           data={item}
                           onView={onViewAction}
                           onClose={onClose}
+                          setAddEdit={setAddData}
+                          setEditData={setEditData}
                         />
                       </Stack>
                     </Stack>
                   ))
                 )}
-
-              {isError && (
-                <Stack
-                  width="100%"
-                  height="100%"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <img
-                    src={SomethingWentWrong}
-                    alt="Something Went Wrong"
-                    className="something-went-wrong"
-                  />
-                  <Stack marginLeft={1}>
-                    <Typography color="#EDF2F7" variant="h5">
-                      Something went wrong.
-                    </Typography>
-                  </Stack>
-                </Stack>
-              )}
 
               {isError && (
                 <Stack
