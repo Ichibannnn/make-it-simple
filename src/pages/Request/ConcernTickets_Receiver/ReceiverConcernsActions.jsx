@@ -81,11 +81,13 @@ export const ReceiverConcernsActions = ({
           );
 
         const approvePayload = {
-          concern: issueHandler?.map((item) => ({
-            requestTransactionId: requestTransactionId,
+          requestTransactionId: requestTransactionId,
+          concerns: issueHandler?.map((item) => ({
             issueHandler: item,
           })),
         };
+
+        // console.log("Payload", approvePayload);
 
         approveReceiverConcern(approvePayload)
           .unwrap()

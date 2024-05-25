@@ -937,7 +937,7 @@ const ReceiverConcerns = () => {
                           data={item}
                           onView={onViewAction}
                           onClose={onClose}
-                          setAddEdit={setAddData}
+                          setAddData={setAddData}
                           setEditData={setEditData}
                         />
                       </Stack>

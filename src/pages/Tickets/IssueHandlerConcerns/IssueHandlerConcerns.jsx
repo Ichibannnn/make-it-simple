@@ -38,6 +38,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import moment from "moment";
+import IssueViewDialog from "./IssueViewDialog";
 
 const IssueHandlerConcerns = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -46,7 +47,13 @@ const IssueHandlerConcerns = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { open, onToggle, onClose } = useDisclosure();
+  const [viewData, setViewData] = useState(null);
+
+  const {
+    open: viewOpen,
+    onToggle: viewOnToggle,
+    onClose: viewOnClose,
+  } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } =
     useGetIssueHandlerConcernsQuery({
@@ -142,6 +149,12 @@ const IssueHandlerConcerns = () => {
     }));
   };
 
+  const onViewDialogHandler = (data) => {
+    console.log("data: ", data);
+
+    setViewData(data);
+  };
+
   return (
     <Stack
       sx={{
@@ -230,16 +243,6 @@ const IssueHandlerConcerns = () => {
                   >
                     REQUESTOR
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    DEPARTMENT
-                  </TableCell>
                 </TableRow>
               </TableHead>
 
@@ -249,7 +252,10 @@ const IssueHandlerConcerns = () => {
                   !isFetching &&
                   data?.value?.closingTicket?.map((item) => (
                     <React.Fragment key={item.requestTransactionId}>
-                      <TableRow key={item.requestTransactionId}>
+                      <TableRow
+                        key={item.requestTransactionId}
+                        onClick={() => onViewDialogHandler(item)}
+                      >
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
@@ -302,17 +308,35 @@ const IssueHandlerConcerns = () => {
                             fontWeight: 500,
                           }}
                         >
-                          {item.requestor_Name}
-                        </TableCell>
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.empId}
+                          </Typography>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.department_Name}
+                          <Typography
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "14px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.requestor_Name}
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.departmentId} - {item.department_Name}
+                          </Typography>
                         </TableCell>
                       </TableRow>
 
@@ -340,12 +364,12 @@ const IssueHandlerConcerns = () => {
                                   gap={1}
                                   alignItems="center"
                                 >
-                                  <Badge
+                                  {/* <Badge
                                     badgeContent={item.openTicketCount}
                                     color="primary"
                                   >
                                     <ConfirmationNumberOutlined />
-                                  </Badge>
+                                  </Badge> */}
                                   TICKETS
                                 </Stack>
                               </Typography>
@@ -359,6 +383,7 @@ const IssueHandlerConcerns = () => {
                                         fontSize: "12px",
                                         fontWeight: 500,
                                       }}
+                                      align="center"
                                     >
                                       TICKET NO.
                                     </TableCell>
@@ -463,6 +488,7 @@ const IssueHandlerConcerns = () => {
                                           fontWeight: 500,
                                           maxWidth: "700px",
                                         }}
+                                        align="center"
                                       >
                                         {subItem.ticketConcernId}
                                       </TableCell>
@@ -588,6 +614,12 @@ const IssueHandlerConcerns = () => {
             </Table>
           </TableContainer>
         </Stack>
+
+        <IssueViewDialog
+          data={viewData}
+          viewOpen={viewOpen}
+          viewOnClose={viewOnClose}
+        />
       </Stack>
     </Stack>
   );

@@ -23,7 +23,7 @@ export const concernIssueHandlerApi = createApi({
     // ISSUE HANDLER ---------------
     getIssueHandlerConcerns: builder.query({
       query: (params) => ({
-        url: "open-Ticket/page?UserType=Issue%20Handler&Status=true",
+        url: "open-Ticket/page?Is_Approve=true&UserType=Issue%20Handler&Status=true",
         method: "GET",
         params: params,
       }),

@@ -44,7 +44,7 @@ export const concernReceiverApi = createApi({
 
     approveReceiverConcern: builder.mutation({
       query: (body) => ({
-        url: "request-concern/approve-request",
+        url: "request-concern/approval-request-receiver",
         method: "PUT",
         body: body,
       }),
