@@ -33,10 +33,7 @@ import { CategoryDialog } from "./CategoryDialog";
 import { CategoryActions } from "./CategoryActions";
 import { CategorySubCat } from "./CategorySubCat";
 
-import {
-  useArchiveCategoryMutation,
-  useGetCategoryQuery,
-} from "../../../features/api masterlist/category_api/categoryApi";
+import { useArchiveCategoryMutation, useGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 
 const Category = () => {
   const [status, setStatus] = useState("true");
@@ -50,13 +47,12 @@ const Category = () => {
 
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } =
-    useGetCategoryQuery({
-      Status: status,
-      Search: search,
-      PageNumber: pageNumber,
-      PageSize: pageSize,
-    });
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetCategoryQuery({
+    Status: status,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const [archiveCategory] = useArchiveCategoryMutation();
 
@@ -193,11 +189,7 @@ const Category = () => {
             <Stack justifyItems="left">
               <Typography variant="h4">Category</Typography>
             </Stack>
-            <Stack
-              justifyItems="space-between"
-              direction="row"
-              marginTop={1}
-            ></Stack>
+            <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -238,24 +230,13 @@ const Category = () => {
           </Tabs>
         </Stack>
 
-        <Divider
-          variant="fullWidth"
-          sx={{ background: "#2D3748", marginTop: "1px" }}
-        />
+        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ marginTop: "10px", padding: "20px" }}
-          gap={4}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
           <OutlinedInput
             flex="1"
             placeholder="Search category"
-            startAdornment={
-              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-            }
+            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             sx={{
@@ -267,13 +248,7 @@ const Category = () => {
               // backgroundColor: "#111927",
             }}
           />
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            startIcon={<AddOutlined />}
-            onClick={onToggle}
-          >
+          <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
             Add
           </Button>
         </Stack>
@@ -392,9 +367,7 @@ const Category = () => {
                         size="30px"
                         sx={{
                           fontSize: "13px",
-                          backgroundColor: item.is_Active
-                            ? "#112C32"
-                            : "#2D2823",
+                          backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
                           color: item.is_Active ? "#10B981" : "#D27D0E",
                           fontWeight: 800,
                         }}
@@ -410,12 +383,7 @@ const Category = () => {
                       }}
                       align="center"
                     >
-                      <CategoryActions
-                        data={item}
-                        status={status}
-                        onArchive={onArchiveAction}
-                        onUpdate={onEditAction}
-                      />
+                      <CategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -423,11 +391,7 @@ const Category = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img
-                      src={somethingWentWrong}
-                      alt="Something Went Wrong"
-                      className="something-went-wrong-table"
-                    />
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
                     </Typography>
@@ -449,11 +413,7 @@ const Category = () => {
               {isSuccess && !data?.value?.category.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img
-                      src={noRecordsFound}
-                      alt="No Records Found"
-                      className="norecords-found-table"
-                    />
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.
                     </Typography>

@@ -60,26 +60,17 @@ const ConcernTickets = () => {
 
   const [editData, setEditData] = useState(null);
 
-  const {
-    open: addConcernOpen,
-    onToggle: addConcernOnToggle,
-    onClose: addConcernOnClose,
-  } = useDisclosure();
+  const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
 
-  const {
-    open: viewConcernOpen,
-    onToggle: viewConcernOnToggle,
-    onClose: viewConcernOnClose,
-  } = useDisclosure();
+  const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } =
-    useGetRequestorConcernsQuery({
-      Concern_Status: status,
-      Search: search,
-      Ascending: ascending,
-      PageNumber: pageNumber,
-      PageSize: pageSize,
-    });
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetRequestorConcernsQuery({
+    Concern_Status: status,
+    Search: search,
+    Ascending: ascending,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -105,6 +96,8 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
+  // console.log("Requestor Data: ", data);
+
   return (
     <Stack
       sx={{
@@ -119,18 +112,12 @@ const ConcernTickets = () => {
       <Stack>
         <Stack direction="row" justifyContent="space-between" width="100%">
           <Stack justifyItems="left">
-            <Typography variant="h4">Concerns</Typography>
+            <Typography variant="h4">Request Concerns</Typography>
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
-            <Button
-              variant="contained"
-              size="large"
-              color="primary"
-              startIcon={<AddOutlined />}
-              onClick={addConcernOnToggle}
-            >
-              Add Concern
+            <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
+              Add Request
             </Button>
           </Stack>
         </Stack>
@@ -150,7 +137,7 @@ const ConcernTickets = () => {
                 <Tab
                   value=""
                   className="tabs-styling"
-                  label="All Concerns"
+                  label="All Requests"
                   icon={<ClearAllOutlined />}
                   iconPosition="start"
                   sx={{
@@ -197,24 +184,13 @@ const ConcernTickets = () => {
               </Tabs>
             </Stack>
 
-            <Divider
-              variant="fullWidth"
-              sx={{ background: "#2D3748", marginTop: "1px" }}
-            />
+            <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ marginTop: "10px", padding: "20px" }}
-              gap={4}
-            >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
               <OutlinedInput
                 flex="1"
                 placeholder="Search Concern#: eg 00001"
-                startAdornment={
-                  <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-                }
+                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 sx={{
@@ -240,26 +216,10 @@ const ConcernTickets = () => {
                       }}
                       align="center"
                     >
-                      <Stack
-                        direction="row"
-                        gap={0.2}
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        CONCERN NO.
-                        <IconButton
-                          size="small"
-                          onClick={() => setAscending(!ascending)}
-                        >
-                          {ascending === true ? (
-                            <ArrowUpward
-                              sx={{ color: "#D65DB1", fontSize: "20px" }}
-                            />
-                          ) : (
-                            <ArrowDownward
-                              sx={{ color: "#D65DB1", fontSize: "20px" }}
-                            />
-                          )}
+                      <Stack direction="row" gap={0.2} justifyContent="center" alignItems="center">
+                        REQUEST NO.
+                        <IconButton size="small" onClick={() => setAscending(!ascending)}>
+                          {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                         </IconButton>
                       </Stack>
                     </TableCell>
@@ -272,7 +232,7 @@ const ConcernTickets = () => {
                         fontSize: "12px",
                       }}
                     >
-                      CONCERN DETAILS
+                      REQUEST DETAILS
                     </TableCell>
 
                     <TableCell
@@ -327,7 +287,7 @@ const ConcernTickets = () => {
                           align="center"
                         >
                           {"#"}
-                          {item.requestTransactionId}
+                          {item.requestConcernId}
                         </TableCell>
 
                         <Tooltip title={item.concern} placement="bottom-start">
@@ -355,12 +315,7 @@ const ConcernTickets = () => {
                           <Chip
                             variant="filled"
                             size="30px"
-                            icon={
-                              <CalendarMonthOutlined
-                                fontSize="small"
-                                color="primary"
-                              />
-                            }
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                             sx={{
                               fontSize: "12px",
                               backgroundColor: "#1D1F3B",
@@ -383,20 +338,11 @@ const ConcernTickets = () => {
                             size="30px"
                             icon={
                               item.concern_Status === "For Approval" ? (
-                                <FiberManualRecord
-                                  fontSize="small"
-                                  color="info"
-                                />
+                                <FiberManualRecord fontSize="small" color="info" />
                               ) : item.concern_Status === "Ongoing" ? (
-                                <FiberManualRecord
-                                  fontSize="small"
-                                  color="warning"
-                                />
+                                <FiberManualRecord fontSize="small" color="warning" />
                               ) : (
-                                <FiberManualRecord
-                                  fontSize="small"
-                                  color="success"
-                                />
+                                <FiberManualRecord fontSize="small" color="success" />
                               )
                             }
                             sx={{
@@ -405,9 +351,7 @@ const ConcernTickets = () => {
                               color: theme.palette.text.main,
                               fontWeight: 800,
                             }}
-                            label={
-                              item.concern_Status ? item.concern_Status : ""
-                            }
+                            label={item.concern_Status ? item.concern_Status : ""}
                           />
                         </TableCell>
 
@@ -419,10 +363,7 @@ const ConcernTickets = () => {
                           }}
                           align="center"
                         >
-                          <ConcernActions
-                            data={item}
-                            onView={onViewConcernAction}
-                          />
+                          <ConcernActions data={item} onView={onViewConcernAction} />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -430,11 +371,7 @@ const ConcernTickets = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           Something went wrong.
                         </Typography>
@@ -456,11 +393,7 @@ const ConcernTickets = () => {
                   {isSuccess && !data?.value?.requestConcern?.length && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img
-                          src={noRecordsFound}
-                          alt="No Records Found"
-                          className="norecords-found-table"
-                        />
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           No records found.
                         </Typography>

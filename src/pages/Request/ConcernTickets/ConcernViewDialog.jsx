@@ -1,23 +1,5 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  IconButton,
-  Paper,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import {
-  CheckOutlined,
-  FileDownloadOutlined,
-  FileUploadOutlined,
-  RemoveCircleOutline,
-} from "@mui/icons-material";
+import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { CheckOutlined, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -28,16 +10,11 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import {
-  useCreateEditRequestorConcernMutation,
-  useDeleteRequestorAttachmentMutation,
-  useLazyGetRequestorAttachmentQuery,
-} from "../../../features/api_request/concerns/concernApi";
+import { useCreateEditRequestorConcernMutation, useDeleteRequestorAttachmentMutation, useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
 
 const requestorSchema = yup.object().shape({
-  RequestTransactionId: yup.string().nullable(),
-  Concern: yup.string().required().label("Concern Details"),
   RequestConcernId: yup.string().nullable(),
+  Concern: yup.string().required().label("Concern Details"),
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
@@ -48,24 +25,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const fileInputRef = useRef();
 
-  const [
-    createEditRequestorConcern,
-    {
-      isLoading: isCreateEditRequestorConcernLoading,
-      isFetching: isCreateEditRequestorConcernFetching,
-    },
-  ] = useCreateEditRequestorConcernMutation();
+  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
+    useCreateEditRequestorConcernMutation();
 
-  const [
-    deleteRequestorAttachment,
-    {
-      isLoading: isDeleteRequestorAttachmentLoading,
-      isFetching: isDeleteRequestorAttachmentFetching,
-    },
-  ] = useDeleteRequestorAttachmentMutation();
+  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
 
-  const [getRequestorAttachment, { data: attachmentData }] =
-    useLazyGetRequestorAttachmentQuery();
+  const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
 
   const {
     control,
@@ -77,7 +42,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   } = useForm({
     resolver: yupResolver(requestorSchema),
     defaultValues: {
-      RequestTransactionId: "",
       Concern: "",
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
@@ -87,16 +51,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const onConcernFormSubmit = (formData) => {
     const payload = new FormData();
 
-    payload.append("RequestTransactionId", formData.RequestTransactionId);
     payload.append("Concern", formData.Concern);
     payload.append("RequestConcernId", formData.RequestConcernId);
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
-      payload.append(
-        `RequestAttachmentsFiles[${i}].ticketAttachmentId`,
-        files[i].ticketAttachmentId || ""
-      );
+      payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }
 
@@ -111,7 +71,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       .unwrap()
       .then(() => {
         toast.success("Success!", {
-          description: "Concern added successfully!",
+          description: "Concern updated successfully!",
           duration: 1500,
         });
         setAttachments([]);
@@ -137,10 +97,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) =>
-        !attachments.some((existingFile) => existingFile.name === newFile.name)
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -169,15 +126,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         await deleteRequestorAttachment(deletePayload).unwrap();
       }
 
-      setAttachments((prevFiles) =>
-        prevFiles.filter((fileName) => fileName !== fileNameToDelete)
-      );
+      setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
       setValue(
         "RequestAttachmentsFiles",
-        watch("RequestAttachmentsFiles").filter(
-          (file) => file.name !== fileNameToDelete.name
-        )
+        watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
       );
     } catch (error) {}
   };
@@ -200,9 +153,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName)
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -231,25 +182,18 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   useEffect(() => {
     if (editData) {
-      setValue("RequestTransactionId", editData?.requestTransactionId);
       setValue("RequestConcernId", editData?.requestConcernId);
       setValue("Concern", editData?.concern);
 
       // getRequestorAttachment({ Id: editData?.requestGeneratorId });
-      getAttachmentData(editData.requestTransactionId);
+      getAttachmentData(editData.requestConcernId);
     }
   }, [editData]);
 
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={open}
-        sx={{ borderRadius: "none", padding: 0 }}
-        PaperProps={{ style: { overflow: "auto" } }}
-      >
+      <Dialog fullWidth maxWidth="md" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }}>
             <Stack direction="column" sx={{ padding: "5px" }}>
@@ -262,7 +206,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       color: "#48BB78",
                     }}
                   >
-                    Add Concern
+                    {!editData ? "Add Concern" : "View Concern"}
                   </Typography>
                 </Stack>
               </Stack>
@@ -278,7 +222,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography>Concern Details*</Typography>
+                  <Typography>Request Details*</Typography>
 
                   <Controller
                     control={control}
@@ -335,18 +279,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         alignItems: "center",
                       }}
                     >
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="warning"
-                        onClick={handleUploadButtonClick}
-                      >
+                      <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
                         Choose file
                       </Button>
 
-                      <Typography sx={{ color: theme.palette.text.secondary }}>
-                        .docx, .jpg, .jpeg, .png, .pdf file
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
                     </Box>
 
                     <Divider
@@ -392,9 +329,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                 flexDirection: "column",
                               }}
                             >
-                              <Typography sx={{ fontWeight: 500 }}>
-                                {fileName.name}
-                              </Typography>
+                              <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
 
                               <Typography
                                 sx={{
@@ -418,22 +353,13 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   sx={{
                                     fontSize: 13,
                                     fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId
-                                      ? theme.palette.success.main
-                                      : theme.palette.primary.main,
+                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId
-                                    ? "Attached file"
-                                    : "Uploaded the file successfully"}
+                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && (
-                                  <CheckOutlined
-                                    color="success"
-                                    fontSize="small"
-                                  />
-                                )}
+                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
                               </Box>
                             </Box>
 
@@ -456,11 +382,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   <IconButton
                                     size="small"
                                     color="error"
-                                    onClick={() =>
-                                      handleUpdateFile(
-                                        fileName.ticketAttachmentId
-                                      )
-                                    }
+                                    onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
                                     style={{
                                       background: "none",
                                     }}
@@ -506,25 +428,14 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             const files = Array.from(event.target.files);
                             files[0].ticketAttachmentId = ticketAttachmentId;
 
-                            onChange([
-                              ...files,
-                              ...value.filter(
-                                (item) =>
-                                  item.ticketAttachmentId !== ticketAttachmentId
-                              ),
-                            ]);
+                            onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
 
                             setAttachments((prevFiles) => [
-                              ...prevFiles.filter(
-                                (item) =>
-                                  item.ticketAttachmentId !== ticketAttachmentId
-                              ),
+                              ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
                               {
                                 ticketAttachmentId: ticketAttachmentId,
                                 name: files[0].name,
-                                size: (files[0].size / (1024 * 1024)).toFixed(
-                                  2
-                                ),
+                                size: (files[0].size / (1024 * 1024)).toFixed(2),
                               },
                             ]);
 
@@ -534,10 +445,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
 
-                            const uniqueNewFiles = files.filter(
-                              (item) =>
-                                !value.some((file) => file.name === item.name)
-                            );
+                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";
@@ -559,11 +467,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
               variant="contained"
               color="primary"
               type="submit"
-              loading={
-                isCreateEditRequestorConcernLoading ||
-                isCreateEditRequestorConcernFetching ||
-                isLoading
-              }
+              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
               disabled={!watch("Concern") || !attachments?.length}
             >
               Save

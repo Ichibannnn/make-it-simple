@@ -12,12 +12,7 @@ body {
 } */
 
 .paper-color {
-  background: radial-gradient(
-    circle at 44% 42%,
-    rgba(178, 154, 184, 1),
-    #8d3bad,
-    rgba(86, 45, 107, 1)
-  ) !important;
+  background: radial-gradient(circle at 44% 42%, rgba(178, 154, 184, 1), #8d3bad, rgba(86, 45, 107, 1)) !important;
 }
 
 .svg-styling {
@@ -184,6 +179,10 @@ body {
 .toast-cancel {
   background-color: transparent;
   color: #1976d2;
+}
+
+.tabs-styling-header {
+  text-transform: capitalize !important;
 }
 
 .tabs-styling {

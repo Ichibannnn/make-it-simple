@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { RemoveCircleOutline } from "@mui/icons-material";
 
 import React, { useRef, useState } from "react";
@@ -36,13 +25,8 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const fileInputRef = useRef();
 
-  const [
-    createEditRequestorConcern,
-    {
-      isLoading: isCreateEditRequestorConcernLoading,
-      isFetching: isCreateEditRequestorConcernFetching,
-    },
-  ] = useCreateEditRequestorConcernMutation();
+  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
+    useCreateEditRequestorConcernMutation();
 
   const {
     control,
@@ -70,6 +54,11 @@ const ConcernDialog = ({ open, onClose }) => {
     for (let i = 0; i < files.length; i++) {
       payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, "");
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
+    }
+
+    if (files.length === 0) {
+      payload.append(`RequestAttachmentsFiles[0].ticketAttachmentId`, "");
+      payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
     createEditRequestorConcern(payload)
@@ -100,10 +89,7 @@ const ConcernDialog = ({ open, onClose }) => {
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) =>
-        !attachments.some((existingFile) => existingFile.name === newFile.name)
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -113,15 +99,11 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const handleDeleteFile = (fileNameToDelete) => {
-    setAttachments((prevFiles) =>
-      prevFiles.filter((fileName) => fileName !== fileNameToDelete)
-    );
+    setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter(
-        (file) => file.name !== fileNameToDelete
-      )
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete)
     );
   };
 
@@ -143,9 +125,7 @@ const ConcernDialog = ({ open, onClose }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName)
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -158,13 +138,7 @@ const ConcernDialog = ({ open, onClose }) => {
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={open}
-        sx={{ borderRadius: "none", padding: 0 }}
-        PaperProps={{ style: { overflow: "auto" } }}
-      >
+      <Dialog fullWidth maxWidth="md" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }}>
             <Stack direction="column" sx={{ padding: "5px" }}>
@@ -177,7 +151,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       color: "#48BB78",
                     }}
                   >
-                    Add Concern
+                    Create Request
                   </Typography>
                 </Stack>
               </Stack>
@@ -193,7 +167,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography>Concern Details*</Typography>
+                  <Typography>Request Details*</Typography>
 
                   <Controller
                     control={control}
@@ -204,7 +178,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           inputRef={ref}
                           size="medium"
                           value={value}
-                          placeholder="Ex. System Name - Concern"
+                          placeholder="Ex. System Name - Description"
                           onChange={onChange}
                           sx={{
                             width: "80%",
@@ -249,18 +223,11 @@ const ConcernDialog = ({ open, onClose }) => {
                         alignItems: "center",
                       }}
                     >
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="warning"
-                        onClick={handleUploadButtonClick}
-                      >
+                      <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
                         Choose file
                       </Button>
 
-                      <Typography sx={{ color: theme.palette.text.secondary }}>
-                        .docx, .jpg, .jpeg, .png, .pdf file
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
                     </Box>
 
                     <Divider
@@ -308,9 +275,7 @@ const ConcernDialog = ({ open, onClose }) => {
                                 flexDirection: "column",
                               }}
                             >
-                              <Typography sx={{ fontWeight: 500 }}>
-                                {fileName.name}
-                              </Typography>
+                              <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
 
                               <Typography
                                 sx={{
@@ -388,18 +353,14 @@ const ConcernDialog = ({ open, onClose }) => {
               variant="contained"
               color="primary"
               type="submit"
-              loading={
-                isCreateEditRequestorConcernLoading ||
-                isCreateEditRequestorConcernFetching ||
-                isLoading
-              }
-              disabled={!watch("Concern") || !attachments.length}
+              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
+              disabled={!watch("Concern")}
             >
               Save
             </LoadingButton>
-            <Button variant="text" onClick={onCloseAction}>
+            <LoadingButton variant="text" loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading} onClick={onCloseAction}>
               Close
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </form>
       </Dialog>

@@ -1,18 +1,4 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Stack, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -22,12 +8,7 @@ import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 
-import {
-  useArchiveRoleMutation,
-  useCreateRoleMutation,
-  useUpdateRoleNameMutation,
-  useUpdateRolePermissionMutation,
-} from "../../../features/user_management_api/role/roleApi";
+import { useArchiveRoleMutation, useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
 import { Toaster, toast } from "sonner";
 
 const schema = yup.object().shape({
@@ -35,18 +16,7 @@ const schema = yup.object().shape({
   permissions: yup.array().required(),
 });
 
-const parentCheckbox = [
-  "Overview",
-  "User Management",
-  "Masterlist",
-  "Requestor",
-  "Receiver",
-  "Approver",
-  "Channel Setup",
-  "Ticketing",
-  "Filing",
-  "Generate",
-];
+const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Channel Setup", "Ticketing", "Filing", "Generate"];
 const userManagementCheckbox = ["User Account", "User Role"];
 const masterlistCheckbox = [
   "Company",
@@ -65,27 +35,12 @@ const masterlistCheckbox = [
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
 const approverCheckbox = ["Approval"];
-const ticketingCheckbox = ["Concerns"];
+const ticketingCheckbox = ["Tickets"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
-  const [
-    createRole,
-    { isLoading: createRoleIsLoading, isFetching: createRoleIsFetching },
-  ] = useCreateRoleMutation();
-  const [
-    updateRoleName,
-    {
-      isLoading: updateRoleNameIsLoading,
-      isFetching: updateRoleNameIsFetching,
-    },
-  ] = useUpdateRoleNameMutation();
-  const [
-    updateRolePermission,
-    {
-      isLoading: updateRolePermissionIsLoading,
-      isFetching: updateRolePermissionIsFetching,
-    },
-  ] = useUpdateRolePermissionMutation();
+  const [createRole, { isLoading: createRoleIsLoading, isFetching: createRoleIsFetching }] = useCreateRoleMutation();
+  const [updateRoleName, { isLoading: updateRoleNameIsLoading, isFetching: updateRoleNameIsFetching }] = useUpdateRoleNameMutation();
+  const [updateRolePermission, { isLoading: updateRolePermissionIsLoading, isFetching: updateRolePermissionIsFetching }] = useUpdateRolePermissionMutation();
 
   const {
     control,
@@ -159,10 +114,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
           }
 
           // ROLE PERMISSION API
-          const isPermissionMatch =
-            formData.permissions.every((item) =>
-              data.permissions.includes(item)
-            ) && formData.permissions.length === data.permissions.length;
+          const isPermissionMatch = formData.permissions.every((item) => data.permissions.includes(item)) && formData.permissions.length === data.permissions.length;
 
           if (!isPermissionMatch) {
             console.log("isPermissionMatch: ", isPermissionMatch);
@@ -187,10 +139,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
               });
           }
 
-          if (
-            formData.user_Role_Name === data.user_Role_Name &&
-            isPermissionMatch
-          ) {
+          if (formData.user_Role_Name === data.user_Role_Name && isPermissionMatch) {
             updateRolePermission({
               id: data.id,
               permissions: formData.permissions,
@@ -236,17 +185,13 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     if (!e.target.checked && e.target.value === "User Management") {
       setValue(
         "permissions",
-        watch("permissions").filter(
-          (item) => !userManagementCheckbox.includes(item)
-        )
+        watch("permissions").filter((item) => !userManagementCheckbox.includes(item))
       );
     }
     if (!e.target.checked && e.target.value === "Masterlist") {
       setValue(
         "permissions",
-        watch("permissions").filter(
-          (item) => !masterlistCheckbox.includes(item)
-        )
+        watch("permissions").filter((item) => !masterlistCheckbox.includes(item))
       );
     }
     // if (!e.target.checked && e.target.value === "Channel Setup") {
@@ -356,11 +301,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                     if (e.target.checked) {
                                       onChange([...value, e.target.value]);
                                     } else {
-                                      onChange([
-                                        ...value.filter(
-                                          (item) => item !== e.target.value
-                                        ),
-                                      ]);
+                                      onChange([...value.filter((item) => item !== e.target.value)]);
                                       handleParentCheckboxChange(e);
                                     }
                                   }}
@@ -418,11 +359,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                       if (e.target.checked) {
                                         onChange([...value, e.target.value]);
                                       } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
                                       }
                                     }}
                                   />
@@ -480,11 +417,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                       if (e.target.checked) {
                                         onChange([...value, e.target.value]);
                                       } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
                                       }
                                     }}
                                   />
@@ -604,11 +537,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                       if (e.target.checked) {
                                         onChange([...value, e.target.value]);
                                       } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
                                       }
                                     }}
                                   />
@@ -666,11 +595,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                       if (e.target.checked) {
                                         onChange([...value, e.target.value]);
                                       } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
                                       }
                                     }}
                                   />
@@ -729,11 +654,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                       if (e.target.checked) {
                                         onChange([...value, e.target.value]);
                                       } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
                                       }
                                     }}
                                   />
@@ -792,11 +713,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                                       if (e.target.checked) {
                                         onChange([...value, e.target.value]);
                                       } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
                                       }
                                     }}
                                   />
@@ -829,41 +746,17 @@ const RoleAddDialog = ({ data, open, onClose }) => {
               disabled={
                 !watch("user_Role_Name") ||
                 !watch("permissions").length ||
-                (watch("permissions").includes("User Management")
-                  ? !watch("permissions").some((item) =>
-                      userManagementCheckbox.includes(item)
-                    )
-                  : false) ||
-                (watch("permissions").includes("Masterlist")
-                  ? !watch("permissions").some((item) =>
-                      masterlistCheckbox.includes(item)
-                    )
-                  : false) ||
+                (watch("permissions").includes("User Management") ? !watch("permissions").some((item) => userManagementCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Masterlist") ? !watch("permissions").some((item) => masterlistCheckbox.includes(item)) : false) ||
                 // (watch("permissions").includes("Channel Setup")
                 //   ? !watch("permissions").some((item) =>
                 //       channelCheckbox.includes(item)
                 //     )
                 //   : false) ||
-                (watch("permissions").includes("Requestor")
-                  ? !watch("permissions").some((item) =>
-                      requestCheckbox.includes(item)
-                    )
-                  : false) ||
-                (watch("permissions").includes("Receiver")
-                  ? !watch("permissions").some((item) =>
-                      receiverCheckbox.includes(item)
-                    )
-                  : false) ||
-                (watch("permissions").includes("Approver")
-                  ? !watch("permissions").some((item) =>
-                      approverCheckbox.includes(item)
-                    )
-                  : false) ||
-                (watch("permissions").includes("Ticketing")
-                  ? !watch("permissions").some((item) =>
-                      ticketingCheckbox.includes(item)
-                    )
-                  : false)
+                (watch("permissions").includes("Requestor") ? !watch("permissions").some((item) => requestCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Receiver") ? !watch("permissions").some((item) => receiverCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Approver") ? !watch("permissions").some((item) => approverCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Ticketing") ? !watch("permissions").some((item) => ticketingCheckbox.includes(item)) : false)
               }
             >
               Save

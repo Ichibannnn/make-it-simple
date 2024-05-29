@@ -170,7 +170,7 @@ export const router = createBrowserRouter([
         element: <TicketingPage />,
         children: [
           {
-            path: "/ticketing/issue-handler-concerns",
+            path: "/ticketing/issue-handler-tickets",
             element: <IssueHandlerConcerns />,
           },
         ],

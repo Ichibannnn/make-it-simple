@@ -1,16 +1,4 @@
-import {
-  Autocomplete,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Divider,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Stack, TextField, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -24,11 +12,8 @@ import { useLazyGetBusinessUnitQuery } from "../../../features/api masterlist/bu
 import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
-import { useLazyGetLocationQuery } from "../../../features/api masterlist/location/locationApi";
-import {
-  useCreateUserMutation,
-  useUpdateUserMutation,
-} from "../../../features/user_management_api/user/userApi";
+import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
+import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
 import Swal from "sweetalert2";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
@@ -48,78 +33,24 @@ const schema = yup.object().shape({
 });
 
 const UserAccountDialog = ({ data, open, onClose }) => {
-  const [
-    createUser,
-    { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching },
-  ] = useCreateUserMutation();
-  const [
-    updateUser,
-    { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching },
-  ] = useUpdateUserMutation();
+  const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
+  const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
 
-  const [
-    getEmployees,
-    {
-      data: employeeData = [],
-      isLoading: emloyeeIsLoading,
-      isSuccess: employeeIsSuccess,
-    },
-  ] = useLazyGetEmployeesQuery();
+  const [getEmployees, { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess }] = useLazyGetEmployeesQuery();
 
-  const [
-    getRoles,
-    { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess },
-  ] = useLazyGetRolesQuery();
+  const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] = useLazyGetRolesQuery();
 
-  const [
-    getCompany,
-    {
-      data: companyData,
-      isLoading: companyIsLoading,
-      isSuccess: companyIsSuccess,
-    },
-  ] = useLazyGetCompanyQuery();
+  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
 
-  const [
-    getBusinessUnit,
-    {
-      data: businessUnitData,
-      isLoading: businessUnitIsLoading,
-      isSuccess: businessUnitIsSuccess,
-    },
-  ] = useLazyGetBusinessUnitQuery();
+  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
 
-  const [
-    getDepartment,
-    {
-      data: departmentData,
-      isLoading: departmentIsLoading,
-      isSuccess: departmentIsSuccess,
-    },
-  ] = useLazyGetDepartmentQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
 
-  const [
-    getUnit,
-    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
-  ] = useLazyGetUnitQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
 
-  const [
-    getSubUnit,
-    {
-      data: subUnitData,
-      isLoading: subUnitIsLoading,
-      isSuccess: subUnitIsSuccess,
-    },
-  ] = useLazyGetSubUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
 
-  const [
-    getLocation,
-    {
-      data: locationData,
-      isLoading: locationIsLoading,
-      isSuccess: locationIsSuccess,
-    },
-  ] = useLazyGetLocationQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
 
   const {
     control,
@@ -198,15 +129,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         location_Name: data?.location_Name,
       });
     }
-  }, [
-    data,
-    companyIsLoading,
-    businessUnitIsLoading,
-    departmentIsLoading,
-    unitIsLoading,
-    subUnitIsLoading,
-    locationIsLoading,
-  ]);
+  }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   const onSubmitHandler = (formData) => {
     if (data) {
@@ -322,22 +245,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     onClose();
   };
 
+  console.log("sub unit ID: ", watch("subUnitId"));
+  console.log("Location ID: ", watch("locationId"));
+  console.log("locationData: ", locationData);
+
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open}>
         <Toaster richColors position="top-right" closeButton />
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>
-          Create User Account
-        </DialogTitle>
+        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>Create User Account</DialogTitle>
 
         <DialogContent>
-          <Stack
-            id="user"
-            component="form"
-            onSubmit={handleSubmit(onSubmitHandler)}
-            gap={2}
-            paddingTop={3}
-          >
+          <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={2} paddingTop={3}>
             <Typography
               sx={{
                 color: "#48BB78",
@@ -360,9 +279,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       value={value}
                       options={employeeData}
                       loading={emloyeeIsLoading}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Employee ID" />
-                      )}
+                      renderInput={(params) => <TextField {...params} label="Employee ID" />}
                       onOpen={() => {
                         if (!employeeIsSuccess) getEmployees();
                       }}
@@ -374,22 +291,13 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                             .split(" ")
                             .map((item) => item.at(0))
                             .join("")
-                            .toLowerCase() +
-                            value?.general_info.last_name
-                              .split(" ")
-                              .join("")
-                              .toLowerCase()
+                            .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase()
                         );
 
                         onChange(value);
                       }}
-                      getOptionLabel={(option) =>
-                        option.general_info.full_id_number
-                      }
-                      isOptionEqualToValue={(option, value) =>
-                        option.general_info.full_id_number ===
-                        value.general_info.full_id_number
-                      }
+                      getOptionLabel={(option) => option.general_info.full_id_number}
+                      isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
                       disabled={data ? true : false}
                       sx={{
                         flex: 1,
@@ -431,16 +339,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               control={control}
               name="username"
               render={({ field: { ref, value, onChange } }) => {
-                return (
-                  <TextField
-                    inputRef={ref}
-                    size="small"
-                    value={value}
-                    label="Username"
-                    onChange={onChange}
-                    fullWidth
-                  />
-                );
+                return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} fullWidth />;
               }}
             />
 
@@ -455,9 +354,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={roleData?.value?.userRole || []}
                     loading={roleIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Role" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Role" />}
                     onOpen={() => {
                       if (!roleIsSuccess)
                         getRoles({
@@ -466,9 +363,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     }}
                     onChange={(_, value) => onChange(value)}
                     getOptionLabel={(option) => option.user_Role_Name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -479,10 +374,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            <Divider
-              variant="fullWidth"
-              sx={{ background: "#2D3748", marginTop: 3, marginBottom: 3 }}
-            />
+            <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 3, marginBottom: 3 }} />
 
             <Typography
               sx={{
@@ -505,9 +397,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={companyData?.value?.company || []}
                     loading={companyIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Company" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Company" />}
                     onOpen={() => {
                       if (!companyIsSuccess) getCompany();
                     }}
@@ -522,12 +412,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       getBusinessUnit();
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.company_Code} - ${option.company_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -548,15 +434,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={
-                      businessUnitData?.value?.businessUnit.filter(
-                        (item) => item.companyId === watch("companyId")?.id
-                      ) || []
-                    }
+                    options={businessUnitData?.value?.businessUnit.filter((item) => item.companyId === watch("companyId")?.id) || []}
                     loading={businessUnitIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Business Unit" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Business Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
 
@@ -567,12 +447,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       getDepartment();
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.business_Code} - ${option.business_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -594,16 +470,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={
-                      departmentData?.value?.department.filter(
-                        (item) =>
-                          item.businessUnitId === watch("businessUnitId")?.id
-                      ) || []
-                    }
+                    options={departmentData?.value?.department.filter((item) => item.businessUnitId === watch("businessUnitId")?.id) || []}
                     loading={departmentIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Department" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Department" />}
                     onChange={(_, value) => {
                       onChange(value);
 
@@ -613,12 +482,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       getUnit();
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.department_Code} - ${option.department_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -639,16 +504,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={
-                      unitData?.value?.unit.filter(
-                        (item) =>
-                          item.departmentId === watch("departmentId")?.id
-                      ) || []
-                    }
+                    options={unitData?.value?.unit.filter((item) => item.departmentId === watch("departmentId")?.id) || []}
                     loading={unitIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Unit" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
 
@@ -657,12 +515,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       getSubUnit();
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.unit_Code} - ${option.unit_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -683,15 +537,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={
-                      subUnitData?.value?.subUnit.filter(
-                        (item) => item.unitId === watch("unitId")?.id
-                      ) || []
-                    }
+                    options={subUnitData?.value?.subUnit.filter((item) => item.unitId === watch("unitId")?.id) || []}
                     loading={subUnitIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Sub Unit" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Sub Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
 
@@ -699,12 +547,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       getLocation();
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.subUnit_Code} - ${option.subUnit_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -725,27 +569,14 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={
-                      locationData?.value?.location.filter((item) =>
-                        item.subUnits.some(
-                          (subUnitItem) =>
-                            subUnitItem.subUnitId === watch("subUnitId")?.id
-                        )
-                      ) || []
-                    }
+                    options={locationData?.value?.location.filter((item) => item.subUnits.some((subUnitItem) => subUnitItem.subUnitId === watch("subUnitId")?.id)) || []}
                     loading={locationIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Location" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Location" />}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.location_Code} - ${option.location_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.location_Code === value.location_Code
-                    }
+                    getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                    isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
                     sx={{
                       flex: 2,
                     }}
@@ -764,12 +595,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
             type="submit"
             form="user"
             variant="contained"
-            loading={
-              isCreateUserIsLoading ||
-              isCreateUserIsFetching ||
-              isUpdateUserIsLoading ||
-              isUpdateUserIsFetching
-            }
+            loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
             disabled={
               !watch("empId") ||
               !watch("username") ||

@@ -1,16 +1,4 @@
-import {
-  Collapse,
-  Drawer,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Radio,
-  Stack,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Collapse, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Radio, Stack, Typography, useMediaQuery } from "@mui/material";
 import React, { Fragment, useEffect, useState } from "react";
 import { theme } from "../theme/theme";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,12 +7,7 @@ import { setSidebar } from "../features/sidebar/sidebarSlice";
 import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
-import {
-  ExpandLess,
-  ExpandMore,
-  KeyboardArrowDown,
-  KeyboardArrowDownOutlined,
-} from "@mui/icons-material";
+import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowDownOutlined } from "@mui/icons-material";
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
@@ -72,13 +55,7 @@ const SidebarHeader = () => {
         // width: "280px",
       }}
     >
-      <img
-        src="/images/dotek-login.png"
-        alt="misLogo"
-        width="56"
-        height="38"
-        className="logo-sidebar"
-      />
+      <img src="/images/dotek-login.png" alt="misLogo" width="56" height="38" className="logo-sidebar" />
 
       <Stack
         sx={{
@@ -125,41 +102,17 @@ const SidebarList = () => {
 
   const userPermission = useSelector((state) => state.user.permissions);
 
-  const {
-    open: userManagementOpen,
-    onToggle: userManagementOnToggle,
-    onClose: userManagementOnClose,
-  } = useDisclosure(!!pathname.match(/user-management/gi));
-  const {
-    open: masterListOpen,
-    onToggle: masterListOnToggle,
-    onClose: masterlistOnClose,
-  } = useDisclosure(!!pathname.match(/masterlist/gi));
+  const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
+  const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
   // const {
   //   open: channelOpen,
   //   onToggle: channelOnToggle,
   //   onClose: channelOnClose,
   // } = useDisclosure(!!pathname.match(/channel/gi));
-  const {
-    open: requestOpen,
-    onToggle: requestOnToggle,
-    onClose: requestOnClose,
-  } = useDisclosure(!!pathname.match(/requestor/gi));
-  const {
-    open: receiverOpen,
-    onToggle: receiverOnToggle,
-    onClose: receiverOnClose,
-  } = useDisclosure(!!pathname.match(/receiver/gi));
-  const {
-    open: approverOpen,
-    onToggle: approverOnToggle,
-    onClose: approverOnClose,
-  } = useDisclosure(!!pathname.match(/approver/gi));
-  const {
-    open: ticketingOpen,
-    onToggle: ticketingOnToggle,
-    onClose: ticketingOnClose,
-  } = useDisclosure(!!pathname.match(/ticketing/gi));
+  const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
+  const { open: receiverOpen, onToggle: receiverOnToggle, onClose: receiverOnClose } = useDisclosure(!!pathname.match(/receiver/gi));
+  const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
+  const { open: ticketingOpen, onToggle: ticketingOnToggle, onClose: ticketingOnClose } = useDisclosure(!!pathname.match(/ticketing/gi));
 
   const sidebarMenu = [
     {
@@ -406,8 +359,8 @@ const SidebarList = () => {
       sub: [
         {
           id: 1,
-          name: "Concerns",
-          path: "/ticketing/issue-handler-concerns",
+          name: "Tickets",
+          path: "/ticketing/issue-handler-tickets",
           icon: "ConfirmationNumberOutlined",
         },
       ],
@@ -441,10 +394,7 @@ const SidebarList = () => {
           .map((item, i) => (
             <Fragment key={i}>
               {item.sub?.length ? (
-                <ListItemButton
-                  onClick={item.onToggle}
-                  selected={item.path === pathname}
-                >
+                <ListItemButton onClick={item.onToggle} selected={item.path === pathname}>
                   <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
                   <ListItemText
                     primary={item.name}
@@ -458,10 +408,7 @@ const SidebarList = () => {
                   {item.open ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
               ) : (
-                <ListItemButton
-                  onClick={() => navigate(item.path)}
-                  selected={item.path === pathname}
-                >
+                <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname}>
                   <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
                   <ListItemText
                     primary={item.name}
@@ -475,9 +422,7 @@ const SidebarList = () => {
                 </ListItemButton>
               )}
 
-              {item.sub?.filter((subItem) =>
-                userPermission.includes(subItem.name)
-              ).length > 0 && (
+              {item.sub?.filter((subItem) => userPermission.includes(subItem.name)).length > 0 && (
                 <Collapse
                   in={item.open}
                   timeout="auto"
@@ -500,16 +445,9 @@ const SidebarList = () => {
                     }}
                   >
                     {item.sub
-                      .filter((subItem) =>
-                        userPermission.includes(subItem.name)
-                      )
+                      .filter((subItem) => userPermission.includes(subItem.name))
                       .map((subItem, j) => (
-                        <ListItemButton
-                          key={j}
-                          onClick={() => navigate(subItem.path)}
-                          selected={subItem.path === pathname}
-                          sx={{ padding: "2px" }}
-                        >
+                        <ListItemButton key={j} onClick={() => navigate(subItem.path)} selected={subItem.path === pathname} sx={{ padding: "2px" }}>
                           {/* <ListItemIcon>
                             {getSubMenuIcon(subItem.icon)}
                           </ListItemIcon> */}

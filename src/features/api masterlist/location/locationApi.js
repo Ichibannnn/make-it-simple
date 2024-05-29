@@ -28,6 +28,14 @@ export const locationApi = createApi({
       }),
       providesTags: ["Location"],
     }),
+    getLocationWithPagination: builder.query({
+      query: (params) => ({
+        url: "location/page?Status=true&PageNumber=1&PageSize=10000",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Location"],
+    }),
     syncLocation: builder.mutation({
       query: (body) => ({
         url: "location",
@@ -39,8 +47,4 @@ export const locationApi = createApi({
   }),
 });
 
-export const {
-  useGetLocationQuery,
-  useSyncLocationMutation,
-  useLazyGetLocationQuery,
-} = locationApi;
+export const { useGetLocationQuery, useSyncLocationMutation, useLazyGetLocationQuery, useLazyGetLocationWithPaginationQuery } = locationApi;
