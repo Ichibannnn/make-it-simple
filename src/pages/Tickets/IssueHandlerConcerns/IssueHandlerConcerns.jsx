@@ -24,6 +24,7 @@ import {
 import {
   AccessTimeOutlined,
   AddOutlined,
+  CalendarMonthOutlined,
   ChecklistRtlOutlined,
   ClearAllOutlined,
   ConfirmationNumberOutlined,
@@ -254,7 +255,7 @@ const IssueHandlerConcerns = () => {
                 icon={
                   <Badge
                     badgeContent={100}
-                    color="success"
+                    color="primary"
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "left",
@@ -314,7 +315,7 @@ const IssueHandlerConcerns = () => {
                 icon={
                   <Badge
                     badgeContent={100}
-                    color="error"
+                    color="success"
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "left",
@@ -453,94 +454,114 @@ const IssueHandlerConcerns = () => {
                 {isSuccess &&
                   !isLoading &&
                   !isFetching &&
-                  data?.value?.closingTicket?.map((item) =>
-                    item?.openTickets?.map((subItem) => (
-                      <React.Fragment key={item.requestTransactionId}>
-                        <TableRow key={subItem.ticketConcernId} onClick={() => onViewAction(item)}>
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
-                            {subItem.ticketConcernId}
-                          </TableCell>
+                  data?.value?.openTicket?.map((item) => (
+                    <React.Fragment key={item.ticketConcernId}>
+                      <TableRow key={item.ticketConcernId} onClick={() => onViewAction(item)}>
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          {item.ticket_No}
+                        </TableCell>
 
-                          <TableCell
-                            // className="ellipsis-styling"
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                              maxWidth: "700px",
-                            }}
-                          >
-                            {subItem.concern_Description}
-                          </TableCell>
+                        <TableCell
+                          // className="ellipsis-styling"
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            maxWidth: "700px",
+                          }}
+                        >
+                          {item.concern_Description}
+                        </TableCell>
 
-                          <TableCell
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                             sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
+                              fontSize: "12px",
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
+                              fontWeight: 800,
                             }}
-                          >
-                            {moment(subItem.start_Date).format("YYYY-MM-DD")}
-                          </TableCell>
+                            label={moment(item.start_Date).format("LL")}
+                          />
+                        </TableCell>
 
-                          <TableCell
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                             sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
+                              fontSize: "12px",
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
+                              fontWeight: 800,
                             }}
-                          >
-                            {moment(subItem.target_Date).format("YYYY-MM-DD")}
-                          </TableCell>
+                            label={moment(item.target_Date).format("LL")}
+                          />
+                        </TableCell>
 
-                          <TableCell
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={item.remarks === "On-Time" ? "On-Time" : item.remarks === "Delayed" ? "Delayed" : ""}
                             sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
+                              backgroundColor: item.remarks === "On-Time" ? "#00913c" : item.remarks === "Delayed" ? "#a32421" : "transparent",
+                              color: "#ffffffde",
+                              borderRadius: "none",
                             }}
-                          >
-                            <Chip
-                              variant="filled"
-                              size="small"
-                              label={subItem.remarks === "On-Time" ? "On-Time" : subItem.remarks === "Delayed" ? "Delayed" : ""}
-                              sx={{
-                                backgroundColor: subItem.remarks === "On-Time" ? "#00913c" : subItem.remarks === "Delayed" ? "#a32421" : "transparent",
-                                color: "#ffffffde",
-                                borderRadius: "none",
-                              }}
-                            />
-                          </TableCell>
+                          />
+                        </TableCell>
 
-                          <TableCell
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={item.ticket_Status === "Open Ticket" ? "Open" : "Closed"}
                             sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
+                              backgroundColor: item.ticket_Status === "Open Ticket" ? "#ec9d29" : "#00913c",
+                              color: "#ffffffde",
+                              borderRadius: 0,
                             }}
-                          >
-                            <Chip
-                              variant="filled"
-                              size="small"
-                              label={subItem.ticket_Status === "Open Ticket" ? "Open" : "Pending"}
-                              sx={{
-                                backgroundColor: subItem.ticket_Status === "Open Ticket" ? "#00913c" : "#ec9d29",
-                                color: "#ffffffde",
-                                borderRadius: "none",
-                              }}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    ))
-                  )}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>

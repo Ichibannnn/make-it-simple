@@ -20,11 +20,14 @@ import {
 import {
   AccessTimeOutlined,
   Add,
+  AddOutlined,
   CheckOutlined,
+  EditNoteOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
   FileUploadOutlined,
   GetAppOutlined,
+  PostAddOutlined,
   RemoveCircleOutline,
   Search,
 } from "@mui/icons-material";
@@ -60,6 +63,7 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import Swal from "sweetalert2";
+import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -76,7 +80,7 @@ const schema = yup.object().shape({
 });
 
 const ReceiverConcerns = () => {
-  const [status, setStatus] = useState("false");
+  const [approveStatus, setApproveStatus] = useState("false");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -100,7 +104,7 @@ const ReceiverConcerns = () => {
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetReceiverConcernsQuery({
-    Status: status,
+    is_Approve: approveStatus,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
@@ -165,56 +169,6 @@ const ReceiverConcerns = () => {
     payload.append("Start_Date", moment(formData.startDate).format("YYYY-MM-DD"));
     payload.append("Target_Date", moment(formData.targetDate).format("YYYY-MM-DD"));
 
-    // ConcernDetails
-    // const concernDetails = formData.concern_Details;
-    // for (let i = 0; i < concernDetails.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].concern_Details`, concernDetails[i]);
-    // }
-
-    // Category
-    // const category = [formData.categoryId?.id];
-    // for (let i = 0; i < category.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].categoryId`, category[i]);
-    // }
-
-    // SubCategory
-    // const subcategory = [formData.subCategoryId?.id];
-    // for (let i = 0; i < subcategory.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].subCategoryId`, subcategory[i]);
-    // }
-
-    // IssueHandler
-    // const assignto = formData.userId?.map((item) => item.userId);
-    // for (let i = 0; i < assignto.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].userId`, assignto[i]);
-    // }
-
-    // StartDate
-    // const startdate = [moment(formData.startDate).format("YYYY-MM-DD")];
-    // for (let i = 0; i < startdate.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].start_Date`, startdate[i]);
-    // }
-
-    // TargetDate
-    // const targetdate = [moment(formData.targetDate).format("YYYY-MM-DD")];
-    // for (let i = 0; i < targetdate.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].target_Date`, targetdate[i]);
-    // }
-
-    // TicketConcernId
-    // const ticketconcernid = formData.ticketConcernId;
-    // for (let i = 0; i < ticketconcernid.length; i++) {
-    //   payload.append(`AddRequestConcernbyConcerns[${i}].ticketConcernId`, ticketconcernid[i]);
-    // }
-
-    // if (ticketconcernid.length === 0) {
-    //   payload.append(`AddRequestConcernbyConcerns[0].ticketConcernId`, "");
-    // }
-
-    // if (ticketconcernid === "") {
-    //   payload.append(`AddRequestConcernbyConcerns[0].ticketConcernId`, "");
-    // }
-
     // Attachments
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
@@ -227,13 +181,13 @@ const ReceiverConcerns = () => {
       payload.append(`ConcernAttachments[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     const approvePayload = {
       ticketConcernId: formData.ticketConcernId,
     };
 
-    console.log("APPROVE PAYLOAD: ", approvePayload);
+    // console.log("APPROVE PAYLOAD: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -261,10 +215,25 @@ const ReceiverConcerns = () => {
         createEditReceiverConcern(payload)
           .unwrap()
           .then(() => {
-            // toast.success("Success!", {
-            //   description: "Concern transferred successfully!",
-            //   duration: 1500,
-            // });
+            // Approve API
+            approveReceiverConcern(approvePayload)
+              .unwrap()
+              .then(() => {
+                setAddData(null);
+                onClose();
+              })
+              .catch((err) => {
+                console.log("Error", err);
+                toast.error("Error!", {
+                  description: err.data.error.message,
+                  duration: 1500,
+                });
+              });
+
+            toast.success("Success!", {
+              description: "Approve concern successfully!",
+              duration: 1500,
+            });
             setAddAttachments([]);
             reset();
             setAddData(null);
@@ -276,24 +245,6 @@ const ReceiverConcerns = () => {
               description: err.data.error.message,
               duration: 1500,
             });
-          });
-
-        approveReceiverConcern(approvePayload)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "Approve concern successfully!",
-              duration: 1500,
-            });
-            setAddData(null);
-            onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            // toast.error("Error!", {
-            //   description: err.data.error.message,
-            //   duration: 1500,
-            // });
           });
       }
     });
@@ -409,13 +360,18 @@ const ReceiverConcerns = () => {
   };
 
   const onDialogClose = () => {
-    setViewData(null);
+    // setViewData(null);
     onClose();
   };
 
   const onCloseAddAction = () => {
     setAddData(null);
     reset();
+  };
+
+  const onAddNewTicketOnToggleAction = () => {
+    onToggle();
+    setAddData(null);
   };
 
   useEffect(() => {
@@ -457,10 +413,16 @@ const ReceiverConcerns = () => {
           <Stack>
             <Typography variant="h4">Concerns</Typography>
           </Stack>
+
+          <Stack justifyItems="space-between" direction="row">
+            <Button variant="contained" size="large" color="primary" startIcon={<PostAddOutlined />} onClick={onAddNewTicketOnToggleAction}>
+              Create Ticket
+            </Button>
+          </Stack>
         </Stack>
       </Stack>
 
-      <Stack sx={{ flexDirection: "row", gap: 2 }}>
+      <Stack sx={{ flexDirection: "row", gap: 2, marginTop: 1 }}>
         {/* CONCERN TABLE */}
         <Paper
           sx={{
@@ -483,7 +445,7 @@ const ReceiverConcerns = () => {
             gap={1}
           >
             <Stack>
-              <Tabs value={status} onChange={(_, value) => setStatus(value)}>
+              <Tabs value={approveStatus} onChange={(_, value) => setApproveStatus(value)}>
                 <Tab className="tabs-styling-header" value="false" label="Pending" sx={{ fontWeight: 600, fontSize: "17px" }} />
 
                 <Tab className="tabs-styling-header" value="true" label="Approved" sx={{ fontWeight: 600, fontSize: "17px" }} />
@@ -578,6 +540,16 @@ const ReceiverConcerns = () => {
                                 variant="filled"
                                 size="small"
                                 label={`Assigned`}
+                                // icon={
+                                //   <CheckOutlined
+                                //     sx={{
+                                //       fontSize: "16px",
+                                //       ".MuiChip-icon": {
+                                //         color: "#ffffff",
+                                //       },
+                                //     }}
+                                //   />
+                                // }
                                 sx={{
                                   backgroundColor: "#00913c",
                                   color: "#ffffffde",
@@ -1193,10 +1165,20 @@ const ReceiverConcerns = () => {
                     {" "}
                     Submit{" "}
                   </LoadingButton>
-                  <Button variant="outlined" onClick={onCloseAddAction}>
+                  <LoadingButton
+                    variant="outlined"
+                    onClick={onCloseAddAction}
+                    disabled={isCreateEditReceiverConcernLoading || isCreateEditReceiverConcernFetching || approveReceiverConcernIsFetching || approveReceiverConcernIsLoading}
+                    sx={{
+                      ":disabled": {
+                        backgroundColor: "none",
+                        color: "black",
+                      },
+                    }}
+                  >
                     {" "}
                     Close{" "}
-                  </Button>
+                  </LoadingButton>
                 </Stack>
               </form>
             </Stack>
@@ -1206,7 +1188,9 @@ const ReceiverConcerns = () => {
         </Paper>
       </Stack>
 
-      <ReceiverConcernDialog open={open} onClose={onDialogClose} data={viewData} />
+      <ReceiverAddTicketDialog open={open} onClose={onDialogClose} />
+
+      {/* <ReceiverConcernDialog open={open} onClose={onDialogClose} data={viewData} /> */}
     </Stack>
   );
 };

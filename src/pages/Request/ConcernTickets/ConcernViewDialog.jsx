@@ -472,7 +472,17 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
             >
               Save
             </LoadingButton>
-            <Button variant="text" onClick={onCloseAction}>
+            <Button
+              variant="text"
+              disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
+              onClick={onCloseAction}
+              sx={{
+                ":disabled": {
+                  backgroundColor: "none",
+                  color: "black",
+                },
+              }}
+            >
               Close
             </Button>
           </DialogActions>

@@ -32,7 +32,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
 
   useEffect(() => {
     if (data) {
-      getAttachmentData(data.requestTransactionId);
+      getAttachmentData(data.ticketConcernId);
     }
   }, [data]);
 
@@ -121,7 +121,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                 }}
               >
                 <FiberManualRecord color="primary" fontSize="20px" />
-                <Typography sx={{ fontSize: "14px" }}>{data?.description}</Typography>
+                <Typography sx={{ fontSize: "14px" }}>{data?.concern_Description}</Typography>
               </Stack>
             </Stack>
 
