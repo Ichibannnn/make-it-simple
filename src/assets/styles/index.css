@@ -263,6 +263,26 @@ body {
   font-weight: lighter;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #edf2f7;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #a0aec0;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #6e53a5;
+}
+
 /* li {
   position: relative;
   font-weight: lighter;

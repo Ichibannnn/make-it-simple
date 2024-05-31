@@ -346,8 +346,6 @@ const ReceiverConcerns = () => {
       categoryId: item?.categoryId,
     }));
 
-    // console.log("bindFunction: ", bindFunction?.[0]?.categoryId);
-
     if (bindFunction?.[0]?.categoryId === null) {
       reset();
       setMinStartDate(null);
@@ -385,16 +383,11 @@ const ReceiverConcerns = () => {
       setValue("Requestor_By", addData?.requestorId);
       setValue("concern_Details", [addData?.concern]);
 
-      console.log("ticketConcernIdArray: ", ticketConcernIdArray?.[0]?.ticketConcernId);
-
       setValue("ticketConcernId", ticketConcernIdArray?.[0]?.ticketConcernId);
 
       getAddAttachmentData(addData.requestConcernId);
     }
   }, [addData]);
-
-  console.log("Receiver Data: ", data);
-  console.log("Errors: ", errors);
 
   return (
     <Stack

@@ -428,7 +428,7 @@ const SidebarList = () => {
                   timeout="auto"
                   unmountOnExit
                   sx={{
-                    maxHeight: item.open ? "500px" : "0",
+                    maxHeight: item.open ? "300px" : "0",
                     overflowY: "auto",
                     transition: "max-height 0.3s ease-in-out",
                   }}

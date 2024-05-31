@@ -52,33 +52,13 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const [members, setMembers] = useState([]);
   const [disabled, setDisabled] = useState(false);
 
-  const [
-    createChannelValidation,
-    { error: errorValidation, isError: errorValidationIsError },
-  ] = useCreateChannelValidationMutation();
+  const [createChannelValidation, { error: errorValidation, isError: errorValidationIsError }] = useCreateChannelValidationMutation();
 
-  const [
-    createChannel,
-    { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching },
-  ] = useCreateChannelMutation();
+  const [createChannel, { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching }] = useCreateChannelMutation();
 
-  const [
-    getDepartment,
-    {
-      data: departmentData,
-      isLoading: departmentIsLoading,
-      isSuccess: departmentIsSuccess,
-    },
-  ] = useLazyGetDepartmentQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
 
-  const [
-    getMembers,
-    {
-      data: memberData,
-      isLoading: memberIsLoading,
-      isSuccess: memberIsSuccess,
-    },
-  ] = useLazyGetChannelMembersQuery();
+  const [getMembers, { data: memberData, isLoading: memberIsLoading, isSuccess: memberIsSuccess }] = useLazyGetChannelMembersQuery();
 
   const {
     control: channelFormControl,
@@ -191,9 +171,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
   };
 
   const onMemberFormDelete = (index) => {
-    setMembers((currentValue) =>
-      currentValue.filter((_, memberIndex) => memberIndex !== index)
-    );
+    setMembers((currentValue) => currentValue.filter((_, memberIndex) => memberIndex !== index));
   };
 
   const onCloseAction = () => {
@@ -232,13 +210,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={open}
-        sx={{ borderRadius: "none", padding: 0 }}
-        PaperProps={{ style: { overflow: "unset" } }}
-      >
+      <Dialog fullWidth maxWidth="sm" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogContent sx={{ paddingBottom: 10 }}>
           <Stack direction="column" sx={{ padding: "5px" }}>
             <Stack>
@@ -264,12 +236,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
               </Typography>
             </Stack>
 
-            <Stack
-              id="channelForm"
-              component="form"
-              onSubmit={channelFormHandleSubmit(onChannelFormSubmit)}
-              sx={{ paddingTop: 2, gap: 2 }}
-            >
+            <Stack id="channelForm" component="form" onSubmit={channelFormHandleSubmit(onChannelFormSubmit)} sx={{ paddingTop: 2, gap: 2 }}>
               <Controller
                 control={channelFormControl}
                 name="channel_Name"
@@ -307,13 +274,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       value={value}
                       options={departmentData?.value?.department || []}
                       loading={departmentIsLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Department"
-                          size="small"
-                        />
-                      )}
+                      renderInput={(params) => <TextField {...params} label="Department" size="small" />}
                       onOpen={() => {
                         if (!departmentIsSuccess) getDepartment();
                       }}
@@ -321,9 +282,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         console.log("Value: ", value);
                         onChange(value);
 
-                        const departmentIdParams = value?.map(
-                          (department) => department?.id
-                        );
+                        const departmentIdParams = value?.map((department) => department?.id);
 
                         console.log("departmentIdParams", departmentIdParams);
 
@@ -331,17 +290,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           DepartmentId: departmentIdParams,
                         });
                       }}
-                      getOptionLabel={(option) =>
-                        `${option.department_Code} - ${option.department_Name}`
-                      }
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      getOptionDisabled={(option) =>
-                        channelFormWatch("deparmentId")?.some(
-                          (item) => item.id === option.id
-                        )
-                      }
+                      getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      getOptionDisabled={(option) => channelFormWatch("deparmentId")?.some((item) => item.id === option.id)}
                       sx={{
                         flex: 2,
                       }}
@@ -378,12 +329,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack sx={{ paddingTop: 2, gap: 2 }}>
-              <Stack
-                component="form"
-                onSubmit={memberFormHandlerSubmit(onMemberFormSubmit)}
-                direction="row"
-                gap={2}
-              >
+              <Stack component="form" onSubmit={memberFormHandlerSubmit(onMemberFormSubmit)} direction="row" gap={2}>
                 <Controller
                   control={memberFormControl}
                   name="userId"
@@ -396,9 +342,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         options={memberData?.value || []}
                         loading={memberIsLoading}
                         // groupBy={(option) => option.userRole}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Members" size="small" />
-                        )}
+                        renderInput={(params) => <TextField {...params} label="Members" size="small" />}
                         // renderGroup={(params) => (
                         //   <li key={params.key}>
                         //     <GroupHeader>{params.group}</GroupHeader>
@@ -412,16 +356,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           onChange(value);
                         }}
                         getOptionLabel={(option) => option.fullName}
-                        isOptionEqualToValue={(option, value) =>
-                          option.userId === value.userId
-                        }
-                        getOptionDisabled={(option) =>
-                          members.some((item) => item.userId === option.userId)
-                        }
-                        disabled={
-                          !channelFormWatch("channel_Name") ||
-                          errorValidationIsError
-                        }
+                        isOptionEqualToValue={(option, value) => option.userId === value.userId}
+                        getOptionDisabled={(option) => members.some((item) => item.userId === option.userId)}
+                        disabled={!channelFormWatch("channel_Name") || errorValidationIsError}
                         sx={{
                           flex: 2,
                         }}
@@ -438,9 +375,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   variant="contained"
                   size="medium"
                   color="primary"
-                  disabled={
-                    !channelFormWatch("channel_Name") || errorValidationIsError
-                  }
+                  disabled={!channelFormWatch("channel_Name") || errorValidationIsError}
                   sx={{
                     ":disabled": {
                       backgroundColor: theme.palette.secondary.main,
