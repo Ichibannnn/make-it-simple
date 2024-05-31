@@ -1,8 +1,8 @@
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { AccessTimeOutlined, AccountCircleRounded, Add, CheckOutlined, Close, FiberManualRecord, GetAppOutlined, PeopleOutlined, RemoveCircleOutline } from "@mui/icons-material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Add, CheckOutlined, Close, RemoveCircleOutline } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -10,16 +10,17 @@ import moment from "moment";
 
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
+import Swal from "sweetalert2";
+
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { useCreateEditReceiverConcernMutation, useLazyGetReceiverAttachmentQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import Swal from "sweetalert2";
+import { useCreateEditReceiverConcernMutation } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 
 const schema = yup.object().shape({
   department: yup.object().required().label("Department is required"),
@@ -33,9 +34,6 @@ const schema = yup.object().shape({
   userId: yup.object().required().label("Issue handler"),
   startDate: yup.date().required("Start date is required"),
   targetDate: yup.date().required("Target date is required"),
-
-  //   ticketConcernId: yup.string().nullable(),
-  //   RequestConcernId: yup.string().nullable(),
 });
 
 const ReceiverAddTicketDialog = ({ open, onClose }) => {
@@ -47,16 +45,15 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
   const today = moment();
 
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
-  const [getRequestor, { data: requestorData, isLoading: requestorIsLoading, isSuccess: requestorIsSuccess }] = useLazyGetDepartmentQuery();
+  const [getRequestor, { isLoading: requestorIsLoading, isSuccess: requestorIsSuccess }] = useLazyGetDepartmentQuery();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryQuery();
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
+  const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createTicketConcern, { isLoading: isCreateTicketConcernLoading, isFetching: isCreateTicketConcernFetching }] = useCreateEditReceiverConcernMutation();
 
-  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
-  const [getAddReceiverAttachment, { data: attachmentData }] = useLazyGetReceiverAttachmentQuery();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -88,7 +85,6 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
   const onSubmitAction = (formData) => {
     // console.log("Form Data: ", formData);
-
     const payload = new FormData();
 
     payload.append("Requestor_By", formData.Requestor_By?.userId);
@@ -140,9 +136,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       if (result.isConfirmed) {
         createTicketConcern(payload)
           .unwrap()
-          .then((response) => {
-            console.log("response: ", response);
-
+          .then(() => {
             toast.success("Success!", {
               description: "Approve request successfully!",
               duration: 1500,
@@ -226,23 +220,6 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     setAddAttachments([...addAttachments, ...uniqueNewFiles]);
   };
 
-  const getAddAttachmentData = async (id) => {
-    try {
-      const res = await getAddReceiverAttachment({ Id: id }).unwrap();
-
-      // console.log("res", res);
-
-      setAddAttachments(
-        res?.value?.[0]?.attachments?.map((item) => ({
-          ticketAttachmentId: item.ticketAttachmentId,
-          name: item.fileName,
-          size: (item.fileSize / (1024 * 1024)).toFixed(2),
-          link: item.attachment,
-        }))
-      );
-    } catch (error) {}
-  };
-
   const onCloseHandler = () => {
     onClose();
   };
@@ -259,7 +236,6 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                 sx={{
                   fontSize: "18px",
                   fontWeight: 700,
-                  //   color: "#48BB78",
                 }}
               >
                 Create Ticket

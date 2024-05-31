@@ -14,15 +14,12 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 
 import {
   AccessTimeOutlined,
   Add,
-  AddOutlined,
   CheckOutlined,
-  EditNoteOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
   FileUploadOutlined,
@@ -55,8 +52,6 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 
-import { ReceiverConcernsActions } from "./ReceiverConcernsActions";
-import ReceiverConcernDialog from "./ReceiverConcernDialog";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LoadingButton } from "@mui/lab";
@@ -87,19 +82,18 @@ const ReceiverConcerns = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const [viewData, setViewData] = useState(null);
   const [addData, setAddData] = useState(null);
+  const [viewApprovedData, setViewApprovedData] = useState(null);
 
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [startDateValidation, setStartDateValidation] = useState(null);
-  const [minEditStartDate, setMinStartDate] = useState(null);
 
   const fileInputRef = useRef();
   const today = moment();
 
-  const isSmallScreen = useMediaQuery("(max-width: 1489px) and (max-height: 945px)");
+  // const isSmallScreen = useMediaQuery("(max-width: 1489px) and (max-height: 945px)");
 
   const { open, onToggle, onClose } = useDisclosure();
 
@@ -113,10 +107,10 @@ const ReceiverConcerns = () => {
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
+  const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
-  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
-  const [getAddReceiverAttachment, { data: attachmentData }] = useLazyGetReceiverAttachmentQuery();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
+  const [getAddReceiverAttachment] = useLazyGetReceiverAttachmentQuery();
 
   const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
 
@@ -126,6 +120,12 @@ const ReceiverConcerns = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+  };
+
+  const onStatusChange = (_, newValue) => {
+    setApproveStatus(newValue);
+    setPageNumber(1);
+    setPageSize(5);
   };
 
   const {
@@ -181,7 +181,7 @@ const ReceiverConcerns = () => {
       payload.append(`ConcernAttachments[0].attachment`, "");
     }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     const approvePayload = {
       ticketConcernId: formData.ticketConcernId,
@@ -336,11 +336,6 @@ const ReceiverConcerns = () => {
     } catch (error) {}
   };
 
-  const onViewAction = (data) => {
-    onToggle();
-    setViewData(data);
-  };
-
   const onAddEditAction = (data) => {
     const bindFunction = data?.ticketRequestConcerns?.map((item) => ({
       categoryId: item?.categoryId,
@@ -348,28 +343,30 @@ const ReceiverConcerns = () => {
 
     if (bindFunction?.[0]?.categoryId === null) {
       reset();
-      setMinStartDate(null);
       setStartDateValidation(null);
       setAddData(data);
+      setViewApprovedData(null);
     } else {
-      setMinStartDate(null);
+      setViewApprovedData(data);
       setAddData(null);
     }
   };
 
   const onDialogClose = () => {
-    // setViewData(null);
     onClose();
   };
 
   const onCloseAddAction = () => {
     setAddData(null);
+    setViewApprovedData(null);
     reset();
   };
 
   const onAddNewTicketOnToggleAction = () => {
     onToggle();
     setAddData(null);
+    setViewApprovedData(null);
+    setApproveStatus(false);
   };
 
   useEffect(() => {
@@ -383,11 +380,73 @@ const ReceiverConcerns = () => {
       setValue("Requestor_By", addData?.requestorId);
       setValue("concern_Details", [addData?.concern]);
 
+      console.log("ticketConcernIdArray: ", ticketConcernIdArray?.[0]?.ticketConcernId);
+
       setValue("ticketConcernId", ticketConcernIdArray?.[0]?.ticketConcernId);
 
       getAddAttachmentData(addData.requestConcernId);
     }
   }, [addData]);
+
+  console.log("AddData :", addData);
+  console.log("View Approved Data :", viewApprovedData);
+
+  useEffect(() => {
+    if (viewApprovedData) {
+      if (!categoryIsSuccess) getCategory();
+      if (!subCategoryIsSuccess) getSubCategory();
+      if (!channelIsSuccess) getChannel();
+      if (!issueHandlerIsSuccess) getIssueHandler();
+
+      const bindData = viewApprovedData?.ticketRequestConcerns?.map((item) => ({
+        categoryId: item?.categoryId,
+        category_Description: item?.category_Description,
+        subCategoryId: item?.subCategoryId,
+        subCategory_Description: item?.subCategory_Description,
+        channelId: item?.channelId,
+        fullname: item?.issue_Handler,
+        userId: item?.userId,
+        channel_Name: item?.channel_Name,
+        start_Date: moment(item?.start_Date),
+        target_Date: moment(item?.target_Date),
+      }));
+
+      console.log("bindData", bindData);
+
+      setValue("categoryId", {
+        id: bindData?.[0]?.categoryId,
+        category_Description: bindData?.[0]?.category_Description,
+      });
+
+      setValue("subCategoryId", {
+        id: bindData?.[0]?.subCategoryId,
+        subCategory_Description: bindData?.[0]?.subCategory_Description,
+      });
+
+      setValue("ChannelId", {
+        id: bindData?.[0]?.channelId,
+        channel_Name: bindData?.[0]?.channel_Name,
+      });
+
+      setValue("userId", {
+        fullname: bindData?.[0]?.fullname,
+        userId: bindData?.[0]?.userId,
+      });
+
+      setValue("startDate", bindData?.[0]?.start_Date);
+      // setMinStartDate(bindData?.[0]?.start_Date);
+
+      setValue("targetDate", bindData?.[0]?.target_Date);
+
+      getAddAttachmentData(viewApprovedData.requestConcernId);
+    }
+  }, [viewApprovedData]);
+
+  useEffect(() => {
+    if (searchValue) {
+      setPageNumber(1);
+    }
+  }, [searchValue]);
 
   return (
     <Stack
@@ -419,7 +478,7 @@ const ReceiverConcerns = () => {
         {/* CONCERN TABLE */}
         <Paper
           sx={{
-            width: addData ? "70%" : "100%",
+            width: addData || viewApprovedData ? "70%" : "100%",
             minHeight: "90vh", // -----------
             display: "flex",
             flexDirection: "column",
@@ -438,7 +497,7 @@ const ReceiverConcerns = () => {
             gap={1}
           >
             <Stack>
-              <Tabs value={approveStatus} onChange={(_, value) => setApproveStatus(value)}>
+              <Tabs value={approveStatus} onChange={onStatusChange}>
                 <Tab className="tabs-styling-header" value="false" label="Pending" sx={{ fontWeight: 600, fontSize: "17px" }} />
 
                 <Tab className="tabs-styling-header" value="true" label="Approved" sx={{ fontWeight: 600, fontSize: "17px" }} />
@@ -456,7 +515,7 @@ const ReceiverConcerns = () => {
                 fontSize: "small",
                 fontWeight: 400,
                 lineHeight: "1.4375rem",
-                width: addData ? "25%" : "20%",
+                width: addData || viewApprovedData ? "25%" : "20%",
                 // backgroundColor: "#111927",
               }}
             />
@@ -489,7 +548,8 @@ const ReceiverConcerns = () => {
                         sx={{
                           borderTopLeftRadius: "20px",
                           borderTopRightRadius: "20px",
-                          backgroundColor: addData?.requestConcernId === item?.requestConcernId ? "#5f478e" : "",
+                          backgroundColor:
+                            addData?.requestConcernId === item?.requestConcernId ? "#5f478e" : viewApprovedData?.requestConcernId === item?.requestConcernId ? "#5f478e" : "",
                           "&:hover": {
                             backgroundColor: theme.palette.secondary.main,
                           },
@@ -533,16 +593,6 @@ const ReceiverConcerns = () => {
                                 variant="filled"
                                 size="small"
                                 label={`Assigned`}
-                                // icon={
-                                //   <CheckOutlined
-                                //     sx={{
-                                //       fontSize: "16px",
-                                //       ".MuiChip-icon": {
-                                //         color: "#ffffff",
-                                //       },
-                                //     }}
-                                //   />
-                                // }
                                 sx={{
                                   backgroundColor: "#00913c",
                                   color: "#ffffffde",
@@ -663,7 +713,7 @@ const ReceiverConcerns = () => {
           sx={{
             width: "30%",
             minHeight: "90vh",
-            display: addData ? "flex" : "none",
+            display: addData || viewApprovedData ? "flex" : "none",
             flexDirection: "column",
             backgroundColor: theme.palette.bgForm.black3,
             padding: 2,
@@ -973,7 +1023,7 @@ const ReceiverConcerns = () => {
                       </Button>
                     </Stack>
 
-                    <Stack sx={{ flexDirection: "column" }}>
+                    <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
                       {addAttachments?.map((fileName, index) => (
                         <Box
                           key={index}
@@ -1138,6 +1188,7 @@ const ReceiverConcerns = () => {
                     justifyContent: "right",
                     alignItems: "center",
                     // minHeight: "70px",
+                    marginTop: 1,
                   }}
                 >
                   <LoadingButton
@@ -1176,7 +1227,472 @@ const ReceiverConcerns = () => {
               </form>
             </Stack>
           ) : (
-            ""
+            // Editing Tickets
+            <Stack height="100%">
+              <Stack sx={{ minHeight: "70px" }}>
+                <Typography sx={{ fontWeight: 600, fontSize: "18px" }}>View Ticket Details</Typography>
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    color: theme.palette.text.secondary,
+                  }}
+                >
+                  User can view this ticket concern
+                </Typography>
+              </Stack>
+
+              <Stack
+                sx={{
+                  minHeight: "1100px",
+                }}
+              >
+                {/* Tickets Details */}
+                <Stack
+                  sx={{
+                    padding: 1,
+                    marginTop: 2,
+                    minHeight: "200px",
+                    border: "1px solid #2D3748",
+                    borderRadius: "20px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "17px",
+                      color: theme.palette.success.main,
+                    }}
+                  >
+                    Ticket Concern
+                  </Typography>
+
+                  <Stack padding={2} gap={1.5}>
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Category:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="categoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={categoryData?.value?.category || []}
+                              loading={categoryIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Category" />}
+                              onOpen={() => {
+                                if (!categoryIsSuccess)
+                                  getCategory({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("subCategoryId", null);
+
+                                getSubCategory({
+                                  Status: true,
+                                });
+                              }}
+                              getOptionLabel={(option) => option.category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Sub Category:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="subCategoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("categoryId")?.id) || []}
+                              loading={subCategoryIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Sub Category" />}
+                              onChange={(_, value) => {
+                                console.log("Value ", value);
+
+                                onChange(value || []);
+                              }}
+                              getOptionLabel={(option) => `${option.subCategory_Description}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              noOptionsText={"No sub category available"}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Channel Name:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="ChannelId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={channelData?.value?.channel || []}
+                              loading={channelIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" />}
+                              onOpen={() => {
+                                if (!channelIsSuccess)
+                                  getChannel({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("userId", []);
+                              }}
+                              getOptionLabel={(option) => option.channel_Name}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Assign To:
+                      </Typography>
+                      <Controller
+                        control={control}
+                        name="userId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
+                              loading={issueHandlerIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Issue Handler" />}
+                              onOpen={() => {
+                                if (!issueHandlerIsSuccess) getIssueHandler();
+                              }}
+                              onChange={(_, value) => {
+                                console.log("Value: ", value);
+
+                                onChange(value);
+                              }}
+                              getOptionLabel={(option) => option.fullname}
+                              isOptionEqualToValue={(option, value) => option.userId === value.userId}
+                              // getOptionDisabled={(option) => watch("userId")?.some((item) => item.userId === option.userId)}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              // disableClearable
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Start Date:
+                      </Typography>
+
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="startDate"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => {
+                                console.log("New Value: ", newValue);
+
+                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                field.onChange(formattedValue);
+                                setStartDateValidation(newValue);
+                              }}
+                              slotProps={{
+                                textField: { variant: "outlined" },
+                              }}
+                            />
+                          )}
+                        />
+                        {errors.startDate && <p>{errors.startDate.message}</p>}
+                      </LocalizationProvider>
+                    </Stack>
+
+                    <Stack gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Target Date:
+                      </Typography>
+
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="targetDate"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => {
+                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                field.onChange(formattedValue);
+                              }}
+                              slotProps={{
+                                textField: { variant: "outlined" },
+                              }}
+                              minDate={startDateValidation}
+                              error={!!errors.targetDate}
+                              helperText={errors.targetDate ? errors.targetDate.message : null}
+                              disabled={!watch("startDate")}
+                            />
+                          )}
+                        />
+                        {errors.targetDate && <Typography>{errors.targetDate.message}</Typography>}
+                      </LocalizationProvider>
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                {/* Attachments */}
+                <Stack padding={2} marginTop={3} gap={1.5} sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}>
+                  <Stack direction="row" gap={1} alignItems="center" onDragOver={handleDragOver} onDrop={handleDrop}>
+                    <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
+
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Atachments:
+                    </Typography>
+                  </Stack>
+
+                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
+                    {addAttachments?.map((fileName, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: "flex",
+                          width: "100%",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          padding: 1,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: 0.5,
+                            borderBottom: "1px solid #2D3748",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
+                            <Typography
+                              sx={{
+                                fontSize: "14px",
+                                color: theme.palette.text.secondary,
+                              }}
+                            >
+                              {fileName.size} Mb
+                            </Typography>
+
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: 13,
+                                  fontWeight: 500,
+                                  color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                }}
+                              >
+                                {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                              </Typography>
+
+                              {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            {!fileName.ticketAttachmentId && (
+                              <Tooltip title="Remove">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleDeleteFile(fileName)}
+                                  style={{
+                                    background: "none",
+                                  }}
+                                >
+                                  <RemoveCircleOutline />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+
+                            <Tooltip title="Download">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => {
+                                  window.location = fileName.link;
+                                }}
+                                style={{
+                                  background: "none",
+                                }}
+                              >
+                                <FileDownloadOutlined />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Stack>
+                </Stack>
+
+                <Controller
+                  control={control}
+                  name="RequestAttachmentsFiles"
+                  render={({ field: { onChange, value } }) => (
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.docx"
+                      onChange={(event) => {
+                        if (ticketAttachmentId) {
+                          const files = Array.from(event.target.files);
+                          files[0].ticketAttachmentId = ticketAttachmentId;
+
+                          onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+
+                          setAddAttachments((prevFiles) => [
+                            ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
+                            {
+                              ticketAttachmentId: ticketAttachmentId,
+                              name: files[0].name,
+                              size: (files[0].size / (1024 * 1024)).toFixed(2),
+                            },
+                          ]);
+
+                          fileInputRef.current.value = "";
+                          setTicketAttachmentId(null);
+                        } else {
+                          handleAttachments(event);
+                          const files = Array.from(event.target.files);
+
+                          const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+
+                          onChange([...value, ...uniqueNewFiles]);
+                          fileInputRef.current.value = "";
+                        }
+                      }}
+                      hidden
+                      multiple={!!ticketAttachmentId}
+                    />
+                  )}
+                />
+              </Stack>
+
+              <Stack
+                sx={{
+                  flexDirection: "row",
+                  gap: 1,
+                  marginTop: 1,
+                  justifyContent: "right",
+                  alignItems: "center",
+                  // minHeight: "70px",
+                }}
+              >
+                <LoadingButton
+                  variant="outlined"
+                  onClick={onCloseAddAction}
+                  disabled={isCreateEditReceiverConcernLoading || isCreateEditReceiverConcernFetching || approveReceiverConcernIsFetching || approveReceiverConcernIsLoading}
+                  sx={{
+                    ":disabled": {
+                      backgroundColor: "none",
+                      color: "black",
+                    },
+                  }}
+                >
+                  {" "}
+                  Close{" "}
+                </LoadingButton>
+              </Stack>
+            </Stack>
           )}
         </Paper>
       </Stack>

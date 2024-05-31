@@ -243,7 +243,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       sx={{
                         display: "flex",
                         flexDirection: "column",
-                        maxHeight: 500,
+                        maxHeight: "auto",
                       }}
                     >
                       {attachments.map((fileName, index) => (

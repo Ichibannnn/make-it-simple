@@ -244,7 +244,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
               </Typography>
             </Stack>
 
-            <Stack sx={{ flexDirection: "column", maxHeight: 500 }}>
+            <Stack sx={{ flexDirection: "column", maxHeight: "äuto" }}>
               {attachments.map((fileName, index) => (
                 <Box
                   key={index}
