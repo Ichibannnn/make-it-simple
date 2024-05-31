@@ -33,7 +33,7 @@ const schema = yup.object().shape({
 
 const ReceiverAddTicketDialog = ({ open, onClose }) => {
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
-  const [getMembers, { data: memberData, isLoading: memberIsLoading, isSuccess: memberIsSuccess }] = useLazyGetChannelMembersQuery();
+  const [getRequestor, { data: requestorData, isLoading: requestorIsLoading, isSuccess: requestorIsSuccess }] = useLazyGetChannelMembersQuery();
 
   const {
     control,
@@ -45,7 +45,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      Requestor_By: "",
+      department: null,
+      Requestor_By: null,
       concern_Details: "",
       ticketConcernId: "",
 
@@ -95,7 +96,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
 
           <Stack direction="row" gap={1} sx={{ width: "100%", height: "100%" }}>
-            <Stack sx={{ minHeight: "500px", width: "50%", border: "1px solid #2D3748", padding: 1 }}>
+            <Stack sx={{ minHeight: "700px", width: "50%", border: "1px solid #2D3748", padding: 1 }}>
               <Typography
                 sx={{
                   fontSize: "15px",
@@ -105,48 +106,133 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                 Requestor Details
               </Typography>
 
-              <Controller
-                control={control}
-                name="department"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      size="small"
-                      value={value}
-                      options={departmentData?.value?.department || []}
-                      loading={departmentIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Department" size="small" />}
-                      onOpen={() => {
-                        if (!departmentIsSuccess) getDepartment();
-                      }}
-                      onChange={(_, value) => {
-                        console.log("Value: ", value);
-                        onChange(value);
+              <Stack padding={2} gap={1.5}>
+                <Stack gap={0.5}>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Department:
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="department"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <Autocomplete
+                          ref={ref}
+                          size="small"
+                          value={value}
+                          options={departmentData?.value?.department || []}
+                          loading={departmentIsLoading}
+                          renderInput={(params) => <TextField {...params} placeholder="Department name" />}
+                          onOpen={() => {
+                            if (!departmentIsSuccess) getDepartment();
+                          }}
+                          onChange={(_, value) => {
+                            onChange(value);
 
-                        const departmentIdParams = value?.map((department) => department?.id);
+                            setValue("Requestor_By", null);
+                          }}
+                          getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          sx={{
+                            flex: 2,
+                          }}
+                          fullWidth
+                          disablePortal
+                          disableClearable
+                        />
+                      );
+                    }}
+                  />
+                </Stack>
 
-                        console.log("departmentIdParams", departmentIdParams);
+                <Stack gap={0.5}>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Requestor:
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="Requestor_By"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <Autocomplete
+                          ref={ref}
+                          size="small"
+                          value={value}
+                          options={departmentData?.value?.department?.find((item) => item.id === watch("department")?.id)?.users || []}
+                          loading={requestorIsLoading}
+                          renderInput={(params) => <TextField {...params} placeholder="Requestor Name" />}
+                          onOpen={() => {
+                            if (!requestorIsSuccess) getRequestor();
+                          }}
+                          onChange={(_, value) => {
+                            onChange(value);
+                          }}
+                          getOptionLabel={(option) => option.fullName}
+                          isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                          sx={{
+                            flex: 2,
+                          }}
+                          fullWidth
+                          disablePortal
+                        />
+                      );
+                    }}
+                  />
+                </Stack>
 
-                        getMembers({
-                          DepartmentId: departmentIdParams,
-                        });
-                      }}
-                      getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      sx={{
-                        flex: 2,
-                      }}
-                      fullWidth
-                      disablePortal
-                      disableClearable
-                    />
-                  );
-                }}
-              />
+                <Stack gap={0.5}>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Concern:
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="concern_Details"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <TextField
+                          inputRef={ref}
+                          size="medium"
+                          value={value}
+                          placeholder="Description"
+                          onChange={onChange}
+                          // sx={{
+                          //   width: "80%",
+                          // }}
+                          autoComplete="off"
+                          rows={6}
+                          multiline
+                        />
+                      );
+                    }}
+                  />
+                </Stack>
+
+                <Stack gap={0.5}>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Attachment:
+                  </Typography>
+                  <Box sx={{ border: "1px solid #2D3748", minHeight: "240px" }}></Box>
+                </Stack>
+              </Stack>
             </Stack>
 
-            <Stack sx={{ minHeight: "500px", width: "50%", border: "1px solid #2D3748", padding: 1 }}>
+            <Stack sx={{ minHeight: "700px", width: "50%", border: "1px solid #2D3748", padding: 1 }}>
               {" "}
               <Typography
                 sx={{

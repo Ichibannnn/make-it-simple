@@ -23,7 +23,7 @@ export const concernReceiverApi = createApi({
     // RECEIVER ---------------
     getReceiverConcerns: builder.query({
       query: (params) => ({
-        url: "request-concern/requestor-page?UserType=Receiver&Status=true",
+        url: "request-concern/requestor-page?UserType=Receiver&Status=true&is_Reject=false",
         method: "GET",
         params: params,
       }),
