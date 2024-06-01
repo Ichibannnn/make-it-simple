@@ -1,446 +1,179 @@
-import { Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
-import React, { Fragment, useEffect } from "react";
+import { Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import React from "react";
 import { theme } from "../theme/theme";
-import { useDispatch, useSelector } from "react-redux";
-import { setSidebar } from "../features/sidebar/sidebarSlice";
-import useDisclosure from "../hooks/useDisclosure";
-import { useLocation, useNavigate } from "react-router-dom";
-import { getMenuIcon } from "./GetIcon";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
-const Sidebar = () => {
-  const isVisible = useSelector((state) => state.sidebar.isVisible);
-  const hideSidebar = useMediaQuery("(max-width: 1639px)");
+import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
+import Logout from "@mui/icons-material/Logout";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import { Password } from "@mui/icons-material";
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUserDetails } from "../features/user_management_api/user/userSlice";
+import { toggleSidebar } from "../features/sidebar/sidebarSlice";
+
+import ReusableAlert from "../hooks/ReusableAlert";
+import useDisclosure from "../hooks/useDisclosure";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+
+import { concernApi } from "../features/api_request/concerns/concernApi";
+import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
+
+const Header = () => {
+  // const hideMenu = useMediaQuery("(max-width: 1069px)");
+  const hideMenu = useMediaQuery("(max-width: 1639px)");
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(setSidebar(!hideSidebar));
-  }, [dispatch, hideSidebar]);
+  const fullName = useSelector((state) => state.user.fullname);
+  const userName = useSelector((state) => state.user.username);
+  const userId = useSelector((state) => state.user.id);
+
+  // console.log("User Details: ", details);
+
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const { open: openChangePassword, onToggle: changePasswordOnToggle, onClose: changePasswordOnClose } = useDisclosure();
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertData, setAlertData] = useState({
+    severity: "",
+    title: "",
+    description: "",
+  });
+
+  const menuHandler = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeHandler = () => {
+    setAnchorEl(null);
+  };
+
+  const logoutHandler = () => {
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      dispatch(concernApi.util.resetApiState());
+      dispatch(concernReceiverApi.util.resetApiState());
+
+      navigate("/");
+
+      dispatch(clearUserDetails());
+    } catch (error) {
+      setAlertData({
+        severity: "error",
+        title: "Error!",
+        description: `Something went wrong.`,
+      });
+      setShowAlert(true);
+    }
+  };
+
+  const handleAlertClose = () => {
+    setShowAlert(false);
+  };
+
+  const toggleSidebarHandler = () => {
+    dispatch(toggleSidebar());
+  };
+
+  const toggleChangePasswordHandler = () => {
+    changePasswordOnToggle();
+  };
 
   return (
-    <>
-      {hideSidebar ? (
-        <Drawer
-          anchor="left"
-          open={isVisible}
-          onClose={() => dispatch(setSidebar(false))}
-          ModalProps={{
-            keepMounted: true,
-          }}
-        >
-          <Stack
-            sx={{
-              height: "100%",
-              backgroundColor: theme.palette.bgForm.black2,
-              width: "280px",
-              overflow: "auto",
-            }}
-          >
-            <SidebarHeader />
-            <SidebarList />
-            <SidebarFooter />
-          </Stack>
-        </Drawer>
-      ) : (
-        isVisible && (
-          <Stack
-            sx={{
-              height: "100%",
-              backgroundColor: theme.palette.bgForm.black2,
-              width: "280px",
-              overflow: "auto",
-            }}
-          >
-            <SidebarHeader />
-            <SidebarList />
-            <SidebarFooter />
-          </Stack>
-        )
-      )}
-    </>
-  );
-};
-
-export default Sidebar;
-
-const SidebarHeader = () => (
-  <Stack
-    sx={{
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      padding: "24px",
-      marginTop: 3,
-      gap: "5px",
-    }}
-  >
-    <img src="/images/dotek-login.png" alt="misLogo" width="56" height="38" className="logo-sidebar" />
     <Stack
       sx={{
-        display: "flex",
-        justifyContent: "start",
-        flexDirection: "column",
-        flexGrow: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        minHeight: "64px",
+        backgroundColor: theme.palette.bgForm.black1,
+        color: "#fff",
+        paddingLeft: "16px",
+        paddingRight: "16px",
       }}
     >
-      <Typography
-        sx={{
-          margin: "0",
-          fontSize: "1rem",
-          fontWeight: "700",
-          color: "#EDF2F7",
-          lineHeight: "1.2",
-        }}
-        variant="h6"
-        className="logo-title"
-      >
-        Make It Simple
-      </Typography>
-      <Typography
-        sx={{
-          margin: "0",
-          fontSize: "12px",
-          fontWeight: "450",
-          color: "#A0AEC0",
-          lineHeight: "1.2",
-        }}
-        variant="h1"
-      >
-        Production
-      </Typography>
-    </Stack>
-  </Stack>
-);
+      <Box>
+        {hideMenu && (
+          <Box>
+            <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
+              <MenuOutlinedIcon />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
 
-const SidebarList = () => {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const userPermission = useSelector((state) => state.user.permissions);
+      <Box>
+        <IconButton onClick={menuHandler} aria-controls="account-menu" aria-haspopup="true">
+          <Tooltip title="Account">
+            <PermIdentityOutlinedIcon />
+          </Tooltip>
+        </IconButton>
+        <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
+          <MenuItem onClick={closeHandler}>
+            <Box
+              sx={{
+                flexDirection: "column",
+                padding: "0px",
+              }}
+            >
+              <Typography sx={{ fontSize: "1rem", fontWeight: "400", lineWeight: "1.5" }}>{fullName}</Typography>
 
-  const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
-  const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
-  const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
-  const { open: receiverOpen, onToggle: receiverOnToggle, onClose: receiverOnClose } = useDisclosure(!!pathname.match(/receiver/gi));
-  const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
-  const { open: ticketingOpen, onToggle: ticketingOnToggle, onClose: ticketingOnClose } = useDisclosure(!!pathname.match(/ticketing/gi));
-
-  const sidebarMenu = [
-    {
-      id: 1,
-      name: "Overview",
-      path: "/overview",
-      icon: "EqualizerOutlined",
-    },
-    {
-      id: 2,
-      name: "User Management",
-      path: "/user-management",
-      icon: "PeopleOutlinedIcon",
-      open: userManagementOpen,
-      onToggle: () => {
-        userManagementOnToggle();
-        masterlistOnClose();
-        requestOnClose();
-        ticketingOnClose();
-        approverOnClose();
-      },
-      sub: [
-        {
-          id: 1,
-          menuId: 1,
-          name: "User Account",
-          path: "/user-management/user-account",
-          icon: "PermIdentityOutlinedIcon",
-        },
-        {
-          id: 2,
-          menuId: 1,
-          name: "User Role",
-          path: "/user-management/user-role",
-          icon: "ManageAccountsOutlinedIcon",
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Masterlist",
-      path: "/masterlist",
-      icon: "ChecklistOutlinedIcon",
-      open: masterListOpen,
-      onToggle: () => {
-        masterListOnToggle();
-        userManagementOnClose();
-        requestOnClose();
-        receiverOnClose();
-        ticketingOnClose();
-        approverOnClose();
-      },
-      sub: [
-        {
-          id: 1,
-          name: "Company",
-          path: "/masterlist/company",
-          icon: "BusinessOutlinedIcon",
-        },
-        {
-          id: 2,
-          name: "Business Unit",
-          path: "/masterlist/business-unit",
-          icon: "LanOutlined",
-        },
-        {
-          id: 3,
-          name: "Department",
-          path: "/masterlist/department",
-          icon: "DomainAddOutlined",
-        },
-        {
-          id: 4,
-          name: "Unit",
-          path: "/masterlist/unit",
-          icon: "AccountTreeOutlined",
-        },
-        {
-          id: 5,
-          name: "Sub Unit",
-          path: "/masterlist/sub-unit",
-          icon: "ListOutlined",
-        },
-        {
-          id: 6,
-          name: "Location",
-          path: "/masterlist/location",
-          icon: "RoomOutlined",
-        },
-        {
-          id: 7,
-          name: "Category",
-          path: "/masterlist/category",
-          icon: "CategoryOutlined",
-        },
-        {
-          id: 8,
-          name: "Sub Category",
-          path: "/masterlist/sub-category",
-          icon: "AutoAwesomeMotionOutlined",
-        },
-        {
-          id: 9,
-          name: "Receiver Setup",
-          path: "/masterlist/receiver-setup",
-          icon: "ContactsOutlined",
-        },
-        {
-          id: 10,
-          name: "Channel Setup",
-          path: "/masterlist/channel-setup",
-          icon: "HubOutlined",
-        },
-        {
-          id: 11,
-          name: "Approver Setup",
-          path: "/masterlist/approver-setup",
-          icon: "GroupsOutlined",
-        },
-      ],
-    },
-    {
-      id: 4,
-      name: "Requestor",
-      path: "/requestor",
-      icon: "DynamicFeedOutlined",
-      open: requestOpen,
-      onToggle: () => {
-        requestOnToggle();
-        userManagementOnClose();
-        masterlistOnClose();
-        receiverOnClose();
-        ticketingOnClose();
-        approverOnClose();
-      },
-      sub: [
-        {
-          id: 1,
-          name: "Requestor Concerns",
-          path: "/requestor/requestor-concerns",
-          icon: "DiscountOutlined",
-        },
-      ],
-    },
-    {
-      id: 5,
-      name: "Receiver",
-      path: "/receiver",
-      icon: "DynamicFeedOutlined",
-      open: receiverOpen,
-      onToggle: () => {
-        receiverOnToggle();
-        requestOnClose();
-        userManagementOnClose();
-        masterlistOnClose();
-        ticketingOnClose();
-        approverOnClose();
-      },
-      sub: [
-        {
-          id: 1,
-          name: "Receiver Concerns",
-          path: "/receiver/receiver-concerns",
-          icon: "DiscountOutlined",
-        },
-      ],
-    },
-    {
-      id: 6,
-      name: "Approver",
-      path: "/Approver",
-      icon: "CreditScoreOutlined",
-      open: approverOpen,
-      onToggle: () => {
-        approverOnToggle();
-        receiverOnClose();
-        requestOnClose();
-        userManagementOnClose();
-        masterlistOnClose();
-        ticketingOnClose();
-      },
-      sub: [
-        {
-          id: 1,
-          name: "Approval",
-          path: "/approver/approval",
-        },
-      ],
-    },
-    {
-      id: 7,
-      name: "Ticketing",
-      path: "/ticketing",
-      icon: "ConfirmationNumberOutlined",
-      open: ticketingOpen,
-      onToggle: () => {
-        ticketingOnToggle();
-        receiverOnClose();
-        requestOnClose();
-        userManagementOnClose();
-        masterlistOnClose();
-        approverOnClose();
-      },
-      sub: [
-        {
-          id: 1,
-          name: "Tickets",
-          path: "/ticketing/issue-handler-tickets",
-          icon: "ConfirmationNumberOutlined",
-        },
-      ],
-    },
-    {
-      id: 7,
-      name: "Filing",
-      path: "/filing",
-      icon: "AttachFileOutlined",
-    },
-    {
-      id: 8,
-      name: "Generate",
-      path: "/generate",
-      icon: "BallotOutlined",
-    },
-  ];
-
-  return (
-    <Stack>
-      <List
-        sx={{
-          marginTop: "35px",
-          marginLeft: "6px",
-          marginRight: "17px",
-          padding: "0px",
-        }}
-      >
-        {sidebarMenu
-          .filter((item) => userPermission.includes(item.name))
-          .map((item, i) => (
-            <Fragment key={i}>
-              {item.sub?.length ? (
-                <ListItemButton onClick={item.onToggle} selected={item.path === pathname}>
-                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    primaryTypographyProps={{
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      lineHeight: "24px",
-                      mb: "2px",
-                    }}
-                  />
-                  {item.open ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-              ) : (
-                <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname}>
-                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    primaryTypographyProps={{
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      lineHeight: "24px",
-                      mb: "2px",
-                    }}
-                  />
-                </ListItemButton>
-              )}
-
-              {item.sub?.filter((subItem) => userPermission.includes(subItem.name)).length > 0 && (
-                <Collapse
-                  in={item.open}
-                  timeout="auto"
-                  unmountOnExit
+              <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+                <Typography
                   sx={{
-                    maxHeight: item.open ? "300px" : "0",
-                    overflowY: "auto",
-                    transition: "max-height 0.3s ease-in-out",
+                    fontSize: ".8rem",
+                    fontWeight: "400",
+                    lineWeight: "1.5",
+                    color: "#A0AEC0",
                   }}
                 >
-                  <List
-                    sx={{
-                      marginTop: "4px",
-                      marginBottom: "4px",
-                      marginLeft: "25px",
-                      marginRight: "2px",
-                      padding: "0px",
-                      maxHeight: "500px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {item.sub
-                      .filter((subItem) => userPermission.includes(subItem.name))
-                      .map((subItem, j) => (
-                        <ListItemButton key={j} onClick={() => navigate(subItem.path)} selected={subItem.path === pathname} sx={{ padding: "2px" }}>
-                          <ListItemText
-                            primary={subItem.name}
-                            primaryTypographyProps={{
-                              fontSize: "14px",
-                              fontWeight: "600",
-                              lineHeight: "24px",
-                              mb: "2px",
-                              marginLeft: "35px",
-                            }}
-                          />
-                        </ListItemButton>
-                      ))}
-                  </List>
-                </Collapse>
-              )}
-            </Fragment>
-          ))}
-      </List>
+                  {userName}
+                </Typography>
+              </Box>
+            </Box>
+          </MenuItem>
+          <Divider color="#1C2536" variant="fullWidth" />
+          <MenuItem onClick={closeHandler}>
+            <ListItemIcon>
+              <Password fontSize="small" />
+            </ListItemIcon>
+            <Typography>Change Password</Typography>
+          </MenuItem>
+
+          <MenuItem onClick={logoutHandler}>
+            <ListItemIcon>
+              <Logout fontSize="small" />
+            </ListItemIcon>
+            <Typography>Logout</Typography>
+          </MenuItem>
+        </Menu>
+      </Box>
+
+      {showAlert && <ReusableAlert severity={alertData.severity} title={alertData.title} description={alertData.description} onClose={handleAlertClose} />}
+
+      {/* <ChangePassword
+        userId={userId}
+        // userPassword={userPassword}
+        openChangePassword={openChangePassword}
+        changePasswordOnClose={changePasswordOnClose}
+      /> */}
     </Stack>
   );
 };
 
-const SidebarFooter = () => <div>{/* Footer */}</div>;
+export default Header;
 
 // const changePasswordSchema = yup.object().shape({
 //   id: yup.string().nullable(),
