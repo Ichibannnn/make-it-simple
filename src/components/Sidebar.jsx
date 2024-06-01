@@ -12,31 +12,84 @@ import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowDownOutlined } 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
   // const hideSidebar = useMediaQuery("(max-width: 1069px)");
-  const hideSidebar = useMediaQuery("(max-width: 1647px)");
+  // const hideSidebar = useMediaQuery("(max-width: 1647px)");
+  const hideSidebar = useMediaQuery("(max-width: 1639px)");
+  const [drawerOpen, setDrawerOpen] = useState(isVisible);
 
   const dispatch = useDispatch();
+
+  // Sync drawerOpen state with isVisible from Redux store
+  useEffect(() => {
+    setDrawerOpen(isVisible);
+  }, [isVisible]);
 
   useEffect(() => {
     dispatch(setSidebar(!hideSidebar));
   }, [dispatch, hideSidebar]);
 
+  const handleDrawerToggle = (open) => {
+    setDrawerOpen(open);
+    dispatch(setSidebar(open));
+  };
+
   return (
-    <Stack>
-      {isVisible && (
-        <Stack
-          sx={{
-            height: "100%",
-            backgroundColor: theme.palette.bgForm.black2,
-            width: "280px",
-            overflow: "auto",
+    // <Stack>
+    //   {isVisible && (
+    //     <Stack
+    //       sx={{
+    //         height: "100%",
+    //         backgroundColor: theme.palette.bgForm.black2,
+    //         width: "280px",
+    //         overflow: "auto",
+    //       }}
+    //     >
+    //       <SidebarHeader />
+    //       <SidebarList />
+    //       <SidebarFooter />
+    //     </Stack>
+    //   )}
+    // </Stack>
+
+    <>
+      {hideSidebar ? (
+        <Drawer
+          anchor="left"
+          open={isVisible}
+          onClose={() => handleDrawerToggle(false)}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
           }}
         >
-          <SidebarHeader />
-          <SidebarList />
-          <SidebarFooter />
-        </Stack>
+          <Stack
+            sx={{
+              height: "100%",
+              backgroundColor: theme.palette.bgForm.black2,
+              width: "280px",
+              overflow: "auto",
+            }}
+          >
+            <SidebarHeader />
+            <SidebarList />
+            <SidebarFooter />
+          </Stack>
+        </Drawer>
+      ) : (
+        isVisible && (
+          <Stack
+            sx={{
+              height: "100%",
+              backgroundColor: theme.palette.bgForm.black2,
+              width: "280px",
+              overflow: "auto",
+            }}
+          >
+            <SidebarHeader />
+            <SidebarList />
+            <SidebarFooter />
+          </Stack>
+        )
       )}
-    </Stack>
+    </>
   );
 };
 
@@ -263,7 +316,7 @@ const SidebarList = () => {
     //       path: "/channel-setup/channel",
     //       icon: "HubOutlined",
     //     },
-    //     {
+    //      {
     //       id: 3,
     //       name: "Approver",
     //       path: "/channel-setup/approver",
