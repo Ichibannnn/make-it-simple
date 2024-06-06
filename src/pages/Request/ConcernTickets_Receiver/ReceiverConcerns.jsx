@@ -126,6 +126,8 @@ const ReceiverConcerns = () => {
     setApproveStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
+    setAddData(null);
+    setViewApprovedData(null);
   };
 
   const {
@@ -388,8 +390,8 @@ const ReceiverConcerns = () => {
     }
   }, [addData]);
 
-  console.log("AddData :", addData);
-  console.log("View Approved Data :", viewApprovedData);
+  // console.log("AddData :", addData);
+  // console.log("View Approved Data :", viewApprovedData);
 
   useEffect(() => {
     if (viewApprovedData) {
@@ -1237,7 +1239,7 @@ const ReceiverConcerns = () => {
                     color: theme.palette.text.secondary,
                   }}
                 >
-                  User can view this ticket concern
+                  Viewing of approved ticket concern
                 </Typography>
               </Stack>
 
@@ -1309,6 +1311,7 @@ const ReceiverConcerns = () => {
                               fullWidth
                               disablePortal
                               disableClearable
+                              disabled
                             />
                           );
                         }}
@@ -1349,6 +1352,7 @@ const ReceiverConcerns = () => {
                               fullWidth
                               disablePortal
                               disableClearable
+                              disabled
                             />
                           );
                         }}
@@ -1394,6 +1398,7 @@ const ReceiverConcerns = () => {
                               fullWidth
                               disablePortal
                               disableClearable
+                              disabled
                             />
                           );
                         }}
@@ -1424,19 +1429,16 @@ const ReceiverConcerns = () => {
                                 if (!issueHandlerIsSuccess) getIssueHandler();
                               }}
                               onChange={(_, value) => {
-                                console.log("Value: ", value);
-
                                 onChange(value);
                               }}
                               getOptionLabel={(option) => option.fullname}
                               isOptionEqualToValue={(option, value) => option.userId === value.userId}
-                              // getOptionDisabled={(option) => watch("userId")?.some((item) => item.userId === option.userId)}
                               sx={{
                                 flex: 2,
                               }}
                               fullWidth
                               disablePortal
-                              // disableClearable
+                              disabled
                             />
                           );
                         }}
@@ -1469,6 +1471,7 @@ const ReceiverConcerns = () => {
                               slotProps={{
                                 textField: { variant: "outlined" },
                               }}
+                              disabled
                             />
                           )}
                         />
@@ -1502,7 +1505,7 @@ const ReceiverConcerns = () => {
                               minDate={startDateValidation}
                               error={!!errors.targetDate}
                               helperText={errors.targetDate ? errors.targetDate.message : null}
-                              disabled={!watch("startDate")}
+                              disabled
                             />
                           )}
                         />

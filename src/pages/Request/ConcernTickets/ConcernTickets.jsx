@@ -96,7 +96,7 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
-  // console.log("Requestor Data: ", data);
+  console.log("Requestor Data: ", data);
 
   return (
     <Stack

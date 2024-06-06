@@ -155,6 +155,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
+
+    // console.log("Attachments: ", attachments)
   };
 
   const onCloseAction = () => {
@@ -186,9 +188,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       setValue("Concern", editData?.concern);
 
       // getRequestorAttachment({ Id: editData?.requestGeneratorId });
-      getAttachmentData(editData.requestConcernId);
+      getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
     }
   }, [editData]);
+
+  // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
+  // console.log("Attachment State: ", attachments);
 
   return (
     <>

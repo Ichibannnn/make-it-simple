@@ -135,6 +135,8 @@ const ConcernDialog = ({ open, onClose }) => {
     setAttachments([]);
   };
 
+  // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
+  // console.log("Attachment State: ", attachments);
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -325,7 +327,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Controller
                     control={control}
                     name="RequestAttachmentsFiles"
-                    render={({ field: { onChange } }) => (
+                    render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
                         accept=".png,.jpg,.jpeg,.docx"
@@ -333,11 +335,17 @@ const ConcernDialog = ({ open, onClose }) => {
                         multiple
                         type="file"
                         onChange={(event) => {
+                          // console.log("Event: ", event);
+
                           handleAttachments(event);
                           // handleDrop(event);
 
                           const files = Array.from(event.target.files);
-                          onChange(files);
+                          // const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+
+                          console.log("FILES: ", files);
+                          onChange([...files]);
+                          // fileInputRef.current.value = "";
                         }}
                       />
                     )}

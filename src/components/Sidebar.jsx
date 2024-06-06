@@ -51,7 +51,7 @@ const Sidebar = () => {
     // </Stack>
 
     <>
-      {hideSidebar || drawerOpen ? (
+      {hideSidebar && drawerOpen ? (
         <Drawer
           anchor="left"
           open={isVisible}
