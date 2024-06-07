@@ -31,6 +31,7 @@ import {
   DiscountOutlined,
   DoneAllOutlined,
   FormatListBulletedOutlined,
+  HistoryToggleOffOutlined,
   KeyboardArrowDown,
   KeyboardArrowUp,
   MenuOpenOutlined,
@@ -38,6 +39,7 @@ import {
   RotateRightOutlined,
   Search,
   StorageOutlined,
+  WarningAmberOutlined,
 } from "@mui/icons-material";
 
 import React, { useEffect, useState } from "react";
@@ -56,6 +58,7 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 import IssueViewDialog from "./IssueViewDialog";
+import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
 
 const schema = yup.object().shape({
   ticketDescription: yup.string().required("Description is required"),
@@ -80,82 +83,6 @@ const IssueHandlerConcerns = () => {
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
-
-  const dummyData = {
-    concerns: [
-      {
-        concernId: 1001,
-        description:
-          "This is my concern This is my concern This is my concern This is my concern This is my concern This is my concern  This is my concern This is my concern This is my concern This is my concern This is my concern",
-        requestorName: "GUMAPOS, RODRIGO JR. SINDAY",
-        department: "Engineering and Technical",
-        tickets: [
-          {
-            ticketNo: 1,
-            ticketDescription: "Elixir ETD - MRP Adjustments",
-            startDate: "2024-11-11",
-            targetDate: "2024-11-11",
-            dateClose: "2024-11-11",
-            remarks: "Delayed",
-            status: "Closed",
-          },
-          {
-            ticketNo: 2,
-            ticketDescription: "Elixir ETD - Move Order Adjustments",
-            startDate: "2024-11-11",
-            targetDate: "2024-11-11",
-            dateClose: "2024-11-11",
-            remarks: "On-Time",
-            status: "Closed",
-          },
-          {
-            ticketNo: 3,
-            ticketDescription: "Elixir ETD - Warehouse Receiving Adjustments",
-            startDate: "2024-11-11",
-            targetDate: "2024-11-11",
-            dateClose: "2024-11-11",
-            remarks: "Delayed",
-            status: "Closed",
-          },
-        ],
-      },
-      {
-        concernId: 1002,
-        description: "Concern 2",
-        requestorName: "GUMAPOS, RODRIGO JR. SINDAY",
-        department: "Engineering and Technical",
-        tickets: [
-          {
-            ticketNo: 3,
-            ticketDescription: "Elixir ETD - Reports Adjustments",
-            startDate: "2024-11-11",
-            targetDate: "2024-11-11",
-            dateClose: "2024-11-11",
-            remarks: "Delayed",
-            status: "Closed",
-          },
-          {
-            ticketNo: 4,
-            ticketDescription: "Elixir ETD - Borrowed Transaction Adjustments",
-            startDate: "2024-11-11",
-            targetDate: "2024-11-11",
-            dateClose: "2024-11-11",
-            remarks: "",
-            status: "Open",
-          },
-          {
-            ticketNo: 5,
-            ticketDescription: "Elixir ETD - Ordering Adjustments",
-            startDate: "2024-11-11",
-            targetDate: "2024-11-11",
-            dateClose: "2024-11-11",
-            remarks: "On-Time",
-            status: "Closed",
-          },
-        ],
-      },
-    ],
-  };
 
   const [openCollapse, setOpenCollapse] = useState({});
   const [addTicketForm, setAddTicketForm] = useState({});
@@ -190,32 +117,15 @@ const IssueHandlerConcerns = () => {
     setPageSize(5);
   };
 
-  const handleCollapseToggle = (requestTransactionId) => {
-    setOpenCollapse((prev) => ({
-      ...prev,
-      [requestTransactionId]: !prev[requestTransactionId],
-    }));
-  };
-
-  const handleAddTicketToggle = (requestTransactionId) => {
-    setAddTicketForm((prev) => ({
-      ...prev,
-      [requestTransactionId]: !prev[requestTransactionId],
-    }));
-    reset();
-  };
-
   const onViewAction = (data) => {
     console.log("data: ", data);
 
     viewOnToggle();
     setViewData(data);
-    // setOpenCollapse(!openCollapse);
   };
 
   const onSubmit = (formData) => {
     console.log("Form Data: ", formData);
-    // Handle save logic
     reset();
   };
 
@@ -249,35 +159,6 @@ const IssueHandlerConcerns = () => {
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
             <Tabs>
               <Tab
-                value=""
-                className="tabs-styling"
-                label="All Tickets"
-                icon={
-                  <Badge
-                    badgeContent={100}
-                    color="primary"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
-                    sx={{
-                      ".MuiBadge-badge": {
-                        fontSize: "0.55rem",
-                        fontWeight: 400,
-                      },
-                    }}
-                  >
-                    <DiscountOutlined />
-                  </Badge>
-                }
-                iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
-              />
-
-              <Tab
                 value="Open"
                 className="tabs-styling"
                 label="Open"
@@ -296,15 +177,49 @@ const IssueHandlerConcerns = () => {
                       },
                     }}
                   >
-                    <FormatListBulletedOutlined />
+                    <DiscountOutlined />
                   </Badge>
                 }
                 iconPosition="start"
                 sx={{
                   fontSize: "12px",
                   fontWeight: 600,
+                  ".MuiBadge-badge": {
+                    color: "#ffff",
+                  },
                   // backgroundColor: theme.palette.warning.main,
                   // color: theme.palette.text.main,
+                }}
+              />
+
+              <Tab
+                value=""
+                className="tabs-styling"
+                label="For Closing"
+                icon={
+                  <Badge
+                    badgeContent={100}
+                    // color="primary"
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                    }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                        background: "#3A96FA",
+                        color: "#ffff",
+                      },
+                    }}
+                  >
+                    <PendingActionsOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
                 }}
               />
 
@@ -324,6 +239,7 @@ const IssueHandlerConcerns = () => {
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
                         fontWeight: 400,
+                        color: "#ffff",
                       },
                     }}
                   >
@@ -338,17 +254,73 @@ const IssueHandlerConcerns = () => {
                   // color: theme.palette.text.main,
                 }}
               />
+
+              <Tab
+                value=""
+                className="tabs-styling"
+                label="Reject"
+                icon={
+                  <Badge
+                    badgeContent={100}
+                    color="error"
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                    }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                      },
+                    }}
+                  >
+                    <WarningAmberOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                }}
+              />
+
+              <Tab
+                value=""
+                className="tabs-styling"
+                label="History"
+                icon={
+                  <Badge
+                    badgeContent={100}
+                    color="primary"
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                    }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                      },
+                    }}
+                  >
+                    <HistoryToggleOffOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                }}
+              />
             </Tabs>
 
             <Stack sx={{ alignItems: "center", justifyContent: "center" }}>
               <OutlinedInput
-                // flex="1"
                 placeholder="Search"
                 startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 sx={{
-                  // flex: 1,
                   borderRadius: "15px",
                   fontSize: "small",
                   fontWeight: 400,
@@ -366,10 +338,6 @@ const IssueHandlerConcerns = () => {
               lineHeight: 1,
             }}
           />
-
-          {/* <Stack direction="row" alignItems="right" sx={{ padding: "10px 20px 20px 20px" }} gap={4}>
-
-          </Stack> */}
 
           <TableContainer>
             <Table sx={{ borderBottom: "none" }}>
@@ -447,6 +415,17 @@ const IssueHandlerConcerns = () => {
                   >
                     STATUS
                   </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    ACTION
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
@@ -456,7 +435,7 @@ const IssueHandlerConcerns = () => {
                   !isFetching &&
                   data?.value?.openTicket?.map((item) => (
                     <React.Fragment key={item.ticketConcernId}>
-                      <TableRow key={item.ticketConcernId} onClick={() => onViewAction(item)}>
+                      <TableRow key={item.ticketConcernId}>
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
@@ -464,6 +443,7 @@ const IssueHandlerConcerns = () => {
                             fontWeight: 500,
                           }}
                           align="center"
+                          onClick={() => onViewAction(item)}
                         >
                           {item.ticket_No}
                         </TableCell>
@@ -476,6 +456,7 @@ const IssueHandlerConcerns = () => {
                             fontWeight: 500,
                             maxWidth: "700px",
                           }}
+                          onClick={() => onViewAction(item)}
                         >
                           {item.concern_Description}
                         </TableCell>
@@ -486,6 +467,7 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                           }}
+                          onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
@@ -507,6 +489,7 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                           }}
+                          onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
@@ -528,6 +511,7 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                           }}
+                          onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
@@ -547,6 +531,7 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                           }}
+                          onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
@@ -555,9 +540,21 @@ const IssueHandlerConcerns = () => {
                             sx={{
                               backgroundColor: item.ticket_Status === "Open Ticket" ? "#ec9d29" : "#00913c",
                               color: "#ffffffde",
-                              borderRadius: 0,
+                              borderRadius: "20px",
+                              // fontSize: "10",
                             }}
                           />
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            maxWidth: "700px",
+                          }}
+                        >
+                          <IssueHandlerConcernsActions data={item} />
                         </TableCell>
                       </TableRow>
                     </React.Fragment>
