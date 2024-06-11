@@ -30,17 +30,17 @@ export const concernIssueHandlerApi = createApi({
       providesTags: ["Concern Issue Handler"],
     }),
 
-    // createEditReceiverConcern: builder.mutation({
-    //   query: (body) => ({
-    //     url: "request-concern/add-ticket-concern",
-    //     method: "POST",
-    //     headers: {
-    //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     },
-    //     body: body,
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
-    // }),
+    closeIssueHandlerTickets: builder.mutation({
+      query: (body) => ({
+        url: "closing-ticket",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
 
     // approveReceiverConcern: builder.mutation({
     //   query: (body) => ({
@@ -62,4 +62,4 @@ export const concernIssueHandlerApi = createApi({
   }),
 });
 
-export const { useGetIssueHandlerConcernsQuery } = concernIssueHandlerApi;
+export const { useGetIssueHandlerConcernsQuery, useCloseIssueHandlerTicketsMutation } = concernIssueHandlerApi;

@@ -1,12 +1,8 @@
 import {
   Badge,
-  Box,
-  Button,
   Chip,
   CircularProgress,
-  Collapse,
   Divider,
-  IconButton,
   OutlinedInput,
   Stack,
   Tab,
@@ -18,56 +14,28 @@ import {
   TablePagination,
   TableRow,
   Tabs,
-  TextField,
   Typography,
 } from "@mui/material";
-import {
-  AccessTimeOutlined,
-  AddOutlined,
-  CalendarMonthOutlined,
-  ChecklistRtlOutlined,
-  ClearAllOutlined,
-  ConfirmationNumberOutlined,
-  DiscountOutlined,
-  DoneAllOutlined,
-  FormatListBulletedOutlined,
-  HistoryToggleOffOutlined,
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-  MenuOpenOutlined,
-  PendingActionsOutlined,
-  RotateRightOutlined,
-  Search,
-  StorageOutlined,
-  WarningAmberOutlined,
-} from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, DiscountOutlined, DoneAllOutlined, HistoryToggleOffOutlined, PendingActionsOutlined, Search } from "@mui/icons-material";
 
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
-import { Toaster, toast } from "sonner";
-
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
+
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import { useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
-
-const schema = yup.object().shape({
-  ticketDescription: yup.string().required("Description is required"),
-  startDate: yup.date().required("Start date is required"),
-  targetDate: yup.date().required().label("Target date is required"),
-});
+import IssueHandlerClosingDialog from "./IssueHandlerClosingDialog";
 
 const IssueHandlerConcerns = () => {
-  const [status, setStatus] = useState("true");
+  const [ticketStatus, setTicketStatus] = useState("Open Ticket");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -75,31 +43,16 @@ const IssueHandlerConcerns = () => {
   const search = useDebounce(searchValue, 500);
 
   const [viewData, setViewData] = useState(null);
+  const [closeTicketData, setCloseTicketData] = useState(null);
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
+  const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetIssueHandlerConcernsQuery({
+    Concern_Status: ticketStatus,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
-  });
-
-  const [openCollapse, setOpenCollapse] = useState({});
-  const [addTicketForm, setAddTicketForm] = useState({});
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      ticketDescription: "",
-      startDate: "",
-      targetDate: "",
-    },
   });
 
   const onPageNumberChange = (_, page) => {
@@ -112,21 +65,25 @@ const IssueHandlerConcerns = () => {
   };
 
   const onStatusChange = (_, newValue) => {
-    setStatus(newValue);
+    setTicketStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
   };
 
   const onViewAction = (data) => {
-    console.log("data: ", data);
+    // console.log("data: ", data);
 
     viewOnToggle();
     setViewData(data);
   };
 
-  const onSubmit = (formData) => {
-    console.log("Form Data: ", formData);
-    reset();
+  const onCloseTicketAction = (data) => {
+    closeTicketOnToggle();
+    setCloseTicketData(data);
+  };
+
+  const onDialogClose = () => {
+    closeTicketOnClose();
   };
 
   return (
@@ -157,9 +114,9 @@ const IssueHandlerConcerns = () => {
           }}
         >
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
-            <Tabs>
+            <Tabs value={ticketStatus} onChange={onStatusChange}>
               <Tab
-                value="Open"
+                value="Open Ticket"
                 className="tabs-styling"
                 label="Open"
                 icon={
@@ -187,13 +144,11 @@ const IssueHandlerConcerns = () => {
                   ".MuiBadge-badge": {
                     color: "#ffff",
                   },
-                  // backgroundColor: theme.palette.warning.main,
-                  // color: theme.palette.text.main,
                 }}
               />
 
               <Tab
-                value=""
+                value="For Closing Ticket"
                 className="tabs-styling"
                 label="For Closing"
                 icon={
@@ -252,35 +207,6 @@ const IssueHandlerConcerns = () => {
                   fontWeight: 600,
                   // backgroundColor: theme.palette.error.main,
                   // color: theme.palette.text.main,
-                }}
-              />
-
-              <Tab
-                value=""
-                className="tabs-styling"
-                label="Reject"
-                icon={
-                  <Badge
-                    badgeContent={100}
-                    color="error"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
-                    sx={{
-                      ".MuiBadge-badge": {
-                        fontSize: "0.55rem",
-                        fontWeight: 400,
-                      },
-                    }}
-                  >
-                    <WarningAmberOutlined />
-                  </Badge>
-                }
-                iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
                 }}
               />
 
@@ -445,7 +371,7 @@ const IssueHandlerConcerns = () => {
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {item.ticket_No}
+                          {item.ticketConcernId}
                         </TableCell>
 
                         <TableCell
@@ -536,12 +462,11 @@ const IssueHandlerConcerns = () => {
                           <Chip
                             variant="filled"
                             size="small"
-                            label={item.ticket_Status === "Open Ticket" ? "Open" : "Closed"}
+                            label={item.ticket_Status === "Open Ticket" ? "Open" : "For Closing Ticket" ? "For Closing" : ""}
                             sx={{
-                              backgroundColor: item.ticket_Status === "Open Ticket" ? "#ec9d29" : "#00913c",
+                              backgroundColor: item.ticket_Status === "Open Ticket" ? "#ec9d29" : "For Closing Ticket" ? "#3A96FA" : "#00913c",
                               color: "#ffffffde",
                               borderRadius: "20px",
-                              // fontSize: "10",
                             }}
                           />
                         </TableCell>
@@ -554,11 +479,43 @@ const IssueHandlerConcerns = () => {
                             maxWidth: "700px",
                           }}
                         >
-                          <IssueHandlerConcernsActions data={item} />
+                          <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} />
                         </TableCell>
                       </TableRow>
                     </React.Fragment>
                   ))}
+                {isError && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        Something went wrong.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {(isLoading || isFetching) && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <CircularProgress />
+                      <Typography variant="h5" color="#EDF2F7">
+                        Please wait...
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {isSuccess && !data?.value?.openTicket.length && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        No records found.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -576,6 +533,7 @@ const IssueHandlerConcerns = () => {
         </Stack>
 
         <IssueViewDialog data={viewData} viewOpen={viewOpen} viewOnClose={viewOnClose} />
+        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
       </Stack>
     </Stack>
   );

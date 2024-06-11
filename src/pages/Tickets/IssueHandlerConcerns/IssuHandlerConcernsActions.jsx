@@ -15,13 +15,14 @@ import Swal from "sweetalert2";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
-const IssueHandlerConcernsActions = ({ data, onReset, onArchive, onUpdate }) => {
+const IssueHandlerConcernsActions = ({ data, onCloseTicket }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
 
-  const onResetAction = (data) => {
+  const onCloseTickeAction = (data) => {
     onToggle();
+    onCloseTicket(data);
   };
 
   return (
@@ -31,32 +32,32 @@ const IssueHandlerConcernsActions = ({ data, onReset, onArchive, onUpdate }) => 
       </IconButton>
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
-        <MenuItem>
+        <MenuItem onClick={() => onCloseTickeAction(data)}>
           <ListItemIcon>
             <ChecklistRtlOutlined fontSize="small" />
           </ListItemIcon>
-          Close Ticket
+          Close
         </MenuItem>
 
-        <MenuItem onClick={() => onResetAction(data)}>
+        <MenuItem>
           <ListItemIcon>
             <MoveDownOutlined fontSize="small" />
           </ListItemIcon>
-          Transfer Ticket
+          Transfer
         </MenuItem>
 
-        <MenuItem onClick={() => onResetAction(data)}>
+        <MenuItem>
           <ListItemIcon>
             <HistoryOutlined fontSize="small" />
           </ListItemIcon>
-          Reticket Ticket
+          Reticket
         </MenuItem>
 
         <MenuItem>
           <ListItemIcon>
             <EventRepeatOutlined fontSize="small" />{" "}
           </ListItemIcon>
-          Redate Ticket
+          Redate
         </MenuItem>
       </Menu>
     </>

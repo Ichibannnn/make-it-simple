@@ -109,7 +109,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       payload.append(`ConcernAttachments[0].attachment`, "");
     }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     Swal.fire({
       title: "Confirmation",
@@ -222,6 +222,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
   const onCloseHandler = () => {
     onClose();
+    reset();
+    setAddAttachments([]);
   };
 
   return (

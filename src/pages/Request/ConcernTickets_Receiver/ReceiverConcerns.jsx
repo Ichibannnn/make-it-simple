@@ -237,6 +237,7 @@ const ReceiverConcerns = () => {
               duration: 1500,
             });
             setAddAttachments([]);
+            setApproveStatus("false");
             reset();
             setAddData(null);
             onClose();
