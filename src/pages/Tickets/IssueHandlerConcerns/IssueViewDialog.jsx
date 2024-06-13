@@ -1,17 +1,21 @@
-import { LoadingButton } from "@mui/lab";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { theme } from "../../../theme/theme";
-import { AccessTimeOutlined, AccountCircleRounded, Add, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, PeopleOutlined } from "@mui/icons-material";
+import { AccessTimeOutlined, AccountCircleRounded, Add, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, PeopleOutlined } from "@mui/icons-material";
 import moment from "moment";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
+import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import TicketHistory from "./TicketHistory";
 
 const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
+  const [navigation, setNavigation] = useState("1");
 
   const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
+
+  const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
 
   const getAttachmentData = async (id) => {
     try {
@@ -32,8 +36,6 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
 
   useEffect(() => {
     if (data) {
-      console.log("Data: ", data);
-
       getAttachmentData(data.ticketConcernId);
     }
   }, [data]);
@@ -42,9 +44,13 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
     viewOnClose();
   };
 
+  // console.log("attachments ", attachments);
+
+  console.log("data ", data);
+
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={viewOpen}>
+      <Dialog fullWidth maxWidth="xl" open={viewOpen}>
         <Toaster richColors position="top-right" closeButton />
 
         <DialogContent>
@@ -53,7 +59,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
             <Stack direction="row" gap={1} alignItems="center">
               <AccountCircleRounded sx={{ fontSize: "70px" }} />
               <Stack>
-                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.empId}</Typography>
+                <Typography sx={{ fontSize: "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>created by: </Typography>
                 <Typography
                   sx={{
                     fontSize: "15px",
@@ -66,205 +72,286 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                 <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography>
               </Stack>
             </Stack>
-
-            {/* <Stack direction="row" gap={0.5} alignItems="center">
-              <AccessTimeOutlined
-                sx={{ fontSize: "16px", color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: "12px", color: theme.palette.text.secondary }}
-              >{` ${moment(data?.created_At).format("LL")}`}</Typography>
-            </Stack> */}
           </Stack>
 
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
 
-          {/* CONCERN DETAILS */}
-          <Stack
-            marginTop={3}
-            padding={2}
-            gap={1}
-            sx={{
-              border: "1px solid #2D3748",
-              width: "100%",
-            }}
-          >
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              paddingLeft={8}
-              paddingRight={8}
-              gap={2}
-              sx={{
-                width: "100%",
-              }}
-            >
-              <Stack
+          <Stack sx={{ marginTop: 2 }}>
+            <Tabs value={navigation} onChange={(_, value) => setNavigation(value)}>
+              <Tab
+                value="1"
+                label="Details"
                 sx={{
-                  width: "30%",
+                  fontSize: "12px",
+                  fontWeight: 600,
                 }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "14px",
-                    color: theme.palette.text.secondary,
-                  }}
-                >
-                  Concern Details:
-                </Typography>
-              </Stack>
-
-              <Stack
-                direction="row"
-                gap={1}
-                sx={{
-                  width: "65%",
-                }}
-              >
-                <FiberManualRecord color="primary" fontSize="20px" />
-                <Typography sx={{ fontSize: "14px" }}>{data?.concern_Description}</Typography>
-              </Stack>
-            </Stack>
-
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              paddingLeft={8}
-              paddingRight={8}
-              gap={2}
-              sx={{
-                width: "100%",
-              }}
-            >
-              <Stack
-                sx={{
-                  width: "30%",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "14px",
-                    color: theme.palette.text.secondary,
-                  }}
-                >
-                  Assigned to:
-                </Typography>
-              </Stack>
-
-              <Stack
-                direction="row"
-                gap={1}
-                sx={{
-                  width: "65%",
-                }}
-              >
-                <FiberManualRecord color="primary" fontSize="20px" />
-                <Stack>
-                  <Typography sx={{ fontSize: "14px" }}>{data?.issue_Handler}</Typography>
-                  <Typography
-                    sx={{
-                      fontSize: "12px",
-                      color: theme.palette.text.secondary,
-                    }}
-                  >
-                    {data?.channel_Name}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: "12px",
-                      color: theme.palette.text.secondary,
-                    }}
-                  >
-                    {data?.unitId} - {data?.unit_Name}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Stack>
+              />
+            </Tabs>
           </Stack>
 
-          {/* ATTACHMENTS */}
-          <Stack
-            marginTop={3}
-            padding={4}
-            sx={{
-              border: "1px solid #2D3748",
-            }}
-          >
-            <Stack direction="row" gap={1} alignItems="center">
-              <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
-
-              <Typography
+          <Stack gap={2} sx={{ flexDirection: isSmallScreen ? "column" : "row", marginTop: 2, justifyContent: "space-between" }}>
+            <Stack sx={{ width: isSmallScreen ? "100%" : "50%", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
+              {/* CONCERN DETAILS */}
+              <Stack
+                marginTop={3}
+                padding={2}
+                gap={1}
                 sx={{
-                  fontSize: "14px",
-                  color: theme.palette.text.secondary,
+                  border: "1px solid #2D3748",
                 }}
               >
-                Attachment(s):
-              </Typography>
-            </Stack>
-
-            <Stack sx={{ flexDirection: "column", maxHeight: "äuto" }}>
-              {attachments?.map((fileName, index) => (
-                <Box
-                  key={index}
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingLeft={8}
+                  paddingRight={8}
+                  gap={2}
                   sx={{
-                    display: "flex",
                     width: "100%",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    padding: 1,
                   }}
                 >
-                  <Box
+                  <Stack
                     sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: 0.5,
-                      borderBottom: "1px solid #2D3748",
+                      width: "30%",
                     }}
                   >
-                    <Box
+                    <Typography
                       sx={{
-                        display: "flex",
-                        flexDirection: "column",
+                        fontSize: "14px",
+                        color: theme.palette.text.secondary,
                       }}
                     >
-                      <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+                      Concern Details:
+                    </Typography>
+                  </Stack>
 
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    sx={{
+                      width: "65%",
+                    }}
+                  >
+                    <FiberManualRecord color="primary" fontSize="20px" />
+                    <Typography sx={{ fontSize: "14px" }}>{data?.concern_Description}</Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingLeft={8}
+                  paddingRight={8}
+                  gap={2}
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <Stack
+                    sx={{
+                      width: "30%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      Assigned to:
+                    </Typography>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    sx={{
+                      width: "65%",
+                    }}
+                  >
+                    <FiberManualRecord color="primary" fontSize="20px" />
+                    <Stack>
+                      <Typography sx={{ fontSize: "15px" }}>{data?.issue_Handler}</Typography>
                       <Typography
                         sx={{
-                          fontSize: "14px",
+                          fontSize: "15px",
                           color: theme.palette.text.secondary,
                         }}
                       >
-                        {fileName.size} Mb
+                        {data?.channel_Name}
                       </Typography>
-                    </Box>
+                      <Typography
+                        sx={{
+                          fontSize: "15px",
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
+                        {data?.unitId} - {data?.unit_Name}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
 
-                    <Box>
-                      <Tooltip title="Download">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => {
-                            window.location = fileName.link;
-                          }}
-                          style={{
-                            background: "none",
+              {/* ATTACHMENTS */}
+              <Stack
+                marginTop={3}
+                padding={4}
+                sx={{
+                  border: "1px solid #2D3748",
+                }}
+              >
+                <Stack direction="row" gap={1} alignItems="center">
+                  <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
+
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      color: theme.palette.text.secondary,
+                    }}
+                  >
+                    Attachment(s):
+                  </Typography>
+                </Stack>
+
+                {!attachments?.length ? (
+                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
+                    <Stack direction="row" gap={0.5} justifyContent="center">
+                      <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
+                      <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                    </Stack>
+                  </Stack>
+                ) : (
+                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
+                    {attachments?.map((fileName, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: "flex",
+                          width: "100%",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          padding: 1,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: 0.5,
+                            borderBottom: "1px solid #2D3748",
                           }}
                         >
-                          <FileDownloadOutlined />
-                        </IconButton>
-                      </Tooltip>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
+                            <Typography
+                              sx={{
+                                fontSize: "14px",
+                                color: theme.palette.text.secondary,
+                              }}
+                            >
+                              {fileName.size} Mb
+                            </Typography>
+                          </Box>
+
+                          <Box>
+                            <Tooltip title="Download">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => {
+                                  window.location = fileName.link;
+                                }}
+                                style={{
+                                  background: "none",
+                                }}
+                              >
+                                <FileDownloadOutlined />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Stack>
+                )}
+
+                <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
+                  {attachments?.map((fileName, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        width: "100%",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        padding: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: 0.5,
+                          borderBottom: "1px solid #2D3748",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                              color: theme.palette.text.secondary,
+                            }}
+                          >
+                            {fileName.size} Mb
+                          </Typography>
+                        </Box>
+
+                        <Box>
+                          <Tooltip title="Download">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => {
+                                window.location = fileName.link;
+                              }}
+                              style={{
+                                background: "none",
+                              }}
+                            >
+                              <FileDownloadOutlined />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </Box>
                     </Box>
-                  </Box>
-                </Box>
-              ))}
+                  ))}
+                </Stack>
+              </Stack>
             </Stack>
+
+            <>
+              <TicketHistory data={data} />
+            </>
           </Stack>
         </DialogContent>
 

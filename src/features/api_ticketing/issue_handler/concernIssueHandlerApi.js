@@ -30,6 +30,14 @@ export const concernIssueHandlerApi = createApi({
       providesTags: ["Concern Issue Handler"],
     }),
 
+    getTicketHistory: builder.query({
+      query: (id) => ({
+        url: `open-Ticket/history/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Concern Issue Handler"],
+    }),
+
     closeIssueHandlerTickets: builder.mutation({
       query: (body) => ({
         url: "closing-ticket",
@@ -41,25 +49,7 @@ export const concernIssueHandlerApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
     }),
-
-    // approveReceiverConcern: builder.mutation({
-    //   query: (body) => ({
-    //     url: "request-concern/approve-request",
-    //     method: "PUT",
-    //     body: body,
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
-    // }),
-
-    // getReceiverAttachment: builder.query({
-    //   query: (params) => ({
-    //     url: `request-concern/request-attachment`,
-    //     method: "GET",
-    //     params: params,
-    //   }),
-    //   providesTags: ["Concern Receiver"],
-    // }),
   }),
 });
 
-export const { useGetIssueHandlerConcernsQuery, useCloseIssueHandlerTicketsMutation } = concernIssueHandlerApi;
+export const { useGetIssueHandlerConcernsQuery, useGetTicketHistoryQuery, useCloseIssueHandlerTicketsMutation } = concernIssueHandlerApi;
