@@ -4,10 +4,12 @@ import {
   EditOutlined,
   EventRepeatOutlined,
   HistoryOutlined,
+  ModeEditOutlineOutlined,
   MoreHoriz,
   MoveDownOutlined,
   RefreshOutlined,
   RestoreOutlined,
+  VisibilityOutlined,
 } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import React, { useRef } from "react";
@@ -15,14 +17,19 @@ import Swal from "sweetalert2";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
-const IssueHandlerConcernsActions = ({ data, onCloseTicket }) => {
+const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
 
-  const onCloseTickeAction = (data) => {
+  const onCloseTicketAction = (data) => {
     onToggle();
     onCloseTicket(data);
+  };
+
+  const onManageTicketAction = (data) => {
+    onToggle();
+    onManageTicket(data);
   };
 
   return (
@@ -32,33 +39,48 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket }) => {
       </IconButton>
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
-        <MenuItem onClick={() => onCloseTickeAction(data)}>
-          <ListItemIcon>
-            <ChecklistRtlOutlined fontSize="small" />
-          </ListItemIcon>
-          Close
-        </MenuItem>
+        {data?.ticket_Status === "Open Ticket" ? (
+          <MenuItem onClick={() => onCloseTicketAction(data)}>
+            <ListItemIcon>
+              <ChecklistRtlOutlined fontSize="small" />
+            </ListItemIcon>
+            Close
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={() => onManageTicketAction(data)}>
+            <ListItemIcon>
+              <ModeEditOutlineOutlined fontSize="small" />
+            </ListItemIcon>
+            Manage Ticket
+          </MenuItem>
+        )}
 
-        <MenuItem>
-          <ListItemIcon>
-            <MoveDownOutlined fontSize="small" />
-          </ListItemIcon>
-          Transfer
-        </MenuItem>
+        {data?.ticket_Status === "Open Ticket" && (
+          <MenuItem>
+            <ListItemIcon>
+              <MoveDownOutlined fontSize="small" />
+            </ListItemIcon>
+            Transfer
+          </MenuItem>
+        )}
 
-        <MenuItem>
-          <ListItemIcon>
-            <HistoryOutlined fontSize="small" />
-          </ListItemIcon>
-          Reticket
-        </MenuItem>
+        {data?.ticket_Status === "Open Ticket" && (
+          <MenuItem>
+            <ListItemIcon>
+              <HistoryOutlined fontSize="small" />
+            </ListItemIcon>
+            Reticket
+          </MenuItem>
+        )}
 
-        <MenuItem>
-          <ListItemIcon>
-            <EventRepeatOutlined fontSize="small" />{" "}
-          </ListItemIcon>
-          Redate
-        </MenuItem>
+        {data?.ticket_Status === "Open Ticket" && (
+          <MenuItem>
+            <ListItemIcon>
+              <EventRepeatOutlined fontSize="small" />{" "}
+            </ListItemIcon>
+            Redate
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
+import { Add, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,24 +10,24 @@ import * as yup from "yup";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
-
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
+  closingTicketId: yup.number(),
   resolution: yup.string().required().label("Resolution is required"),
   AddClosingAttachments: yup.array().nullable(),
 });
 
-const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
+const ManageTicketDialog = ({ data, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const fileInputRef = useRef();
 
   const [closeTickets, { isLoading: closeTicketsIsLoading, isFetching: closeTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
+  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -40,17 +40,95 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       ticketConcernId: "",
+      closingTicketId: "",
       resolution: "",
       AddClosingAttachments: [],
     },
   });
 
+  const handleAttachments = (event) => {
+    // console.log("event: ", event);
+    const newFiles = Array.from(event.target.files);
+
+    const fileNames = newFiles.map((file) => ({
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2),
+    }));
+
+    const uniqueNewFiles = fileNames.filter((newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name));
+
+    setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+  };
+
+  const handleUploadButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleUpdateFile = (id) => {
+    setTicketAttachmentId(id);
+    fileInputRef.current.click();
+  };
+
+  const handleDeleteFile = async (fileNameToDelete) => {
+    console.log("File name: ", fileNameToDelete);
+
+    try {
+      if (fileNameToDelete.ticketAttachmentId) {
+        const deletePayload = {
+          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+        };
+        await deleteRequestorAttachment(deletePayload)
+          .unwrap()
+          .then()
+          .catch((err) => {
+            console.log("error: ", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+
+      setAddAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+
+      setValue(
+        "AddClosingAttachments",
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+      );
+    } catch (error) {}
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const fileList = event.dataTransfer.files;
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
+    const fileNames = Array.from(fileList)
+      .filter((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        return allowedExtensions.includes(`.${extension}`);
+      })
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
+    const uniqueNewFiles = fileNames.filter((fileName) => !addAttachments.includes(fileName));
+    setAddAttachments([...addAttachments, ...uniqueNewFiles]);
+
+    // console.log("Attachments: ", attachments)
+  };
+
   const onSubmitAction = (formData) => {
-    // console.log("FormData: ", formData);
+    console.log("Form Data: ", formData);
 
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
+    payload.append("ClosingTicketId", formData.closingTicketId);
     payload.append("Resolution", formData.resolution);
 
     // Attachments
@@ -67,7 +145,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
+      text: `Edit this ticket number ${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -93,7 +171,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
           .unwrap()
           .then(() => {
             toast.success("Success!", {
-              description: "Ticket submitted successfully!",
+              description: "Ticket updated successfully!",
               duration: 1500,
             });
 
@@ -101,7 +179,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               setAddAttachments([]);
               reset();
               onClose();
-            }, 150);
+            }, 500);
           })
           .catch((err) => {
             console.log("Error", err);
@@ -114,83 +192,42 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     });
   };
 
-  const handleAttachments = (event) => {
-    // console.log("event: ", event);
-    const newFiles = Array.from(event.target.files);
-
-    const fileNames = newFiles.map((file) => ({
-      name: file.name,
-      size: (file.size / (1024 * 1024)).toFixed(2),
-    }));
-
-    const uniqueNewFiles = fileNames.filter((newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name));
-
-    setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
-  };
-
-  const handleUploadButtonClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
-
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          removeAttachments: [
-            {
-              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-            },
-          ],
-        };
-        await deleteRequestorAttachment(deletePayload).unwrap();
-      }
-
-      setAddAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-      setValue(
-        "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
-      );
-    } catch (error) {}
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
   const onCloseHandler = () => {
     onClose();
     reset();
     setAddAttachments([]);
   };
 
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const fileList = event.dataTransfer.files;
-    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
-    const fileNames = Array.from(fileList)
-      .filter((file) => {
-        const extension = file.name.split(".").pop().toLowerCase();
-        return allowedExtensions.includes(`.${extension}`);
-      })
-      .map((file) => ({
-        name: file.name,
-        size: (file.size / (1024 * 1024)).toFixed(2),
-      }));
-
-    const uniqueNewFiles = fileNames.filter((fileName) => !addAttachments.includes(fileName));
-    setAddAttachments([...addAttachments, ...uniqueNewFiles]);
-  };
-
   useEffect(() => {
     if (data) {
-      // console.log("Data: ", data);
-
       setValue("ticketConcernId", data?.ticketConcernId);
+      setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
+      setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
+
+      const manageTicketArray = data?.getForClosingTickets?.map((item) =>
+        item?.getAttachmentForClosingTickets?.map((subItem) => {
+          return {
+            ticketAttachmentId: subItem.ticketAttachmentId,
+            name: subItem.fileName,
+            size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
+            link: subItem.attachment,
+          };
+        })
+      );
+
+      setAddAttachments(
+        manageTicketArray?.[0]?.map((item) => ({
+          ticketAttachmentId: item.ticketAttachmentId,
+          name: item.name,
+          size: item.size,
+          link: item.link,
+        }))
+      );
     }
   }, [data]);
+
+  // console.log("Manage Ticket: ", data);
+  console.log("Close Ticket Id: ", watch("closingTicketId"));
 
   return (
     <>
@@ -266,7 +303,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    Closing Ticket Form
+                    Manage Ticket Form
                   </Typography>
 
                   <Stack gap={0.5} mt={2}>
@@ -389,6 +426,38 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                                   <RemoveCircleOutline />
                                 </IconButton>
                               </Tooltip>
+
+                              {!!fileName.ticketAttachmentId && (
+                                <Tooltip title="Upload">
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
+                                    style={{
+                                      background: "none",
+                                    }}
+                                  >
+                                    <FileUploadOutlined />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+
+                              {!!fileName.ticketAttachmentId && (
+                                <Tooltip title="Download">
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => {
+                                      window.location = fileName.link;
+                                    }}
+                                    style={{
+                                      background: "none",
+                                    }}
+                                  >
+                                    <FileDownloadOutlined />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
                             </Box>
                           </Box>
                         ))}
@@ -446,7 +515,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
             <LoadingButton type="submit" form="closeTicket" variant="contained" loading={closeTicketsIsFetching || closeTicketsIsLoading} disabled={!watch("resolution")}>
-              Submit
+              Save
             </LoadingButton>
           </Stack>
         </DialogActions>
@@ -455,4 +524,4 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
   );
 };
 
-export default IssueHandlerClosingDialog;
+export default ManageTicketDialog;

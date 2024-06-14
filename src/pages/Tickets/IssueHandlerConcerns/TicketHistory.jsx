@@ -1,22 +1,12 @@
-import React, { useEffect } from "react";
-import {
-  LoadingButton,
-  Timeline,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineItem,
-  TimelineOppositeContent,
-  TimelineSeparator,
-  timelineClasses,
-  timelineItemClasses,
-  timelineOppositeContentClasses,
-} from "@mui/lab";
-import { Stack, Typography, useMediaQuery } from "@mui/material";
-import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import React from "react";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
-import { AccessTimeOutlined, PersonOutlineOutlined, WatchLater } from "@mui/icons-material";
+
+import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
+import { Stack, Typography, useMediaQuery } from "@mui/material";
+import { AccessTimeOutlined, PersonOutlineOutlined } from "@mui/icons-material";
+
+import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 const TicketHistory = ({ data }) => {
   const { data: historyData } = useGetTicketHistoryQuery(data?.ticketConcernId, {
@@ -24,9 +14,6 @@ const TicketHistory = ({ data }) => {
   });
 
   const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
-
-  // console.log("historyData: ", historyData);
-  // console.log("Ticket Id: ", data?.ticketConcernId);
 
   return (
     <Stack sx={{ width: isSmallScreen ? "100%" : "50%", height: "auto", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
@@ -36,7 +23,6 @@ const TicketHistory = ({ data }) => {
           [`& .${timelineOppositeContentClasses.root}`]: {
             flex: 0.2,
             alignItems: "center",
-            // justifyContent : "center"
           },
         }}
       >
@@ -48,14 +34,17 @@ const TicketHistory = ({ data }) => {
                 <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
               </Stack>
             </TimelineOppositeContent>
+
             <TimelineSeparator>
               <TimelineDot color="primary" />
               <TimelineConnector />
             </TimelineSeparator>
+
             <TimelineContent>
               <Typography component="span" sx={{ fontSize: "19px", fontWeight: 900, color: theme.palette.primary.main }}>
                 {item.request}
               </Typography>
+
               <Typography color="text.secondary" sx={{ fontSize: "15px" }}>
                 {item.status}
               </Typography>

@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, DiscountOutlined, DoneAllOutlined, HistoryToggleOffOutlined, PendingActionsOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 
@@ -33,6 +33,7 @@ import { useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
 import IssueHandlerClosingDialog from "./IssueHandlerClosingDialog";
+import ManageTicketDialog from "./ManageTicketDialog";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -47,6 +48,7 @@ const IssueHandlerConcerns = () => {
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
+  const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
@@ -82,8 +84,15 @@ const IssueHandlerConcerns = () => {
     setCloseTicketData(data);
   };
 
+  const onManageTicketAction = (data) => {
+    manageTicketOnToggle();
+    setCloseTicketData(data);
+  };
+
   const onDialogClose = () => {
+    setCloseTicketData(null);
     closeTicketOnClose();
+    manageTicketOnClose();
   };
 
   return (
@@ -479,7 +488,7 @@ const IssueHandlerConcerns = () => {
                             maxWidth: "700px",
                           }}
                         >
-                          <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} />
+                          <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} onManageTicket={onManageTicketAction} />
                         </TableCell>
                       </TableRow>
                     </React.Fragment>
@@ -534,6 +543,7 @@ const IssueHandlerConcerns = () => {
 
         <IssueViewDialog data={viewData} viewOpen={viewOpen} viewOnClose={viewOnClose} />
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
+        <ManageTicketDialog data={closeTicketData} open={manageTicketOpen} onClose={onDialogClose} />
       </Stack>
     </Stack>
   );

@@ -1,12 +1,12 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { theme } from "../../../theme/theme";
-import { AccessTimeOutlined, AccountCircleRounded, Add, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, PeopleOutlined } from "@mui/icons-material";
-import moment from "moment";
+
+import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { AccountCircleRounded, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
-import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+
 import TicketHistory from "./TicketHistory";
 
 const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
@@ -43,10 +43,6 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
   const onCloseHandler = () => {
     viewOnClose();
   };
-
-  // console.log("attachments ", attachments);
-
-  console.log("data ", data);
 
   return (
     <>
@@ -135,6 +131,82 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                   >
                     <FiberManualRecord color="primary" fontSize="20px" />
                     <Typography sx={{ fontSize: "14px" }}>{data?.concern_Description}</Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingLeft={8}
+                  paddingRight={8}
+                  gap={2}
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <Stack
+                    sx={{
+                      width: "30%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      Category:
+                    </Typography>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    sx={{
+                      width: "65%",
+                    }}
+                  >
+                    <FiberManualRecord color="primary" fontSize="20px" />
+                    <Typography sx={{ fontSize: "14px" }}>{data?.category_Description}</Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingLeft={8}
+                  paddingRight={8}
+                  gap={2}
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <Stack
+                    sx={{
+                      width: "30%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      Sub Category:
+                    </Typography>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    sx={{
+                      width: "65%",
+                    }}
+                  >
+                    <FiberManualRecord color="primary" fontSize="20px" />
+                    <Typography sx={{ fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
                   </Stack>
                 </Stack>
 
@@ -356,9 +428,6 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
         </DialogContent>
 
         <DialogActions>
-          {/* <LoadingButton type="submit" form="user" variant="contained">
-            Save
-          </LoadingButton> */}
           <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
