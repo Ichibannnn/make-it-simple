@@ -19,6 +19,7 @@ import {
 import {
   AccessTimeOutlined,
   Add,
+  AttachFileOutlined,
   CheckOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
@@ -262,9 +263,11 @@ const ReceiverConcerns = () => {
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name));
+    const uniqueNewFiles = fileNames?.filter((newFile) => !addAttachments?.some((existingFile) => existingFile?.name === newFile?.name));
 
-    setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+    console.log("uniqueFiles: ", uniqueNewFiles);
+
+    setAddAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
 
   const handleUploadButtonClick = () => {
@@ -282,11 +285,7 @@ const ReceiverConcerns = () => {
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
-          removeAttachments: [
-            {
-              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-            },
-          ],
+          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
         };
         await deleteRequestorAttachment(deletePayload).unwrap();
       }
@@ -383,7 +382,7 @@ const ReceiverConcerns = () => {
       setValue("Requestor_By", addData?.requestorId);
       setValue("concern_Details", [addData?.concern]);
 
-      console.log("ticketConcernIdArray: ", ticketConcernIdArray?.[0]?.ticketConcernId);
+      // console.log("ticketConcernIdArray: ", ticketConcernIdArray?.[0]?.ticketConcernId);
 
       setValue("ticketConcernId", ticketConcernIdArray?.[0]?.ticketConcernId);
 
@@ -543,7 +542,7 @@ const ReceiverConcerns = () => {
                       sx={{
                         border: "1px solid #2D3748",
                         borderRadius: "20px",
-                        minHeight: "200px",
+                        minHeight: "100px",
                         cursor: "pointer",
                       }}
                     >
@@ -611,7 +610,7 @@ const ReceiverConcerns = () => {
                           onClick={() => onAddEditAction(item)}
                           sx={{
                             border: "1px solid #2D3748",
-                            minHeight: "120px",
+                            minHeight: "110px",
                             padding: 2,
                           }}
                         >
@@ -741,7 +740,7 @@ const ReceiverConcerns = () => {
 
                 <Stack
                   sx={{
-                    minHeight: "1100px",
+                    minHeight: "auto",
                   }}
                 >
                   {/* Tickets Details */}
@@ -1026,119 +1025,128 @@ const ReceiverConcerns = () => {
                       </Button>
                     </Stack>
 
-                    <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                      {addAttachments?.map((fileName, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            display: "flex",
-                            width: "100%",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                            padding: 1,
-                          }}
-                        >
+                    {addAttachments === undefined ? (
+                      <Stack sx={{ flexDirection: "column", maxHeight: "auto", padding: 4 }}>
+                        <Stack direction="row" gap={0.5} justifyContent="center">
+                          <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
+                          <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                        </Stack>
+                      </Stack>
+                    ) : (
+                      <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
+                        {addAttachments?.map((fileName, index) => (
                           <Box
+                            key={index}
                             sx={{
                               display: "flex",
-                              flexDirection: "row",
+                              width: "100%",
+                              flexDirection: "column",
                               justifyContent: "space-between",
-                              alignItems: "center",
-                              padding: 0.5,
-                              borderBottom: "1px solid #2D3748",
+                              padding: 1,
                             }}
                           >
                             <Box
                               sx={{
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                padding: 0.5,
+                                borderBottom: "1px solid #2D3748",
                               }}
                             >
-                              <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                              <Typography
-                                sx={{
-                                  fontSize: "14px",
-                                  color: theme.palette.text.secondary,
-                                }}
-                              >
-                                {fileName.size} Mb
-                              </Typography>
-
                               <Box
                                 sx={{
                                   display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 1,
+                                  flexDirection: "column",
                                 }}
                               >
+                                <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                                 <Typography
                                   sx={{
-                                    fontSize: 13,
-                                    fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    fontSize: "14px",
+                                    color: theme.palette.text.secondary,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  {fileName.size} Mb
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontSize: 13,
+                                      fontWeight: 500,
+                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    }}
+                                  >
+                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  </Typography>
+
+                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                </Box>
+                              </Box>
+
+                              <Box>
+                                {!fileName.ticketAttachmentId && (
+                                  <Tooltip title="Remove">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleDeleteFile(fileName)}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <RemoveCircleOutline />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
+
+                                {fileName.ticketAttachmentId === null && (
+                                  <Tooltip title="Upload">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <FileUploadOutlined />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
+
+                                {!!fileName.ticketAttachmentId && (
+                                  <Tooltip title="Download">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => {
+                                        window.location = fileName.link;
+                                      }}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <FileDownloadOutlined />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
                               </Box>
                             </Box>
-
-                            <Box>
-                              {!fileName.ticketAttachmentId && (
-                                <Tooltip title="Remove">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => handleDeleteFile(fileName)}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <RemoveCircleOutline />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-
-                              {fileName.ticketAttachmentId === null && (
-                                <Tooltip title="Upload">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <FileUploadOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-
-                              {!!fileName.ticketAttachmentId && (
-                                <Tooltip title="Download">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => {
-                                      window.location = fileName.link;
-                                    }}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <FileDownloadOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </Box>
                           </Box>
-                        </Box>
-                      ))}
-                    </Stack>
+                        ))}
+                      </Stack>
+                    )}
                   </Stack>
 
                   <Controller
@@ -1246,7 +1254,7 @@ const ReceiverConcerns = () => {
 
               <Stack
                 sx={{
-                  minHeight: "1100px",
+                  minHeight: "auto",
                 }}
               >
                 {/* Tickets Details */}
@@ -1530,102 +1538,111 @@ const ReceiverConcerns = () => {
                     </Typography>
                   </Stack>
 
-                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                    {addAttachments?.map((fileName, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          width: "100%",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          padding: 1,
-                        }}
-                      >
+                  {addAttachments === undefined ? (
+                    <Stack sx={{ flexDirection: "column", maxHeight: "auto", padding: 4 }}>
+                      <Stack direction="row" gap={0.5} justifyContent="center">
+                        <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
+                        <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                      </Stack>
+                    </Stack>
+                  ) : (
+                    <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
+                      {addAttachments?.map((fileName, index) => (
                         <Box
+                          key={index}
                           sx={{
                             display: "flex",
-                            flexDirection: "row",
+                            width: "100%",
+                            flexDirection: "column",
                             justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: 0.5,
-                            borderBottom: "1px solid #2D3748",
+                            padding: 1,
                           }}
                         >
                           <Box
                             sx={{
                               display: "flex",
-                              flexDirection: "column",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              padding: 0.5,
+                              borderBottom: "1px solid #2D3748",
                             }}
                           >
-                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                            <Typography
-                              sx={{
-                                fontSize: "14px",
-                                color: theme.palette.text.secondary,
-                              }}
-                            >
-                              {fileName.size} Mb
-                            </Typography>
-
                             <Box
                               sx={{
                                 display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 1,
+                                flexDirection: "column",
                               }}
                             >
+                              <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                               <Typography
                                 sx={{
-                                  fontSize: 13,
-                                  fontWeight: 500,
-                                  color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                  fontSize: "14px",
+                                  color: theme.palette.text.secondary,
                                 }}
                               >
-                                {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                {fileName.size} Mb
                               </Typography>
 
-                              {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                            </Box>
-                          </Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontSize: 13,
+                                    fontWeight: 500,
+                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                  }}
+                                >
+                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                </Typography>
 
-                          <Box>
-                            {!fileName.ticketAttachmentId && (
-                              <Tooltip title="Remove">
+                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                              </Box>
+                            </Box>
+
+                            <Box>
+                              {!fileName.ticketAttachmentId && (
+                                <Tooltip title="Remove">
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleDeleteFile(fileName)}
+                                    style={{
+                                      background: "none",
+                                    }}
+                                  >
+                                    <RemoveCircleOutline />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+
+                              <Tooltip title="Download">
                                 <IconButton
                                   size="small"
                                   color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
+                                  onClick={() => {
+                                    window.location = fileName.link;
+                                  }}
                                   style={{
                                     background: "none",
                                   }}
                                 >
-                                  <RemoveCircleOutline />
+                                  <FileDownloadOutlined />
                                 </IconButton>
                               </Tooltip>
-                            )}
-
-                            <Tooltip title="Download">
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => {
-                                  window.location = fileName.link;
-                                }}
-                                style={{
-                                  background: "none",
-                                }}
-                              >
-                                <FileDownloadOutlined />
-                              </IconButton>
-                            </Tooltip>
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    ))}
-                  </Stack>
+                      ))}
+                    </Stack>
+                  )}
                 </Stack>
 
                 <Controller

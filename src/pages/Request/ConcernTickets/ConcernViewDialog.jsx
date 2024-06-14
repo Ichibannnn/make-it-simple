@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { CheckOutlined, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline } from "@mui/icons-material";
+import { AttachFileOutlined, CheckOutlined, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -97,9 +97,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
 
-    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+    // console.log("uniqueFiles: ", uniqueNewFiles);
+
+    setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
 
   const handleUploadButtonClick = () => {
@@ -117,11 +119,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
-          removeAttachments: [
-            {
-              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-            },
-          ],
+          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
         };
         await deleteRequestorAttachment(deletePayload).unwrap();
       }
@@ -191,9 +189,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
     }
   }, [editData]);
-
-  // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
-  // console.log("Attachment State: ", attachments);
 
   return (
     <>
@@ -300,124 +295,133 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       }}
                     />
 
-                    <Stack
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        maxHeight: "auto",
-                      }}
-                    >
-                      {attachments?.map((fileName, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            display: "flex",
-                            width: "100%",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                            padding: 1,
-                          }}
-                        >
+                    {attachments === undefined ? (
+                      <Stack sx={{ flexDirection: "column", maxHeight: "auto", padding: 4 }}>
+                        <Stack direction="row" gap={0.5} justifyContent="center">
+                          <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
+                          <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                        </Stack>
+                      </Stack>
+                    ) : (
+                      <Stack
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          maxHeight: "auto",
+                        }}
+                      >
+                        {attachments?.map((fileName, index) => (
                           <Box
+                            key={index}
                             sx={{
                               display: "flex",
-                              flexDirection: "row",
+                              width: "100%",
+                              flexDirection: "column",
                               justifyContent: "space-between",
-                              alignItems: "center",
-                              padding: 0.5,
-                              borderBottom: "1px solid #2D3748",
+                              padding: 1,
                             }}
                           >
                             <Box
                               sx={{
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                padding: 0.5,
+                                borderBottom: "1px solid #2D3748",
                               }}
                             >
-                              <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
-
-                              <Typography
-                                sx={{
-                                  fontSize: 13,
-                                  fontWeight: 500,
-                                  color: theme.palette.text.secondary,
-                                }}
-                              >
-                                {fileName.size} Mb
-                              </Typography>
-
                               <Box
                                 sx={{
                                   display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 1,
+                                  flexDirection: "column",
                                 }}
                               >
+                                <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
+
                                 <Typography
                                   sx={{
                                     fontSize: 13,
                                     fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    color: theme.palette.text.secondary,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  {fileName.size} Mb
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                              </Box>
-                            </Box>
-
-                            <Box>
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 1,
                                   }}
                                 >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 13,
+                                      fontWeight: 500,
+                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    }}
+                                  >
+                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  </Typography>
 
-                              {!!fileName.ticketAttachmentId && (
-                                <Tooltip title="Upload">
+                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                </Box>
+                              </Box>
+
+                              <Box>
+                                <Tooltip title="Remove">
                                   <IconButton
                                     size="small"
                                     color="error"
-                                    onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
+                                    onClick={() => handleDeleteFile(fileName)}
                                     style={{
                                       background: "none",
                                     }}
                                   >
-                                    <FileUploadOutlined />
+                                    <RemoveCircleOutline />
                                   </IconButton>
                                 </Tooltip>
-                              )}
 
-                              {!!fileName.ticketAttachmentId && (
-                                <Tooltip title="Download">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => {
-                                      window.location = fileName.link;
-                                    }}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <FileDownloadOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
+                                {!!fileName.ticketAttachmentId && (
+                                  <Tooltip title="Upload">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <FileUploadOutlined />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
+
+                                {!!fileName.ticketAttachmentId && (
+                                  <Tooltip title="Download">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => {
+                                        window.location = fileName.link;
+                                      }}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <FileDownloadOutlined />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
+                              </Box>
                             </Box>
                           </Box>
-                        </Box>
-                      ))}
-                    </Stack>
+                        ))}
+                      </Stack>
+                    )}
                   </Stack>
 
                   <Controller
@@ -473,7 +477,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
               color="primary"
               type="submit"
               loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-              disabled={!watch("Concern") || !attachments?.length}
+              disabled={!watch("Concern")}
             >
               Save
             </LoadingButton>
