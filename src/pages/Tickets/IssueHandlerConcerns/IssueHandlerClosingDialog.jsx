@@ -26,7 +26,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   const fileInputRef = useRef();
 
-  const [closeTickets, { isLoading: closeTicketsIsLoading, isFetching: closeTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
+  const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -89,7 +89,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         console.log("Payload Entries: ", [...payload.entries()]);
-        closeTickets(payload)
+        closeIssueHandlerTickets(payload)
           .unwrap()
           .then(() => {
             toast.success("Success!", {
@@ -445,7 +445,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
-            <LoadingButton type="submit" form="closeTicket" variant="contained" loading={closeTicketsIsFetching || closeTicketsIsLoading} disabled={!watch("resolution")}>
+            <LoadingButton
+              type="submit"
+              form="closeTicket"
+              variant="contained"
+              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
+              disabled={!watch("resolution")}
+            >
               Submit
             </LoadingButton>
           </Stack>

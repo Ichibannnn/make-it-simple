@@ -92,7 +92,7 @@ const IssueHandlerConcerns = () => {
   const onDialogClose = () => {
     setCloseTicketData(null);
     closeTicketOnClose();
-    manageTicketOnClose();
+    // manageTicketOnClose();
   };
 
   return (
@@ -543,7 +543,13 @@ const IssueHandlerConcerns = () => {
 
         <IssueViewDialog data={viewData} viewOpen={viewOpen} viewOnClose={viewOnClose} />
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
-        <ManageTicketDialog data={closeTicketData} open={manageTicketOpen} onClose={onDialogClose} />
+        <ManageTicketDialog
+          data={closeTicketData}
+          open={manageTicketOpen}
+          onClose={() => {
+            manageTicketOnClose(setCloseTicketData(null));
+          }}
+        />
       </Stack>
     </Stack>
   );

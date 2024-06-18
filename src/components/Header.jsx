@@ -23,6 +23,7 @@ import * as yup from "yup";
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -67,6 +68,7 @@ const Header = () => {
       dispatch(concernApi.util.resetApiState());
       dispatch(concernReceiverApi.util.resetApiState());
       dispatch(concernIssueHandlerApi.util.resetApiState());
+      dispatch(ticketApprovalApi.util.resetApiState());
 
       navigate("/");
 
