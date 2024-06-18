@@ -1,19 +1,5 @@
-import {
-  Autocomplete,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  Close,
-  DeleteOutlineOutlined,
-  DragIndicator,
-} from "@mui/icons-material";
+import { Autocomplete, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Close, DeleteOutlineOutlined, DragIndicator } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,19 +9,10 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import {
-  useCreateEditApproverMutation,
-  useLazyGetSubUnitListQuery,
-  useLazyGetApproverListQuery,
-} from "../../../features/api_channel_setup/approver/approverApi";
+import { useCreateEditApproverMutation, useLazyGetSubUnitListQuery, useLazyGetApproverListQuery } from "../../../features/api_channel_setup/approver/approverApi";
 
 import { DndContext, closestCorners } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-  arrayMove,
-} from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -51,31 +28,11 @@ const approverSchema = yup.object().shape({
 const ApproverDialog = ({ data, open, onClose }) => {
   const [approvers, setApprovers] = useState([]);
 
-  const [
-    createEditApprover,
-    {
-      isLoading: createEditApproverIsLoading,
-      isFetching: createEditApproverIsFetching,
-    },
-  ] = useCreateEditApproverMutation();
+  const [createEditApprover, { isLoading: createEditApproverIsLoading, isFetching: createEditApproverIsFetching }] = useCreateEditApproverMutation();
 
-  const [
-    getSubUnitList,
-    {
-      data: subUnitListData,
-      isLoading: subUnitListIsLoading,
-      isSuccess: subUnitListIsSuccess,
-    },
-  ] = useLazyGetSubUnitListQuery();
+  const [getSubUnitList, { data: subUnitListData, isLoading: subUnitListIsLoading, isSuccess: subUnitListIsSuccess }] = useLazyGetSubUnitListQuery();
 
-  const [
-    getApproverList,
-    {
-      data: approverListData,
-      isLoading: approverListIsLoading,
-      isSuccess: approverListIsSuccess,
-    },
-  ] = useLazyGetApproverListQuery();
+  const [getApproverList, { data: approverListData, isLoading: approverListIsLoading, isSuccess: approverListIsSuccess }] = useLazyGetApproverListQuery();
 
   const {
     control: subUnitFormControl,
@@ -201,12 +158,8 @@ const ApproverDialog = ({ data, open, onClose }) => {
     if (active.id === over.id) return;
 
     setApprovers((approvers) => {
-      const originalIndex = approvers.findIndex(
-        (approver) => approver.id === active.id
-      );
-      const newIndex = approvers.findIndex(
-        (approver) => approver.id === over.id
-      );
+      const originalIndex = approvers.findIndex((approver) => approver.id === active.id);
+      const newIndex = approvers.findIndex((approver) => approver.id === over.id);
 
       const updatedApprovers = arrayMove(approvers, originalIndex, newIndex);
 
@@ -242,24 +195,23 @@ const ApproverDialog = ({ data, open, onClose }) => {
         approverId: item?.approverId,
       }));
 
-      console.log("editApproversList", editApproversList);
-
       setApprovers(editApproversList);
+
+      const subUnitId = subUnitFormWatch("subUnitId")?.subUnitId;
+      getApproverList({ SubUnitId: subUnitId });
     }
   }, [data]);
 
   // console.log("Table: ", approvers);
 
+  // console.log("Data: ", data);
+
+  console.log("Sub unit: ", subUnitFormWatch("subUnitId"));
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={open}
-        sx={{ borderRadius: "none", padding: 0 }}
-        PaperProps={{ style: { overflow: "unset" } }}
-      >
+      <Dialog fullWidth maxWidth="md" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogContent sx={{ paddingBottom: 10 }}>
           <Stack direction="column" sx={{ padding: "5px" }}>
             <Stack>
@@ -285,12 +237,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
               </Typography>
             </Stack>
 
-            <Stack
-              id="approverForm"
-              component="form"
-              onSubmit={subUnitFormHandleSubmit(onApproverFormSubmit)}
-              sx={{ paddingTop: 2, gap: 2 }}
-            >
+            <Stack id="approverForm" component="form" onSubmit={subUnitFormHandleSubmit(onApproverFormSubmit)} sx={{ paddingTop: 2, gap: 2 }}>
               <Controller
                 control={subUnitFormControl}
                 name="subUnitId"
@@ -303,27 +250,19 @@ const ApproverDialog = ({ data, open, onClose }) => {
                       // options={subUnitListData?.value || []}
                       options={data ? [] : subUnitListData?.value || []}
                       loading={subUnitListIsLoading}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Sub Unit" size="small" />
-                      )}
+                      renderInput={(params) => <TextField {...params} label="Sub Unit" size="small" />}
                       onOpen={() => {
                         if (!subUnitListIsSuccess) getSubUnitList();
                       }}
                       onChange={(_, value) => {
-                        console.log("Value: ", value);
-
                         onChange(value);
 
                         getApproverList({
                           SubUnitId: value?.subUnitId,
                         });
                       }}
-                      getOptionLabel={(option) =>
-                        `${option.subUnit_Code} - ${option.subUnit_Name}`
-                      }
-                      isOptionEqualToValue={(option, value) =>
-                        option.subUnitId === value.subUnitId
-                      }
+                      getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                      isOptionEqualToValue={(option, value) => option.subUnitId === value.subUnitId}
                       noOptionsText={"No sub unit available"}
                       disabled={data ? true : false}
                       sx={{
@@ -339,12 +278,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack sx={{ paddingTop: 2, gap: 2 }}>
-              <Stack
-                component="form"
-                onSubmit={approverFormHandleSubmit(onApproverListFormAdd)}
-                direction="row"
-                gap={2}
-              >
+              <Stack component="form" onSubmit={approverFormHandleSubmit(onApproverListFormAdd)} direction="row" gap={2}>
                 <Controller
                   control={approverFormControl}
                   name="approvers"
@@ -356,25 +290,13 @@ const ApproverDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={approverListData?.value || []}
                         loading={approverListIsLoading}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Approvers"
-                            size="small"
-                          />
-                        )}
+                        renderInput={(params) => <TextField {...params} label="Approvers" size="small" />}
                         onChange={(_, value) => {
                           onChange(value);
                         }}
                         getOptionLabel={(option) => option.fullName}
-                        isOptionEqualToValue={(option, value) =>
-                          option.userId === value.userId
-                        }
-                        getOptionDisabled={(option) =>
-                          approvers.some(
-                            (item) => item.userId === option.userId
-                          )
-                        }
+                        isOptionEqualToValue={(option, value) => option.userId === value.userId}
+                        getOptionDisabled={(option) => approvers.some((item) => item.userId === option.userId)}
                         noOptionsText={"No approver available"}
                         sx={{
                           flex: 2,
@@ -405,14 +327,8 @@ const ApproverDialog = ({ data, open, onClose }) => {
               </Stack>
 
               <DndProvider backend={HTML5Backend}>
-                <DndContext
-                  onDragEnd={handleDragEnd}
-                  collisionDetection={closestCorners}
-                >
-                  <Column
-                    approvers={approvers}
-                    onDelete={onApproverListFormDelete}
-                  />
+                <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+                  <Column approvers={approvers} onDelete={onApproverListFormDelete} />
                 </DndContext>
               </DndProvider>
             </Stack>
@@ -425,9 +341,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
               variant="contained"
               type="submit"
               form="approverForm"
-              loading={
-                createEditApproverIsLoading || createEditApproverIsFetching
-              }
+              loading={createEditApproverIsLoading || createEditApproverIsFetching}
               disabled={!subUnitFormWatch("subUnitId") || !approvers.length}
             >
               Save
@@ -458,13 +372,7 @@ export const Column = ({ approvers, onDelete }) => {
       </Typography>
       <SortableContext items={approvers} strategy={verticalListSortingStrategy}>
         {approvers.map((approver, index) => (
-          <ApproversName
-            id={approver.id}
-            userId={approver.userId}
-            fullName={approver.fullName}
-            key={index}
-            onDelete={() => onDelete(index)}
-          />
+          <ApproversName id={approver.id} userId={approver.userId} fullName={approver.fullName} key={index} onDelete={() => onDelete(index)} />
         ))}
       </SortableContext>
     </div>
@@ -472,8 +380,7 @@ export const Column = ({ approvers, onDelete }) => {
 };
 
 export const ApproversName = ({ id, fullName, onDelete }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
     transition,
@@ -489,22 +396,11 @@ export const ApproversName = ({ id, fullName, onDelete }) => {
   return (
     <>
       <div ref={setNodeRef} style={style} className="style-draggable">
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          {...attributes}
-          {...listeners}
-        >
+        <Stack direction="row" justifyContent="space-between" alignItems="center" {...attributes} {...listeners}>
           <DragIndicator />
         </Stack>
 
-        <Stack
-          width="100%"
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <Stack width="100%" direction="row" justifyContent="space-between" alignItems="center">
           {id} - {fullName}
           <IconButton onClick={handleDelete}>
             <DeleteOutlineOutlined />

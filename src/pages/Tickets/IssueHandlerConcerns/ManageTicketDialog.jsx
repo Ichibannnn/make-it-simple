@@ -227,7 +227,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   // console.log("Manage Ticket: ", data);
   // console.log("Close Ticket Id: ", watch("closingTicketId"));
 
-  console.log("attachment: ", addAttachments);
+  // console.log("attachment: ", addAttachments);
 
   return (
     <>
