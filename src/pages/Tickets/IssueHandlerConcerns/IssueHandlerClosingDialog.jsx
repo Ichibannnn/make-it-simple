@@ -97,11 +97,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               duration: 1500,
             });
 
-            setTimeout(() => {
-              setAddAttachments([]);
-              reset();
-              onClose();
-            }, 150);
+            setAddAttachments([]);
+            reset();
+            onClose();
           })
           .catch((err) => {
             console.log("Error", err);
@@ -194,9 +192,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   return (
     <>
+      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="md" open={open}>
-        <Toaster richColors position="top-right" closeButton />
-
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">

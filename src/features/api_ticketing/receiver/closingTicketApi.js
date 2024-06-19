@@ -2,9 +2,9 @@ import queryString from "query-string";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const ticketApprovalApi = createApi({
-  reducerPath: "ticketApprovalApi",
-  tagTypes: ["Ticket Approval"],
+export const closingTicketApi = createApi({
+  reducerPath: "closingTicketApi",
+  tagTypes: ["Closing Ticket"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
@@ -21,33 +21,33 @@ export const ticketApprovalApi = createApi({
   }),
   endpoints: (builder) => ({
     // Approver ---------------
-    getTicketApproval: builder.query({
+    getClosingTickets: builder.query({
       query: (params) => ({
         url: "closing-ticket/page?UserType=Approver&IsClosed=false&IsReject=false",
         method: "GET",
         params: params,
       }),
-      providesTags: ["Ticket Approval"],
+      providesTags: ["Closing Ticket"],
     }),
 
-    approveTicket: builder.mutation({
+    closeTicket: builder.mutation({
       query: (body) => ({
         url: "closing-ticket/approval",
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Closing Ticket"]),
     }),
 
-    disapproveTicket: builder.mutation({
+    rejectTicket: builder.mutation({
       query: (body) => ({
         url: "closing-ticket/reject",
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : ["Closing Ticket"]),
     }),
   }),
 });
 
-export const { useGetTicketApprovalQuery, useApproveTicketMutation, useDisapproveTicketMutation } = ticketApprovalApi;
+export const { useGetClosingTicketsQuery, useCloseTicketMutation, useRejectTicketMutation } = closingTicketApi;

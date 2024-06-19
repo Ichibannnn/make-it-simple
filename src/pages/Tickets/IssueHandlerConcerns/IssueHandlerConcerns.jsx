@@ -445,16 +445,17 @@ const IssueHandlerConcerns = () => {
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
+                            maxWidth: "700px",
                           }}
                           onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
                             size="small"
-                            label={item.remarks === "On-Time" ? "On-Time" : item.remarks === "Delayed" ? "Delayed" : ""}
+                            label={item.remarks ? item.remarks : ""}
                             sx={{
-                              backgroundColor: item.remarks === "On-Time" ? "#00913c" : item.remarks === "Delayed" ? "#a32421" : "transparent",
-                              color: "#ffffffde",
+                              backgroundColor: item.remarks ? theme.palette.error.main : "transparent",
+                              color: "#ffffffd",
                               borderRadius: "none",
                             }}
                           />

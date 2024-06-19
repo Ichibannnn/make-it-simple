@@ -1,33 +1,8 @@
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import IcecreamOutlinedIcon from "@mui/icons-material/IcecreamOutlined";
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
-import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
-import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
-import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 
-import {
-  AccountTreeOutlined,
-  AttachFileOutlined,
-  AutoAwesomeMotionOutlined,
-  BallotOutlined,
-  BookmarkAddOutlined,
-  CategoryOutlined,
-  ConfirmationNumberOutlined,
-  ContactsOutlined,
-  CreditScoreOutlined,
-  DiscountOutlined,
-  DomainAddOutlined,
-  DynamicFeedOutlined,
-  EqualizerOutlined,
-  GroupsOutlined,
-  HubOutlined,
-  KeyboardCommandKeyOutlined,
-  LanOutlined,
-  ListOutlined,
-  NumbersOutlined,
-  RoomOutlined,
-} from "@mui/icons-material";
+import { AttachFileOutlined, BallotOutlined, ConfirmationNumberOutlined, CreditScoreOutlined, DynamicFeedOutlined, EqualizerOutlined, NumbersOutlined } from "@mui/icons-material";
 
 export const getMenuIcon = (iconName) => {
   const iconMap = {

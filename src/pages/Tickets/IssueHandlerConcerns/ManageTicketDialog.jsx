@@ -125,24 +125,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const onSubmitAction = (formData) => {
     console.log("Form Data: ", formData);
 
-    const payload = new FormData();
-
-    payload.append("TicketConcernId", formData.ticketConcernId);
-    payload.append("ClosingTicketId", formData.closingTicketId);
-    payload.append("Resolution", formData.resolution);
-
-    // Attachments
-    const files = formData.AddClosingAttachments;
-    for (let i = 0; i < files.length; i++) {
-      payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-      payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
-    }
-
-    if (files.length === 0) {
-      payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
-      payload.append(`AddClosingAttachments[0].attachment`, "");
-    }
-
     Swal.fire({
       title: "Confirmation",
       text: `Edit this ticket number ${data?.ticketConcernId}?`,
@@ -166,6 +148,24 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        const payload = new FormData();
+
+        payload.append("TicketConcernId", formData.ticketConcernId);
+        payload.append("ClosingTicketId", formData.closingTicketId);
+        payload.append("Resolution", formData.resolution);
+
+        // Attachments
+        const files = formData.AddClosingAttachments;
+        for (let i = 0; i < files.length; i++) {
+          payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+          payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
+        }
+
+        if (files.length === 0) {
+          payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
+          payload.append(`AddClosingAttachments[0].attachment`, "");
+        }
+
         closeIssueHandlerTickets(payload)
           .unwrap()
           .then(() => {
@@ -173,12 +173,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
               description: "Ticket updated successfully!",
               duration: 1500,
             });
-
-            setTimeout(() => {
-              setAddAttachments([]);
-              reset();
-              onClose();
-            }, 500);
+            setAddAttachments([]);
+            reset();
+            onClose();
           })
           .catch((err) => {
             toast.error("Error!", {
@@ -231,9 +228,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   return (
     <>
+      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="md" open={open}>
-        <Toaster richColors position="top-right" closeButton />
-
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -374,7 +370,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         )}
                       </Stack>
 
-                      {addAttachments.length === 0 ? (
+                      {addAttachments?.length === 0 ? (
                         <Stack sx={{ flexDirection: "column", border: "1px solid #2D3748", minHeight: "195px", justifyContent: "center", alignItems: "center" }}>
                           <Stack direction="row" gap={0.5} justifyContent="center">
                             <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />

@@ -31,6 +31,7 @@ import Approver from "../pages/ChannelSetup/Approver/Approver";
 
 import ReceiverPage from "../pages/Request/ReceiverPage";
 import ReceiverConcerns from "../pages/Request/ConcernTickets_Receiver/ReceiverConcerns";
+import ReceiverCloseTickets from "../pages/Receiver/ClosingTickets/ReceiverCloseTickets";
 
 import TicketingPage from "../pages/Tickets/TicketingPage";
 import IssueHandlerConcerns from "../pages/Tickets/IssueHandlerConcerns/IssueHandlerConcerns";
@@ -117,24 +118,6 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      // {
-      //   path: "/channel-setup",
-      //   element: <ChannelPage />,
-      //   children: [
-      //     {
-      //       path: "/channel-setup/receiver",
-      //       element: <Receiver />,
-      //     },
-      //     {
-      //       path: "/channel-setup/channel",
-      //       element: <Channel />,
-      //     },
-      //     {
-      //       path: "/channel-setup/approver",
-      //       element: <Approver />,
-      //     },
-      //   ],
-      // },
       {
         path: "/requestor",
         element: <RequestsPage />,
@@ -152,6 +135,10 @@ export const router = createBrowserRouter([
           {
             path: "/receiver/receiver-concerns",
             element: <ReceiverConcerns />,
+          },
+          {
+            path: "/receiver/close-tickets",
+            element: <ReceiverCloseTickets />,
           },
         ],
       },

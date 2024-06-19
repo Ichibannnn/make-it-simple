@@ -2,18 +2,22 @@ import React, { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
+import { Box, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import { useLazyGetRequestorAttachmentQuery } from "../../../../features/api_request/concerns/concernApi";
 import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import Swal from "sweetalert2";
+import useDisclosure from "../../../../hooks/useDisclosure";
+import DisapprovedDialog from "./DisapprovedDialog";
 
 const TicketApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
+  const [disapproveData, setDisapproveData] = useState(null);
 
-  const [approveTicket, { isLoading: approveTicketIsLoadinng, isFetching: approveTicketIsFetching }] = useApproveTicketMutation();
+  const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useApproveTicketMutation();
+
+  const { open: disapproveOpen, onToggle: disapproveOnToggle, onClose: disapproveOnClose } = useDisclosure();
 
   const onApproveAction = () => {
     const approvePayload = {
@@ -85,13 +89,17 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
     onClose();
   };
 
+  const onDisapproveHandler = () => {
+    disapproveOnToggle();
+    setDisapproveData(data);
+  };
+
   console.log("Data: ", data);
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xl" open={open}>
-        <Toaster richColors position="top-right" closeButton />
-
+      <Toaster richColors position="top-right" closeButton />
+      <Dialog fullWidth maxWidth="md" open={open}>
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -133,6 +141,44 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                   border: "1px solid #2D3748",
                 }}
               >
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingLeft={8}
+                  paddingRight={8}
+                  gap={2}
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <Stack
+                    sx={{
+                      width: "30%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      Ticket Number:
+                    </Typography>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    sx={{
+                      width: "65%",
+                    }}
+                  >
+                    <FiberManualRecord color="primary" fontSize="20px" />
+                    <Typography sx={{ fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                  </Stack>
+                </Stack>
+
                 <Stack
                   direction="row"
                   alignItems="center"
@@ -444,15 +490,24 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
         <DialogActions>
           <Stack sx={{ flexDirection: "row", gap: 0.5, padding: 2 }}>
-            <LoadingButton variant="contained" color="success" onClick={onApproveAction}>
+            <LoadingButton variant="contained" color="success" onClick={onApproveAction} loading={approveTicketIsLoading || approveTicketIsFetching} startIcon={<Check />}>
               Approve
             </LoadingButton>
 
-            <LoadingButton type="submit" variant="contained" color="error">
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              onClick={onDisapproveHandler}
+              color="error"
+              loading={approveTicketIsLoading || approveTicketIsFetching}
+              startIcon={<Close />}
+            >
               Disapprove
             </LoadingButton>
           </Stack>
         </DialogActions>
+
+        <DisapprovedDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} />
       </Dialog>
     </>
   );

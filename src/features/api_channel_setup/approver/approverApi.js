@@ -55,13 +55,6 @@ export const approverApi = createApi({
       invalidatesTags: (_, error) => (error ? [] : ["Approver"]),
     }),
 
-    // query: (body) => ({
-    //   url: "receiver",
-    //   method: "POST",
-    //   body: body,
-    // }),
-    // invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
-
     archiveApprover: builder.mutation({
       query: (body) => ({
         url: `approver/status`,
@@ -73,10 +66,4 @@ export const approverApi = createApi({
   }),
 });
 
-export const {
-  useGetApproverQuery,
-  useLazyGetSubUnitListQuery,
-  useLazyGetApproverListQuery,
-  useCreateEditApproverMutation,
-  useArchiveApproverMutation,
-} = approverApi;
+export const { useGetApproverQuery, useLazyGetSubUnitListQuery, useLazyGetApproverListQuery, useCreateEditApproverMutation, useArchiveApproverMutation } = approverApi;

@@ -33,7 +33,7 @@ const masterlistCheckbox = [
 ];
 // const channelCheckbox = ["Receiver", "Channel", "Approver"];
 const requestCheckbox = ["Requestor Concerns"];
-const receiverCheckbox = ["Receiver Concerns"];
+const receiverCheckbox = ["Receiver Concerns", "Close Tickets"];
 const approverCheckbox = ["Approval"];
 const ticketingCheckbox = ["Tickets"];
 

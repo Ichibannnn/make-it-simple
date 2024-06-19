@@ -272,7 +272,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         onRowsPerPageChange={onPageSizeChange}
       />
 
-      <TicketApprovalDialog open={open} onClose={onDialogClose} data={viewApprovalData} />
+      <TicketApprovalDialog data={viewApprovalData} open={open} onClose={onDialogClose} />
     </Stack>
   );
 };

@@ -157,11 +157,6 @@ const SidebarList = () => {
 
   const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
   const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
-  // const {
-  //   open: channelOpen,
-  //   onToggle: channelOnToggle,
-  //   onClose: channelOnClose,
-  // } = useDisclosure(!!pathname.match(/channel/gi));
   const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
   const { open: receiverOpen, onToggle: receiverOnToggle, onClose: receiverOnClose } = useDisclosure(!!pathname.match(/receiver/gi));
   const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
@@ -289,41 +284,6 @@ const SidebarList = () => {
         },
       ],
     },
-    // {
-    //   id: 4,
-    //   name: "Channel Setup",
-    //   path: "/channel-setup",
-    //   icon: "NumbersOutlined",
-    //   open: channelOpen,
-    //   onToggle: () => {
-    //     channelOnToggle();
-    //     userManagementOnClose();
-    //     masterlistOnClose();
-    //     requestOnClose();
-    //     receiverOnClose();
-    //     ticketingOnClose();
-    //   },
-    //   sub: [
-    //     {
-    //       id: 1,
-    //       name: "Receiver",
-    //       path: "/channel-setup/receiver",
-    //       icon: "ContactsOutlined",
-    //     },
-    //     {
-    //       id: 2,
-    //       name: "Channel",
-    //       path: "/channel-setup/channel",
-    //       icon: "HubOutlined",
-    //     },
-    //      {
-    //       id: 3,
-    //       name: "Approver",
-    //       path: "/channel-setup/approver",
-    //       icon: "GroupsOutlined",
-    //     },
-    //   ],
-    // },
     {
       id: 4,
       name: "Requestor",
@@ -334,7 +294,6 @@ const SidebarList = () => {
         requestOnToggle();
         userManagementOnClose();
         masterlistOnClose();
-        // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
         approverOnClose();
@@ -359,7 +318,6 @@ const SidebarList = () => {
         requestOnClose();
         userManagementOnClose();
         masterlistOnClose();
-        // channelOnClose();
         ticketingOnClose();
         approverOnClose();
       },
@@ -368,6 +326,12 @@ const SidebarList = () => {
           id: 1,
           name: "Receiver Concerns",
           path: "/receiver/receiver-concerns",
+          icon: "DiscountOutlined",
+        },
+        {
+          id: 2,
+          name: "Close Tickets",
+          path: "/receiver/close-tickets",
           icon: "DiscountOutlined",
         },
       ],
@@ -407,7 +371,6 @@ const SidebarList = () => {
         userManagementOnClose();
         masterlistOnClose();
         approverOnClose();
-        // channelOnClose();
       },
       sub: [
         {
