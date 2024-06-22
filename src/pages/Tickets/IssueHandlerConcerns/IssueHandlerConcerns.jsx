@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   Chip,
   CircularProgress,
   Divider,
@@ -14,6 +15,7 @@ import {
   TablePagination,
   TableRow,
   Tabs,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, DiscountOutlined, DoneAllOutlined, HistoryToggleOffOutlined, PendingActionsOutlined, Search } from "@mui/icons-material";
@@ -336,6 +338,7 @@ const IssueHandlerConcerns = () => {
                       fontWeight: 700,
                       fontSize: "12px",
                     }}
+                    align="center"
                   >
                     REMARKS
                   </TableCell>
@@ -449,16 +452,21 @@ const IssueHandlerConcerns = () => {
                           }}
                           onClick={() => onViewAction(item)}
                         >
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={item.remarks ? item.remarks : ""}
-                            sx={{
-                              backgroundColor: item.remarks ? theme.palette.error.main : "transparent",
-                              color: "#ffffffd",
-                              borderRadius: "none",
-                            }}
-                          />
+                          <Box>
+                            <Tooltip title={item.remarks} placement="bottom-start">
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                label={item.remarks ? item.remarks : ""}
+                                sx={{
+                                  backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                  color: "#ffffffd",
+                                  borderRadius: "none",
+                                  maxWidth: "300px",
+                                }}
+                              />
+                            </Tooltip>
+                          </Box>
                         </TableCell>
 
                         <TableCell
@@ -472,9 +480,24 @@ const IssueHandlerConcerns = () => {
                           <Chip
                             variant="filled"
                             size="small"
-                            label={item.ticket_Status === "Open Ticket" ? "Open" : "For Closing Ticket" ? "For Closing" : ""}
+                            label={
+                              item.ticket_Status === "Open Ticket"
+                                ? "Open"
+                                : item.ticket_Status === "For Closing Ticket"
+                                ? "For Closing"
+                                : item.ticket_Status === "Closed/For Confirmation"
+                                ? "Closed/For Confirmation"
+                                : ""
+                            }
                             sx={{
-                              backgroundColor: item.ticket_Status === "Open Ticket" ? "#ec9d29" : "For Closing Ticket" ? "#3A96FA" : "#00913c",
+                              backgroundColor:
+                                item.ticket_Status === "Open Ticket"
+                                  ? "#ec9d29"
+                                  : item.ticket_Status === "For Closing Ticket"
+                                  ? "#3A96FA"
+                                  : item.ticket_Status === "Closed/For Confirmation"
+                                  ? "#00913c"
+                                  : "transparent",
                               color: "#ffffffde",
                               borderRadius: "20px",
                             }}

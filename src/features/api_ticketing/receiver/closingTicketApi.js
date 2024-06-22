@@ -20,7 +20,7 @@ export const closingTicketApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    // Approver ---------------
+    // Receiver ---------------
     getClosingTickets: builder.query({
       query: (params) => ({
         url: "closing-ticket/page?UserType=Receiver&IsClosed=false&IsReject=false",
