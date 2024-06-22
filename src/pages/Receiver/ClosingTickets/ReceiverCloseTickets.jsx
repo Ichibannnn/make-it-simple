@@ -4,7 +4,9 @@ import { DiscountOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons
 import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
-import { useCloseTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
+
+import { useGetClosingTicketsQuery } from "../../../features/api_ticketing/receiver/closingTicketApi";
+
 import CloseTicketsTab from "./CloseTicketsTab";
 
 const ReceiverCloseTickets = () => {
@@ -21,7 +23,7 @@ const ReceiverCloseTickets = () => {
     isFetching: closeTicketIsFetching,
     isSuccess: closeTicketIsSuccess,
     isError: closeTicketIsError,
-  } = useCloseTicketMutation({
+  } = useGetClosingTicketsQuery({
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
@@ -56,7 +58,7 @@ const ReceiverCloseTickets = () => {
             <Stack justifyItems="left">
               <Typography variant="h4">Close Tickets</Typography>
             </Stack>
-            <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
+            <Stack justifyItems="space-between" direction="row"></Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -65,7 +67,7 @@ const ReceiverCloseTickets = () => {
         sx={{
           backgroundColor: theme.palette.bgForm.black3,
           borderRadius: "20px",
-          marginTop: "20px",
+          marginTop: "10px",
         }}
       >
         <Stack direction="row" justifyContent="space-between">

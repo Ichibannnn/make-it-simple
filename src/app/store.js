@@ -30,6 +30,7 @@ import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
+import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 
 export const store = configureStore({
   reducer: {
@@ -61,6 +62,7 @@ export const store = configureStore({
     [concernIssueHandlerApi.reducerPath]: concernIssueHandlerApi.reducer,
 
     [ticketApprovalApi.reducerPath]: ticketApprovalApi.reducer,
+    [closingTicketApi.reducerPath]: closingTicketApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -92,6 +94,7 @@ export const store = configureStore({
       concernIssueHandlerApi.middleware,
 
       ticketApprovalApi.middleware,
+      closingTicketApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,
