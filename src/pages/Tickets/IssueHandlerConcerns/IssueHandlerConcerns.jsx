@@ -97,6 +97,8 @@ const IssueHandlerConcerns = () => {
     // manageTicketOnClose();
   };
 
+  console.log("data: ", data);
+
   return (
     <Stack
       sx={{
@@ -132,7 +134,8 @@ const IssueHandlerConcerns = () => {
                 label="Open"
                 icon={
                   <Badge
-                    badgeContent={100}
+                    badgeContent={901}
+                    max={100000}
                     color="warning"
                     anchorOrigin={{
                       vertical: "top",
@@ -338,7 +341,6 @@ const IssueHandlerConcerns = () => {
                       fontWeight: 700,
                       fontSize: "12px",
                     }}
-                    align="center"
                   >
                     REMARKS
                   </TableCell>
@@ -396,7 +398,9 @@ const IssueHandlerConcerns = () => {
                           }}
                           onClick={() => onViewAction(item)}
                         >
-                          {item.concern_Description}
+                          {item.concern_Description.split("\r\n").map((line, index) => (
+                            <div key={index}>{line}</div>
+                          ))}
                         </TableCell>
 
                         <TableCell
@@ -463,6 +467,7 @@ const IssueHandlerConcerns = () => {
                                   color: "#ffffffd",
                                   borderRadius: "none",
                                   maxWidth: "300px",
+                                  cursor: "pointer",
                                 }}
                               />
                             </Tooltip>
@@ -487,6 +492,8 @@ const IssueHandlerConcerns = () => {
                                 ? "For Closing"
                                 : item.ticket_Status === "Closed/For Confirmation"
                                 ? "Closed/For Confirmation"
+                                : item.ticket_Status === "Closed"
+                                ? "Closed"
                                 : ""
                             }
                             sx={{
@@ -496,6 +503,8 @@ const IssueHandlerConcerns = () => {
                                   : item.ticket_Status === "For Closing Ticket"
                                   ? "#3A96FA"
                                   : item.ticket_Status === "Closed/For Confirmation"
+                                  ? "#00913c"
+                                  : item.ticket_Status === "Closed"
                                   ? "#00913c"
                                   : "transparent",
                               color: "#ffffffde",

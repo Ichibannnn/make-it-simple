@@ -75,6 +75,10 @@ const schema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
+const displaySchema = yup.object().shape({
+  displayConcern: yup.string().nullable(),
+});
+
 const ReceiverConcerns = () => {
   const [approveStatus, setApproveStatus] = useState("false");
   const [pageNumber, setPageNumber] = useState(1);
@@ -155,6 +159,19 @@ const ReceiverConcerns = () => {
 
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
+    },
+  });
+
+  const {
+    control: displayControl,
+    setValue: displaySetValue,
+    watch: displayWatch,
+    reset: displayReset,
+    formState: { errors: displayError },
+  } = useForm({
+    resolver: yupResolver(displaySchema),
+    defaultValues: {
+      displayConcern: "",
     },
   });
 
@@ -390,9 +407,6 @@ const ReceiverConcerns = () => {
     }
   }, [addData]);
 
-  // console.log("AddData :", addData);
-  // console.log("View Approved Data :", viewApprovedData);
-
   useEffect(() => {
     if (viewApprovedData) {
       if (!categoryIsSuccess) getCategory();
@@ -412,8 +426,6 @@ const ReceiverConcerns = () => {
         start_Date: moment(item?.start_Date),
         target_Date: moment(item?.target_Date),
       }));
-
-      console.log("bindData", bindData);
 
       setValue("categoryId", {
         id: bindData?.[0]?.categoryId,
@@ -449,6 +461,18 @@ const ReceiverConcerns = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  useEffect(() => {
+    if (data) {
+      displaySetValue(
+        "displayConcern",
+        data?.value?.requestConcern?.map((item) => item.concern)
+      );
+    }
+  }, [data]);
+
+  console.log("Watch: ", displayWatch("displayConcern"));
+  console.log("Data: ", data);
 
   return (
     <Stack
@@ -527,7 +551,7 @@ const ReceiverConcerns = () => {
             <Stack
               sx={{
                 minHeight: "500px",
-                maxHeight: "115vh",
+                maxHeight: "100vh",
                 overflowY: "auto",
                 gap: 2,
               }}
@@ -542,7 +566,7 @@ const ReceiverConcerns = () => {
                       sx={{
                         border: "1px solid #2D3748",
                         borderRadius: "20px",
-                        minHeight: "100px",
+                        minHeight: "auto",
                         cursor: "pointer",
                       }}
                     >
@@ -628,12 +652,35 @@ const ReceiverConcerns = () => {
                           <Stack direction="row" gap={1} alignItems="center">
                             <FiberManualRecord color="success" fontSize="65px" />
 
+                            {/* <Controller
+                              control={displayControl}
+                              name="displayConcern"
+                              render={({ field: { ref, value, onChange } }) => {
+                                return (
+                                  <TextField
+                                    inputRef={ref}
+                                    size="medium"
+                                    value={value}
+                                    onChange={onChange}
+                                    // sx={{
+                                    //   width: "80%",
+                                    // }}
+                                    autoComplete="off"
+                                    rows={8}
+                                    multiline
+                                  />
+                                );
+                              }}
+                            /> */}
+
                             <Typography
                               sx={{
                                 fontSize: "14px",
                               }}
                             >
-                              {item.concern}
+                              {item.concern.split("\r\n").map((line, index) => (
+                                <div key={index}>{line}</div>
+                              ))}
                             </Typography>
                           </Stack>
                         </Stack>

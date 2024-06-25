@@ -251,7 +251,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                       color: theme.palette.text.secondary,
                     }}
                   >
-                    {data?.concern_Description}
+                    {data?.concern_Description.split("\r\n").map((line, index) => (
+                      <div key={index}>{line}</div>
+                    ))}
                   </Typography>
                 </Stack>
 

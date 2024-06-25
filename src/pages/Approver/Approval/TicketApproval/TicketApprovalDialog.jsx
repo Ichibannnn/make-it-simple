@@ -6,10 +6,11 @@ import { Box, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, 
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import Swal from "sweetalert2";
 import useDisclosure from "../../../../hooks/useDisclosure";
+
 import DisapprovedDialog from "./DisapprovedDialog";
+import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 
 const TicketApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -213,7 +214,12 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                     }}
                   >
                     <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.concern_Details}</Typography>
+                    <Typography sx={{ fontSize: "14px" }}>
+                      {" "}
+                      {data?.concern_Details.split("\r\n").map((line, index) => (
+                        <div key={index}>{line}</div>
+                      ))}
+                    </Typography>
                   </Stack>
                 </Stack>
 
@@ -496,7 +502,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
             <LoadingButton
               type="submit"
-              variant="contained"
+              variant="outlined"
               onClick={onDisapproveHandler}
               color="error"
               loading={approveTicketIsLoading || approveTicketIsFetching}

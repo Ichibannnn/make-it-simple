@@ -11,7 +11,7 @@ import {
   RestoreOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
-import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { Box, IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import React, { useRef } from "react";
 import Swal from "sweetalert2";
 
@@ -48,10 +48,22 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket }) =>
           </MenuItem>
         ) : (
           <MenuItem onClick={() => onManageTicketAction(data)}>
-            <ListItemIcon>
-              <ModeEditOutlineOutlined fontSize="small" />
-            </ListItemIcon>
-            Manage Ticket
+            {data?.getForClosingTickets?.[0]?.isApprove === false ? (
+              <Stack direction="row" sx={{ alignItems: "center" }}>
+                <ListItemIcon>
+                  <ModeEditOutlineOutlined fontSize="small" />
+                </ListItemIcon>
+
+                <Typography>Manage Ticket</Typography>
+              </Stack>
+            ) : (
+              <Stack direction="row" sx={{ alignItems: "center" }}>
+                <ListItemIcon>
+                  <VisibilityOutlined fontSize="small" />
+                </ListItemIcon>
+                <Typography>View Ticket</Typography>
+              </Stack>
+            )}
           </MenuItem>
         )}
 

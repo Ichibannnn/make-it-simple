@@ -287,8 +287,8 @@ const ConcernTickets = () => {
                       <TableRow key={index}>
                         <TableCell
                           sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "14px",
+                            color: "#EDF2F7",
+                            fontSize: "12px",
                             fontWeight: 500,
                           }}
                           align="center"
@@ -302,18 +302,18 @@ const ConcernTickets = () => {
                             className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                              maxWidth: "500px",
+                              fontSize: "12px",
+                              fontWeight: 500,
                             }}
                           >
-                            {item.concern}
+                            {item.concern.split("\r\n").map((line, index) => (
+                              <div key={index}>{line}</div>
+                            ))}
                           </TableCell>
                         </Tooltip>
 
                         <TableCell
                           sx={{
-                            // color: "#EDF2F7",
                             fontSize: "14px",
                             fontWeight: 500,
                           }}
