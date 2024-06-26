@@ -151,23 +151,21 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     </Typography>
                   </TableCell>
 
-                  <TableCell
-                    // className="ellipsis-styling"
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "300px",
-                    }}
-                  >
-                    <Box>
-                      <Tooltip title={item.concern_Details} placement="bottom-start">
-                        {item?.concern_Details.split("\r\n").map((line, index) => (
-                          <div key={index}>{line}</div>
-                        ))}
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
+                  <Tooltip title={item?.concern_Details} placement="bottom-start">
+                    <TableCell
+                      // className="ellipsis-styling"
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        maxWidth: "300px",
+                      }}
+                    >
+                      {item?.concern_Details.split("\r\n").map((line, index) => (
+                        <div key={index}>{line}</div>
+                      ))}
+                    </TableCell>
+                  </Tooltip>
 
                   <TableCell
                     sx={{

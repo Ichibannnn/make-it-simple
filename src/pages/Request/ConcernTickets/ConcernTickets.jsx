@@ -103,8 +103,6 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
-  console.log("Requestor Data: ", data);
-
   return (
     <Stack
       sx={{
@@ -299,11 +297,12 @@ const ConcernTickets = () => {
 
                         <Tooltip title={item.concern} placement="bottom-start">
                           <TableCell
-                            className="ellipsis-styling"
+                            // className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",
                               fontWeight: 500,
+                              maxWidth: "500px",
                             }}
                           >
                             {item.concern.split("\r\n").map((line, index) => (

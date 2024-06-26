@@ -36,12 +36,12 @@ const ClosingTicketHistory = ({ data }) => {
             </TimelineOppositeContent>
 
             <TimelineSeparator>
-              <TimelineDot color="primary" />
+              <TimelineDot color={item.request === "Rejected" ? "error" : "success"} />
               <TimelineConnector />
             </TimelineSeparator>
 
             <TimelineContent>
-              <Typography component="span" sx={{ fontSize: "19px", fontWeight: 900, color: theme.palette.primary.main }}>
+              <Typography component="span" sx={{ fontSize: "19px", fontWeight: 900, color: item.request === "Rejected" ? theme.palette.error.main : theme.palette.success.main }}>
                 {item.request}
               </Typography>
 
@@ -50,8 +50,17 @@ const ClosingTicketHistory = ({ data }) => {
               </Typography>
 
               <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
-                <PersonOutlineOutlined sx={{ fontSize: "20px", color: "#22B4BF" }} />
-                <Typography sx={{ fontSize: "14px", fontStyle: "italic", fontWeight: 500, color: "#22B4BF" }}>{item.transacted_By}</Typography>
+                <PersonOutlineOutlined sx={{ fontSize: "20px", color: theme.palette.text.main }} />
+                <Typography sx={{ fontSize: "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
+              </Stack>
+
+              <Stack gap={0} marginTop={2}>
+                <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "700" }}>
+                  {item.remarks ? "Reason: " : ""}
+                </Typography>
+                <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "700", color: theme.palette.error.main }}>
+                  {item.remarks ? item.remarks : ""}
+                </Typography>
               </Stack>
             </TimelineContent>
           </TimelineItem>

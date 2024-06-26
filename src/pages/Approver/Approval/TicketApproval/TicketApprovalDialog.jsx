@@ -95,8 +95,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
     setDisapproveData(data);
   };
 
-  console.log("Data: ", data);
-
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -214,12 +212,12 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                     }}
                   >
                     <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>
-                      {" "}
-                      {data?.concern_Details.split("\r\n").map((line, index) => (
-                        <div key={index}>{line}</div>
-                      ))}
-                    </Typography>
+                    <Typography
+                      sx={{ fontSize: "14px" }}
+                      dangerouslySetInnerHTML={{
+                        __html: data?.concern_Details.replace(/\r\n/g, "<br />"),
+                      }}
+                    />
                   </Stack>
                 </Stack>
 
@@ -428,67 +426,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                     ))}
                   </Stack>
                 )}
-
-                <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                  {attachments?.map((fileName, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        display: "flex",
-                        width: "100%",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        padding: 1,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: 0.5,
-                          borderBottom: "1px solid #2D3748",
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "14px",
-                              color: theme.palette.text.secondary,
-                            }}
-                          >
-                            {fileName.size} Mb
-                          </Typography>
-                        </Box>
-
-                        <Box>
-                          <Tooltip title="Download">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => {
-                                window.location = fileName.link;
-                              }}
-                              style={{
-                                background: "none",
-                              }}
-                            >
-                              <FileDownloadOutlined />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))}
-                </Stack>
               </Stack>
             </Stack>
           </Stack>

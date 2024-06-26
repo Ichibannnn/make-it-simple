@@ -17,13 +17,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
-import {
-  CheckCircle,
-  CloseOutlined,
-  Visibility,
-  VisibilityOff,
-  Watch,
-} from "@mui/icons-material";
+import { CheckCircle, CloseOutlined, Visibility, VisibilityOff, Watch } from "@mui/icons-material";
 import background from "../../assets/svg/dotek-login-illustration4.svg";
 import { LoadingButton } from "@mui/lab";
 import { theme } from "../../theme/theme";
@@ -72,10 +66,7 @@ const Login = () => {
             height: "33rem",
           }}
         >
-          <Box
-            sx={{ height: "full", width: "100%", padding: 4 }}
-            textAlign="center"
-          >
+          <Box sx={{ height: "full", width: "100%", padding: 4 }} textAlign="center">
             <Typography mt={5} color="white" fontWeight="bold" variant="h3">
               {" "}
               WELCOME!
@@ -95,12 +86,7 @@ const Login = () => {
             padding: 4,
           }}
         >
-          <Stack
-            spacing={0}
-            direction="column"
-            sx={{ width: "100%" }}
-            textAlign="center"
-          >
+          <Stack spacing={0} direction="column" sx={{ width: "100%" }} textAlign="center">
             <Box p={0} zIndex="100">
               <img src={logo} alt="dotek-icon" className="login-icon" />
             </Box>
@@ -115,21 +101,9 @@ const Login = () => {
           </Stack>
         </Paper>
       </Stack>
-      <Box
-        zIndex="1"
-        borderRadius="10px 0 0 10px"
-        mt={6}
-        flexDirection="column"
-        display="flex"
-        justifyContent="center"
-      >
+      <Box zIndex="1" borderRadius="10px 0 0 10px" mt={6} flexDirection="column" display="flex" justifyContent="center">
         <Box justifyContent="center" display="flex">
-          <img
-            src={misLogo}
-            alt="logo"
-            loading="lazy"
-            style={{ width: "10%", height: "100%" }}
-          />
+          <img src={misLogo} alt="logo" loading="lazy" style={{ width: "10%", height: "100%" }} />
         </Box>
         <Typography fontSize="10px" color="gray" textAlign="center">
           &#169; 2023 Powered by <br /> Management Information System
@@ -187,7 +161,7 @@ const LoginForm = () => {
     try {
       const res = await logIn(data).unwrap();
 
-      console.log("Response: ", res);
+      // console.log("Response: ", res);
       const { token, ...user } = res.value;
 
       // console.log("Token: ", token);
@@ -258,12 +232,7 @@ const LoginForm = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      sx={{ color: "gray" }}
-                      onClick={showPasswordHandler}
-                      edge="end"
-                      aria-label="toggle password visibility"
-                    >
+                    <IconButton sx={{ color: "gray" }} onClick={showPasswordHandler} edge="end" aria-label="toggle password visibility">
                       {showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
@@ -295,11 +264,7 @@ const LoginForm = () => {
           onClose={handleAlertClose}
         />
       )}
-      <ChangePassword
-        open={open}
-        onClose={onClose}
-        changePasswordDetails={changePasswordDetails}
-      />
+      <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} />
     </Container>
   );
 };
@@ -307,8 +272,7 @@ const LoginForm = () => {
 export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
   // console.log("User Name: ", changePasswordDetails.value.username);
 
-  const [changeUserPassword, { isSuccess: isPostSuccess }] =
-    useChangeUserPasswordMutation();
+  const [changeUserPassword, { isSuccess: isPostSuccess }] = useChangeUserPasswordMutation();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -438,12 +402,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {changePasswordDetails?.value?.username ===
-                            watch("current_Password") ? (
-                              <CheckCircle color="success" />
-                            ) : (
-                              ""
-                            )}
+                            {changePasswordDetails?.value?.username === watch("current_Password") ? <CheckCircle color="success" /> : ""}
                           </InputAdornment>
                         ),
                       }}
@@ -469,10 +428,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") ===
-                              watch("confirm_Password") &&
-                            watch("new_Password") !== null &&
-                            watch("confirm_Password") ? (
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -502,10 +458,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") ===
-                              watch("confirm_Password") &&
-                            watch("new_Password") !== null &&
-                            watch("confirm_Password") ? (
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -524,8 +477,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
                 type="submit"
                 variant="contained"
                 disabled={
-                  changePasswordDetails?.value?.username !==
-                    watch("current_Password") ||
+                  changePasswordDetails?.value?.username !== watch("current_Password") ||
                   !watch("new_Password") ||
                   !watch("confirm_Password") ||
                   watch("new_Password") !== watch("confirm_Password")

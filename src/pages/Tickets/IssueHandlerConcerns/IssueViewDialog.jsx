@@ -118,6 +118,44 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                         color: theme.palette.text.secondary,
                       }}
                     >
+                      Ticket Number:
+                    </Typography>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    gap={1}
+                    sx={{
+                      width: "65%",
+                    }}
+                  >
+                    <FiberManualRecord color="primary" fontSize="20px" />
+                    <Typography sx={{ fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingLeft={8}
+                  paddingRight={8}
+                  gap={2}
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <Stack
+                    sx={{
+                      width: "30%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
                       Concern Details:
                     </Typography>
                   </Stack>
@@ -130,7 +168,12 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                     }}
                   >
                     <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.concern_Description}</Typography>
+                    <Typography
+                      sx={{ fontSize: "14px" }}
+                      dangerouslySetInnerHTML={{
+                        __html: data?.concern_Description.replace(/\r\n/g, "<br />"),
+                      }}
+                    />
                   </Stack>
                 </Stack>
 
@@ -357,67 +400,6 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                     ))}
                   </Stack>
                 )}
-
-                <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                  {attachments?.map((fileName, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        display: "flex",
-                        width: "100%",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        padding: 1,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: 0.5,
-                          borderBottom: "1px solid #2D3748",
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "14px",
-                              color: theme.palette.text.secondary,
-                            }}
-                          >
-                            {fileName.size} Mb
-                          </Typography>
-                        </Box>
-
-                        <Box>
-                          <Tooltip title="Download">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => {
-                                window.location = fileName.link;
-                              }}
-                              style={{
-                                background: "none",
-                              }}
-                            >
-                              <FileDownloadOutlined />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))}
-                </Stack>
               </Stack>
             </Stack>
 

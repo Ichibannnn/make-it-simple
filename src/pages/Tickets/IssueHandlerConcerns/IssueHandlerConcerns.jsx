@@ -18,7 +18,17 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, DiscountOutlined, DoneAllOutlined, HistoryToggleOffOutlined, PendingActionsOutlined, Search } from "@mui/icons-material";
+import {
+  AccessTimeOutlined,
+  CalendarMonthOutlined,
+  Circle,
+  DiscountOutlined,
+  DoneAllOutlined,
+  FiberManualRecord,
+  HistoryToggleOffOutlined,
+  PendingActionsOutlined,
+  Search,
+} from "@mui/icons-material";
 
 import React, { useState } from "react";
 import moment from "moment";
@@ -97,7 +107,7 @@ const IssueHandlerConcerns = () => {
     // manageTicketOnClose();
   };
 
-  console.log("data: ", data);
+  // console.log("data: ", data);
 
   return (
     <Stack
@@ -178,6 +188,37 @@ const IssueHandlerConcerns = () => {
                         fontSize: "0.55rem",
                         fontWeight: 400,
                         background: "#3A96FA",
+                        color: "#ffff",
+                      },
+                    }}
+                  >
+                    <PendingActionsOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                }}
+              />
+
+              <Tab
+                value="For Confirmation"
+                className="tabs-styling"
+                label="For Confirmation"
+                icon={
+                  <Badge
+                    badgeContent={100}
+                    // color="primary"
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                    }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                        background: "#009688",
                         color: "#ffff",
                       },
                     }}
@@ -356,6 +397,21 @@ const IssueHandlerConcerns = () => {
                     STATUS
                   </TableCell>
 
+                  {ticketStatus === "Closed" ? (
+                    <TableCell
+                      sx={{
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
+                      }}
+                    >
+                      CLOSING STATUS
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
+
                   <TableCell
                     sx={{
                       background: "#1C2536",
@@ -375,12 +431,24 @@ const IssueHandlerConcerns = () => {
                   !isFetching &&
                   data?.value?.openTicket?.map((item) => (
                     <React.Fragment key={item.ticketConcernId}>
-                      <TableRow key={item.ticketConcernId}>
+                      <TableRow
+                        key={item.ticketConcernId}
+                        sx={{
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
                           }}
                           align="center"
                           onClick={() => onViewAction(item)}
@@ -395,11 +463,18 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                             maxWidth: "700px",
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
                           }}
                           onClick={() => onViewAction(item)}
                         >
                           {item.concern_Description.split("\r\n").map((line, index) => (
-                            <div key={index}>{line}</div>
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
                           ))}
                         </TableCell>
 
@@ -408,17 +483,42 @@ const IssueHandlerConcerns = () => {
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
                           }}
                           onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
                             size="30px"
-                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                            icon={
+                              <CalendarMonthOutlined
+                                fontSize="small"
+                                color={
+                                  ticketStatus === "Closed" && item?.closed_Status === "On-Time"
+                                    ? "#fff"
+                                    : ticketStatus === "Closed" && item?.closed_Status === "Delay"
+                                    ? "#fff"
+                                    : "primary"
+                                }
+                              />
+                            }
                             sx={{
                               fontSize: "12px",
-                              backgroundColor: "#1D1F3B",
-                              color: theme.palette.primary.main,
+                              backgroundColor:
+                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
+                                  ? "transparent"
+                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
+                                  ? "transparent"
+                                  : "#1D1F3B",
+                              color:
+                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
+                                  ? theme.palette.text.main
+                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
+                                  ? theme.palette.text.main
+                                  : theme.palette.primary.main,
                               fontWeight: 800,
                             }}
                             label={moment(item.start_Date).format("LL")}
@@ -430,17 +530,42 @@ const IssueHandlerConcerns = () => {
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
                           }}
                           onClick={() => onViewAction(item)}
                         >
                           <Chip
                             variant="filled"
                             size="30px"
-                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                            icon={
+                              <CalendarMonthOutlined
+                                fontSize="small"
+                                color={
+                                  ticketStatus === "Closed" && item?.closed_Status === "On-Time"
+                                    ? "#fff"
+                                    : ticketStatus === "Closed" && item?.closed_Status === "Delay"
+                                    ? "#fff"
+                                    : "primary"
+                                }
+                              />
+                            }
                             sx={{
                               fontSize: "12px",
-                              backgroundColor: "#1D1F3B",
-                              color: theme.palette.primary.main,
+                              backgroundColor:
+                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
+                                  ? "transparent"
+                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
+                                  ? "transparent"
+                                  : "#1D1F3B",
+                              color:
+                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
+                                  ? theme.palette.text.main
+                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
+                                  ? theme.palette.text.main
+                                  : theme.palette.primary.main,
                               fontWeight: 800,
                             }}
                             label={moment(item.target_Date).format("LL")}
@@ -453,6 +578,10 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                             maxWidth: "700px",
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
                           }}
                           onClick={() => onViewAction(item)}
                         >
@@ -464,7 +593,7 @@ const IssueHandlerConcerns = () => {
                                 label={item.remarks ? item.remarks : ""}
                                 sx={{
                                   backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
-                                  color: "#ffffffd",
+                                  color: "#ffffff",
                                   borderRadius: "none",
                                   maxWidth: "300px",
                                   cursor: "pointer",
@@ -479,6 +608,10 @@ const IssueHandlerConcerns = () => {
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
+                            "&:hover": {
+                              background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
+                              color: "#EDF2F7",
+                            },
                           }}
                           onClick={() => onViewAction(item)}
                         >
@@ -490,8 +623,8 @@ const IssueHandlerConcerns = () => {
                                 ? "Open"
                                 : item.ticket_Status === "For Closing Ticket"
                                 ? "For Closing"
-                                : item.ticket_Status === "Closed/For Confirmation"
-                                ? "Closed/For Confirmation"
+                                : item.ticket_Status === "For Confirmation"
+                                ? "For Confirmation"
                                 : item.ticket_Status === "Closed"
                                 ? "Closed"
                                 : ""
@@ -502,8 +635,8 @@ const IssueHandlerConcerns = () => {
                                   ? "#ec9d29"
                                   : item.ticket_Status === "For Closing Ticket"
                                   ? "#3A96FA"
-                                  : item.ticket_Status === "Closed/For Confirmation"
-                                  ? "#00913c"
+                                  : item.ticket_Status === "For Confirmation"
+                                  ? "#009688"
                                   : item.ticket_Status === "Closed"
                                   ? "#00913c"
                                   : "transparent",
@@ -513,12 +646,50 @@ const IssueHandlerConcerns = () => {
                           />
                         </TableCell>
 
+                        {ticketStatus === "Closed" ? (
+                          <TableCell
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "14px",
+                              fontWeight: 500,
+                            }}
+                            align="center"
+                          >
+                            <Chip
+                              variant="filled"
+                              size="30px"
+                              icon={
+                                item?.closed_Status === "On-Time" ? <FiberManualRecord fontSize="small" color="success" /> : <FiberManualRecord fontSize="small" color="error" />
+                              }
+                              sx={{
+                                fontSize: "12px",
+                                backgroundColor: theme.palette.bgForm.black1,
+                                color: theme.palette.text.main,
+                                fontWeight: 800,
+                              }}
+                              label={
+                                item?.closed_Status === "On-Time" ? (
+                                  <Typography sx={{ color: theme.palette.success.main, fontSize: "13px", fontWeight: 800 }}>On-Time</Typography>
+                                ) : (
+                                  <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}>Delayed</Typography>
+                                )
+                              }
+                            />
+                          </TableCell>
+                        ) : (
+                          ""
+                        )}
+
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
                             maxWidth: "700px",
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
                           }}
                         >
                           <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} onManageTicket={onManageTicketAction} />

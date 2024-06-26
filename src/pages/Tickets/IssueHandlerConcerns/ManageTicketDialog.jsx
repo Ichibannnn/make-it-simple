@@ -301,11 +301,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       fontSize: "14px",
                       color: theme.palette.text.secondary,
                     }}
-                  >
-                    {data?.concern_Description.split("\r\n").map((line, index) => (
-                      <div key={index}>{line}</div>
-                    ))}
-                  </Typography>
+                    dangerouslySetInnerHTML={{
+                      __html: data?.concern_Description.replace(/\r\n/g, "<br />"),
+                    }}
+                  />
                 </Stack>
 
                 <Stack sx={{ padding: 2, marginTop: 2, minHeight: "500px", bgcolor: theme.palette.bgForm.black2 }}>
