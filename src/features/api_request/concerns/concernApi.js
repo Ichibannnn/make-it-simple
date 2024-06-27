@@ -59,6 +59,27 @@ export const concernApi = createApi({
       }),
       providesTags: ["Concern"],
     }),
+
+    confirmConcern: builder.mutation({
+      query: (body) => ({
+        url: "closing-ticket/confirmation",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+    }),
+
+    returnConcern: builder.mutation({
+      query: (body) => ({
+        url: "closing-ticket/return",
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+    }),
   }),
 });
 
@@ -68,4 +89,6 @@ export const {
   useLazyGetRequestorAttachmentQuery,
   useGetRequestorAttachmentQuery,
   useDeleteRequestorAttachmentMutation,
+  useConfirmConcernMutation,
+  useReturnConcernMutation,
 } = concernApi;

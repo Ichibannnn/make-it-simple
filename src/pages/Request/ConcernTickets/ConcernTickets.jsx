@@ -49,7 +49,11 @@ import ConcernDialog from "./ConcernDialog";
 import ConcernViewDialog from "./ConcernViewDialog";
 import ConcernActions from "./ConcernActions";
 
-import { useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
+import { useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
+import ConcernHistory from "./ConcernHistory";
+import { toast, Toaster } from "sonner";
+import Swal from "sweetalert2";
+import ConcernReturn from "./ConcernReturn";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -62,10 +66,12 @@ const ConcernTickets = () => {
 
   const [editData, setEditData] = useState(null);
   const [viewHistoryData, setViewHistoryData] = useState(null);
+  const [returnData, setReturnData] = useState(null);
 
   const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
-
   const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();
+  const { open: viewHistoryOpen, onToggle: viewHistoryOnToggle, onClose: viewHistoryOnClose } = useDisclosure();
+  const { open: returnOpen, onToggle: returnOnToggle, onClose: returnOnClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetRequestorConcernsQuery({
     Concern_Status: status,
@@ -74,6 +80,8 @@ const ConcernTickets = () => {
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
+
+  const [confirmConcern] = useConfirmConcernMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -100,10 +108,65 @@ const ConcernTickets = () => {
     setEditData(data);
   };
 
-  // const onViewHistoryAction = (data) => {
-  //   onToggle();
-  //   setViewHistoryData(data);
-  // };
+  const onConfirmAction = (data) => {
+    const payload = {
+      requestConcernId: data?.requestConcernId,
+    };
+
+    console.log("Payload: ", payload);
+
+    Swal.fire({
+      title: "Confirmation",
+      text: "Confirm this concern?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        confirmConcern(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Confirm concern successfully!",
+              duration: 1500,
+            });
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
+  };
+
+  const onReturnAction = (data) => {
+    console.log("Return: ", data);
+    returnOnToggle();
+    setReturnData(data);
+  };
+
+  const onViewHistoryAction = (data) => {
+    viewHistoryOnToggle();
+    setViewHistoryData(data);
+  };
 
   useEffect(() => {
     if (searchValue) {
@@ -122,6 +185,7 @@ const ConcernTickets = () => {
         padding: "24px",
       }}
     >
+      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack direction="row" justifyContent="space-between" width="100%">
           <Stack justifyItems="left">
@@ -403,6 +467,7 @@ const ConcernTickets = () => {
                             fontWeight: 500,
                           }}
                           align="center"
+                          onClick={() => onViewHistoryAction(item)}
                         >
                           {"#"}
                           {item.requestConcernId}
@@ -417,6 +482,7 @@ const ConcernTickets = () => {
                               fontWeight: 500,
                               maxWidth: "500px",
                             }}
+                            onClick={() => onViewHistoryAction(item)}
                           >
                             {item.concern.split("\r\n").map((line, index) => (
                               <div key={index}>{line}</div>
@@ -430,6 +496,7 @@ const ConcernTickets = () => {
                             fontWeight: 500,
                           }}
                           align="center"
+                          onClick={() => onViewHistoryAction(item)}
                         >
                           <Chip
                             variant="filled"
@@ -451,6 +518,7 @@ const ConcernTickets = () => {
                             fontSize: "14px",
                             fontWeight: 500,
                           }}
+                          onClick={() => onViewHistoryAction(item)}
                         >
                           <Chip
                             variant="filled"
@@ -491,7 +559,7 @@ const ConcernTickets = () => {
                           }}
                           align="center"
                         >
-                          <ConcernActions data={item} onView={onViewConcernAction} />
+                          <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -544,7 +612,6 @@ const ConcernTickets = () => {
             />
 
             <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />
-
             <ConcernViewDialog
               editData={editData}
               open={viewConcernOpen}
@@ -552,6 +619,8 @@ const ConcernTickets = () => {
                 viewConcernOnClose(setEditData(null));
               }}
             />
+            <ConcernHistory data={viewHistoryData} open={viewHistoryOpen} onClose={viewHistoryOnClose} />
+            <ConcernReturn data={returnData} open={returnOpen} onClose={returnOnClose} />
           </Stack>
         </Stack>
       </Stack>
