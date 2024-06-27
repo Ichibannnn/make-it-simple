@@ -190,6 +190,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [editData]);
 
+  console.log("edit data: ", editData);
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -238,6 +240,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           sx={{
                             width: "80%",
                           }}
+                          disabled={editData?.concern_Status === "Ongoing" || editData?.concern_Status === "For Confirmation" || editData?.concern_Status === "Done" ? true : false}
                           autoComplete="off"
                           rows={6}
                           multiline
@@ -271,20 +274,22 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: 1,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
-                        Choose file
-                      </Button>
+                    {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 1,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
+                          Choose file
+                        </Button>
 
-                      <Typography sx={{ color: theme.palette.text.secondary }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
-                    </Box>
+                        <Typography sx={{ color: theme.palette.text.secondary }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
+                      </Box>
+                    )}
 
                     <Divider
                       variant="fullWidth"
@@ -372,20 +377,22 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               </Box>
 
                               <Box>
-                                <Tooltip title="Remove">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => handleDeleteFile(fileName)}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <RemoveCircleOutline />
-                                  </IconButton>
-                                </Tooltip>
+                                {((!!fileName.ticketAttachmentId && editData?.concern_Status === "For Approval") || editData?.concern_Status === "") && (
+                                  <Tooltip title="Remove">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleDeleteFile(fileName)}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <RemoveCircleOutline />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
 
-                                {!!fileName.ticketAttachmentId && (
+                                {((!!fileName.ticketAttachmentId && editData?.concern_Status === "For Approval") || editData?.concern_Status === "") && (
                                   <Tooltip title="Upload">
                                     <IconButton
                                       size="small"

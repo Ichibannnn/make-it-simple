@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Toaster, toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
-import { Box, Dialog, DialogActions, DialogContent, Button, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
+import { Box, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { AccountCircleRounded, AttachFileOutlined, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
 
-import Swal from "sweetalert2";
-import useDisclosure from "../../../../hooks/useDisclosure";
 import ClosingTicketHistory from "./ClosingTicketHistory";
 
 const ViewClosingDialog = ({ data, open, onClose }) => {
@@ -35,8 +31,6 @@ const ViewClosingDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xl" open={open}>
-        <Toaster richColors position="top-right" closeButton />
-
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">

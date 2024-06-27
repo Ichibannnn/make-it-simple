@@ -1,21 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  Chip,
-  CircularProgress,
-  IconButton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
+import { Checkbox, Chip, CircularProgress, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, Typography } from "@mui/material";
+import { AccessTimeOutlined, CalendarMonthOutlined, LocalOffer } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 
 import moment from "moment";
@@ -390,15 +374,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
                       fontWeight: 500,
                     }}
                   >
-                    <LoadingButton
-                      size="small"
-                      variant="contained"
-                      color="error"
-                      //   startIcon={<Close />}
-                      // onClick={handleUploadButtonClick}
-                      onClick={() => onDisapproveHandler(item)}
-                      sx={{ padding: "4px", borderRadius: "0" }}
-                    >
+                    <LoadingButton size="small" variant="contained" color="error" onClick={() => onDisapproveHandler(item)} sx={{ padding: "4px", borderRadius: "0" }}>
                       <Typography sx={{ fontSize: "12px" }}>Disapprove</Typography>
                     </LoadingButton>
                   </TableCell>

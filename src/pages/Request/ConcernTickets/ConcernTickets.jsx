@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Chip,
   CircularProgress,
@@ -26,6 +27,7 @@ import {
   ChecklistRtlOutlined,
   ClearAllOutlined,
   FiberManualRecord,
+  HowToRegOutlined,
   KeyboardArrowDown,
   KeyboardArrowUp,
   PendingActionsOutlined,
@@ -59,6 +61,7 @@ const ConcernTickets = () => {
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
+  const [viewHistoryData, setViewHistoryData] = useState(null);
 
   const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
 
@@ -96,6 +99,11 @@ const ConcernTickets = () => {
     viewConcernOnToggle();
     setEditData(data);
   };
+
+  // const onViewHistoryAction = (data) => {
+  //   onToggle();
+  //   setViewHistoryData(data);
+  // };
 
   useEffect(() => {
     if (searchValue) {
@@ -143,7 +151,25 @@ const ConcernTickets = () => {
                   value=""
                   className="tabs-styling"
                   label="All Requests"
-                  icon={<ClearAllOutlined />}
+                  icon={
+                    <Badge
+                      badgeContent={901}
+                      max={100000}
+                      color="primary"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                        },
+                      }}
+                    >
+                      <ClearAllOutlined />
+                    </Badge>
+                  }
                   iconPosition="start"
                   sx={{
                     fontSize: "12px",
@@ -155,7 +181,26 @@ const ConcernTickets = () => {
                   value="For Approval"
                   className="tabs-styling"
                   label="For Approval"
-                  icon={<PendingActionsOutlined />}
+                  icon={
+                    <Badge
+                      badgeContent={100}
+                      // color="primary"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                          background: "#3A96FA",
+                          color: "#ffff",
+                        },
+                      }}
+                    >
+                      <PendingActionsOutlined />
+                    </Badge>
+                  }
                   iconPosition="start"
                   sx={{
                     fontSize: "12px",
@@ -167,7 +212,57 @@ const ConcernTickets = () => {
                   value="Ongoing"
                   className="tabs-styling"
                   label="Ongoing"
-                  icon={<RotateRightOutlined />}
+                  icon={
+                    <Badge
+                      badgeContent={901}
+                      max={100000}
+                      color="warning"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                          color: "#ffff",
+                        },
+                      }}
+                    >
+                      <RotateRightOutlined />
+                    </Badge>
+                  }
+                  iconPosition="start"
+                  sx={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                />
+
+                <Tab
+                  value="For Confirmation"
+                  className="tabs-styling"
+                  label="For Confirmation"
+                  icon={
+                    <Badge
+                      badgeContent={100}
+                      // color="primary"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                          background: "#009688",
+                          color: "#ffff",
+                        },
+                      }}
+                    >
+                      <HowToRegOutlined />
+                    </Badge>
+                  }
                   iconPosition="start"
                   sx={{
                     fontSize: "12px",
@@ -179,7 +274,25 @@ const ConcernTickets = () => {
                   value="Done"
                   className="tabs-styling"
                   label="Done"
-                  icon={<ChecklistRtlOutlined />}
+                  icon={
+                    <Badge
+                      badgeContent={100}
+                      color="success"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                          color: "#ffff",
+                        },
+                      }}
+                    >
+                      <ChecklistRtlOutlined />
+                    </Badge>
+                  }
                   iconPosition="start"
                   sx={{
                     fontSize: "12px",
@@ -347,6 +460,15 @@ const ConcernTickets = () => {
                                 <FiberManualRecord fontSize="small" color="info" />
                               ) : item.concern_Status === "Ongoing" ? (
                                 <FiberManualRecord fontSize="small" color="warning" />
+                              ) : item.concern_Status === "For Confirmation" ? (
+                                <FiberManualRecord
+                                  fontSize="small"
+                                  sx={{
+                                    "&.MuiSvgIcon-root": {
+                                      color: "#009688",
+                                    },
+                                  }}
+                                />
                               ) : (
                                 <FiberManualRecord fontSize="small" color="success" />
                               )

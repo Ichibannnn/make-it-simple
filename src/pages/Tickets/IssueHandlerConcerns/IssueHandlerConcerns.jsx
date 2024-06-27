@@ -493,32 +493,11 @@ const IssueHandlerConcerns = () => {
                           <Chip
                             variant="filled"
                             size="30px"
-                            icon={
-                              <CalendarMonthOutlined
-                                fontSize="small"
-                                color={
-                                  ticketStatus === "Closed" && item?.closed_Status === "On-Time"
-                                    ? "#fff"
-                                    : ticketStatus === "Closed" && item?.closed_Status === "Delay"
-                                    ? "#fff"
-                                    : "primary"
-                                }
-                              />
-                            }
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                             sx={{
                               fontSize: "12px",
-                              backgroundColor:
-                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
-                                  ? "transparent"
-                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
-                                  ? "transparent"
-                                  : "#1D1F3B",
-                              color:
-                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
-                                  ? theme.palette.text.main
-                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
-                                  ? theme.palette.text.main
-                                  : theme.palette.primary.main,
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
                               fontWeight: 800,
                             }}
                             label={moment(item.start_Date).format("LL")}
@@ -540,32 +519,11 @@ const IssueHandlerConcerns = () => {
                           <Chip
                             variant="filled"
                             size="30px"
-                            icon={
-                              <CalendarMonthOutlined
-                                fontSize="small"
-                                color={
-                                  ticketStatus === "Closed" && item?.closed_Status === "On-Time"
-                                    ? "#fff"
-                                    : ticketStatus === "Closed" && item?.closed_Status === "Delay"
-                                    ? "#fff"
-                                    : "primary"
-                                }
-                              />
-                            }
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                             sx={{
                               fontSize: "12px",
-                              backgroundColor:
-                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
-                                  ? "transparent"
-                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
-                                  ? "transparent"
-                                  : "#1D1F3B",
-                              color:
-                                ticketStatus === "Closed" && item?.closed_Status === "On-Time"
-                                  ? theme.palette.text.main
-                                  : ticketStatus === "Closed" && item?.closed_Status === "Delay"
-                                  ? theme.palette.text.main
-                                  : theme.palette.primary.main,
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
                               fontWeight: 800,
                             }}
                             label={moment(item.target_Date).format("LL")}
