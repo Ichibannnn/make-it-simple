@@ -16,13 +16,7 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import {
-  Search,
-  SyncOutlined,
-  AddOutlined,
-  Sync,
-  Add,
-} from "@mui/icons-material";
+import { Search, SyncOutlined, AddOutlined, Sync, Add } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
@@ -39,11 +33,7 @@ import { SubUnitErrorDialog } from "./SubUnitErrorDialog";
 import SubUnitAddDialog from "./SubUnitAddDialog";
 import SubActions from "./SubActions";
 
-import {
-  useArchiveSubUnitMutation,
-  useGetSubUnitQuery,
-  useSyncSubUnitMutation,
-} from "../../../features/api masterlist/sub-unit/subUnitApi";
+import { useArchiveSubUnitMutation, useGetSubUnitQuery, useSyncSubUnitMutation } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetSubUnitsQuery } from "../../../features/ymir/ymirApi";
 
 const SubUnit = () => {
@@ -58,33 +48,18 @@ const SubUnit = () => {
 
   const { open, onToggle, onClose } = useDisclosure();
 
-  const {
-    open: addSubUnitOpen,
-    onToggle: addSubUnitOnToggle,
-    onClose: addSubUnitOnClose,
-  } = useDisclosure();
+  const { open: addSubUnitOpen, onToggle: addSubUnitOnToggle, onClose: addSubUnitOnClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } =
-    useGetSubUnitQuery({
-      Status: status,
-      Search: search,
-      PageNumber: pageNumber,
-      PageSize: pageSize,
-    });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSubUnitQuery({
+    Status: status,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
-  const [
-    getSubUnits,
-    { isLoading: isSubUnitLoading, isFetching: isSubUnitFetching },
-  ] = useLazyGetSubUnitsQuery();
+  const [getSubUnits, { isLoading: isSubUnitLoading, isFetching: isSubUnitFetching }] = useLazyGetSubUnitsQuery();
 
-  const [
-    syncSubUnits,
-    {
-      error: errorData,
-      isLoading: isSubUnitSyncLoading,
-      isFetching: isSubUnitSyncFetching,
-    },
-  ] = useSyncSubUnitMutation();
+  const [syncSubUnits, { error: errorData, isLoading: isSubUnitSyncLoading, isFetching: isSubUnitSyncFetching }] = useSyncSubUnitMutation();
 
   const [archiveSubUnit] = useArchiveSubUnitMutation();
 
@@ -94,6 +69,13 @@ const SubUnit = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
+  };
+
+  const onStatusChange = (_, newValue) => {
+    setStatus(newValue);
+    setPageNumber(1);
+    setPageSize(5);
+    refetch();
   };
 
   const onArchiveAction = (data) => {
@@ -269,11 +251,7 @@ const SubUnit = () => {
               <Typography variant="h4">Sub Unit</Typography>
             </Stack>
 
-            <Stack
-              justifyItems="space-between"
-              direction="row"
-              marginTop={1}
-            ></Stack>
+            <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -286,7 +264,7 @@ const SubUnit = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={(_, value) => setStatus(value)}>
+          <Tabs value={status} onChange={onStatusChange}>
             <Tab
               value=""
               label="All"
@@ -314,24 +292,13 @@ const SubUnit = () => {
           </Tabs>
         </Stack>
 
-        <Divider
-          variant="fullWidth"
-          sx={{ background: "#2D3748", marginTop: "1px" }}
-        />
+        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ marginTop: "10px", padding: "20px" }}
-          gap={2}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={2}>
           <OutlinedInput
             flex="1"
             placeholder="Search sub unit"
-            startAdornment={
-              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-            }
+            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             sx={{
@@ -350,12 +317,7 @@ const SubUnit = () => {
             startIcon={<SyncOutlined />}
             loadingPosition="start"
             onClick={() => onSyncSubUnits()}
-            loading={
-              isSubUnitLoading ||
-              isSubUnitFetching ||
-              isSubUnitSyncLoading ||
-              isSubUnitSyncFetching
-            }
+            loading={isSubUnitLoading || isSubUnitFetching || isSubUnitSyncLoading || isSubUnitSyncFetching}
             sx={{
               ":disabled": {
                 backgroundColor: theme.palette.primary.main,
@@ -533,9 +495,7 @@ const SubUnit = () => {
                         size="30px"
                         sx={{
                           fontSize: "13px",
-                          backgroundColor: item.is_Active
-                            ? "#112C32"
-                            : "#2D2823",
+                          backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
                           color: item.is_Active ? "#10B981" : "#D27D0E",
                           fontWeight: 800,
                         }}
@@ -555,13 +515,7 @@ const SubUnit = () => {
                       <Chip
                         variant="filled"
                         size="30px"
-                        icon={
-                          item.subUnit_No === null ? (
-                            <Add color="warning" />
-                          ) : (
-                            <Sync color="success" />
-                          )
-                        }
+                        icon={item.subUnit_No === null ? <Add color="warning" /> : <Sync color="success" />}
                         sx={{
                           fontSize: "12px",
                           backgroundColor: theme.palette.bgForm.black1,
@@ -581,12 +535,7 @@ const SubUnit = () => {
                         }}
                         align="center"
                       >
-                        <SubActions
-                          data={item}
-                          status={status}
-                          onArchive={onArchiveAction}
-                          onUpdate={onEditAction}
-                        />
+                        <SubActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                       </TableCell>
                     ) : (
                       <TableCell
@@ -604,11 +553,7 @@ const SubUnit = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img
-                      src={somethingWentWrong}
-                      alt="Something Went Wrong"
-                      className="something-went-wrong-table"
-                    />
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
                     </Typography>
@@ -630,11 +575,7 @@ const SubUnit = () => {
               {isSuccess && !data?.value?.subUnit.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img
-                      src={noRecordsFound}
-                      alt="No Records Found"
-                      className="norecords-found-table"
-                    />
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.
                     </Typography>
@@ -656,18 +597,9 @@ const SubUnit = () => {
           onRowsPerPageChange={onPageSizeChange}
         />
 
-        <SubUnitErrorDialog
-          errorData={errorData}
-          open={open}
-          onClose={onClose}
-        />
+        <SubUnitErrorDialog errorData={errorData} open={open} onClose={onClose} />
 
-        <SubUnitAddDialog
-          data={editData}
-          setData={setEditData}
-          open={addSubUnitOpen}
-          onClose={addSubUnitOnClose}
-        />
+        <SubUnitAddDialog data={editData} setData={setEditData} open={addSubUnitOpen} onClose={addSubUnitOnClose} />
       </Stack>
     </Stack>
   );

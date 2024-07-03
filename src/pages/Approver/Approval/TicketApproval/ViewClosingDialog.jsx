@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Toaster, toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
 import { Box, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 
 import ClosingTicketHistory from "./ClosingTicketHistory";
 
@@ -40,15 +38,7 @@ const ViewClosingDialog = ({ data, open, onClose }) => {
               <AccountCircleRounded sx={{ fontSize: "70px" }} />
               <Stack>
                 <Typography sx={{ fontSize: "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>for closing: </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "15px",
-                    color: "#6dc993",
-                    fontWeight: 700,
-                  }}
-                >
-                  {data?.fullname}
-                </Typography>
+                <Typography sx={{ fontSize: "15px", color: "#6dc993", fontWeight: 700 }}> {data?.fullname}</Typography>
                 <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography>
                 <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.channel_Name}</Typography>
               </Stack>
@@ -74,153 +64,45 @@ const ViewClosingDialog = ({ data, open, onClose }) => {
                   border: "1px solid #2D3748",
                 }}
               >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Ticket Number:
-                    </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" paddingLeft={8} paddingRight={8} gap={2} sx={{ width: "100%" }}>
+                  <Stack sx={{ width: "30%" }}>
+                    <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>Ticket Number:</Typography>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
+                  <Stack direction="row" gap={1} sx={{ width: "65%" }}>
                     <FiberManualRecord color="primary" fontSize="20px" />
                     <Typography sx={{ fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
                   </Stack>
                 </Stack>
 
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Concern Details:
-                    </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" paddingLeft={8} paddingRight={8} gap={2} sx={{ width: "100%" }}>
+                  <Stack sx={{ width: "30%" }}>
+                    <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>Concern Details:</Typography>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
+                  <Stack direction="row" gap={1} sx={{ width: "65%" }}>
                     <FiberManualRecord color="primary" fontSize="20px" />
                     <Typography sx={{ fontSize: "14px" }}>{data?.concern_Details}</Typography>
                   </Stack>
                 </Stack>
 
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Category:
-                    </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" paddingLeft={8} paddingRight={8} gap={2} sx={{ width: "100%" }}>
+                  <Stack sx={{ width: "30%" }}>
+                    <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>Category:</Typography>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
+                  <Stack direction="row" gap={1} sx={{ width: "65%" }}>
                     <FiberManualRecord color="primary" fontSize="20px" />
                     <Typography sx={{ fontSize: "14px" }}>{data?.category_Description}</Typography>
                   </Stack>
                 </Stack>
 
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Sub Category:
-                    </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" paddingLeft={8} paddingRight={8} gap={2} sx={{ width: "100%" }}>
+                  <Stack sx={{ width: "30%" }}>
+                    <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>Sub Category:</Typography>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
+                  <Stack direction="row" gap={1} sx={{ width: "65%" }}>
                     <FiberManualRecord color="primary" fontSize="20px" />
                     <Typography sx={{ fontSize: "14px" }}>{data?.subCategoryDescription}</Typography>
                   </Stack>
@@ -228,24 +110,11 @@ const ViewClosingDialog = ({ data, open, onClose }) => {
               </Stack>
 
               {/* ATTACHMENTS */}
-              <Stack
-                marginTop={3}
-                padding={4}
-                sx={{
-                  border: "1px solid #2D3748",
-                }}
-              >
+              <Stack marginTop={3} padding={4} sx={{ border: "1px solid #2D3748" }}>
                 <Stack direction="row" gap={1} alignItems="center">
                   <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
 
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      color: theme.palette.text.secondary,
-                    }}
-                  >
-                    Attachment(s):
-                  </Typography>
+                  <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>Attachment(s):</Typography>
                 </Stack>
 
                 {!attachments?.length ? (
@@ -258,42 +127,12 @@ const ViewClosingDialog = ({ data, open, onClose }) => {
                 ) : (
                   <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
                     {attachments?.map((fileName, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          width: "100%",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          padding: 1,
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: 0.5,
-                            borderBottom: "1px solid #2D3748",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
+                      <Box key={index} sx={{ display: "flex", width: "100%", flexDirection: "column", justifyContent: "space-between", padding: 1 }}>
+                        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 0.5, borderBottom: "1px solid #2D3748" }}>
+                          <Box sx={{ display: "flex", flexDirection: "column" }}>
                             <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
 
-                            <Typography
-                              sx={{
-                                fontSize: "14px",
-                                color: theme.palette.text.secondary,
-                              }}
-                            >
-                              {fileName.size} Mb
-                            </Typography>
+                            <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{fileName.size} Mb</Typography>
                           </Box>
 
                           <Box>
@@ -304,9 +143,7 @@ const ViewClosingDialog = ({ data, open, onClose }) => {
                                 onClick={() => {
                                   window.location = fileName.link;
                                 }}
-                                style={{
-                                  background: "none",
-                                }}
+                                style={{ background: "none" }}
                               >
                                 <FileDownloadOutlined />
                               </IconButton>

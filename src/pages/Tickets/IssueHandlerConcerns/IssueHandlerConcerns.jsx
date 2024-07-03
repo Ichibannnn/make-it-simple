@@ -62,7 +62,7 @@ const IssueHandlerConcerns = () => {
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetIssueHandlerConcernsQuery({
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
     PageNumber: pageNumber,
@@ -82,6 +82,7 @@ const IssueHandlerConcerns = () => {
     setTicketStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
+    refetch();
   };
 
   const onViewAction = (data) => {
@@ -107,7 +108,7 @@ const IssueHandlerConcerns = () => {
     // manageTicketOnClose();
   };
 
-  // console.log("data: ", data);
+  console.log("Ticket Status: ", ticketStatus);
 
   return (
     <Stack
@@ -611,7 +612,6 @@ const IssueHandlerConcerns = () => {
                               fontSize: "14px",
                               fontWeight: 500,
                             }}
-                            align="center"
                           >
                             <Chip
                               variant="filled"

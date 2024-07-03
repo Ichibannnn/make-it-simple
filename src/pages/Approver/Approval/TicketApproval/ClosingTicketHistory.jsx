@@ -36,12 +36,19 @@ const ClosingTicketHistory = ({ data }) => {
             </TimelineOppositeContent>
 
             <TimelineSeparator>
-              <TimelineDot color={item.request === "Rejected" ? "error" : "success"} />
+              <TimelineDot color={item.request === "Rejected" ? "error" : item.request === "Disapprove" ? "error" : "success"} />
               <TimelineConnector />
             </TimelineSeparator>
 
             <TimelineContent>
-              <Typography component="span" sx={{ fontSize: "19px", fontWeight: 900, color: item.request === "Rejected" ? theme.palette.error.main : theme.palette.success.main }}>
+              <Typography
+                component="span"
+                sx={{
+                  fontSize: "19px",
+                  fontWeight: 900,
+                  color: item.request === "Rejected" ? theme.palette.error.main : item.request === theme.palette.error.main ? "error" : theme.palette.success.main,
+                }}
+              >
                 {item.request}
               </Typography>
 

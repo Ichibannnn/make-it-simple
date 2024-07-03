@@ -33,10 +33,7 @@ import ReceiverDialog from "./ReceiverDialog";
 import ReceiverActions from "./ReceiverActions";
 import ReceiverBusinessUnit from "./ReceiverBusinessUnit";
 
-import {
-  useArchiveReceiverMutation,
-  useGetReceiverQuery,
-} from "../../../features/api_channel_setup/receiver/receiverApi";
+import { useArchiveReceiverMutation, useGetReceiverQuery } from "../../../features/api_channel_setup/receiver/receiverApi";
 
 const Receiver = () => {
   const [status, setStatus] = useState("true");
@@ -50,13 +47,12 @@ const Receiver = () => {
 
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } =
-    useGetReceiverQuery({
-      Status: status,
-      Search: search,
-      PageNumber: pageNumber,
-      PageSize: pageSize,
-    });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverQuery({
+    Status: status,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const [archiveReceiver] = useArchiveReceiverMutation();
 
@@ -73,6 +69,7 @@ const Receiver = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
+    refetch();
   };
 
   const onDialogClose = () => {
@@ -193,11 +190,7 @@ const Receiver = () => {
             <Stack justifyItems="left">
               <Typography variant="h4">Receiver</Typography>
             </Stack>
-            <Stack
-              justifyItems="space-between"
-              direction="row"
-              marginTop={1}
-            ></Stack>
+            <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -238,24 +231,13 @@ const Receiver = () => {
           </Tabs>
         </Stack>
 
-        <Divider
-          variant="fullWidth"
-          sx={{ background: "#2D3748", marginTop: "1px" }}
-        />
+        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ marginTop: "10px", padding: "20px" }}
-          gap={4}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
           <OutlinedInput
             flex="1"
             placeholder="Search receiver"
-            startAdornment={
-              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-            }
+            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             sx={{
@@ -266,13 +248,7 @@ const Receiver = () => {
               lineHeight: "1.4375rem",
             }}
           />
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            startIcon={<AddOutlined />}
-            onClick={onToggle}
-          >
+          <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
             Add
           </Button>
         </Stack>
@@ -392,9 +368,7 @@ const Receiver = () => {
                         size="30px"
                         sx={{
                           fontSize: "13px",
-                          backgroundColor: item.is_Active
-                            ? "#112C32"
-                            : "#2D2823",
+                          backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
                           color: item.is_Active ? "#10B981" : "#D27D0E",
                           fontWeight: 800,
                         }}
@@ -410,12 +384,7 @@ const Receiver = () => {
                       }}
                       align="center"
                     >
-                      <ReceiverActions
-                        data={item}
-                        status={status}
-                        onArchive={onArchiveAction}
-                        onUpdate={onEditAction}
-                      />
+                      <ReceiverActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -423,11 +392,7 @@ const Receiver = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img
-                      src={somethingWentWrong}
-                      alt="Something Went Wrong"
-                      className="something-went-wrong-table"
-                    />
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
                     </Typography>
@@ -449,11 +414,7 @@ const Receiver = () => {
               {isSuccess && !data?.value?.receiver.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img
-                      src={noRecordsFound}
-                      alt="No Records Found"
-                      className="norecords-found-table"
-                    />
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.
                     </Typography>

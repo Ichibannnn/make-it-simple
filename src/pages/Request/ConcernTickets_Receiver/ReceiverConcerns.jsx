@@ -102,7 +102,7 @@ const ReceiverConcerns = () => {
 
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetReceiverConcernsQuery({
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,
     PageNumber: pageNumber,
@@ -133,6 +133,7 @@ const ReceiverConcerns = () => {
     setPageSize(5);
     setAddData(null);
     setViewApprovedData(null);
+    refetch();
   };
 
   const {

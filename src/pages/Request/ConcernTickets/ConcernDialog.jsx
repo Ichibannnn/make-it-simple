@@ -89,9 +89,7 @@ const ConcernDialog = ({ open, onClose }) => {
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
-
-    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+    updateAttachments(fileNames);
   };
 
   const handleUploadButtonClick = () => {
@@ -101,10 +99,8 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleDeleteFile = (fileNameToDelete) => {
     setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
-    setValue(
-      "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete)
-    );
+    const updatedAttachments = watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete);
+    setValue("RequestAttachmentsFiles", updatedAttachments);
   };
 
   const handleDragOver = (event) => {
@@ -114,8 +110,13 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleDrop = (event) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
-    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
-    const fileNames = Array.from(fileList)
+    const newFiles = Array.from(fileList);
+    updateAttachments(newFiles);
+  };
+
+  const updateAttachments = (newFiles) => {
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf", ".xlxs"];
+    const filteredFiles = newFiles
       .filter((file) => {
         const extension = file.name.split(".").pop().toLowerCase();
         return allowedExtensions.includes(`.${extension}`);
@@ -125,8 +126,12 @@ const ConcernDialog = ({ open, onClose }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
-    setAttachments([...attachments, ...uniqueNewFiles]);
+    const currentAttachments = watch("RequestAttachmentsFiles") || [];
+    const uniqueNewFiles = filteredFiles.filter((newFile) => !currentAttachments.some((existingFile) => existingFile.name === newFile.name));
+    const updatedAttachments = [...currentAttachments, ...uniqueNewFiles];
+
+    setAttachments(updatedAttachments);
+    setValue("RequestAttachmentsFiles", updatedAttachments);
   };
 
   const onCloseAction = () => {
@@ -135,8 +140,10 @@ const ConcernDialog = ({ open, onClose }) => {
     setAttachments([]);
   };
 
-  // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
-  // console.log("Attachment State: ", attachments);
+  console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
+
+  const currentAttachments = watch("RequestAttachmentsFiles") || [];
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -327,7 +334,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Controller
                     control={control}
                     name="RequestAttachmentsFiles"
-                    render={({ field: { onChange, value } }) => (
+                    render={({ field: { onChange } }) => (
                       <input
                         ref={fileInputRef}
                         accept=".png,.jpg,.jpeg,.docx"
@@ -335,17 +342,9 @@ const ConcernDialog = ({ open, onClose }) => {
                         multiple
                         type="file"
                         onChange={(event) => {
-                          // console.log("Event: ", event);
-
-                          handleAttachments(event);
-                          // handleDrop(event);
-
                           const files = Array.from(event.target.files);
-                          // const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                          console.log("FILES: ", files);
-                          onChange([...files]);
-                          // fileInputRef.current.value = "";
+                          handleAttachments(event);
+                          onChange([...currentAttachments, ...files]);
                         }}
                       />
                     )}

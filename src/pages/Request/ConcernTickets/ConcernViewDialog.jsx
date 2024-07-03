@@ -140,7 +140,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const handleDrop = (event) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
-    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf", ".xlxs"];
     const fileNames = Array.from(fileList)
       .filter((file) => {
         const extension = file.name.split(".").pop().toLowerCase();
@@ -189,6 +189,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
     }
   }, [editData]);
+
+  console.log("Watch RequestAttachmentsFiles: ", watch("RequestAttachmentsFiles"));
 
   console.log("edit data: ", editData);
 
@@ -377,7 +379,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               </Box>
 
                               <Box>
-                                {((!!fileName.ticketAttachmentId && editData?.concern_Status === "For Approval") || editData?.concern_Status === "") && (
+                                {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
                                   <Tooltip title="Remove">
                                     <IconButton
                                       size="small"
@@ -444,7 +446,9 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             const files = Array.from(event.target.files);
                             files[0].ticketAttachmentId = ticketAttachmentId;
 
-                            onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+
+                            onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId), ...!uniqueNewFiles]);
 
                             setAttachments((prevFiles) => [
                               ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),

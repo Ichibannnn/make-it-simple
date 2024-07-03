@@ -93,7 +93,6 @@ const ConcernReturn = ({ data, open, onClose }) => {
               description: "Request return successfully!",
               duration: 1500,
             });
-
             setAddAttachments([]);
             reset();
             onClose();

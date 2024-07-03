@@ -47,7 +47,7 @@ const UserAccounts = () => {
 
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetUsersQuery({
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetUsersQuery({
     Status: status,
     Search: search,
     PageNumber: pageNumber,
@@ -70,6 +70,7 @@ const UserAccounts = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
+    refetch();
   };
 
   const onDialogClose = () => {

@@ -73,7 +73,7 @@ const ConcernTickets = () => {
   const { open: viewHistoryOpen, onToggle: viewHistoryOnToggle, onClose: viewHistoryOnClose } = useDisclosure();
   const { open: returnOpen, onToggle: returnOnToggle, onClose: returnOnClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetRequestorConcernsQuery({
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRequestorConcernsQuery({
     Concern_Status: status,
     Search: search,
     Ascending: ascending,
@@ -96,6 +96,7 @@ const ConcernTickets = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
+    refetch();
   };
 
   const onDialogClose = () => {
