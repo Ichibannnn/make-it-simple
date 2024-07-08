@@ -1,12 +1,4 @@
-import {
-  Autocomplete,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Dialog, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { CloseOutlined } from "@mui/icons-material";
 
@@ -27,25 +19,15 @@ const schema = yup.object().shape({
   unitId: yup.object().required().label("Unit"),
   subUnit_Code: yup.string().required().label("Sub Unit Code"),
   subUnit_Name: yup.string().required().label("Sub Unit Name"),
-  locations: yup.array().required().label("Locations"),
+  locations: yup.object().required().label("Locations"),
 });
 
 const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   const [createEditSubUnit] = useCreateEditSubUnitMutation();
 
-  const [
-    getUnit,
-    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
-  ] = useLazyGetUnitQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
 
-  const [
-    getLocation,
-    {
-      data: locationData,
-      isLoading: locationIsLoading,
-      isSuccess: locationIsSuccess,
-    },
-  ] = useLazyGetLocationQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationQuery();
 
   const {
     control,
@@ -62,7 +44,7 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
       unitId: null,
       subUnit_Code: "",
       subUnit_Name: "",
-      locations: [],
+      locations: null,
     },
   });
 
@@ -72,11 +54,11 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
         unitId: formData.unitId.id,
         subUnit_Code: formData.subUnit_Code,
         subUnit_Name: formData.subUnit_Name,
-        locations: formData.locations.map((item) => ({
-          location_Code: item.location_Code,
-          location_Name: item.location_Name,
-        })),
+        location_Code: formData?.locations?.location_Code,
+        location_Name: formData?.locations?.location_Name,
       };
+
+      console.log("addPayload: ", addPayload);
 
       createEditSubUnit(addPayload)
         .unwrap()
@@ -146,16 +128,11 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   //   console.log("Sub Unit Name: ", watch("subUnit_Name"));
   // console.log("Location: ", watch("locations"));
 
-  console.log("Edit Data: ", data);
+  // console.log("Edit Data: ", data);
 
   return (
     <div>
-      <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={open}
-        PaperProps={{ style: { overflow: "unset" } }}
-      >
+      <Dialog fullWidth maxWidth="sm" open={open} PaperProps={{ style: { overflow: "unset" } }}>
         <Toaster richColors position="top-right" />
 
         <IconButton
@@ -199,21 +176,15 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                           value={value}
                           options={unitData?.value?.unit || []}
                           loading={unitIsLoading}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Unit" />
-                          )}
+                          renderInput={(params) => <TextField {...params} label="Unit" />}
                           onOpen={() => {
                             if (!unitIsSuccess) getUnit();
                           }}
                           onChange={(_, value) => {
                             onChange(value);
                           }}
-                          getOptionLabel={(option) =>
-                            `${option.unit_Code} - ${option.unit_Name}`
-                          }
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
+                          getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
                           sx={{
                             flex: 2,
                           }}
@@ -229,17 +200,7 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                     control={control}
                     name="subUnit_Code"
                     render={({ field: { ref, value, onChange } }) => {
-                      return (
-                        <TextField
-                          inputRef={ref}
-                          size="small"
-                          value={value}
-                          label="Sub Unit Code"
-                          onChange={onChange}
-                          fullWidth
-                          autoComplete="off"
-                        />
-                      );
+                      return <TextField inputRef={ref} size="small" value={value} label="Sub Unit Code" onChange={onChange} fullWidth autoComplete="off" />;
                     }}
                   />
 
@@ -247,17 +208,7 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                     control={control}
                     name="subUnit_Name"
                     render={({ field: { ref, value, onChange } }) => {
-                      return (
-                        <TextField
-                          inputRef={ref}
-                          size="small"
-                          value={value}
-                          label="Sub Unit Name"
-                          onChange={onChange}
-                          fullWidth
-                          autoComplete="off"
-                        />
-                      );
+                      return <TextField inputRef={ref} size="small" value={value} label="Sub Unit Name" onChange={onChange} fullWidth autoComplete="off" />;
                     }}
                   />
 
@@ -268,27 +219,21 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                       render={({ field: { ref, value, onChange } }) => {
                         return (
                           <Autocomplete
-                            multiple
+                            // multiple
                             ref={ref}
                             size="small"
                             value={value}
                             options={locationData?.value?.location || []}
                             loading={locationIsLoading}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Location" />
-                            )}
+                            renderInput={(params) => <TextField {...params} label="Location" />}
                             onOpen={() => {
                               if (!locationIsSuccess) getLocation();
                             }}
                             onChange={(_, value) => {
                               onChange(value);
                             }}
-                            getOptionLabel={(option) =>
-                              `${option.location_Code} - ${option.location_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.location_Code === value.location_Code
-                            }
+                            getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                            isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
                             sx={{
                               flex: 2,
                             }}
@@ -304,21 +249,11 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                   )}
                 </Stack>
 
-                <Stack
-                  direction="row"
-                  justifyContent="right"
-                  marginTop={3}
-                  gap={1}
-                >
+                <Stack direction="row" justifyContent="right" marginTop={3} gap={1}>
                   <LoadingButton
                     type="submit"
                     variant="contained"
-                    disabled={
-                      !watch("unitId") ||
-                      !watch("subUnit_Code") ||
-                      !watch("subUnit_Name") ||
-                      (!data ? watch("locations").length === 0 : false)
-                    }
+                    disabled={!watch("unitId") || !watch("subUnit_Code") || !watch("subUnit_Name") || (!data ? !watch("locations") : false)}
                     sx={{
                       ":disabled": {
                         backgroundColor: theme.palette.secondary.main,
@@ -330,11 +265,7 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                     Save
                   </LoadingButton>
 
-                  <LoadingButton
-                    variant="outlined"
-                    onClick={onCloseAction}
-                    size="small"
-                  >
+                  <LoadingButton variant="outlined" onClick={onCloseAction} size="small">
                     Close
                   </LoadingButton>
                 </Stack>

@@ -372,7 +372,7 @@ const ConcernTickets = () => {
             <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
               <OutlinedInput
                 flex="1"
-                placeholder="Search Concern#: eg 00001"
+                placeholder="Search Request no.: eg 00001"
                 startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -406,6 +406,20 @@ const ConcernTickets = () => {
                         </IconButton>
                       </Stack>
                     </TableCell>
+
+                    {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                        align="center"
+                      >
+                        TICKET NO.
+                      </TableCell>
+                    )}
 
                     <TableCell
                       sx={{
@@ -470,9 +484,22 @@ const ConcernTickets = () => {
                           align="center"
                           onClick={() => onViewHistoryAction(item)}
                         >
-                          {"#"}
                           {item.requestConcernId}
                         </TableCell>
+
+                        {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                          <TableCell
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                            align="center"
+                            onClick={() => onViewHistoryAction(item)}
+                          >
+                            {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                          </TableCell>
+                        )}
 
                         <Tooltip title={item.concern} placement="bottom-start">
                           <TableCell

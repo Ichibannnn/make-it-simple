@@ -2,6 +2,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Chip,
   Dialog,
   DialogActions,
@@ -37,15 +38,13 @@ import {
 } from "../../../features/api_channel_setup/channel/channelApi";
 import styled from "@emotion/styled";
 import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
+import MultiSelect from "../../../components/MultiSelect/MultiSelect";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
   channel_Name: yup.string().required().label("Channel Name"),
   deparmentId: yup.array().required().label("Deparment"),
-});
-
-const memberSchema = yup.object().shape({
-  userId: yup.object().required().label("User"),
+  userId: yup.array().required().label("User"),
 });
 
 const ChannelDialog = ({ data, open, onClose }) => {
@@ -73,20 +72,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
       id: null,
       channel_Name: "",
       deparmentId: [],
-    },
-  });
-
-  const {
-    control: memberFormControl,
-    handleSubmit: memberFormHandlerSubmit,
-    reset: memberFormReset,
-    setValue: memberFormSetValue,
-    watch: memberFormWatch,
-    formState: { errors: membersFormError },
-  } = useForm({
-    resolver: yupResolver(memberSchema),
-    defaultValues: {
-      userId: null,
+      userId: [],
     },
   });
 
@@ -101,14 +87,16 @@ const ChannelDialog = ({ data, open, onClose }) => {
   };
 
   const onChannelFormSubmit = (formData) => {
+    console.log("FormData: ", formData);
+    // console.log("Watch Members: ", memberFormWatch("userId"));
+
     if (!data) {
       const addPayload = {
         channel_Name: formData.channel_Name,
-        channelUserByIds: members?.map((item) => ({
+        channelUserByIds: formData?.userId?.map((item) => ({
           userId: item.userId,
         })),
       };
-
       createChannel(addPayload)
         .unwrap()
         .then(() => {
@@ -118,7 +106,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
           });
           setMembers([]);
           channelFormReset();
-          memberFormReset();
           onClose();
         })
         .catch((error) => {
@@ -131,11 +118,10 @@ const ChannelDialog = ({ data, open, onClose }) => {
       const editPayload = {
         channelId: data.id,
         channel_Name: formData.channel_Name,
-        channelUserByIds: members?.map((item) => ({
+        channelUserByIds: formData?.userId?.map((item) => ({
           userId: item.userId,
         })),
       };
-
       createChannel(editPayload)
         .unwrap()
         .then(() => {
@@ -145,7 +131,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
           });
           setMembers([]);
           channelFormReset();
-          memberFormReset();
           onClose();
         })
         .catch((error) => {
@@ -157,42 +142,30 @@ const ChannelDialog = ({ data, open, onClose }) => {
     }
   };
 
-  const onMemberFormSubmit = (data) => {
-    setMembers((currentValue) => [
-      ...currentValue,
-      {
-        userId: data.userId.userId,
-        fullName: data.userId.fullName,
-        userRole: data.userId.userRole,
-      },
-    ]);
-
-    memberFormReset();
-  };
-
-  const onMemberFormDelete = (index) => {
-    setMembers((currentValue) => currentValue.filter((_, memberIndex) => memberIndex !== index));
-  };
-
   const onCloseAction = () => {
     onClose();
     setDisabled(false);
     setMembers([]);
     channelFormReset();
-    memberFormReset();
   };
-
-  useEffect(() => {
-    if (members.length > 0 || !!data) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
-    }
-  }, [members]);
 
   useEffect(() => {
     if (data) {
       channelFormSetValue("channel_Name", data.channel_Name);
+
+      // const departmentMap = data?.channelUsers?.reduce((dept, item) => {
+      //   if (!dept[item.department_Code]) {
+      //     dept[item.department_Code] = {
+      //       id: item.id,
+      //       department_Code: item.department_Code,
+      //       department_Name: item.department_Name,
+      //     };
+      //   }
+
+      //   return dept;
+      // }, {});
+      // const editDepartmentList = Object.values(departmentMap);
+      // console.log("filterDepartment: ", editDepartmentList);
 
       const editMemberList = data?.channelUsers?.map((item) => ({
         channelUserId: item.channelUserId,
@@ -201,11 +174,16 @@ const ChannelDialog = ({ data, open, onClose }) => {
         userRole: item.userRole,
       }));
 
-      setMembers(editMemberList);
+      // channelFormSetValue("deparmentId", editDepartmentList);
+      channelFormSetValue("userId", editMemberList);
     }
   }, [data]);
 
-  console.log("Members data: ", memberData);
+  // console.log("Members data: ", memberData);
+
+  console.log("department: ", channelFormWatch("deparmentId"));
+
+  console.log("data: ", data);
 
   return (
     <>
@@ -251,7 +229,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       onBlur={onValidateChannelName}
                       error={errorValidationIsError}
                       helperText={errorValidation?.data?.error?.message}
-                      disabled={disabled && !data}
+                      // disabled={data ? true : false}
                       sx={{
                         flex: 2,
                       }}
@@ -286,6 +264,10 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
                         console.log("departmentIdParams", departmentIdParams);
 
+                        if (channelFormWatch("deparmentId").length === 0) {
+                          channelFormSetValue("userId", []);
+                        }
+
                         getMembers({
                           DepartmentId: departmentIdParams,
                         });
@@ -303,52 +285,53 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   );
                 }}
               />
-            </Stack>
 
-            <Stack>
-              <Stack direction="row" gap={0.5} paddingTop={3}>
+              <Stack>
+                <Stack direction="row" gap={0.5} paddingTop={3}>
+                  <Typography
+                    sx={{
+                      fontSize: "18px",
+                      fontWeight: 700,
+                      color: "#48BB78",
+                    }}
+                  >
+                    Member Form
+                  </Typography>
+                </Stack>
+
                 <Typography
                   sx={{
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    color: "#48BB78",
+                    color: theme.palette.text.secondary,
+                    fontSize: "12px",
                   }}
                 >
-                  Member Form
+                  Tagging of member(s) after creating a channel
                 </Typography>
               </Stack>
 
-              <Typography
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontSize: "12px",
-                }}
-              >
-                Tagging of member(s) after creating a channel
-              </Typography>
-            </Stack>
-
-            <Stack sx={{ paddingTop: 2, gap: 2 }}>
-              <Stack component="form" onSubmit={memberFormHandlerSubmit(onMemberFormSubmit)} direction="row" gap={2}>
+              <Stack sx={{ gap: 2 }}>
                 <Controller
-                  control={memberFormControl}
+                  control={channelFormControl}
                   name="userId"
                   render={({ field: { ref, value, onChange } }) => {
                     return (
                       <Autocomplete
+                        multiple
                         ref={ref}
                         size="small"
                         value={value}
                         options={memberData?.value || []}
                         loading={memberIsLoading}
-                        // groupBy={(option) => option.userRole}
                         renderInput={(params) => <TextField {...params} label="Members" size="small" />}
-                        // renderGroup={(params) => (
-                        //   <li key={params.key}>
-                        //     <GroupHeader>{params.group}</GroupHeader>
-                        //     <GroupItems>{params.children}</GroupItems>
-                        //   </li>
-                        // )}
+                        renderOption={(props, option, { selected }) => {
+                          const { key, ...optionProps } = props;
+                          return (
+                            <li key={key} {...optionProps}>
+                              <Checkbox size="small" style={{ marginRight: 8 }} checked={selected} />
+                              {option.fullName}
+                            </li>
+                          );
+                        }}
                         onOpen={() => {
                           if (!memberIsSuccess) getMembers();
                         }}
@@ -357,120 +340,31 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         }}
                         getOptionLabel={(option) => option.fullName}
                         isOptionEqualToValue={(option, value) => option.userId === value.userId}
-                        getOptionDisabled={(option) => members.some((item) => item.userId === option.userId)}
-                        disabled={!channelFormWatch("channel_Name") || errorValidationIsError}
+                        getOptionDisabled={(option) => channelFormWatch("userId").some((item) => item.userId === option.userId)}
+                        disabled={
+                          data
+                            ? !channelFormWatch("channel_Name") || errorValidationIsError
+                            : !channelFormWatch("channel_Name") || !channelFormWatch("deparmentId").length || errorValidationIsError
+                        }
                         sx={{
                           flex: 2,
                         }}
                         fullWidth
                         disablePortal
                         disableClearable
+                        disableCloseOnSelect
+                        renderTags={(value, getTagProps) =>
+                          value.map((option, index) => (
+                            <Stack sx={{ width: "100%", alignItems: "start" }} key={index}>
+                              <Chip label={option.fullName} {...getTagProps({ index })} />
+                            </Stack>
+                          ))
+                        }
                       />
                     );
                   }}
                 />
-
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  size="medium"
-                  color="primary"
-                  disabled={!channelFormWatch("channel_Name") || errorValidationIsError}
-                  sx={{
-                    ":disabled": {
-                      backgroundColor: theme.palette.secondary.main,
-                      color: "black",
-                    },
-                  }}
-                >
-                  Add member
-                </LoadingButton>
               </Stack>
-
-              <TableContainer>
-                <Table
-                  size="small"
-                  sx={{
-                    borderBottom: "none",
-                    // minHeight: "50px",
-                  }}
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: theme.palette.text.secondary,
-                          fontWeight: 700,
-                          fontSize: "10px",
-                        }}
-                      >
-                        FULLNAME
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: theme.palette.text.secondary,
-                          fontWeight: 700,
-                          fontSize: "10px",
-                        }}
-                      >
-                        ROLE
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: theme.palette.text.secondary,
-                          fontWeight: 700,
-                          fontSize: "10px",
-                        }}
-                        align="center"
-                      >
-                        ACTION
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody sx={{ border: "1px" }}>
-                    {members.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                          }}
-                        >
-                          {item.fullName}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: theme.palette.primary.main,
-                            fontSize: "12px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {item.userRole}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                          }}
-                          align="center"
-                        >
-                          <IconButton onClick={() => onMemberFormDelete(index)}>
-                            <DeleteOutlineOutlined />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
             </Stack>
           </Stack>
         </DialogContent>
@@ -486,7 +380,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
               startIcon={<Save />}
               loadingPosition="start"
               loading={createChannelIsLoading || createChannelIsFetching}
-              disabled={!channelFormWatch("channel_Name") || !members.length}
+              disabled={!channelFormWatch("channel_Name") || !channelFormWatch("userId").length}
               sx={{
                 ":disabled": {
                   backgroundColor: theme.palette.primary.secondary,
@@ -507,16 +401,3 @@ const ChannelDialog = ({ data, open, onClose }) => {
 };
 
 export default ChannelDialog;
-
-const GroupHeader = styled("div")(({ theme }) => ({
-  position: "sticky",
-  top: "-8px",
-  fontSize: "12px",
-  padding: "4px 10px",
-  color: theme.palette.text.main,
-  backgroundColor: theme.palette.text.accent,
-}));
-
-export const GroupItems = styled("ul")({
-  padding: 0,
-});

@@ -314,6 +314,13 @@ const theme = createTheme({
           "&.MuiPickersDay-root.Mui-disabled:not(.Mui-selected)": {
             color: "rgb(255 255 255 / 38%)",
           },
+          "&.MuiChip-root .MuiChip-deleteIcon": {
+            color: "rgb(255 255 255 / 59%)",
+            "&:hover": {
+              backgroundColor: "#1A222F",
+              color: "#9e77ed",
+            },
+          },
         },
       },
     },

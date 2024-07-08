@@ -22,7 +22,7 @@ export const subUnitApi = createApi({
   endpoints: (builder) => ({
     getSubUnit: builder.query({
       query: (params) => ({
-        url: "sub-unit/page?Status=true",
+        url: "sub-unit/page",
         method: "GET",
         params: params,
       }),
@@ -57,10 +57,4 @@ export const subUnitApi = createApi({
   }),
 });
 
-export const {
-  useGetSubUnitQuery,
-  useLazyGetSubUnitQuery,
-  useSyncSubUnitMutation,
-  useCreateEditSubUnitMutation,
-  useArchiveSubUnitMutation,
-} = subUnitApi;
+export const { useGetSubUnitQuery, useLazyGetSubUnitQuery, useSyncSubUnitMutation, useCreateEditSubUnitMutation, useArchiveSubUnitMutation } = subUnitApi;
