@@ -15,6 +15,7 @@ import { toast, Toaster } from "sonner";
 import Swal from "sweetalert2";
 import { useCloseTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
 import CloseDisappprove from "./CloseDisapprove";
+import ClosingTicketActions from "./ClosingTicketActions";
 
 const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewClosingData, setViewClosingData] = useState(null);
@@ -374,9 +375,11 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
                       fontWeight: 500,
                     }}
                   >
-                    <LoadingButton size="small" variant="contained" color="error" onClick={() => onDisapproveHandler(item)} sx={{ padding: "4px", borderRadius: "0" }}>
+                    {/* <LoadingButton size="small" variant="contained" color="error" onClick={() => onDisapproveHandler(item)} sx={{ padding: "4px", borderRadius: "0" }}>
                       <Typography sx={{ fontSize: "12px" }}>Disapprove</Typography>
-                    </LoadingButton>
+                    </LoadingButton> */}
+
+                    <ClosingTicketActions onDisapprove={() => onDisapproveHandler(item)} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -428,6 +431,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
       />
 
       <ViewClosingDialog data={viewClosingData} open={open} onClose={onDialogClose} />
+
       <CloseDisappprove data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} />
     </Stack>
   );

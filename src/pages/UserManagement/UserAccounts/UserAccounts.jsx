@@ -125,7 +125,7 @@ const UserAccounts = () => {
               })
               .catch((error) => {
                 toast.error("Error!", {
-                  description: "Unable to archive this user.",
+                  description: error.data.error.message,
                   duration: 1500,
                 });
               });
@@ -164,7 +164,7 @@ const UserAccounts = () => {
             })
             .catch((error) => {
               toast.error("Error!", {
-                description: "Unable to archive this user.",
+                description: error.data.error.message,
                 duration: 1500,
               });
             });
@@ -205,9 +205,9 @@ const UserAccounts = () => {
               duration: 1500,
             });
           })
-          .catch(() => {
+          .catch((error) => {
             toast.error("Error!", {
-              description: "Unable to reset password.",
+              description: error.data.error.message,
               duration: 1500,
             });
           });

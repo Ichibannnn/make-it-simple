@@ -647,7 +647,7 @@ const ConcernTickets = () => {
                 viewConcernOnClose(setEditData(null));
               }}
             />
-            <ConcernHistory data={viewHistoryData} open={viewHistoryOpen} onClose={viewHistoryOnClose} />
+            <ConcernHistory data={viewHistoryData} status={status} open={viewHistoryOpen} onClose={viewHistoryOnClose} />
             <ConcernReturn data={returnData} open={returnOpen} onClose={returnOnClose} />
           </Stack>
         </Stack>

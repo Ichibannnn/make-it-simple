@@ -21,7 +21,6 @@ import {
 import {
   AccessTimeOutlined,
   CalendarMonthOutlined,
-  Circle,
   DiscountOutlined,
   DoneAllOutlined,
   FiberManualRecord,
@@ -108,8 +107,6 @@ const IssueHandlerConcerns = () => {
     // manageTicketOnClose();
   };
 
-  console.log("Ticket Status: ", ticketStatus);
-
   return (
     <Stack
       sx={{
@@ -129,14 +126,7 @@ const IssueHandlerConcerns = () => {
           <Stack justifyItems="space-between" direction="row"></Stack>
         </Stack>
 
-        <Stack
-          sx={{
-            backgroundColor: theme.palette.bgForm.black3,
-            borderRadius: "20px",
-            marginTop: "10px",
-            height: "75vh",
-          }}
-        >
+        <Stack sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "20px", marginTop: "10px", height: "75vh" }}>
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
             <Tabs value={ticketStatus} onChange={onStatusChange}>
               <Tab
@@ -148,10 +138,7 @@ const IssueHandlerConcerns = () => {
                     badgeContent={901}
                     max={100000}
                     color="warning"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
@@ -261,8 +248,6 @@ const IssueHandlerConcerns = () => {
                 sx={{
                   fontSize: "12px",
                   fontWeight: 600,
-                  // backgroundColor: theme.palette.error.main,
-                  // color: theme.palette.text.main,
                 }}
               />
 
@@ -458,7 +443,6 @@ const IssueHandlerConcerns = () => {
                         </TableCell>
 
                         <TableCell
-                          // className="ellipsis-styling"
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
@@ -703,7 +687,7 @@ const IssueHandlerConcerns = () => {
           />
         </Stack>
 
-        <IssueViewDialog data={viewData} viewOpen={viewOpen} viewOnClose={viewOnClose} />
+        <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
         <ManageTicketDialog
           data={closeTicketData}

@@ -33,23 +33,6 @@ const Sidebar = () => {
   };
 
   return (
-    // <Stack>
-    //   {isVisible && (
-    //     <Stack
-    //       sx={{
-    //         height: "100%",
-    //         backgroundColor: theme.palette.bgForm.black2,
-    //         width: "280px",
-    //         overflow: "auto",
-    //       }}
-    //     >
-    //       <SidebarHeader />
-    //       <SidebarList />
-    //       <SidebarFooter />
-    //     </Stack>
-    //   )}
-    // </Stack>
-
     <>
       {hideSidebar && drawerOpen ? (
         <Drawer
