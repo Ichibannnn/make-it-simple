@@ -18,6 +18,8 @@ import Swal from "sweetalert2";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
+import useDisclosure from "../../../hooks/useDisclosure";
+import UserAccountWarningDialog from "./UserAccountWarningDialog";
 
 const schema = yup.object().shape({
   empId: yup.object().required().label("Employee ID"),
@@ -44,6 +46,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+
+  const { open: warningOpen, onToggle: warningOnToggle, onClose: warningOnClose } = useDisclosure();
 
   const {
     control,
@@ -125,8 +129,11 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   const onSubmitHandler = (formData) => {
-    if (data) {
-      const submitUpdateUser = {
+    if (data?.is_Use === true) {
+      console.log("Open modal");
+      console.log("FormData: ", formData);
+
+      const warningPayload = {
         id: data.id,
         userRoleId: formData.userRoleId.id,
         username: formData.username,
@@ -138,98 +145,114 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         locationCode: formData.locationId.location_Code,
       };
 
-      Swal.fire({
-        title: "Information",
-        text: "Are you sure you want to update this user?",
-        icon: "info",
-        color: "white",
-        showCancelButton: true,
-        background: "#111927",
-        confirmButtonColor: "#9e77ed",
-        cancelButtonColor: "#1C2536",
-        heightAuto: false,
-        width: "30em",
-        customClass: {
-          container: "custom-container",
-          title: "custom-title",
-          htmlContainer: "custom-text",
-          icon: "custom-icon",
-          confirmButton: "custom-confirm-btn",
-          cancelButton: "custom-cancel-btn",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // console.log("Edit user: ", submitUpdateUser);
-          updateUser(submitUpdateUser)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "User updated successfully!",
-              });
-              reset();
-              onClose();
-            })
-            .catch((error) => {
-              console.log("Error : ", error);
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
-        }
-      });
+      warningOnToggle();
     } else {
-      const submitAddUser = {
-        empId: formData.empId.general_info.full_id_number,
-        fullname: formData.empId.general_info.full_name,
-        username: formData.username,
-        userRoleId: formData.userRoleId.id,
-        departmentId: formData.departmentId.id,
-        subUnitId: formData.subUnitId.id,
-        unitId: formData.unitId.id,
-        companyId: formData.companyId.id,
-        locationCode: formData.locationId.location_Code,
-        businessUnitId: formData.businessUnitId.id,
-      };
+      if (data) {
+        const submitUpdateUser = {
+          id: data.id,
+          userRoleId: formData.userRoleId.id,
+          username: formData.username,
+          departmentId: formData.departmentId.id,
+          subUnitId: formData.subUnitId.id,
+          unitId: formData.unitId.id,
+          companyId: formData.companyId.id,
+          businessUnitId: formData.businessUnitId.id,
+          locationCode: formData.locationId.location_Code,
+        };
 
-      Swal.fire({
-        title: "Information",
-        text: "Are you sure you want to add this user?",
-        icon: "info",
-        color: "white",
-        showCancelButton: true,
-        background: "#111927",
-        confirmButtonColor: "#9e77ed",
-        cancelButtonColor: "#1C2536",
-        heightAuto: false,
-        width: "30em",
-        customClass: {
-          container: "custom-container",
-          title: "custom-title",
-          htmlContainer: "custom-text",
-          icon: "custom-icon",
-          confirmButton: "custom-confirm-btn",
-          cancelButton: "custom-cancel-btn",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          console.log("Add user: ", submitAddUser);
-          createUser(submitAddUser)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "User added successfully!",
+        Swal.fire({
+          title: "Information",
+          text: "Are you sure you want to update this user?",
+          icon: "info",
+          color: "white",
+          showCancelButton: true,
+          background: "#111927",
+          confirmButtonColor: "#9e77ed",
+          cancelButtonColor: "#1C2536",
+          heightAuto: false,
+          width: "30em",
+          customClass: {
+            container: "custom-container",
+            title: "custom-title",
+            htmlContainer: "custom-text",
+            icon: "custom-icon",
+            confirmButton: "custom-confirm-btn",
+            cancelButton: "custom-cancel-btn",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // console.log("Edit user: ", submitUpdateUser);
+            updateUser(submitUpdateUser)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "User updated successfully!",
+                });
+                reset();
+                onClose();
+              })
+              .catch((error) => {
+                console.log("Error : ", error);
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
               });
-              reset();
-              onClose();
-            })
-            .catch((error) => {
-              console.log("Error : ", error);
-              toast.error("Error!", {
-                description: error.data.error.message,
+          }
+        });
+      } else {
+        const submitAddUser = {
+          empId: formData.empId.general_info.full_id_number,
+          fullname: formData.empId.general_info.full_name,
+          username: formData.username,
+          userRoleId: formData.userRoleId.id,
+          departmentId: formData.departmentId.id,
+          subUnitId: formData.subUnitId.id,
+          unitId: formData.unitId.id,
+          companyId: formData.companyId.id,
+          locationCode: formData.locationId.location_Code,
+          businessUnitId: formData.businessUnitId.id,
+        };
+
+        Swal.fire({
+          title: "Information",
+          text: "Are you sure you want to add this user?",
+          icon: "info",
+          color: "white",
+          showCancelButton: true,
+          background: "#111927",
+          confirmButtonColor: "#9e77ed",
+          cancelButtonColor: "#1C2536",
+          heightAuto: false,
+          width: "30em",
+          customClass: {
+            container: "custom-container",
+            title: "custom-title",
+            htmlContainer: "custom-text",
+            icon: "custom-icon",
+            confirmButton: "custom-confirm-btn",
+            cancelButton: "custom-cancel-btn",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            console.log("Add user: ", submitAddUser);
+            createUser(submitAddUser)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "User added successfully!",
+                });
+                reset();
+                onClose();
+              })
+              .catch((error) => {
+                console.log("Error : ", error);
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
               });
-            });
-        }
-      });
+          }
+        });
+      }
     }
   };
 
@@ -237,10 +260,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     reset();
     onClose();
   };
-
-  console.log("sub unit ID: ", watch("subUnitId"));
-  console.log("Location ID: ", watch("locationId"));
-  console.log("locationData: ", locationData);
 
   return (
     <>
@@ -606,6 +625,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      <UserAccountWarningDialog open={warningOpen} onClose={warningOnClose} />
     </>
   );
 };
