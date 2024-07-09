@@ -1,5 +1,5 @@
 import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Stack, TextField, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -46,6 +46,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+
+  const [warningData, setWarningData] = useState("");
 
   const { open: warningOpen, onToggle: warningOnToggle, onClose: warningOnClose } = useDisclosure();
 
@@ -129,13 +131,14 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   const onSubmitHandler = (formData) => {
-    if (data?.is_Use === true) {
-      console.log("Open modal");
-      console.log("FormData: ", formData);
+    if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
+      // console.log("Open modal");
+      // console.log("FormData: ", formData);
 
-      const warningPayload = {
+      setWarningData({
         id: data.id,
         userRoleId: formData.userRoleId.id,
+        user_Role_Name: formData.userRoleId.user_Role_Name,
         username: formData.username,
         departmentId: formData.departmentId.id,
         subUnitId: formData.subUnitId.id,
@@ -143,8 +146,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         companyId: formData.companyId.id,
         businessUnitId: formData.businessUnitId.id,
         locationCode: formData.locationId.location_Code,
-      };
-
+      });
       warningOnToggle();
     } else {
       if (data) {
@@ -255,6 +257,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       }
     }
   };
+
+  // console.log("WarningData: ", warningData);
 
   const onCloseHandler = () => {
     reset();
@@ -626,7 +630,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      <UserAccountWarningDialog open={warningOpen} onClose={warningOnClose} />
+      <UserAccountWarningDialog data={data} payload={warningData} open={warningOpen} onClose={warningOnClose} userOnClose={onCloseHandler} />
     </>
   );
 };
