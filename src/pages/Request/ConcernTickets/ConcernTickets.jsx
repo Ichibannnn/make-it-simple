@@ -183,7 +183,7 @@ const ConcernTickets = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "24px",
+        padding: "17px",
       }}
     >
       <Toaster richColors position="top-right" closeButton />
@@ -194,7 +194,7 @@ const ConcernTickets = () => {
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
-            <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
+            <Button variant="contained" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
               Add Request
             </Button>
           </Stack>
@@ -206,7 +206,7 @@ const ConcernTickets = () => {
             sx={{
               backgroundColor: theme.palette.bgForm.black3,
               borderRadius: "20px",
-              marginTop: "20px",
+              marginTop: "10px",
               width: "100%",
             }}
           >
@@ -369,9 +369,8 @@ const ConcernTickets = () => {
 
             <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "5px", padding: "15px" }} gap={4}>
               <OutlinedInput
-                flex="1"
                 placeholder="Search Request no.: eg 00001"
                 startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 value={searchValue}
@@ -386,8 +385,8 @@ const ConcernTickets = () => {
               />
             </Stack>
 
-            <TableContainer>
-              <Table sx={{ borderBottom: "none" }}>
+            <TableContainer sx={{ minHeight: "542px", maxHeight: "542px" }}>
+              <Table stickyHeader sx={{ borderBottom: "none" }}>
                 <TableHead>
                   <TableRow>
                     <TableCell
@@ -501,22 +500,25 @@ const ConcernTickets = () => {
                           </TableCell>
                         )}
 
-                        <Tooltip title={item.concern} placement="bottom-start">
-                          <TableCell
-                            // className="ellipsis-styling"
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              maxWidth: "500px",
-                            }}
-                            onClick={() => onViewHistoryAction(item)}
-                          >
-                            {item.concern.split("\r\n").map((line, index) => (
-                              <div key={index}>{line}</div>
-                            ))}
-                          </TableCell>
-                        </Tooltip>
+                        {/* <Tooltip title={item.concern} placement="bottom-start"> */}
+                        <TableCell
+                          // className="ellipsis-styling"
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            maxWidth: "500px",
+                          }}
+                          onClick={() => onViewHistoryAction(item)}
+                        >
+                          {item.concern.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </TableCell>
+                        {/* </Tooltip> */}
 
                         <TableCell
                           sx={{
@@ -629,7 +631,7 @@ const ConcernTickets = () => {
             </TableContainer>
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}

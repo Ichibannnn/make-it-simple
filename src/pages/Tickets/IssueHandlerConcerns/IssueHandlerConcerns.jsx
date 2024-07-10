@@ -126,7 +126,7 @@ const IssueHandlerConcerns = () => {
           <Stack justifyItems="space-between" direction="row"></Stack>
         </Stack>
 
-        <Stack sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "20px", marginTop: "10px", height: "75vh" }}>
+        <Stack sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "20px", marginTop: "10px", height: "730px" }}>
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
             <Tabs value={ticketStatus} onChange={onStatusChange}>
               <Tab
@@ -306,8 +306,8 @@ const IssueHandlerConcerns = () => {
             }}
           />
 
-          <TableContainer>
-            <Table sx={{ borderBottom: "none" }}>
+          <TableContainer sx={{ minHeight: "589px", maxHeight: "589px" }}>
+            <Table stickyHeader sx={{ borderBottom: "none" }}>
               <TableHead>
                 <TableRow>
                   <TableCell
@@ -676,7 +676,7 @@ const IssueHandlerConcerns = () => {
           </TableContainer>
 
           <TablePagination
-            sx={{ color: "#A0AEC0", fontWeight: 400 }}
+            sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={data?.value?.totalCount || 0}

@@ -84,6 +84,8 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleAttachments = (event) => {
     const newFiles = Array.from(event.target.files);
 
+    // console.log("New files", newFiles);
+
     const fileNames = newFiles.map((file) => ({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
@@ -123,7 +125,7 @@ const ConcernDialog = ({ open, onClose }) => {
       })
       .map((file) => ({
         name: file.name,
-        size: (file.size / (1024 * 1024)).toFixed(2),
+        size: file.size,
       }));
 
     const currentAttachments = watch("RequestAttachmentsFiles") || [];

@@ -11,7 +11,7 @@ const UserAccountWarningDialog = ({ data, payload, open, onClose, userOnClose })
 
   const onSubmitAction = () => {
     // console.log("Data: ", data);
-    console.log("Payload", payload);
+    // console.log("Payload", payload);
 
     const submitUpdateUser = {
       id: data.id,
@@ -70,21 +70,10 @@ const UserAccountWarningDialog = ({ data, payload, open, onClose, userOnClose })
 
         <DialogActions>
           <Stack direction="row" gap={1} sx={{ width: "100%", paddingBottom: 1, justifyContent: "center" }}>
-            <LoadingButton
-              variant="contained"
-              size="small"
-              onClick={onSubmitAction}
-              // disabled={!watch("category_Description")}
-              // sx={{
-              //   ":disabled": {
-              //     backgroundColor: theme.palette.secondary.main,
-              //     color: "black",
-              //   },
-              // }}
-            >
+            <LoadingButton variant="contained" size="small" onClick={onSubmitAction} loading={isUpdateUserIsLoading || isUpdateUserIsFetching}>
               Yes
             </LoadingButton>
-            <LoadingButton size="small" variant="outlined" onClick={onCloseAction}>
+            <LoadingButton size="small" variant="outlined" onClick={onCloseAction} loading={isUpdateUserIsLoading || isUpdateUserIsFetching}>
               No
             </LoadingButton>
           </Stack>
