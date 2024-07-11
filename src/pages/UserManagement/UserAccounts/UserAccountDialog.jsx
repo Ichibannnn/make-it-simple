@@ -132,9 +132,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   const onSubmitHandler = (formData) => {
     if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
-      // console.log("Open modal");
-      // console.log("FormData: ", formData);
-
       setWarningData({
         id: data.id,
         userRoleId: formData.userRoleId.id,
@@ -183,7 +180,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            // console.log("Edit user: ", submitUpdateUser);
             updateUser(submitUpdateUser)
               .unwrap()
               .then(() => {
