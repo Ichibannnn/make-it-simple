@@ -95,7 +95,7 @@ const ClosingTicketHistory = ({ data }) => {
                 sx={{
                   fontSize: "19px",
                   fontWeight: 900,
-                  color: item.request === "Rejected" ? theme.palette.error.main : item.request === theme.palette.error.main ? "error" : theme.palette.success.main,
+                  color: item.request === "Rejected" ? theme.palette.error.main : item.request === "Disapprove" ? theme.palette.error.main : theme.palette.success.main,
                 }}
               >
                 {item.request}

@@ -45,6 +45,7 @@ import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
 import IssueHandlerClosingDialog from "./IssueHandlerClosingDialog";
 import ManageTicketDialog from "./ManageTicketDialog";
+import TicketFiltering from "./TicketFiltering";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -53,6 +54,10 @@ const IssueHandlerConcerns = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+
+  const [filterStatus, setFilterStatus] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const [viewData, setViewData] = useState(null);
   const [closeTicketData, setCloseTicketData] = useState(null);
@@ -281,7 +286,18 @@ const IssueHandlerConcerns = () => {
               />
             </Tabs>
 
-            <Stack sx={{ alignItems: "center", justifyContent: "center" }}>
+            <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center" }}>
+              {ticketStatus === "" && (
+                <TicketFiltering
+                  filterStatus={filterStatus}
+                  setFilterStatus={setFilterStatus}
+                  dateFrom={dateFrom}
+                  setDateFrom={setDateFrom}
+                  dateTo={dateTo}
+                  setDateTo={setDateTo}
+                />
+              )}
+
               <OutlinedInput
                 placeholder="Search"
                 startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
