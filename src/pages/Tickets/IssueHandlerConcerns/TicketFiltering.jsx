@@ -9,9 +9,9 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 
 const TicketFiltering = ({ filterStatus, setFilterStatus, dateFrom, setDateFrom, dateTo, setDateTo }) => {
-  const [tempFilterStatus, setTempFilterStatus] = useState("");
-  const [tempDateFrom, setTempDateFrom] = useState("");
-  const [tempDateTo, setTempDateTo] = useState("");
+  const [tempFilterStatus, setTempFilterStatus] = useState(null);
+  const [tempDateFrom, setTempDateFrom] = useState(null);
+  const [tempDateTo, setTempDateTo] = useState(null);
 
   const options = ["Open Ticket", "For Closing Ticket", "For Confirmation", "Closed"];
 
@@ -20,27 +20,40 @@ const TicketFiltering = ({ filterStatus, setFilterStatus, dateFrom, setDateFrom,
   const { open, onToggle } = useDisclosure();
 
   const onApplyAction = () => {
-    setFilterStatus(tempFilterStatus);
-    setDateFrom(moment(tempDateFrom).format("YYYY-MM-DD"));
-    setDateTo(moment(tempDateTo).format("YYYY-MM-DD"));
+    // if (!tempFilterStatus && !tempDateFrom && !tempDateTo) {
+    //   setFilterStatus(null);
+    //   setDateFrom(null);
+    //   setDateTo(null);
+    // } else {
+    //   setFilterStatus(tempFilterStatus);
+    //   setDateFrom(moment(tempDateFrom).format("YYYY-MM-DD"));
+    //   setDateTo(moment(tempDateTo).format("YYYY-MM-DD"));
+    // }
+
+    setFilterStatus(tempFilterStatus ? tempFilterStatus : null);
+    setDateFrom(tempDateFrom ? moment(tempDateFrom).format("YYYY-MM-DD") : null);
+    setDateTo(tempDateTo ? moment(tempDateTo).format("YYYY-MM-DD") : null);
     onToggle();
   };
 
   const onClearAction = () => {
-    setTempFilterStatus("");
-    setTempDateFrom("");
-    setTempDateTo("");
+    setTempFilterStatus(null);
+    setTempDateFrom(null);
+    setTempDateTo(null);
+    // setFilterStatus("");
+    // setDateFrom("");
+    // setDateTo("");
   };
 
-  console.log("Status: ", filterStatus);
-  console.log("Date From: ", dateFrom);
-  console.log("Date To: ", dateTo);
+  console.log("Status: ", tempFilterStatus);
+  console.log("Date From: ", tempDateFrom);
+  console.log("Date To: ", tempDateTo);
 
   return (
     <>
       <Tooltip title={"Filter Tickets"} placement="bottom-start">
         <IconButton ref={ref} onClick={onToggle}>
-          <FilterListOutlined sx={{ fontSize: "28px" }} />
+          <CalendarMonthOutlined sx={{ fontSize: "28px" }} />
         </IconButton>
       </Tooltip>
 
@@ -78,7 +91,19 @@ const TicketFiltering = ({ filterStatus, setFilterStatus, dateFrom, setDateFrom,
           </Stack>
 
           <Stack marginTop={1} direction="row" sx={{ justifyContent: "space-between" }}>
-            <Button onClick={onApplyAction}>Apply</Button>
+            <Button
+              onClick={onApplyAction}
+              disabled={(tempDateFrom && !tempDateTo) || (!tempDateFrom && tempDateTo)}
+              sx={{
+                ":disabled": {
+                  backgroundColor: "transparent",
+                  color: "#3f305f",
+                  cursor: "not-allowed",
+                },
+              }}
+            >
+              Apply
+            </Button>
             <Button onClick={onClearAction}>Clear</Button>
           </Stack>
         </Stack>

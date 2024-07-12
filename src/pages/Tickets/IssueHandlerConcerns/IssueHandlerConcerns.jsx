@@ -29,7 +29,7 @@ import {
   Search,
 } from "@mui/icons-material";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 
@@ -55,9 +55,9 @@ const IssueHandlerConcerns = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const [filterStatus, setFilterStatus] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [filterStatus, setFilterStatus] = useState(null);
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
 
   const [viewData, setViewData] = useState(null);
   const [closeTicketData, setCloseTicketData] = useState(null);
@@ -69,6 +69,9 @@ const IssueHandlerConcerns = () => {
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
+    History_Status: filterStatus || "",
+    Date_From: dateFrom || "",
+    Date_To: dateTo || "",
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
@@ -111,6 +114,14 @@ const IssueHandlerConcerns = () => {
     closeTicketOnClose();
     // manageTicketOnClose();
   };
+
+  useEffect(() => {
+    if (ticketStatus !== "") {
+      setFilterStatus(null);
+      setDateFrom(null);
+      setDateTo(null);
+    }
+  }, [ticketStatus]);
 
   return (
     <Stack
@@ -414,7 +425,22 @@ const IssueHandlerConcerns = () => {
                     ""
                   )}
 
-                  <TableCell
+                  {ticketStatus !== "Closed" ? (
+                    <TableCell
+                      sx={{
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
+                      }}
+                    >
+                      ACTION
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
+
+                  {/* <TableCell
                     sx={{
                       background: "#1C2536",
                       color: "#D65DB1",
@@ -423,7 +449,7 @@ const IssueHandlerConcerns = () => {
                     }}
                   >
                     ACTION
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               </TableHead>
 
@@ -638,20 +664,24 @@ const IssueHandlerConcerns = () => {
                           ""
                         )}
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            maxWidth: "700px",
-                            "&:hover": {
-                              background: "",
+                        {ticketStatus !== "Closed" ? (
+                          <TableCell
+                            sx={{
                               color: "#EDF2F7",
-                            },
-                          }}
-                        >
-                          <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} onManageTicket={onManageTicketAction} />
-                        </TableCell>
+                              fontSize: "12px",
+                              fontWeight: 500,
+                              maxWidth: "700px",
+                              "&:hover": {
+                                background: "",
+                                color: "#EDF2F7",
+                              },
+                            }}
+                          >
+                            <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} onManageTicket={onManageTicketAction} />
+                          </TableCell>
+                        ) : (
+                          ""
+                        )}
                       </TableRow>
                     </React.Fragment>
                   ))}
