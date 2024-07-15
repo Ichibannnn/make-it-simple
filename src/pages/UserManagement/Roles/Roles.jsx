@@ -427,7 +427,7 @@ const Roles = () => {
         </TableContainer>
 
         <TablePagination
-          sx={{ color: "#A0AEC0", fontWeight: 400 }}
+          sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={data?.value?.totalCount || 0}

@@ -86,7 +86,7 @@ const TicketHistory = ({ data }) => {
 
             <TimelineSeparator>
               {/* <TimelineConnector sx={{ backgroundColor: theme.palette.success.main }} /> */}
-              <TimelineDot color={item.request === "Rejected" ? "error" : item.request === "Disapprove" ? "error" : "success"} />
+              <TimelineDot color={item.request === "Rejected" ? "error" : item.request === "Disapprove" ? "error" : item.request === "Cancel" ? "error" : "success"} />
               <TimelineConnector />
             </TimelineSeparator>
 
@@ -96,7 +96,14 @@ const TicketHistory = ({ data }) => {
                 sx={{
                   fontSize: "19px",
                   fontWeight: 900,
-                  color: item.request === "Rejected" ? theme.palette.error.main : item.request === "Disapprove" ? theme.palette.error.main : theme.palette.success.main,
+                  color:
+                    item.request === "Rejected"
+                      ? theme.palette.error.main
+                      : item.request === "Disapprove"
+                      ? theme.palette.error.main
+                      : item.request === "Cancel"
+                      ? theme.palette.error.main
+                      : theme.palette.success.main,
                 }}
               >
                 {item.request}

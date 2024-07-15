@@ -25,6 +25,7 @@ import {
   DoneAllOutlined,
   FiberManualRecord,
   HistoryToggleOffOutlined,
+  MoveDownOutlined,
   PendingActionsOutlined,
   Search,
 } from "@mui/icons-material";
@@ -39,13 +40,17 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { useCancelTransferTicketMutation, useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
 import IssueHandlerClosingDialog from "./IssueHandlerClosingDialog";
 import ManageTicketDialog from "./ManageTicketDialog";
 import TicketFiltering from "./TicketFiltering";
+import TicketForTransferDialog from "./TicketForTransferDialog";
+import ManageTransferDialog from "./ManageTransferDialog";
+import Swal from "sweetalert2";
+import { toast, Toaster } from "sonner";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -61,10 +66,15 @@ const IssueHandlerConcerns = () => {
 
   const [viewData, setViewData] = useState(null);
   const [closeTicketData, setCloseTicketData] = useState(null);
+  const [transferTicketData, setTransferTicketData] = useState(null);
+
+  const [cancelTransferTicket] = useCancelTransferTicketMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
+  const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
+  const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
@@ -109,10 +119,69 @@ const IssueHandlerConcerns = () => {
     setCloseTicketData(data);
   };
 
+  const onTransferTicketAction = (data) => {
+    transferTicketOnToggle();
+    setTransferTicketData(data);
+  };
+
+  const onManageTransferAction = (data) => {
+    manageTransferOnToggle();
+    setTransferTicketData(data);
+  };
+
   const onDialogClose = () => {
     setCloseTicketData(null);
+    setTransferTicketData(null);
     closeTicketOnClose();
     // manageTicketOnClose();
+  };
+
+  const onCancelTransferAction = (data) => {
+    console.log("Close Transfer: ", data);
+
+    const payload = {
+      transferTicketId: data?.getForTransferTickets?.[0]?.transferTicketConcernId,
+    };
+
+    Swal.fire({
+      title: "Confirmation",
+      text: `Cancel transfer ticket number ${data?.ticketConcernId}?`,
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        cancelTransferTicket(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Cancelled request transfer successfully!",
+              duration: 1500,
+            });
+          })
+          .catch((err) => {
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
 
   useEffect(() => {
@@ -134,6 +203,7 @@ const IssueHandlerConcerns = () => {
         padding: "14px 44px 44px 44px",
       }}
     >
+      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack justifyItems="left">
@@ -176,6 +246,34 @@ const IssueHandlerConcerns = () => {
               />
 
               <Tab
+                value="For Transfer"
+                className="tabs-styling"
+                label="For Transfer"
+                icon={
+                  <Badge
+                    badgeContent={901}
+                    max={100000}
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                        background: "#ff7043",
+                        color: "#ffff",
+                      },
+                    }}
+                  >
+                    <MoveDownOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                }}
+              />
+
+              <Tab
                 value="For Closing Ticket"
                 className="tabs-styling"
                 label="For Closing"
@@ -213,7 +311,6 @@ const IssueHandlerConcerns = () => {
                 icon={
                   <Badge
                     badgeContent={100}
-                    // color="primary"
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "left",
@@ -439,17 +536,6 @@ const IssueHandlerConcerns = () => {
                   ) : (
                     ""
                   )}
-
-                  {/* <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    ACTION
-                  </TableCell> */}
                 </TableRow>
               </TableHead>
 
@@ -677,7 +763,14 @@ const IssueHandlerConcerns = () => {
                               },
                             }}
                           >
-                            <IssueHandlerConcernsActions data={item} onCloseTicket={onCloseTicketAction} onManageTicket={onManageTicketAction} />
+                            <IssueHandlerConcernsActions
+                              data={item}
+                              onCloseTicket={onCloseTicketAction}
+                              onManageTicket={onManageTicketAction}
+                              onTransferTicket={onTransferTicketAction}
+                              onManageTransfer={onManageTransferAction}
+                              onCancelTransfer={onCancelTransferAction}
+                            />
                           </TableCell>
                         ) : (
                           ""
@@ -740,6 +833,20 @@ const IssueHandlerConcerns = () => {
           open={manageTicketOpen}
           onClose={() => {
             manageTicketOnClose(setCloseTicketData(null));
+          }}
+        />
+        <TicketForTransferDialog
+          data={transferTicketData}
+          open={transferTicketOpen}
+          onClose={() => {
+            transferTicketOnClose(setTransferTicketData(null));
+          }}
+        />
+        <ManageTransferDialog
+          data={transferTicketData}
+          open={manageTransferOpen}
+          onClose={() => {
+            manageTransferOnClose(setTransferTicketData(null));
           }}
         />
       </Stack>

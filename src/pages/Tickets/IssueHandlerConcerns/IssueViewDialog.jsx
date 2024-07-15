@@ -177,6 +177,48 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                   </Stack>
                 </Stack>
 
+                {/* Transfer Remarks */}
+                {data?.ticket_Status === "For Transfer" && (
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    paddingLeft={8}
+                    paddingRight={8}
+                    gap={2}
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <Stack
+                      sx={{
+                        width: "30%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
+                        Transfer Remarks
+                      </Typography>
+                    </Stack>
+
+                    <Stack
+                      direction="row"
+                      gap={1}
+                      sx={{
+                        width: "65%",
+                      }}
+                    >
+                      <FiberManualRecord color="primary" fontSize="20px" />
+                      <Typography sx={{ fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
+                    </Stack>
+                  </Stack>
+                )}
+
+                {/* Resoulution */}
                 {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
                   <Stack
                     direction="row"

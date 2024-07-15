@@ -49,7 +49,34 @@ export const concernIssueHandlerApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
     }),
+
+    transferIssueHandlerTickets: builder.mutation({
+      query: (body) => ({
+        url: "transfer-ticket/add-transfer",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
+
+    cancelTransferTicket: builder.mutation({
+      query: (body) => ({
+        url: "transfer-ticket/cancel",
+        method: "DELETE",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
   }),
 });
 
-export const { useGetIssueHandlerConcernsQuery, useGetTicketHistoryQuery, useCloseIssueHandlerTicketsMutation } = concernIssueHandlerApi;
+export const {
+  useGetIssueHandlerConcernsQuery,
+  useGetTicketHistoryQuery,
+  useCloseIssueHandlerTicketsMutation,
+  useTransferIssueHandlerTicketsMutation,
+  useCancelTransferTicketMutation,
+} = concernIssueHandlerApi;

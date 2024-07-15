@@ -472,8 +472,8 @@ const ReceiverConcerns = () => {
     }
   }, [data]);
 
-  console.log("Watch: ", displayWatch("displayConcern"));
-  console.log("Data: ", data);
+  // console.log("Watch: ", displayWatch("displayConcern"));
+  // console.log("Data: ", data);
 
   return (
     <Stack
