@@ -8,7 +8,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import TicketApproval from "./TicketApproval/TicketApproval";
 import ForTransfer from "./ForTransferApproval/ForTransfer";
 
-import { useGetTicketApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -30,10 +30,23 @@ const Approval = () => {
     PageSize: pageSize,
   });
 
+  const {
+    data: transferData,
+    isLoading: transferIsLoading,
+    isFetching: transferIsFetching,
+    isSuccess: transferIsSuccess,
+    isError: transferIsError,
+  } = useGetTransferApprovalQuery({
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
+
   const onStatusChange = (_, newValue) => {
     setTabNavigation(newValue);
     setPageNumber(1);
     setPageSize(5);
+    setSearchValue("");
   };
 
   useEffect(() => {
@@ -170,7 +183,15 @@ const Approval = () => {
             </>
           ) : (
             <>
-              <ForTransfer />
+              <ForTransfer
+                data={transferData}
+                isLoading={transferIsLoading}
+                isFetching={transferIsFetching}
+                isSuccess={transferIsSuccess}
+                isError={transferIsError}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
+              />
             </>
           )}
         </Stack>

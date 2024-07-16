@@ -9,14 +9,14 @@ import { theme } from "../../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import { useDisapproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useRejectTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 
 const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
 });
 
-const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
-  const [disapproveTicket, { isLoading, isFetching }] = useDisapproveTicketMutation();
+const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
+  const [disapproveTransfer, { isLoading, isFetching }] = useRejectTransferMutation();
 
   const {
     handleSubmit,
@@ -36,13 +36,15 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
     // console.log(" Data: ", data);
 
     const disapprovePayload = {
-      closingTicketId: data?.closingTicketId,
+      transferTicketId: data?.transferTicketId,
       reject_Remarks: formData?.reject_Remarks,
     };
 
+    console.log("disapprovePayload: ", disapprovePayload);
+
     Swal.fire({
       title: "Confirmation",
-      text: `Disapproved this ticket number ${data?.ticketConcernId}?`,
+      text: `Disapproved this request transfer ticket number ${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -63,7 +65,7 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        disapproveTicket(disapprovePayload)
+        disapproveTransfer(disapprovePayload)
           .unwrap()
           .then(() => {
             toast.success("Success!", {
@@ -106,7 +108,7 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
             color: "#48BB78",
           }}
         >
-          Remarks Form
+          Disapprove Remarks
         </DialogTitle>
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
@@ -160,4 +162,4 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
   );
 };
 
-export default DisapprovedDialog;
+export default TransferDisapproveDialog;

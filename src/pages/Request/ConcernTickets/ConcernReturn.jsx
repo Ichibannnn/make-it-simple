@@ -178,8 +178,6 @@ const ConcernReturn = ({ data, open, onClose }) => {
     setAddAttachments([...addAttachments, ...uniqueNewFiles]);
   };
 
-  //   console.log("Attachments: ", addAttachments);
-
   return (
     <>
       <Toaster richColors position="top-right" closeButton />

@@ -20,7 +20,7 @@ export const ticketApprovalApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    // Approver ---------------
+    // Approver Ticket Approval ---------------
     getTicketApproval: builder.query({
       query: (params) => ({
         url: "closing-ticket/page?UserType=Approver&IsClosed=false&IsReject=false",
@@ -47,7 +47,42 @@ export const ticketApprovalApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
     }),
+
+    // Approvel Transfer Approval
+    getTransferApproval: builder.query({
+      query: (params) => ({
+        url: "transfer-ticket/page?UserType=Approver&IsTransfer=false&IsReject=false",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Ticket Approval"],
+    }),
+
+    approveTransfer: builder.mutation({
+      query: (body) => ({
+        url: "transfer-ticket/approval",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+    }),
+
+    rejectTransfer: builder.mutation({
+      query: (body) => ({
+        url: "transfer-ticket/reject",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+    }),
   }),
 });
 
-export const { useGetTicketApprovalQuery, useApproveTicketMutation, useDisapproveTicketMutation } = ticketApprovalApi;
+export const {
+  useGetTicketApprovalQuery,
+  useApproveTicketMutation,
+  useDisapproveTicketMutation,
+  useGetTransferApprovalQuery,
+  useApproveTransferMutation,
+  useRejectTransferMutation,
+} = ticketApprovalApi;
