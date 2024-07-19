@@ -315,7 +315,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    Manage Ticket Form
+                    {data?.getForClosingTickets?.[0]?.isApprove === false ? "Manage Ticket Form" : "View Ticket Form"}
                   </Typography>
 
                   <Stack gap={0.5} mt={2}>

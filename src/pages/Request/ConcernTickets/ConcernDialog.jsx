@@ -142,7 +142,7 @@ const ConcernDialog = ({ open, onClose }) => {
     setAttachments([]);
   };
 
-  console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
+  // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
 
   const currentAttachments = watch("RequestAttachmentsFiles") || [];
 

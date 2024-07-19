@@ -16,7 +16,6 @@ import {
   TablePagination,
   TableRow,
   Tabs,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import {
@@ -28,8 +27,6 @@ import {
   ClearAllOutlined,
   FiberManualRecord,
   HowToRegOutlined,
-  KeyboardArrowDown,
-  KeyboardArrowUp,
   PendingActionsOutlined,
   RotateRightOutlined,
   Search,

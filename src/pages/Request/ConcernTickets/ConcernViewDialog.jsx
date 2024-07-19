@@ -99,7 +99,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
 
-    // console.log("uniqueFiles: ", uniqueNewFiles);
+    console.log("uniqueFiles: ", uniqueNewFiles);
+    console.log("uniqueFiles: ", uniqueNewFiles);
 
     setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
@@ -191,8 +192,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   }, [editData]);
 
   console.log("Watch RequestAttachmentsFiles: ", watch("RequestAttachmentsFiles"));
-
-  console.log("edit data: ", editData);
+  // console.log("edit data: ", editData);
 
   return (
     <>
@@ -444,9 +444,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         onChange={(event) => {
                           if (ticketAttachmentId) {
                             const files = Array.from(event.target.files);
+
                             files[0].ticketAttachmentId = ticketAttachmentId;
 
                             const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+
+                            // console.log("Controlled Unique: ", uniqueNewFiles);
 
                             onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId), ...!uniqueNewFiles]);
 
@@ -465,7 +468,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
 
+                            console.log("files: ", files);
+
                             const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+
+                            console.log("Controlled Unique: ", uniqueNewFiles);
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";

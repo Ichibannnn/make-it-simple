@@ -79,7 +79,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
     }
   }, [data]);
 
-  console.log("Timeline data: ", data);
+  // console.log("Timeline data: ", data);
 
   return (
     <>
