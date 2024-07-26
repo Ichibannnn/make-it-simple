@@ -175,6 +175,49 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                           color: theme.palette.text.secondary,
                         }}
                       >
+                        Ticket Number:
+                      </Typography>
+                    </Stack>
+
+                    <Stack
+                      direction="row"
+                      gap={1}
+                      sx={{
+                        width: "65%",
+                      }}
+                    >
+                      <FiberManualRecord color="primary" fontSize="20px" />
+
+                      {data?.ticketRequestConcerns?.[0]?.ticket_No === null ? (
+                        <Typography sx={{ fontSize: "14px", color: theme.palette.warning.main, fontStyle: "italic" }}>-</Typography>
+                      ) : (
+                        <Typography sx={{ fontSize: "14px" }}>{data?.ticketRequestConcerns?.[0]?.ticket_No}</Typography>
+                      )}
+                    </Stack>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    paddingLeft={8}
+                    paddingRight={8}
+                    gap={2}
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <Stack
+                      sx={{
+                        width: "30%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
                         Concern Details:
                       </Typography>
                     </Stack>
@@ -380,127 +423,6 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                     border: "1px solid #2D3748",
                   }}
                 >
-                  {/* <Typography>Attachment*</Typography>
-
-                  <Stack
-                    sx={{
-                      width: "80%",
-                      display: "flex",
-                      border: "2px dashed #2D3748",
-                      justifyContent: "left",
-                      padding: 1,
-                    }}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                  >
-                    <Divider
-                      variant="fullWidth"
-                      sx={{
-                        display: !attachments?.length ? "none" : "flex",
-                        background: "#2D3748",
-                        marginTop: 1,
-                      }}
-                    />
-
-                    {attachments === undefined ? (
-                      <Stack sx={{ flexDirection: "column", maxHeight: "auto", padding: 4 }}>
-                        <Stack direction="row" gap={0.5} justifyContent="center">
-                          <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
-                          <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
-                        </Stack>
-                      </Stack>
-                    ) : (
-                      <Stack
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          maxHeight: "auto",
-                        }}
-                      >
-                        {attachments?.map((fileName, index) => (
-                          <Box
-                            key={index}
-                            sx={{
-                              display: "flex",
-                              width: "100%",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              padding: 1,
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                padding: 0.5,
-                                borderBottom: "1px solid #2D3748",
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
-
-                                <Typography
-                                  sx={{
-                                    fontSize: 13,
-                                    fontWeight: 500,
-                                    color: theme.palette.text.secondary,
-                                  }}
-                                >
-                                  {fileName.size} Mb
-                                </Typography>
-
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: 1,
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      fontSize: 13,
-                                      fontWeight: 500,
-                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
-                                    }}
-                                  >
-                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
-                                  </Typography>
-
-                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                                </Box>
-                              </Box>
-
-                              <Box>
-                                <Tooltip title="Download">
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => {
-                                      window.location = fileName.link;
-                                    }}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <FileDownloadOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </Box>
-                          </Box>
-                        ))}
-                      </Stack>
-                    )}
-                  </Stack> */}
-
                   <Stack direction="row" gap={1} alignItems="center">
                     <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
 

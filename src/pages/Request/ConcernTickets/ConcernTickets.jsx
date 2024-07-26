@@ -156,7 +156,7 @@ const ConcernTickets = () => {
   };
 
   const onReturnAction = (data) => {
-    console.log("Return: ", data);
+    // console.log("Return: ", data);
     returnOnToggle();
     setReturnData(data);
   };
@@ -171,6 +171,8 @@ const ConcernTickets = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  console.log("data: ", data);
 
   return (
     <Stack
@@ -215,7 +217,7 @@ const ConcernTickets = () => {
                   label="All Requests"
                   icon={
                     <Badge
-                      badgeContent={901}
+                      badgeContent={data?.value?.requestConcern?.length}
                       max={100000}
                       color="primary"
                       anchorOrigin={{
@@ -228,6 +230,7 @@ const ConcernTickets = () => {
                           fontWeight: 400,
                         },
                       }}
+                      showZero
                     >
                       <ClearAllOutlined />
                     </Badge>
@@ -245,8 +248,8 @@ const ConcernTickets = () => {
                   label="For Approval"
                   icon={
                     <Badge
-                      badgeContent={100}
-                      // color="primary"
+                      badgeContent={data?.value?.requestConcern?.[0]?.forApprovalCount}
+                      max={100000}
                       anchorOrigin={{
                         vertical: "top",
                         horizontal: "left",
@@ -259,6 +262,7 @@ const ConcernTickets = () => {
                           color: "#ffff",
                         },
                       }}
+                      showZero
                     >
                       <PendingActionsOutlined />
                     </Badge>
@@ -276,7 +280,7 @@ const ConcernTickets = () => {
                   label="Ongoing"
                   icon={
                     <Badge
-                      badgeContent={901}
+                      badgeContent={data?.value?.requestConcern?.[0]?.onGoingCount}
                       max={100000}
                       color="warning"
                       anchorOrigin={{
@@ -307,7 +311,8 @@ const ConcernTickets = () => {
                   label="For Confirmation"
                   icon={
                     <Badge
-                      badgeContent={100}
+                      badgeContent={data?.value?.requestConcern?.[0]?.forConfirmationCount}
+                      max={100000}
                       // color="primary"
                       anchorOrigin={{
                         vertical: "top",
@@ -338,7 +343,8 @@ const ConcernTickets = () => {
                   label="Done"
                   icon={
                     <Badge
-                      badgeContent={100}
+                      badgeContent={data?.value?.requestConcern?.[0]?.doneCount}
+                      max={100000}
                       color="success"
                       anchorOrigin={{
                         vertical: "top",

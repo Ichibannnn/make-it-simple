@@ -507,7 +507,7 @@ const IssueHandlerConcerns = () => {
                     STATUS
                   </TableCell>
 
-                  {ticketStatus === "Closed" ? (
+                  {ticketStatus === "Closed" || ticketStatus === "" ? (
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -717,7 +717,7 @@ const IssueHandlerConcerns = () => {
                           />
                         </TableCell>
 
-                        {ticketStatus === "Closed" ? (
+                        {ticketStatus === "Closed" || ticketStatus === "" ? (
                           <TableCell
                             sx={{
                               color: "#EDF2F7",
