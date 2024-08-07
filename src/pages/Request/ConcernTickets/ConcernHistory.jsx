@@ -188,10 +188,10 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                     >
                       <FiberManualRecord color="primary" fontSize="20px" />
 
-                      {data?.ticketRequestConcerns?.[0]?.ticket_No === null ? (
+                      {data?.concern_Status === "For Approval" ? (
                         <Typography sx={{ fontSize: "14px", color: theme.palette.warning.main, fontStyle: "italic" }}>-</Typography>
                       ) : (
-                        <Typography sx={{ fontSize: "14px" }}>{data?.ticketRequestConcerns?.[0]?.ticket_No}</Typography>
+                        <Typography sx={{ fontSize: "14px" }}>{data?.ticketRequestConcerns?.[0]?.ticketConcernId}</Typography>
                       )}
                     </Stack>
                   </Stack>

@@ -192,6 +192,8 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
+  console.log("Ticket Status: ", ticketStatus);
+
   return (
     <Stack
       sx={{
@@ -485,6 +487,22 @@ const IssueHandlerConcerns = () => {
                     </Stack>
                   </TableCell>
 
+                  {(ticketStatus === "Closed" || ticketStatus === "") && (
+                    <TableCell
+                      sx={{
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" gap={0.5}>
+                        <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                        CLOSED DATE
+                      </Stack>
+                    </TableCell>
+                  )}
+
                   <TableCell
                     sx={{
                       background: "#1C2536",
@@ -507,7 +525,7 @@ const IssueHandlerConcerns = () => {
                     STATUS
                   </TableCell>
 
-                  {ticketStatus === "Closed" || ticketStatus === "" ? (
+                  {(ticketStatus === "Closed" || ticketStatus === "") && (
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -518,8 +536,6 @@ const IssueHandlerConcerns = () => {
                     >
                       CLOSING STATUS
                     </TableCell>
-                  ) : (
-                    ""
                   )}
 
                   {ticketStatus !== "Closed" ? (
@@ -643,16 +659,36 @@ const IssueHandlerConcerns = () => {
                           />
                         </TableCell>
 
+                        {(ticketStatus === "Closed" || ticketStatus === "") && (
+                          <TableCell
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                            onClick={() => onViewAction(item)}
+                          >
+                            <Chip
+                              variant="filled"
+                              size="30px"
+                              icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
+                              label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
+                              sx={{
+                                fontSize: "12px",
+                                backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                color: theme.palette.primary.main,
+                                fontWeight: 800,
+                              }}
+                            />
+                          </TableCell>
+                        )}
+
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
                             maxWidth: "700px",
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
                           }}
                           onClick={() => onViewAction(item)}
                         >
@@ -717,7 +753,7 @@ const IssueHandlerConcerns = () => {
                           />
                         </TableCell>
 
-                        {ticketStatus === "Closed" || ticketStatus === "" ? (
+                        {(ticketStatus === "Closed" || ticketStatus === "") && (
                           <TableCell
                             sx={{
                               color: "#EDF2F7",
@@ -746,8 +782,6 @@ const IssueHandlerConcerns = () => {
                               }
                             />
                           </TableCell>
-                        ) : (
-                          ""
                         )}
 
                         {ticketStatus !== "Closed" ? (
@@ -757,10 +791,6 @@ const IssueHandlerConcerns = () => {
                               fontSize: "12px",
                               fontWeight: 500,
                               maxWidth: "700px",
-                              "&:hover": {
-                                background: "",
-                                color: "#EDF2F7",
-                              },
                             }}
                           >
                             <IssueHandlerConcernsActions
@@ -791,7 +821,7 @@ const IssueHandlerConcerns = () => {
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
+                    <TableCell colSpan={9} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...

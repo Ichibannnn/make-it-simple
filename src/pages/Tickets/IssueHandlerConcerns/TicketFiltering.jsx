@@ -45,9 +45,9 @@ const TicketFiltering = ({ filterStatus, setFilterStatus, dateFrom, setDateFrom,
     // setDateTo("");
   };
 
-  console.log("Status: ", tempFilterStatus);
-  console.log("Date From: ", tempDateFrom);
-  console.log("Date To: ", tempDateTo);
+  // console.log("Status: ", tempFilterStatus);
+  // console.log("Date From: ", tempDateFrom);
+  // console.log("Date To: ", tempDateTo);
 
   return (
     <>

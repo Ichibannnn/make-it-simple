@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
-import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation } from "../../../features/user_management_api/user/userApi";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
@@ -34,6 +33,8 @@ import { AddOutlined, Search } from "@mui/icons-material";
 import UserAccountAction from "./UserAccountAction";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
+
+import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation } from "../../../features/user_management_api/user/userApi";
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
