@@ -189,7 +189,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                       <FiberManualRecord color="primary" fontSize="20px" />
 
                       {data?.concern_Status === "For Approval" ? (
-                        <Typography sx={{ fontSize: "14px", color: theme.palette.warning.main, fontStyle: "italic" }}>-</Typography>
+                        <Typography sx={{ fontSize: "14px", color: theme.palette.warning.main, fontStyle: "italic" }}>Ticket not yet assigned</Typography>
                       ) : (
                         <Typography sx={{ fontSize: "14px" }}>{data?.ticketRequestConcerns?.[0]?.ticketConcernId}</Typography>
                       )}

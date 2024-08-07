@@ -27,6 +27,7 @@ import {
   GetAppOutlined,
   PostAddOutlined,
   RemoveCircleOutline,
+  RemoveRedEyeOutlined,
   Search,
 } from "@mui/icons-material";
 
@@ -60,6 +61,7 @@ import { Toaster, toast } from "sonner";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import Swal from "sweetalert2";
 import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
+import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -89,6 +91,7 @@ const ReceiverConcerns = () => {
 
   const [addData, setAddData] = useState(null);
   const [viewApprovedData, setViewApprovedData] = useState(null);
+  const [viewRemarksData, setViewRemarksData] = useState(null);
 
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
@@ -101,6 +104,7 @@ const ReceiverConcerns = () => {
   // const isSmallScreen = useMediaQuery("(max-width: 1489px) and (max-height: 945px)");
 
   const { open, onToggle, onClose } = useDisclosure();
+  const { open: viewRemarksOpen, onToggle: viewRemarksOnToggle, onClose: viewRemarksOnClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
@@ -389,6 +393,11 @@ const ReceiverConcerns = () => {
     setApproveStatus(false);
   };
 
+  const onViewRemarksAction = (data) => {
+    viewRemarksOnToggle();
+    setViewRemarksData(data);
+  };
+
   useEffect(() => {
     if (addData) {
       const ticketConcernIdArray = addData?.ticketRequestConcerns?.map((item) => {
@@ -653,27 +662,6 @@ const ReceiverConcerns = () => {
                           <Stack direction="row" gap={1} alignItems="center">
                             <FiberManualRecord color="success" fontSize="65px" />
 
-                            {/* <Controller
-                              control={displayControl}
-                              name="displayConcern"
-                              render={({ field: { ref, value, onChange } }) => {
-                                return (
-                                  <TextField
-                                    inputRef={ref}
-                                    size="medium"
-                                    value={value}
-                                    onChange={onChange}
-                                    // sx={{
-                                    //   width: "80%",
-                                    // }}
-                                    autoComplete="off"
-                                    rows={8}
-                                    multiline
-                                  />
-                                );
-                              }}
-                            /> */}
-
                             <Typography
                               sx={{
                                 fontSize: "14px",
@@ -698,16 +686,29 @@ const ReceiverConcerns = () => {
                           paddingLeft: 2,
                         }}
                       >
-                        <Stack>
-                          <Typography
-                            sx={{
-                              fontSize: "13px",
-                            }}
-                          >
-                            {/* Issue Handler(s) assigned to this concern: */}
-                          </Typography>
-                        </Stack>
-                        {/* <ReceiverConcernsActions data={item} onView={onViewAction} onClose={onClose} setAddData={setAddData} setEditData={setEditData} /> */}
+                        {/* Transfered Remarks */}
+                        {subItem?.transfer_By !== null && (
+                          <Stack direction="row" gap={0.5} sx={{ width: "100%", justifyContent: "space-between", alignItems: "center" }}>
+                            <Typography
+                              sx={{
+                                fontSize: "13px",
+                                color: theme.palette.warning.main,
+                              }}
+                            >
+                              {` Transferred by: ${subItem?.transfer_By}`}
+                            </Typography>
+
+                            <Button
+                              size="small"
+                              variant="text"
+                              startIcon={<RemoveRedEyeOutlined />}
+                              sx={{ padding: "8px", borderRadius: "2px" }}
+                              onClick={() => onViewRemarksAction(item)}
+                            >
+                              <Typography sx={{ fontSize: "12px" }}>View Remarks</Typography>
+                            </Button>
+                          </Stack>
+                        )}
                       </Stack>
                     </Stack>
                   ))
@@ -1767,6 +1768,7 @@ const ReceiverConcerns = () => {
       </Stack>
 
       <ReceiverAddTicketDialog open={open} onClose={onDialogClose} />
+      <ViewTransferRemarksDialog data={viewRemarksData} open={viewRemarksOpen} onClose={viewRemarksOnClose} />
     </Stack>
   );
 };

@@ -255,7 +255,12 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     }}
                   >
                     <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.transfer_Remarks}</Typography>
+                    <Typography
+                      sx={{ fontSize: "14px" }}
+                      dangerouslySetInnerHTML={{
+                        __html: data?.transfer_Remarks.replace(/\r\n/g, "<br />"),
+                      }}
+                    />
                   </Stack>
                 </Stack>
 

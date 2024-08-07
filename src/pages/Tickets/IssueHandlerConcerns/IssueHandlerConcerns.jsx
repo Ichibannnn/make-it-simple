@@ -591,7 +591,7 @@ const IssueHandlerConcerns = () => {
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
-                            maxWidth: "700px",
+                            maxWidth: "400px",
                             "&:hover": {
                               background: "",
                               color: "#EDF2F7",
@@ -765,19 +765,27 @@ const IssueHandlerConcerns = () => {
                               variant="filled"
                               size="30px"
                               icon={
-                                item?.closed_Status === "On-Time" ? <FiberManualRecord fontSize="small" color="success" /> : <FiberManualRecord fontSize="small" color="error" />
+                                item?.closed_Status === "On-Time" ? (
+                                  <FiberManualRecord fontSize="small" color="success" />
+                                ) : item?.closed_Status === "Delay" ? (
+                                  <FiberManualRecord fontSize="small" color="error" />
+                                ) : (
+                                  ""
+                                )
                               }
                               sx={{
                                 fontSize: "12px",
-                                backgroundColor: theme.palette.bgForm.black1,
+                                backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
                                 color: theme.palette.text.main,
                                 fontWeight: 800,
                               }}
                               label={
                                 item?.closed_Status === "On-Time" ? (
                                   <Typography sx={{ color: theme.palette.success.main, fontSize: "13px", fontWeight: 800 }}>On-Time</Typography>
-                                ) : (
+                                ) : item?.closed_Status === "Delay" ? (
                                   <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}>Delayed</Typography>
+                                ) : (
+                                  <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}></Typography>
                                 )
                               }
                             />
