@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Dialog, DialogContent, Divider, IconButton, Stack, Typography } from "@mui/material";
 import React from "react";
 
 import { theme } from "../../../theme/theme";
@@ -41,7 +41,6 @@ const ViewTransferRemarksDialog = ({ data, open, onClose }) => {
               sx={{
                 fontSize: "14px",
                 color: theme.palette.text.secondary,
-                // fontStyle: "italic",
               }}
             >
               Remarks:

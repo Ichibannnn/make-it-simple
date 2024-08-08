@@ -1,11 +1,11 @@
-import { Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Box, Chip, Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { theme } from "../theme/theme";
 
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { Password } from "@mui/icons-material";
+import { KeyboardArrowDown, KeyboardArrowDownOutlined, Password, Person } from "@mui/icons-material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -112,20 +112,40 @@ const Header = () => {
     >
       <Box>
         {hideMenu && (
-          <Box>
-            <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
-              <MenuOutlinedIcon />
-            </IconButton>
-          </Box>
+          <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
+            <MenuOutlinedIcon />
+          </IconButton>
         )}
       </Box>
 
       <Box>
-        <IconButton onClick={menuHandler} aria-controls="account-menu" aria-haspopup="true">
+        <Box
+          sx={{
+            display: "flex",
+            direction: "row",
+            gap: 0.5,
+            width: "100%",
+            alignItems: "center",
+            padding: 1,
+            bgcolor: theme.palette.bgForm.black1,
+            borderRadius: "20px",
+            "&:hover": {
+              backgroundColor: theme.palette.bgForm.black2,
+            },
+          }}
+          onClick={menuHandler}
+        >
+          <Person sx={{ fontSize: "20px" }} />
+          <Typography sx={{ fontSize: "14px" }}>{fullName}</Typography>
+          <KeyboardArrowDown sx={{ color: theme.palette.text.secondary }} />
+        </Box>
+
+        {/* <IconButton onClick={menuHandler} aria-controls="account-menu" aria-haspopup="true">
           <Tooltip title="Account">
             <PermIdentityOutlinedIcon />
           </Tooltip>
-        </IconButton>
+        </IconButton> */}
+        {/* <Chip label={fullName} color="error" deleteIcon={<KeyboardArrowDown />} onDelete={menuHandler} onClick={menuHandler} icon={<Person />} /> */}
         <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
           <MenuItem onClick={closeHandler}>
             <Box
