@@ -76,8 +76,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      console.log("Data: ", data);
-
       // if (employeeIsSuccess) getEmployees();
       if (!companyIsSuccess) getCompany();
       if (!businessUnitIsSuccess) getBusinessUnit();
@@ -253,8 +251,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       }
     }
   };
-
-  // console.log("WarningData: ", warningData);
 
   const onCloseHandler = () => {
     reset();

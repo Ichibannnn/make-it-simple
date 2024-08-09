@@ -263,6 +263,10 @@ body {
   font-weight: lighter;
 }
 
+.capitalize-letter {
+  text-transform: capitalize !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

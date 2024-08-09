@@ -29,6 +29,7 @@ import {
   RemoveCircleOutline,
   RemoveRedEyeOutlined,
   Search,
+  WarningRounded,
 } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -688,15 +689,19 @@ const ReceiverConcerns = () => {
                       >
                         {/* Transfered Remarks */}
                         {subItem?.transfer_By !== null && (
-                          <Stack direction="row" gap={0.5} sx={{ width: "100%", justifyContent: "space-between", alignItems: "center" }}>
-                            <Typography
-                              sx={{
-                                fontSize: "13px",
-                                color: theme.palette.warning.main,
-                              }}
-                            >
-                              {` Transferred by: ${subItem?.transfer_By}`}
-                            </Typography>
+                          <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between", alignItems: "center" }}>
+                            <Stack direction={0.5} sx={{ alignItems: "center" }}>
+                              <WarningRounded color="warning" sx={{ fontSize: "18px" }} />
+
+                              <Typography
+                                sx={{
+                                  fontSize: "13px",
+                                  color: theme.palette.warning.main,
+                                }}
+                              >
+                                {` Transferred by: ${subItem?.transfer_By}`}
+                              </Typography>
+                            </Stack>
 
                             <Button
                               size="small"

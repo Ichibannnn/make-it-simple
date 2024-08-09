@@ -1,11 +1,10 @@
-import { Box, Chip, Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Box, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { theme } from "../theme/theme";
 
-import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { KeyboardArrowDown, KeyboardArrowDownOutlined, Password, Person } from "@mui/icons-material";
+import { AccountCircleRounded, Password } from "@mui/icons-material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,10 +14,6 @@ import { toggleSidebar } from "../features/sidebar/sidebarSlice";
 
 import ReusableAlert from "../hooks/ReusableAlert";
 import useDisclosure from "../hooks/useDisclosure";
-
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
 
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
@@ -36,11 +31,9 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const fullName = useSelector((state) => state.user.fullname);
-  const userName = useSelector((state) => state.user.username);
-  const userId = useSelector((state) => state.user.id);
-
-  // console.log("User Details: ", details);
+  const fullName = useSelector((state) => state?.user?.fullname);
+  const userName = useSelector((state) => state?.user?.username);
+  const userRole = useSelector((state) => state?.user?.userRoleName);
 
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -123,54 +116,29 @@ const Header = () => {
           sx={{
             display: "flex",
             direction: "row",
-            gap: 0.5,
             width: "100%",
+            justifyContent: "center",
             alignItems: "center",
-            padding: 1,
             bgcolor: theme.palette.bgForm.black1,
             borderRadius: "20px",
-            "&:hover": {
-              backgroundColor: theme.palette.bgForm.black2,
-            },
           }}
-          onClick={menuHandler}
         >
-          <Person sx={{ fontSize: "20px" }} />
-          <Typography sx={{ fontSize: "14px" }}>{fullName}</Typography>
-          <KeyboardArrowDown sx={{ color: theme.palette.text.secondary }} />
+          <IconButton onClick={menuHandler} ml={1}>
+            <Tooltip title="Account">
+              <AccountCircleRounded sx={{ fontSize: "40px" }} />
+            </Tooltip>
+          </IconButton>
+
+          <Stack mt={0.5}>
+            <Typography className="capitalize-letter" sx={{ fontSize: "13px", fontWeight: 500 }}>
+              {fullName}
+            </Typography>
+
+            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>{userRole}</Typography>
+          </Stack>
         </Box>
 
-        {/* <IconButton onClick={menuHandler} aria-controls="account-menu" aria-haspopup="true">
-          <Tooltip title="Account">
-            <PermIdentityOutlinedIcon />
-          </Tooltip>
-        </IconButton> */}
-        {/* <Chip label={fullName} color="error" deleteIcon={<KeyboardArrowDown />} onDelete={menuHandler} onClick={menuHandler} icon={<Person />} /> */}
         <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
-          <MenuItem onClick={closeHandler}>
-            <Box
-              sx={{
-                flexDirection: "column",
-                padding: "0px",
-              }}
-            >
-              <Typography sx={{ fontSize: "1rem", fontWeight: "400", lineWeight: "1.5" }}>{fullName}</Typography>
-
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-                <Typography
-                  sx={{
-                    fontSize: ".8rem",
-                    fontWeight: "400",
-                    lineWeight: "1.5",
-                    color: "#A0AEC0",
-                  }}
-                >
-                  {userName}
-                </Typography>
-              </Box>
-            </Box>
-          </MenuItem>
-          <Divider color="#1C2536" variant="fullWidth" />
           <MenuItem onClick={closeHandler}>
             <ListItemIcon>
               <Password fontSize="small" />
@@ -188,13 +156,6 @@ const Header = () => {
       </Box>
 
       {showAlert && <ReusableAlert severity={alertData.severity} title={alertData.title} description={alertData.description} onClose={handleAlertClose} />}
-
-      {/* <ChangePassword
-        userId={userId}
-        // userPassword={userPassword}
-        openChangePassword={openChangePassword}
-        changePasswordOnClose={changePasswordOnClose}
-      /> */}
     </Stack>
   );
 };
