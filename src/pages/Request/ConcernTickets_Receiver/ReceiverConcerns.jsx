@@ -14,6 +14,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 
 import {
@@ -106,6 +107,8 @@ const ReceiverConcerns = () => {
 
   const { open, onToggle, onClose } = useDisclosure();
   const { open: viewRemarksOpen, onToggle: viewRemarksOnToggle, onClose: viewRemarksOnClose } = useDisclosure();
+
+  const isSmallScreen = useMediaQuery("(max-width: 1091px) and (max-height: 911px)");
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
@@ -511,11 +514,11 @@ const ReceiverConcerns = () => {
         </Stack>
       </Stack>
 
-      <Stack sx={{ flexDirection: "row", gap: 2, marginTop: 1 }}>
+      <Stack sx={{ flexDirection: isSmallScreen ? "column" : "row", gap: 2, marginTop: 1 }}>
         {/* CONCERN TABLE */}
         <Paper
           sx={{
-            width: addData || viewApprovedData ? "70%" : "100%",
+            width: (addData || viewApprovedData) && !isSmallScreen ? "70%" : "100%",
             minHeight: "90vh", // -----------
             display: "flex",
             flexDirection: "column",
@@ -767,7 +770,7 @@ const ReceiverConcerns = () => {
         {/* CREATE TICKET FORM */}
         <Paper
           sx={{
-            width: "30%",
+            width: isSmallScreen ? "100%" : "30%",
             minHeight: "90vh",
             display: addData || viewApprovedData ? "flex" : "none",
             flexDirection: "column",
@@ -1771,7 +1774,6 @@ const ReceiverConcerns = () => {
           )}
         </Paper>
       </Stack>
-
       <ReceiverAddTicketDialog open={open} onClose={onDialogClose} />
       <ViewTransferRemarksDialog data={viewRemarksData} open={viewRemarksOpen} onClose={viewRemarksOnClose} />
     </Stack>

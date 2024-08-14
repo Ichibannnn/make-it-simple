@@ -192,7 +192,7 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
-  console.log("Ticket Status: ", ticketStatus);
+  // console.log("Ticket Status: ", ticketStatus);
 
   return (
     <Stack

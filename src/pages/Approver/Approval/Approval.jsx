@@ -9,6 +9,7 @@ import TicketApproval from "./TicketApproval/TicketApproval";
 import ForTransfer from "./ForTransferApproval/ForTransfer";
 
 import { useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -17,6 +18,28 @@ const Approval = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+
+  const connection = useSignalRConnection();
+
+  useEffect(() => {
+    if (connection) {
+      connection
+        .start()
+        .then(() => {
+          connection.on("TicketData", (item) => {
+            console.log("Item: ", item);
+          });
+          // connection.on("TicketData", (data) => {
+          //   console.log("Data: ", data);
+          // });
+        })
+        .catch((err) => {
+          alert("Connection failed: ", err);
+        });
+    }
+  }, [connection]);
+
+  // console.log("Connection: ", connection);
 
   const {
     data: ticketApprovalData,

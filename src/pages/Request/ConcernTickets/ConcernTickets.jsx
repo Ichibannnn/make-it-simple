@@ -52,6 +52,8 @@ import { toast, Toaster } from "sonner";
 import Swal from "sweetalert2";
 import ConcernReturn from "./ConcernReturn";
 
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
+
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
   const [ascending, setAscending] = useState(false);
@@ -77,6 +79,25 @@ const ConcernTickets = () => {
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
+
+  // console.log("useSignalRConnection", useSignalRConnection);
+
+  // useEffect(() => {
+  //   if (data) {
+  //     // const handleRequestApproved = (requestId) => {
+  //     //   dispatch(removeMaterial({ id: requestId }));
+  //     // };
+
+  //     connection.start().catch((err) => console.error("SignalR Connection Error: ", err));
+
+  //     connection.on("RequestApproved", data);
+
+  //     return () => {
+  //       connection.off("RequestApproved", data);
+  //       connection.stop();
+  //     };
+  //   }
+  // }, [data]);
 
   const [confirmConcern] = useConfirmConcernMutation();
 
@@ -172,7 +193,7 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
-  console.log("data: ", data);
+  // console.log("data: ", data);
 
   return (
     <Stack
