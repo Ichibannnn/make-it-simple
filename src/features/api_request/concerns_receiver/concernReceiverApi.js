@@ -19,6 +19,7 @@ export const concernReceiverApi = createApi({
       });
     },
   }),
+
   endpoints: (builder) => ({
     // RECEIVER ---------------
     getReceiverConcerns: builder.query({

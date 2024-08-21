@@ -52,6 +52,9 @@ import ManageTransferDialog from "./ManageTransferDialog";
 import Swal from "sweetalert2";
 import { toast, Toaster } from "sonner";
 
+import { useSignalR } from "../../../context/SignalRContext";
+import { useNotification } from "../../../context/NotificationContext";
+
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
   const [pageNumber, setPageNumber] = useState(1);
@@ -75,6 +78,10 @@ const IssueHandlerConcerns = () => {
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
+
+  const connection = useSignalR();
+
+  const { data: notification } = useNotification();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
@@ -192,7 +199,13 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
-  // console.log("Ticket Status: ", ticketStatus);
+  // useEffect(() => {
+  //   if (connection) {
+  //     connection.on("TicketNotifData", (data) => {
+  //       console.log("Data: ", data);
+  //     });
+  //   }
+  // }, [connection]);
 
   return (
     <Stack
@@ -223,7 +236,7 @@ const IssueHandlerConcerns = () => {
                 label="Open"
                 icon={
                   <Badge
-                    badgeContent={901}
+                    badgeContent={notification?.value?.openTicketNotif}
                     max={100000}
                     color="warning"
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
@@ -253,7 +266,7 @@ const IssueHandlerConcerns = () => {
                 label="For Transfer"
                 icon={
                   <Badge
-                    badgeContent={901}
+                    badgeContent={notification?.value?.forTransferNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
@@ -281,7 +294,8 @@ const IssueHandlerConcerns = () => {
                 label="For Closing"
                 icon={
                   <Badge
-                    badgeContent={100}
+                    badgeContent={notification?.value?.forCloseNotif}
+                    max={100000}
                     // color="primary"
                     anchorOrigin={{
                       vertical: "top",
@@ -312,7 +326,8 @@ const IssueHandlerConcerns = () => {
                 label="For Confirmation"
                 icon={
                   <Badge
-                    badgeContent={100}
+                    badgeContent={notification?.value?.notConfirmNotif}
+                    max={100000}
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "left",
@@ -342,7 +357,8 @@ const IssueHandlerConcerns = () => {
                 label="Closed"
                 icon={
                   <Badge
-                    badgeContent={100}
+                    badgeContent={notification?.value?.closedNotif}
+                    max={100000}
                     color="success"
                     anchorOrigin={{
                       vertical: "top",
@@ -372,7 +388,8 @@ const IssueHandlerConcerns = () => {
                 label="History"
                 icon={
                   <Badge
-                    badgeContent={100}
+                    badgeContent={notification?.value?.allTicketNotif}
+                    max={100000}
                     color="primary"
                     anchorOrigin={{
                       vertical: "top",
@@ -728,6 +745,8 @@ const IssueHandlerConcerns = () => {
                             label={
                               item.ticket_Status === "Open Ticket"
                                 ? "Open"
+                                : item.ticket_Status === "For Transfer"
+                                ? "For Transfer"
                                 : item.ticket_Status === "For Closing Ticket"
                                 ? "For Closing"
                                 : item.ticket_Status === "For Confirmation"
@@ -740,6 +759,8 @@ const IssueHandlerConcerns = () => {
                               backgroundColor:
                                 item.ticket_Status === "Open Ticket"
                                   ? "#ec9d29"
+                                  : item.ticket_Status === "For Transfer"
+                                  ? "#ff7043"
                                   : item.ticket_Status === "For Closing Ticket"
                                   ? "#3A96FA"
                                   : item.ticket_Status === "For Confirmation"
@@ -865,7 +886,7 @@ const IssueHandlerConcerns = () => {
         </Stack>
 
         <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />
-        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
+        <IssueHandlerClosingDialog data={closeTicketData} refetch={refetch} open={closeTicketOpen} onClose={onDialogClose} />
         <ManageTicketDialog
           data={closeTicketData}
           open={manageTicketOpen}

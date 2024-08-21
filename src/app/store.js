@@ -31,12 +31,15 @@ import { ymirApi } from "../features/ymir/ymirApi";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
+import { notificationApi } from "../features/api_notification/notificationApi";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     user: userReducer,
     sidebar: sidebarReducer,
+
+    [notificationApi.reducerPath]: notificationApi.reducer,
 
     [loginApi.reducerPath]: loginApi.reducer,
 
@@ -70,6 +73,8 @@ export const store = configureStore({
 
   middleware: (getDefaultMiddleWare) =>
     getDefaultMiddleWare().concat([
+      notificationApi.middleware,
+
       loginApi.middleware,
 
       userApi.middleware,

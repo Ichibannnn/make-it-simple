@@ -99,9 +99,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
 
-    console.log("uniqueFiles: ", uniqueNewFiles);
-    console.log("uniqueFiles: ", uniqueNewFiles);
-
     setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
 
@@ -468,11 +465,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
 
-                            console.log("files: ", files);
+                            // console.log("files: ", files);
 
                             const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
-                            console.log("Controlled Unique: ", uniqueNewFiles);
+                            // console.log("Controlled Unique: ", uniqueNewFiles);
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";

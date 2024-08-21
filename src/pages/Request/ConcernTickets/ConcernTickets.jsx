@@ -53,6 +53,7 @@ import Swal from "sweetalert2";
 import ConcernReturn from "./ConcernReturn";
 
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useNotification } from "../../../context/NotificationContext";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -71,6 +72,10 @@ const ConcernTickets = () => {
   const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();
   const { open: viewHistoryOpen, onToggle: viewHistoryOnToggle, onClose: viewHistoryOnClose } = useDisclosure();
   const { open: returnOpen, onToggle: returnOnToggle, onClose: returnOnClose } = useDisclosure();
+
+  const { data: notification } = useNotification();
+
+  // console.log("Requestor Concern: ", notification);
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRequestorConcernsQuery({
     Concern_Status: status,
@@ -193,8 +198,6 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
-  // console.log("data: ", data);
-
   return (
     <Stack
       sx={{
@@ -238,7 +241,7 @@ const ConcernTickets = () => {
                   label="All Requests"
                   icon={
                     <Badge
-                      badgeContent={data?.value?.requestConcern?.length}
+                      badgeContent={notification?.value?.allRequestTicketNotif}
                       max={100000}
                       color="primary"
                       anchorOrigin={{
@@ -251,7 +254,6 @@ const ConcernTickets = () => {
                           fontWeight: 400,
                         },
                       }}
-                      showZero
                     >
                       <ClearAllOutlined />
                     </Badge>
@@ -269,7 +271,7 @@ const ConcernTickets = () => {
                   label="For Approval"
                   icon={
                     <Badge
-                      badgeContent={data?.value?.requestConcern?.[0]?.forApprovalCount}
+                      badgeContent={notification?.value?.forTicketNotif}
                       max={100000}
                       anchorOrigin={{
                         vertical: "top",
@@ -283,7 +285,6 @@ const ConcernTickets = () => {
                           color: "#ffff",
                         },
                       }}
-                      showZero
                     >
                       <PendingActionsOutlined />
                     </Badge>
@@ -301,7 +302,7 @@ const ConcernTickets = () => {
                   label="Ongoing"
                   icon={
                     <Badge
-                      badgeContent={data?.value?.requestConcern?.[0]?.onGoingCount}
+                      badgeContent={notification?.value?.currentlyFixingNotif}
                       max={100000}
                       color="warning"
                       anchorOrigin={{
@@ -332,7 +333,7 @@ const ConcernTickets = () => {
                   label="For Confirmation"
                   icon={
                     <Badge
-                      badgeContent={data?.value?.requestConcern?.[0]?.forConfirmationCount}
+                      badgeContent={notification?.value?.notConfirmNotif}
                       max={100000}
                       // color="primary"
                       anchorOrigin={{
@@ -364,7 +365,7 @@ const ConcernTickets = () => {
                   label="Done"
                   icon={
                     <Badge
-                      badgeContent={data?.value?.requestConcern?.[0]?.doneCount}
+                      badgeContent={notification?.value?.doneNotif}
                       max={100000}
                       color="success"
                       anchorOrigin={{

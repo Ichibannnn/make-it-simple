@@ -88,7 +88,6 @@ const SidebarHeader = () => {
         padding: "24px",
         marginTop: 3,
         gap: "5px",
-        // width: "280px",
       }}
     >
       <img src="/images/dotek-login.png" alt="misLogo" width="56" height="38" className="logo-sidebar" />
@@ -98,7 +97,6 @@ const SidebarHeader = () => {
           display: "flex",
           justifyContent: "start",
           flexDirection: "column",
-          // alignItems: "center",
           flexGrow: 1,
         }}
       >

@@ -19,6 +19,7 @@ export const categoryApi = createApi({
       });
     },
   }),
+
   endpoints: (builder) => ({
     getCategory: builder.query({
       query: (params) => ({
@@ -48,9 +49,4 @@ export const categoryApi = createApi({
   }),
 });
 
-export const {
-  useGetCategoryQuery,
-  useLazyGetCategoryQuery,
-  useCreateEditCategoryMutation,
-  useArchiveCategoryMutation,
-} = categoryApi;
+export const { useGetCategoryQuery, useLazyGetCategoryQuery, useCreateEditCategoryMutation, useArchiveCategoryMutation } = categoryApi;

@@ -9,7 +9,7 @@ import TicketApproval from "./TicketApproval/TicketApproval";
 import ForTransfer from "./ForTransferApproval/ForTransfer";
 
 import { useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useNotification } from "../../../context/NotificationContext";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -19,27 +19,9 @@ const Approval = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const connection = useSignalRConnection();
+  const { data: notification } = useNotification();
 
-  useEffect(() => {
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          connection.on("TicketData", (item) => {
-            console.log("Item: ", item);
-          });
-          // connection.on("TicketData", (data) => {
-          //   console.log("Data: ", data);
-          // });
-        })
-        .catch((err) => {
-          alert("Connection failed: ", err);
-        });
-    }
-  }, [connection]);
-
-  // console.log("Connection: ", connection);
+  // console.log("Approval: ", notification);
 
   const {
     data: ticketApprovalData,
@@ -115,7 +97,8 @@ const Approval = () => {
               label="Tickets"
               icon={
                 <Badge
-                  badgeContent={100}
+                  badgeContent={notification?.value?.forApprovalClosingNotif}
+                  max={100000}
                   color="warning"
                   anchorOrigin={{
                     vertical: "top",
@@ -146,7 +129,8 @@ const Approval = () => {
               label="For Transfer"
               icon={
                 <Badge
-                  badgeContent={100}
+                  badgeContent={notification?.value?.forApprovalTransferNotif}
+                  max={100000}
                   color="warning"
                   anchorOrigin={{
                     vertical: "top",

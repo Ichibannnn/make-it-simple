@@ -84,14 +84,16 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleAttachments = (event) => {
     const newFiles = Array.from(event.target.files);
 
-    // console.log("New files", newFiles);
-
     const fileNames = newFiles.map((file) => ({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
     }));
 
-    updateAttachments(fileNames);
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
+
+    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+
+    // updateAttachments(fileNames);
   };
 
   const handleUploadButtonClick = () => {
@@ -101,8 +103,10 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleDeleteFile = (fileNameToDelete) => {
     setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
-    const updatedAttachments = watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete);
-    setValue("RequestAttachmentsFiles", updatedAttachments);
+    setValue(
+      "RequestAttachmentsFiles",
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete)
+    );
   };
 
   const handleDragOver = (event) => {
@@ -112,8 +116,21 @@ const ConcernDialog = ({ open, onClose }) => {
   const handleDrop = (event) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
-    const newFiles = Array.from(fileList);
-    updateAttachments(newFiles);
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
+    const fileNames = Array.from(fileList)
+      .filter((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        return allowedExtensions.includes(`.${extension}`);
+      })
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
+    console.log("fileNames: ", fileNames);
+
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
+    setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
   const updateAttachments = (newFiles) => {
@@ -145,6 +162,10 @@ const ConcernDialog = ({ open, onClose }) => {
   // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
 
   const currentAttachments = watch("RequestAttachmentsFiles") || [];
+
+  // console.log("Attachments: ", attachments);
+  // console.log("currentAttachments: ", watch("currentAttachments"));
+  // console.log("Attachments: ", watch("RequestAttachmentsFiles"));
 
   return (
     <>
@@ -344,9 +365,12 @@ const ConcernDialog = ({ open, onClose }) => {
                         multiple
                         type="file"
                         onChange={(event) => {
-                          const files = Array.from(event.target.files);
                           handleAttachments(event);
-                          onChange([...currentAttachments, ...files]);
+                          const files = Array.from(event.target.files);
+
+                          console.log("Controller Files: ", files);
+
+                          onChange(files);
                         }}
                       />
                     )}
@@ -367,6 +391,7 @@ const ConcernDialog = ({ open, onClose }) => {
             >
               Save
             </LoadingButton>
+
             <LoadingButton
               variant="text"
               disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}

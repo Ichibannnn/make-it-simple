@@ -8,6 +8,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import { useGetClosingTicketsQuery } from "../../../features/api_ticketing/receiver/closingTicketApi";
 
 import CloseTicketsTab from "./CloseTicketsTab";
+import { useNotification } from "../../../context/NotificationContext";
 
 const ReceiverCloseTickets = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -16,6 +17,10 @@ const ReceiverCloseTickets = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+
+  const { data: notification } = useNotification();
+
+  console.log("Closing Ticket: ", notification);
 
   const {
     data: closeTicketData,
@@ -78,7 +83,8 @@ const ReceiverCloseTickets = () => {
               label="For Closing"
               icon={
                 <Badge
-                  badgeContent={100}
+                  badgeContent={notification?.value?.allClosingNotif}
+                  max={100000}
                   color="warning"
                   anchorOrigin={{
                     vertical: "top",

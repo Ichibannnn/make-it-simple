@@ -20,6 +20,7 @@ import { concernReceiverApi } from "../features/api_request/concerns_receiver/co
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
+import { notificationApi } from "../features/api_notification/notificationApi";
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -59,15 +60,15 @@ const Header = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
+      dispatch(notificationApi.util.resetApiState());
       dispatch(concernApi.util.resetApiState());
       dispatch(concernReceiverApi.util.resetApiState());
       dispatch(concernIssueHandlerApi.util.resetApiState());
       dispatch(ticketApprovalApi.util.resetApiState());
       dispatch(closingTicketApi.util.resetApiState());
 
-      navigate("/");
-
       dispatch(clearUserDetails());
+      navigate("/");
     } catch (error) {
       setAlertData({
         severity: "error",

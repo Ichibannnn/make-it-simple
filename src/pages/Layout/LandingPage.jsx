@@ -4,6 +4,8 @@ import { Outlet } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import Sidebar from "../../components/Sidebar";
 import MainContent from "../../components/MainContent";
+import useSignalRConnection from "../../hooks/useSignalRConnection";
+import { useEffect } from "react";
 
 const LandingPage = () => {
   return (

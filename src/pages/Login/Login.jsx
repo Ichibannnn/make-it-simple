@@ -40,6 +40,7 @@ import useDisclosure from "../../hooks/useDisclosure";
 import { useChangeUserPasswordMutation } from "../../features/user_management_api/user/userApi";
 import { useEffect } from "react";
 import { Toaster, toast } from "sonner";
+import { notificationApi } from "../../features/api_notification/notificationApi";
 
 const Login = () => {
   const hideLoginForm = useMediaQuery("(max-width: 958px)");
@@ -177,6 +178,8 @@ const LoginForm = () => {
 
         dispatch(signIn());
         dispatch(setUserDetails(user));
+
+        dispatch(notificationApi.util.resetApiState());
 
         setAlertData({
           severity: "success",

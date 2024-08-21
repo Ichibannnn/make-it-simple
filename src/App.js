@@ -1,16 +1,20 @@
-import { Box, Button, CssBaseline, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./app/router";
 import { theme } from "./theme/theme";
-import useSignalRConnection from "./hooks/useSignalRConnection";
-import { useEffect } from "react";
+import { SignalRProvider } from "./context/SignalRContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      <RouterProvider router={router} />
+      <SignalRProvider>
+        <NotificationProvider>
+          <RouterProvider router={router} />
+        </NotificationProvider>
+      </SignalRProvider>
     </ThemeProvider>
   );
 };

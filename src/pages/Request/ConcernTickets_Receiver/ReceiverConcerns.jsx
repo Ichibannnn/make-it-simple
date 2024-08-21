@@ -1,5 +1,6 @@
 import {
   Autocomplete,
+  Badge,
   Box,
   Button,
   Chip,
@@ -22,10 +23,13 @@ import {
   Add,
   AttachFileOutlined,
   CheckOutlined,
+  ClearAllOutlined,
+  DoneAllOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
   FileUploadOutlined,
   GetAppOutlined,
+  PendingActions,
   PostAddOutlined,
   RemoveCircleOutline,
   RemoveRedEyeOutlined,
@@ -34,17 +38,24 @@ import {
 } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
+
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import moment from "moment";
 
 import { theme } from "../../../theme/theme";
+import Swal from "sweetalert2";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import SomethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LoadingButton } from "@mui/lab";
+import { Toaster, toast } from "sonner";
 
 import {
   useApproveReceiverConcernMutation,
@@ -55,13 +66,9 @@ import {
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
-
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
-import Swal from "sweetalert2";
+import { useNotification } from "../../../context/NotificationContext";
+
 import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
 import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
 
@@ -109,6 +116,10 @@ const ReceiverConcerns = () => {
   const { open: viewRemarksOpen, onToggle: viewRemarksOnToggle, onClose: viewRemarksOnClose } = useDisclosure();
 
   const isSmallScreen = useMediaQuery("(max-width: 1091px) and (max-height: 911px)");
+
+  const { data: notification } = useNotification();
+
+  // console.log("Receiver Concerns: ", notification);
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
@@ -538,9 +549,59 @@ const ReceiverConcerns = () => {
           >
             <Stack>
               <Tabs value={approveStatus} onChange={onStatusChange}>
-                <Tab className="tabs-styling-header" value="false" label="Pending" sx={{ fontWeight: 600, fontSize: "17px" }} />
+                <Tab
+                  className="tabs-styling-header"
+                  value="false"
+                  label="Pending"
+                  icon={
+                    <Badge
+                      badgeContent={notification?.value?.receiverForApprovalNotif}
+                      max={100000}
+                      color="primary"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                        },
+                      }}
+                    >
+                      <PendingActions />
+                    </Badge>
+                  }
+                  iconPosition="start"
+                  sx={{ fontWeight: 600, fontSize: "17px" }}
+                />
 
-                <Tab className="tabs-styling-header" value="true" label="Approved" sx={{ fontWeight: 600, fontSize: "17px" }} />
+                <Tab
+                  className="tabs-styling-header"
+                  value="true"
+                  label="Approved"
+                  icon={
+                    <Badge
+                      badgeContent={notification?.value?.receiverApproveNotif}
+                      max={100000}
+                      color="primary"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      sx={{
+                        ".MuiBadge-badge": {
+                          fontSize: "0.55rem",
+                          fontWeight: 400,
+                        },
+                      }}
+                    >
+                      <DoneAllOutlined />
+                    </Badge>
+                  }
+                  iconPosition="start"
+                  sx={{ fontWeight: 600, fontSize: "17px" }}
+                />
               </Tabs>
             </Stack>
 

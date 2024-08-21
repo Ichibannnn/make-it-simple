@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -20,7 +21,7 @@ const schema = yup.object().shape({
   AddClosingAttachments: yup.array().nullable(),
 });
 
-const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
+const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -28,6 +29,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
+
+  const connection = useSignalRConnection();
 
   const {
     control,
@@ -96,6 +99,12 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               description: "Ticket submitted successfully!",
               duration: 1500,
             });
+
+            // connection();
+
+            // if (connection) {
+            //   refetch();
+            // }
 
             setAddAttachments([]);
             reset();

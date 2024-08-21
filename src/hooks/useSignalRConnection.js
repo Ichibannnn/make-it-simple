@@ -1,8 +1,11 @@
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
@@ -13,8 +16,28 @@ const useSignalRConnection = () => {
       .withAutomaticReconnect()
       .build();
 
+    newConnection
+      .start()
+      .then(() => {
+        newConnection.on("TicketNotifData", (notifData) => {
+          // console.log("Notification: ", notifData);
+          // dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
+        });
+      })
+      .catch((error) => {
+        console.log("Error: ", error);
+      });
+
     setConnection(newConnection);
-  }, []);
+
+    return () => {
+      if (newConnection) {
+        newConnection.stop().then(() => {
+          console.log("SignalR Connection stopped");
+        });
+      }
+    };
+  }, [dispatch]);
 
   return connection;
 };
