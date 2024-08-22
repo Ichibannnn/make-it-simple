@@ -71,6 +71,8 @@ import { useNotification } from "../../../context/NotificationContext";
 
 import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
 import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -101,26 +103,16 @@ const ReceiverConcerns = () => {
   const [addData, setAddData] = useState(null);
   const [viewApprovedData, setViewApprovedData] = useState(null);
   const [viewRemarksData, setViewRemarksData] = useState(null);
-
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
-
   const [startDateValidation, setStartDateValidation] = useState(null);
+  const isSmallScreen = useMediaQuery("(max-width: 1091px) and (max-height: 911px)");
 
+  const dispatch = useDispatch();
   const fileInputRef = useRef();
   const today = moment();
 
-  // const isSmallScreen = useMediaQuery("(max-width: 1489px) and (max-height: 945px)");
-
-  const { open, onToggle, onClose } = useDisclosure();
-  const { open: viewRemarksOpen, onToggle: viewRemarksOnToggle, onClose: viewRemarksOnClose } = useDisclosure();
-
-  const isSmallScreen = useMediaQuery("(max-width: 1091px) and (max-height: 911px)");
-
   const { data: notification } = useNotification();
-
-  // console.log("Receiver Concerns: ", notification);
-
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,
@@ -135,8 +127,10 @@ const ReceiverConcerns = () => {
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
   const [getAddReceiverAttachment] = useLazyGetReceiverAttachmentQuery();
-
   const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
+
+  const { open, onToggle, onClose } = useDisclosure();
+  const { open: viewRemarksOpen, onToggle: viewRemarksOnToggle, onClose: viewRemarksOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -274,6 +268,9 @@ const ReceiverConcerns = () => {
               description: "Approve concern successfully!",
               duration: 1500,
             });
+
+            dispatch(notificationApi.util.resetApiState());
+
             setAddAttachments([]);
             setApproveStatus("false");
             reset();

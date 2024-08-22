@@ -1,20 +1,24 @@
-import { Checkbox, Chip, CircularProgress, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, Typography } from "@mui/material";
+import { Checkbox, Chip, CircularProgress, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, LocalOffer } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 
 import moment from "moment";
 import { theme } from "../../../theme/theme";
+import { useDispatch } from "react-redux";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import ViewClosingDialog from "../../Approver/Approval/TicketApproval/ViewClosingDialog";
 import { LoadingButton } from "@mui/lab";
 import { toast, Toaster } from "sonner";
 import Swal from "sweetalert2";
+
 import { useCloseTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
+
 import CloseDisappprove from "./CloseDisapprove";
+import ViewClosingDialog from "../../Approver/Approval/TicketApproval/ViewClosingDialog";
 import ClosingTicketActions from "./ClosingTicketActions";
 
 const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
@@ -22,10 +26,12 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
 
-  const { open, onToggle, onClose } = useDisclosure();
-  const { open: disapproveOpen, onToggle: disapproveOnToggle, onClose: disapproveOnClose } = useDisclosure();
+  const dispatch = useDispatch();
 
   const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useCloseTicketMutation();
+
+  const { open, onToggle, onClose } = useDisclosure();
+  const { open: disapproveOpen, onToggle: disapproveOnToggle, onClose: disapproveOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -49,7 +55,6 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
   const onDisapproveHandler = (item) => {
     disapproveOnToggle();
     setDisapproveData(item);
-    console.log("item:", item);
   };
 
   const handleSelectAll = (event) => {
@@ -66,15 +71,11 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
   };
 
   const handleApprove = () => {
-    // console.log("Approved Tickets:", selectedTickets);
-
     const payload = {
       approveClosingRequests: selectedTickets.map((item) => ({
         closingTicketId: item,
       })),
     };
-
-    console.log("payload:", payload);
 
     Swal.fire({
       title: "Confirmation",
@@ -106,6 +107,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
               description: "Ticket closed successfully!",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
             setSelectedTickets([]);
           })
           .catch((err) => {
@@ -131,6 +133,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
   return (
     <Stack sx={{ width: "100%" }}>
       <Toaster richColors position="top-right" closeButton />
+
       {selectedTickets.length > 0 && (
         <Stack
           direction="row"
@@ -140,16 +143,19 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
         >
           <Stack direction="row" gap={0.5}>
             <LocalOffer />
+
             <Typography>
               {selectedTickets.length} {""}
               {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
             </Typography>
           </Stack>
+
           <LoadingButton variant="contained" color="primary" onClick={handleApprove} loading={approveTicketIsLoading || approveTicketIsFetching} startIcon={<LocalOffer />}>
             Close ticket
           </LoadingButton>
         </Stack>
       )}
+
       <TableContainer>
         <Table sx={{ borderBottom: "none" }}>
           <TableHead>
@@ -375,14 +381,11 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
                       fontWeight: 500,
                     }}
                   >
-                    {/* <LoadingButton size="small" variant="contained" color="error" onClick={() => onDisapproveHandler(item)} sx={{ padding: "4px", borderRadius: "0" }}>
-                      <Typography sx={{ fontSize: "12px" }}>Disapprove</Typography>
-                    </LoadingButton> */}
-
                     <ClosingTicketActions onDisapprove={() => onDisapproveHandler(item)} />
                   </TableCell>
                 </TableRow>
               ))}
+
             {isError && (
               <TableRow>
                 <TableCell colSpan={7} align="center">

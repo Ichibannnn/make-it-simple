@@ -83,6 +83,8 @@ const IssueHandlerConcerns = () => {
 
   const { data: notification } = useNotification();
 
+  console.log("Tickets: ", notification);
+
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,

@@ -8,6 +8,8 @@ import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
 import useDisclosure from "../../../../hooks/useDisclosure";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 import DisapprovedDialog from "./DisapprovedDialog";
 import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
@@ -15,6 +17,8 @@ import { useApproveTicketMutation } from "../../../../features/api_ticketing/app
 const TicketApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
+
+  const dispatch = useDispatch();
 
   const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useApproveTicketMutation();
 
@@ -56,6 +60,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
         approveTicket(approvePayload)
           .unwrap()
           .then(() => {
+            dispatch(notificationApi.util.resetApiState());
             toast.success("Success!", {
               description: "Approve request successfully!",
               duration: 1500,
@@ -63,7 +68,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
             onClose();
           })
           .catch((err) => {
-            console.log("Error", err);
             toast.error("Error!", {
               description: err.data.error.message,
               duration: 1500,

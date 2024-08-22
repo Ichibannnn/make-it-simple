@@ -9,7 +9,9 @@ import { theme } from "../../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
+import { useDispatch } from "react-redux";
 import { useRejectTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
@@ -17,6 +19,8 @@ const schema = yup.object().shape({
 
 const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
   const [disapproveTransfer, { isLoading, isFetching }] = useRejectTransferMutation();
+
+  const dispatch = useDispatch();
 
   const {
     handleSubmit,
@@ -32,9 +36,6 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    // console.log("Form Data: ", formData);
-    // console.log(" Data: ", data);
-
     const disapprovePayload = {
       transferTicketId: data?.transferTicketId,
       reject_Remarks: formData?.reject_Remarks,
@@ -72,6 +73,7 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
               description: "Disapproved request successfully! ",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
             reset();
             onClose();
             approvalOnClose();

@@ -34,8 +34,6 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
     setViewTransferData(data);
   };
 
-  // console.log("Transfer Data: ", data);
-
   return (
     <Stack sx={{ width: "100%" }}>
       <TableContainer>

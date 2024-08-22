@@ -10,6 +10,8 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
 import { useDisapproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
@@ -17,6 +19,8 @@ const schema = yup.object().shape({
 
 const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
   const [disapproveTicket, { isLoading, isFetching }] = useDisapproveTicketMutation();
+
+  const dispatch = useDispatch();
 
   const {
     handleSubmit,
@@ -32,9 +36,6 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    // console.log("Form Data: ", formData);
-    // console.log(" Data: ", data);
-
     const disapprovePayload = {
       closingTicketId: data?.closingTicketId,
       reject_Remarks: formData?.reject_Remarks,
@@ -70,12 +71,12 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
               description: "Disapproved request successfully! ",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
             reset();
             onClose();
             approvalOnClose();
           })
           .catch((error) => {
-            console.log("error: ", error);
             toast.error("Error!", {
               description: error.data.error.message,
               duration: 1500,

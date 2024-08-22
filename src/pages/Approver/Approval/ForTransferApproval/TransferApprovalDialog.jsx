@@ -9,10 +9,14 @@ import { theme } from "../../../../theme/theme";
 import useDisclosure from "../../../../hooks/useDisclosure";
 import { useApproveTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import TransferDisapproveDialog from "./TransferDisapproveDialog";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 const TransferApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
+
+  const dispatch = useDispatch();
 
   const [approveTransfer, { isLoading: approveTransferIsLoading, isFetching: approveTransferIsFetching }] = useApproveTransferMutation();
 
@@ -22,9 +26,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     const approvePayload = {
       transferTicketId: data?.transferTicketId,
     };
-
-    console.log("Data: ", data);
-    console.log("Payload: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -56,6 +57,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
               description: "Approve request successfully!",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
             onClose();
           })
           .catch((err) => {

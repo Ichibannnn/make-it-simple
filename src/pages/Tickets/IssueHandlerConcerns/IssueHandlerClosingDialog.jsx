@@ -14,6 +14,8 @@ import Swal from "sweetalert2";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -25,6 +27,7 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
+  const dispatch = useDispatch();
   const fileInputRef = useRef();
 
   const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
@@ -105,6 +108,8 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
             // if (connection) {
             //   refetch();
             // }
+
+            dispatch(notificationApi.util.resetApiState());
 
             setAddAttachments([]);
             reset();

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Badge,
   Button,
@@ -32,8 +33,9 @@ import {
   Search,
 } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
+import { toast, Toaster } from "sonner";
+import Swal from "sweetalert2";
 import moment from "moment";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
@@ -45,14 +47,11 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import ConcernDialog from "./ConcernDialog";
 import ConcernViewDialog from "./ConcernViewDialog";
 import ConcernActions from "./ConcernActions";
-
-import { useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
-import ConcernHistory from "./ConcernHistory";
-import { toast, Toaster } from "sonner";
-import Swal from "sweetalert2";
 import ConcernReturn from "./ConcernReturn";
+import ConcernHistory from "./ConcernHistory";
 
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useNotification } from "../../../context/NotificationContext";
 
 const ConcernTickets = () => {
@@ -74,9 +73,6 @@ const ConcernTickets = () => {
   const { open: returnOpen, onToggle: returnOnToggle, onClose: returnOnClose } = useDisclosure();
 
   const { data: notification } = useNotification();
-
-  // console.log("Requestor Concern: ", notification);
-
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRequestorConcernsQuery({
     Concern_Status: status,
     Search: search,
@@ -137,7 +133,7 @@ const ConcernTickets = () => {
       requestConcernId: data?.requestConcernId,
     };
 
-    console.log("Payload: ", payload);
+    // console.log("Payload: ", payload);
 
     Swal.fire({
       title: "Confirmation",

@@ -1,15 +1,18 @@
+import React, { useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Add, CheckOutlined, RemoveCircleOutline } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch } from "react-redux";
+import { Controller, useForm } from "react-hook-form";
 
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
+
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { useDeleteRequestorAttachmentMutation, useReturnConcernMutation } from "../../../features/api_request/concerns/concernApi";
 
 const schema = yup.object().shape({
@@ -21,19 +24,13 @@ const ConcernReturn = ({ data, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
+  const dispatch = useDispatch();
   const fileInputRef = useRef();
 
   const [returnConcern, { isLoading: returnConcernIsLoading, isFetching: returnConcernIsFetching }] = useReturnConcernMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, setValue, watch, reset } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       remarks: "",
@@ -93,12 +90,12 @@ const ConcernReturn = ({ data, open, onClose }) => {
               description: "Request return successfully!",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
             setAddAttachments([]);
             reset();
             onClose();
           })
           .catch((err) => {
-            console.log("Error", err);
             toast.error("Error!", {
               description: err.data.error.message,
               duration: 1500,

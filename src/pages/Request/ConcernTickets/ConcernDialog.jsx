@@ -1,7 +1,7 @@
+import React, { useRef, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { RemoveCircleOutline } from "@mui/icons-material";
 
-import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -11,6 +11,8 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
 import { useCreateEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 
 const requestorSchema = yup.object().shape({
   RequestTransactionId: yup.string().nullable(),
@@ -23,19 +25,13 @@ const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const dispatch = useDispatch();
   const fileInputRef = useRef();
 
   const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
     useCreateEditRequestorConcernMutation();
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, setValue, watch, reset } = useForm({
     resolver: yupResolver(requestorSchema),
     defaultValues: {
       RequestTransactionId: "",
@@ -68,6 +64,7 @@ const ConcernDialog = ({ open, onClose }) => {
           description: "Concern added successfully!",
           duration: 1500,
         });
+        dispatch(notificationApi.util.resetApiState());
         setAttachments([]);
         reset();
         setIsLoading(false);
@@ -126,8 +123,6 @@ const ConcernDialog = ({ open, onClose }) => {
         name: file.name,
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
-
-    console.log("fileNames: ", fileNames);
 
     const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);

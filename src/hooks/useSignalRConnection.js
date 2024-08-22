@@ -20,7 +20,6 @@ const useSignalRConnection = () => {
       .start()
       .then(() => {
         newConnection.on("TicketNotifData", (notifData) => {
-          // console.log("Notification: ", notifData);
           // dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
         });
       })

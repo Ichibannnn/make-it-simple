@@ -1,15 +1,18 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
 import { useRejectTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 
 const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
@@ -17,12 +20,12 @@ const schema = yup.object().shape({
 
 const CloseDisappprove = ({ data, open, onClose }) => {
   const [disapproveTicket, { isLoading, isFetching }] = useRejectTicketMutation();
+  const dispatch = useDispatch();
 
   const {
     handleSubmit,
     register,
     watch,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
@@ -33,9 +36,6 @@ const CloseDisappprove = ({ data, open, onClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    // console.log("Form Data: ", formData);
-    // console.log(" Data: ", data);
-
     const disapprovePayload = {
       reject_Remarks: formData?.reject_Remarks,
       closingTicketId: data?.closingTicketId,
@@ -64,7 +64,6 @@ const CloseDisappprove = ({ data, open, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log("disapprovePayload", disapprovePayload);
         disapproveTicket(disapprovePayload)
           .unwrap()
           .then(() => {
@@ -72,11 +71,11 @@ const CloseDisappprove = ({ data, open, onClose }) => {
               description: "Disapproved ticket successfully! ",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
             reset();
             onClose();
           })
           .catch((error) => {
-            console.log("error: ", error);
             toast.error("Error!", {
               description: error.data.error.message,
               duration: 1500,

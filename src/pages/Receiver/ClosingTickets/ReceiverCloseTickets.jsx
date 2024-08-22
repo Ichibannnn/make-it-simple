@@ -1,14 +1,14 @@
 import { Badge, Divider, OutlinedInput, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { DiscountOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons-material";
+import { DiscountOutlined, Search } from "@mui/icons-material";
 
 import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
 
 import { useGetClosingTicketsQuery } from "../../../features/api_ticketing/receiver/closingTicketApi";
+import { useNotification } from "../../../context/NotificationContext";
 
 import CloseTicketsTab from "./CloseTicketsTab";
-import { useNotification } from "../../../context/NotificationContext";
 
 const ReceiverCloseTickets = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -19,8 +19,9 @@ const ReceiverCloseTickets = () => {
   const search = useDebounce(searchValue, 500);
 
   const { data: notification } = useNotification();
-
   console.log("Closing Ticket: ", notification);
+
+  console.log("Notification Close Ticket: ", notification);
 
   const {
     data: closeTicketData,
@@ -83,7 +84,7 @@ const ReceiverCloseTickets = () => {
               label="For Closing"
               icon={
                 <Badge
-                  badgeContent={notification?.value?.allClosingNotif}
+                  badgeContent={notification?.value?.forApprovalClosingNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{

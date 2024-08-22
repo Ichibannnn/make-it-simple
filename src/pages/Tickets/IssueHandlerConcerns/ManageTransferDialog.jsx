@@ -166,7 +166,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
           payload.append(`AddTransferAttachments[0].attachment`, "");
         }
 
-        console.log("Payload Entries: ", [...payload.entries()]);
+        // console.log("Payload Entries: ", [...payload.entries()]);
 
         manageTransferTickets(payload)
           .unwrap()
@@ -175,6 +175,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
               description: "Transfer updated successfully!",
               duration: 1500,
             });
+
             setAddAttachments([]);
             reset();
             onClose();
