@@ -67,25 +67,25 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     console.log("Payload Entries: ", [...payload.entries()]);
 
-    createEditRequestorConcern(payload)
-      .unwrap()
-      .then(() => {
-        toast.success("Success!", {
-          description: "Concern updated successfully!",
-          duration: 1500,
-        });
-        setAttachments([]);
-        reset();
-        setIsLoading(false);
-        onClose();
-      })
-      .catch((err) => {
-        console.log("Error", err);
-        toast.error("Error!", {
-          description: err.data.error.message,
-          duration: 1500,
-        });
-      });
+    // createEditRequestorConcern(payload)
+    //   .unwrap()
+    //   .then(() => {
+    //     toast.success("Success!", {
+    //       description: "Concern updated successfully!",
+    //       duration: 1500,
+    //     });
+    //     setAttachments([]);
+    //     reset();
+    //     setIsLoading(false);
+    //     onClose();
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error", err);
+    //     toast.error("Error!", {
+    //       description: err.data.error.message,
+    //       duration: 1500,
+    //     });
+    //   });
   };
 
   const handleAttachments = (event) => {
@@ -187,9 +187,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
     }
   }, [editData]);
-
-  // console.log("Watch RequestAttachmentsFiles: ", watch("RequestAttachmentsFiles"));
-  // console.log("edit data: ", editData);
 
   return (
     <>
@@ -464,12 +461,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           } else {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
+                            const uniqueNewFiles = files.filter((item) => !attachments.some((file) => file.name === item.name));
 
-                            // console.log("files: ", files);
-
-                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                            // console.log("Controlled Unique: ", uniqueNewFiles);
+                            console.log("Edited Attachment: ", files);
+                            console.log("Value: ", value);
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";

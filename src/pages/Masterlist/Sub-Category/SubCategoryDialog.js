@@ -37,14 +37,7 @@ const schema = yup.object().shape({
 
 export const SubCategoryDialog = ({ data, open, onClose }) => {
   const [createEditSubCategory] = useCreateEditSubCategoryMutation();
-  const [
-    getCategory,
-    {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
-    },
-  ] = useLazyGetCategoryQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
 
   const {
     control,
@@ -67,7 +60,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
     if (data) {
       setValue("id", data?.id);
       setValue("categoryId", {
-        // id: data?.categoryId,
+        categoryId: data?.categoryId,
         category_Description: data?.category_Description,
       });
       setValue("subCategory_Description", data?.subCategory_Description);
@@ -80,16 +73,18 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = (formData) => {
+    console.log("FormData: ", formData);
+
     if (formData.id) {
       createEditSubCategory({
         id: formData.id,
         subCategory_Description: formData.subCategory_Description,
-        categoryId: formData.categoryId.id,
+        categoryId: formData.categoryId.categoryId,
       })
         .unwrap()
         .then(() => {
           toast.success("Success!", {
-            description: "Updated category! ",
+            description: "Updated sub category! ",
             duration: 1500,
           });
           reset();
@@ -110,7 +105,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
         .unwrap()
         .then(() => {
           toast.success("Success!", {
-            description: "Category added successsfully!",
+            description: "Sub Category added successsfully!",
             duration: 1500,
           });
           reset();
@@ -126,7 +121,9 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
     }
   };
 
-  console.log("Category Data: ", categoryData);
+  // console.log("Category Data: ", categoryData);
+
+  console.log("Data: ", data);
 
   return (
     <>
@@ -179,9 +176,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                         }}
                         onChange={(_, value) => onChange(value)}
                         getOptionLabel={(option) => option.category_Description}
-                        isOptionEqualToValue={(option, value) =>
-                          option.id === value.id
-                        }
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
                         sx={{
                           flex: 2,
                         }}
@@ -218,18 +213,11 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            <Stack
-              direction="row"
-              justifyContent="right"
-              alignItems="center"
-              sx={{ paddingTop: 2, gap: 1 }}
-            >
+            <Stack direction="row" justifyContent="right" alignItems="center" sx={{ paddingTop: 2, gap: 1 }}>
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={
-                  !watch("categoryId") || !watch("subCategory_Description")
-                }
+                disabled={!watch("categoryId") || !watch("subCategory_Description")}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

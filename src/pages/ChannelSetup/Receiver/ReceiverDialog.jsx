@@ -15,11 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  DeleteOutlineOutlined,
-  SaveOutlined,
-  SyncOutlined,
-} from "@mui/icons-material";
+import { DeleteOutlineOutlined, SaveOutlined, SyncOutlined } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -29,11 +25,7 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import {
-  useCreateEditReceiverMutation,
-  useLazyGetReceiverBusinessListQuery,
-  useLazyGetReceiverListQuery,
-} from "../../../features/api_channel_setup/receiver/receiverApi";
+import { useCreateEditReceiverMutation, useLazyGetReceiverBusinessListQuery, useLazyGetReceiverListQuery } from "../../../features/api_channel_setup/receiver/receiverApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -47,31 +39,11 @@ const businessUnitSchema = yup.object().shape({
 const ReceiverDialog = ({ data, open, onClose }) => {
   const [businessUnits, setBusinessUnits] = useState([]);
 
-  const [
-    createEditReceiver,
-    {
-      isLoading: isCreateEditReceiverLoading,
-      isFetching: isCreateEditReceiverFetching,
-    },
-  ] = useCreateEditReceiverMutation();
+  const [createEditReceiver, { isLoading: isCreateEditReceiverLoading, isFetching: isCreateEditReceiverFetching }] = useCreateEditReceiverMutation();
 
-  const [
-    getReceiver,
-    {
-      data: receiverData,
-      isLoading: receiverIsLoading,
-      isSuccess: receiverIsSuccess,
-    },
-  ] = useLazyGetReceiverListQuery();
+  const [getReceiver, { data: receiverData, isLoading: receiverIsLoading, isSuccess: receiverIsSuccess }] = useLazyGetReceiverListQuery();
 
-  const [
-    getBusinessUnit,
-    {
-      data: businessUnitData,
-      isLoading: businessUnitIsLoading,
-      isSuccess: businessUnitIsSuccess,
-    },
-  ] = useLazyGetReceiverBusinessListQuery();
+  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetReceiverBusinessListQuery();
 
   const {
     control: receiverFormControl,
@@ -126,6 +98,12 @@ const ReceiverDialog = ({ data, open, onClose }) => {
           receiverFormReset();
           businessUnitFormReset();
           onClose();
+        })
+        .catch((error) => {
+          toast.error("Error!", {
+            description: error.data.error.message,
+            duration: 1500,
+          });
         });
     } else {
       const editPayload = {
@@ -172,9 +150,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
   };
 
   const onBusinessUnitFormDelete = (index) => {
-    setBusinessUnits((currentValue) =>
-      currentValue.filter((_, memberIndex) => memberIndex !== index)
-    );
+    setBusinessUnits((currentValue) => currentValue.filter((_, memberIndex) => memberIndex !== index));
   };
 
   const onCloseAction = () => {
@@ -205,13 +181,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={open}
-        sx={{ borderRadius: "none", padding: 0 }}
-        PaperProps={{ style: { overflow: "unset" } }}
-      >
+      <Dialog fullWidth maxWidth="sm" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogContent sx={{ paddingBottom: 10 }}>
           <Stack direction="column" sx={{ padding: "5px" }}>
             <Stack>
@@ -237,12 +207,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
               </Typography>
             </Stack>
 
-            <Stack
-              id="receiverForm"
-              component="form"
-              onSubmit={receiverFormHandleSubmit(onReceiverFormSubmit)}
-              sx={{ paddingTop: 2, gap: 2 }}
-            >
+            <Stack id="receiverForm" component="form" onSubmit={receiverFormHandleSubmit(onReceiverFormSubmit)} sx={{ paddingTop: 2, gap: 2 }}>
               <Controller
                 control={receiverFormControl}
                 name="userId"
@@ -254,13 +219,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                       value={value}
                       options={receiverData?.value || []}
                       loading={receiverIsLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Receiver Name"
-                          size="small"
-                        />
-                      )}
+                      renderInput={(params) => <TextField {...params} label="Receiver Name" size="small" />}
                       onOpen={() => {
                         if (!receiverIsSuccess) getReceiver();
                       }}
@@ -268,9 +227,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                         onChange(value);
                       }}
                       getOptionLabel={(option) => option.fullName}
-                      isOptionEqualToValue={(option, value) =>
-                        option.userId === value.userId || []
-                      }
+                      isOptionEqualToValue={(option, value) => option.userId === value.userId || []}
                       noOptionsText={"No receiver available"}
                       disabled={data ? true : false}
                       sx={{
@@ -286,12 +243,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack sx={{ paddingTop: 2, gap: 2 }}>
-              <Stack
-                component="form"
-                onSubmit={businessUnitFormHandleSubmit(onBusinessFormSubmit)}
-                direction="row"
-                gap={2}
-              >
+              <Stack component="form" onSubmit={businessUnitFormHandleSubmit(onBusinessFormSubmit)} direction="row" gap={2}>
                 <Controller
                   control={businessUnitFormControl}
                   name="businessId"
@@ -303,31 +255,16 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={businessUnitData?.value || []}
                         loading={businessUnitIsLoading}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Business Units"
-                            size="small"
-                          />
-                        )}
+                        renderInput={(params) => <TextField {...params} label="Business Units" size="small" />}
                         onOpen={() => {
                           if (!businessUnitIsSuccess) getBusinessUnit();
                         }}
                         onChange={(_, value) => {
                           onChange(value);
                         }}
-                        getOptionLabel={(option) =>
-                          `${option.businessUnit_Code} - ${option.businessUnit_Name}`
-                        }
-                        isOptionEqualToValue={(option, value) =>
-                          option.businessUnitId === value.businessUnitId
-                        }
-                        getOptionDisabled={(option) =>
-                          businessUnits.some(
-                            (item) =>
-                              item.businessUnitId === option.businessUnitId
-                          )
-                        }
+                        getOptionLabel={(option) => `${option.businessUnit_Code} - ${option.businessUnit_Name}`}
+                        isOptionEqualToValue={(option, value) => option.businessUnitId === value.businessUnitId}
+                        getOptionDisabled={(option) => businessUnits.some((item) => item.businessUnitId === option.businessUnitId)}
                         noOptionsText={"No business unit available"}
                         sx={{
                           flex: 2,
@@ -410,9 +347,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                           }}
                           align="center"
                         >
-                          <IconButton
-                            onClick={() => onBusinessUnitFormDelete(index)}
-                          >
+                          <IconButton onClick={() => onBusinessUnitFormDelete(index)}>
                             <DeleteOutlineOutlined />
                           </IconButton>
                         </TableCell>
@@ -433,9 +368,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
             type="submit"
             form="receiverForm"
             disabled={!receiverFormWatch("userId") || !businessUnits.length}
-            loading={
-              isCreateEditReceiverLoading || isCreateEditReceiverFetching
-            }
+            loading={isCreateEditReceiverLoading || isCreateEditReceiverFetching}
           >
             Save
           </LoadingButton>

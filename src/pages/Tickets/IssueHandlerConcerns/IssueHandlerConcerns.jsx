@@ -54,6 +54,7 @@ import { toast, Toaster } from "sonner";
 
 import { useSignalR } from "../../../context/SignalRContext";
 import { useNotification } from "../../../context/NotificationContext";
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -79,11 +80,12 @@ const IssueHandlerConcerns = () => {
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
 
-  const connection = useSignalR();
+  const connection = useSignalRConnection();
 
   const { data: notification } = useNotification();
 
-  console.log("Tickets: ", notification);
+  // console.log("Tickets: ", notification);
+  // console.log("Connection: ", connection);
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,

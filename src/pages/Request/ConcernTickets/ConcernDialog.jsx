@@ -57,6 +57,8 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
+    console.log("Payload Entries: ", [...payload.entries()]);
+
     createEditRequestorConcern(payload)
       .unwrap()
       .then(() => {
@@ -352,7 +354,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Controller
                     control={control}
                     name="RequestAttachmentsFiles"
-                    render={({ field: { onChange } }) => (
+                    render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
                         accept=".png,.jpg,.jpeg,.docx"
@@ -362,10 +364,12 @@ const ConcernDialog = ({ open, onClose }) => {
                         onChange={(event) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
+                          const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
                           console.log("Controller Files: ", files);
 
-                          onChange(files);
+                          onChange([...value, ...uniqueNewFiles]);
+                          fileInputRef.current.value = "";
                         }}
                       />
                     )}

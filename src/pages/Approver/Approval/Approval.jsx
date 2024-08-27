@@ -21,7 +21,7 @@ const Approval = () => {
 
   const { data: notification } = useNotification();
 
-  console.log("Approval: ", notification);
+  // console.log("Approval: ", notification);
 
   const {
     data: ticketApprovalData,

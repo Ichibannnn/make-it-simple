@@ -148,7 +148,7 @@ const Receiver = () => {
             .then(() => {
               console.log("Data: ", data);
               toast.success("Success!", {
-                description: "Sub Category restored successfully!",
+                description: "Receiver restored successfully!",
               });
             })
             .catch((error) => {

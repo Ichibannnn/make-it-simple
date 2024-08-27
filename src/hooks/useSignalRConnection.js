@@ -2,10 +2,14 @@ import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
+import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
   const dispatch = useDispatch();
+
+  const { data: notification } = useGetNotificationQuery();
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
@@ -20,23 +24,28 @@ const useSignalRConnection = () => {
       .start()
       .then(() => {
         newConnection.on("TicketNotifData", (notifData) => {
-          // dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
+          console.log("Hub Data: ", notifData);
+          console.log("Notification Api: ", notification);
+
+          // if (notification?.value?.forTransferNotif !== notifData?.value?.forTransferNotif) {
+          //   dispatch(concernIssueHandlerApi.util.resetApiState());
+          //   dispatch(ticketApprovalApi.util.resetApiState());
+          // }
         });
+        setConnection(newConnection);
       })
       .catch((error) => {
         console.log("Error: ", error);
       });
 
-    setConnection(newConnection);
-
-    return () => {
-      if (newConnection) {
-        newConnection.stop().then(() => {
-          console.log("SignalR Connection stopped");
-        });
-      }
-    };
-  }, [dispatch]);
+    // return () => {
+    //   if (newConnection) {
+    //     newConnection.stop().then(() => {
+    //       console.log("SignalR Connection stopped");
+    //     });
+    //   }
+    // };
+  }, [dispatch, notification]);
 
   return connection;
 };
