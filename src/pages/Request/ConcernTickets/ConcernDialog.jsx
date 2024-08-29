@@ -100,18 +100,22 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const handleDeleteFile = (fileNameToDelete) => {
+    console.log("File to Delete: ", fileNameToDelete);
+
     setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete)
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
     );
   };
 
+  // Multiple files handler event
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
+  // Drag and Drop handler event
   const handleDrop = (event) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
@@ -155,14 +159,6 @@ const ConcernDialog = ({ open, onClose }) => {
     reset();
     setAttachments([]);
   };
-
-  // console.log("Watch Attchments: ", watch("RequestAttachmentsFiles"));
-
-  const currentAttachments = watch("RequestAttachmentsFiles") || [];
-
-  // console.log("Attachments: ", attachments);
-  // console.log("currentAttachments: ", watch("currentAttachments"));
-  // console.log("Attachments: ", watch("RequestAttachmentsFiles"));
 
   return (
     <>
@@ -242,7 +238,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       padding: 1,
                     }}
                     onDragOver={handleDragOver}
-                    onDrop={handleDrop}
+                    // onDrop={handleDrop}
                   >
                     <Box
                       sx={{

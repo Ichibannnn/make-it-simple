@@ -32,6 +32,7 @@ import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../features/api_notification/notificationApi";
+import notificationMiddleware from "../middleware/notificationMiddleware";
 
 export const store = configureStore({
   reducer: {
@@ -103,6 +104,8 @@ export const store = configureStore({
 
       sedarApi.middleware,
       ymirApi.middleware,
+
+      notificationMiddleware,
     ]),
 });
 

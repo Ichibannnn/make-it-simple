@@ -131,10 +131,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     } catch (error) {}
   };
 
+  // Multiple files handler event
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
+  // Drag and Drop handler event
   const handleDrop = (event) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
@@ -268,7 +270,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       padding: 1,
                     }}
                     onDragOver={handleDragOver}
-                    onDrop={handleDrop}
+                    // onDrop={handleDrop}
                   >
                     {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
                       <Box
@@ -463,8 +465,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             const files = Array.from(event.target.files);
                             const uniqueNewFiles = files.filter((item) => !attachments.some((file) => file.name === item.name));
 
-                            console.log("Edited Attachment: ", files);
-                            console.log("Value: ", value);
+                            // console.log("Edited Attachment: ", files);
+                            // console.log("Value: ", value);
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";

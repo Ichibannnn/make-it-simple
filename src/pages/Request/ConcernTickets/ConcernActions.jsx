@@ -1,4 +1,4 @@
-import { ArrowBackOutlined, DoneOutlined, MoreHoriz, ReplyAllOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { ArrowBackOutlined, CloseOutlined, DoneOutlined, MoreHoriz, ReplyAllOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 
 import React, { useRef } from "react";
@@ -6,7 +6,7 @@ import React, { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
 
-const ConcernActions = ({ data, onView, onConfirm, onReturn }) => {
+const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -24,6 +24,11 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn }) => {
   const onReturnAction = (data) => {
     onToggle();
     onReturn(data);
+  };
+
+  const onCancelAction = (data) => {
+    onToggle();
+    onCancel(data);
   };
 
   return (
@@ -64,6 +69,15 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn }) => {
           </ListItemIcon>
           Reply
         </MenuItem>
+
+        {(data?.concern_Status === "" || data?.concern_Status === "For Approval") && (
+          <MenuItem onClick={() => onCancelAction(data)}>
+            <ListItemIcon>
+              <CloseOutlined fontSize="small" color="error" />
+            </ListItemIcon>
+            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Cancel</Typography>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

@@ -69,6 +69,15 @@ export const concernApi = createApi({
       invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
     }),
 
+    cancelConcern: builder.mutation({
+      query: (body) => ({
+        url: "request-concern/cancel-request",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+    }),
+
     returnConcern: builder.mutation({
       query: (body) => ({
         url: "closing-ticket/return",
@@ -90,5 +99,6 @@ export const {
   useGetRequestorAttachmentQuery,
   useDeleteRequestorAttachmentMutation,
   useConfirmConcernMutation,
+  useCancelConcernMutation,
   useReturnConcernMutation,
 } = concernApi;

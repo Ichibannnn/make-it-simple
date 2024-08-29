@@ -51,8 +51,10 @@ import ConcernReturn from "./ConcernReturn";
 import ConcernHistory from "./ConcernHistory";
 
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
+import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useNotification } from "../../../context/NotificationContext";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -66,6 +68,8 @@ const ConcernTickets = () => {
   const [editData, setEditData] = useState(null);
   const [viewHistoryData, setViewHistoryData] = useState(null);
   const [returnData, setReturnData] = useState(null);
+
+  const dispatch = useDispatch();
 
   const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
   const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();
@@ -101,6 +105,7 @@ const ConcernTickets = () => {
   // }, [data]);
 
   const [confirmConcern] = useConfirmConcernMutation();
+  const [cancelConcern] = useCancelConcernMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -161,8 +166,59 @@ const ConcernTickets = () => {
         confirmConcern(payload)
           .unwrap()
           .then(() => {
+            dispatch(notificationApi.util.resetApiState());
             toast.success("Success!", {
               description: "Confirm concern successfully!",
+              duration: 1500,
+            });
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
+  };
+
+  const onCancelAction = (data) => {
+    const payload = {
+      requestConcernId: data?.requestConcernId,
+    };
+
+    // console.log("Payload: ", payload);
+
+    Swal.fire({
+      title: "Confirmation",
+      text: "Cancel this request?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        cancelConcern(payload)
+          .unwrap()
+          .then(() => {
+            dispatch(notificationApi.util.resetApiState());
+            toast.success("Success!", {
+              description: "Cancelled request successfully!",
               duration: 1500,
             });
           })
@@ -213,7 +269,7 @@ const ConcernTickets = () => {
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
-            <Button variant="contained" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
+            <Button variant="contained" aria-hidden="false" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
               Add Request
             </Button>
           </Stack>
@@ -610,7 +666,7 @@ const ConcernTickets = () => {
                           }}
                           align="center"
                         >
-                          <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} />
+                          <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
                         </TableCell>
                       </TableRow>
                     ))}

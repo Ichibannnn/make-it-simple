@@ -330,7 +330,7 @@ const IssueHandlerConcerns = () => {
                 label="For Confirmation"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.notConfirmNotif}
+                    badgeContent={notification?.value?.notConfirmCloseNotif}
                     max={100000}
                     anchorOrigin={{
                       vertical: "top",

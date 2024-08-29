@@ -2,7 +2,7 @@ import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
+import { notificationApi, useGetNotificationQuery } from "../features/api_notification/notificationApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 
 const useSignalRConnection = () => {
@@ -13,7 +13,7 @@ const useSignalRConnection = () => {
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("https://pretest-api.mis.rdfmis.com/notification-hub", {
+      .withUrl(`https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${localStorage.getItem("token")}`, {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
       })
@@ -23,29 +23,29 @@ const useSignalRConnection = () => {
     newConnection
       .start()
       .then(() => {
-        newConnection.on("TicketNotifData", (notifData) => {
-          console.log("Hub Data: ", notifData);
-          console.log("Notification Api: ", notification);
+        console.log("SignalR Connected");
 
-          // if (notification?.value?.forTransferNotif !== notifData?.value?.forTransferNotif) {
-          //   dispatch(concernIssueHandlerApi.util.resetApiState());
-          //   dispatch(ticketApprovalApi.util.resetApiState());
+        newConnection.on("ReceiveNotification", (hubNotification) => {
+          // console.log("Hub Data: ", hubNotification);
+          // console.log("Notification Api: ", notification);
+          // dispatch(notificationApi.util.resetApiState());
+          // if (dispatch(notificationApi.util.resetApiState())) {
+          //   dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
           // }
         });
-        setConnection(newConnection);
       })
       .catch((error) => {
         console.log("Error: ", error);
       });
 
-    // return () => {
-    //   if (newConnection) {
-    //     newConnection.stop().then(() => {
-    //       console.log("SignalR Connection stopped");
-    //     });
-    //   }
-    // };
-  }, [dispatch, notification]);
+    return () => {
+      if (newConnection) {
+        newConnection.stop().then(() => {
+          console.log("SignalR Stopped");
+        });
+      }
+    };
+  }, [dispatch]);
 
   return connection;
 };

@@ -1,46 +1,30 @@
-import {
-  Box,
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Paper,
-  Snackbar,
-  Stack,
-  TextField,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
 import React, { useState } from "react";
-import { CheckCircle, CloseOutlined, Visibility, VisibilityOff, Watch } from "@mui/icons-material";
-import background from "../../assets/svg/dotek-login-illustration4.svg";
-import { LoadingButton } from "@mui/lab";
+import { useEffect } from "react";
+import { Box, Container, Dialog, DialogContent, Grid, IconButton, InputAdornment, Paper, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { CheckCircle, CloseOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+
 import { theme } from "../../theme/theme";
+import { LoadingButton } from "@mui/lab";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import logo from "../../assets/svg/dotek-login.svg";
 import misLogo from "../../assets/images/misLogo.png";
+import background from "../../assets/svg/dotek-login-illustration4.svg";
 
 import { signIn } from "../../features/auth/authSlice";
 import { useSignInMutation } from "../../features/login/loginSlice";
 import { setUserDetails } from "../../features/user_management_api/user/userSlice";
-
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
-import ReusableAlert from "../../hooks/ReusableAlert";
+
 import useDisclosure from "../../hooks/useDisclosure";
-import { useChangeUserPasswordMutation } from "../../features/user_management_api/user/userApi";
-import { useEffect } from "react";
+import ReusableAlert from "../../hooks/ReusableAlert";
 import { Toaster, toast } from "sonner";
+import { Controller, useForm } from "react-hook-form";
 import { notificationApi } from "../../features/api_notification/notificationApi";
+import { useChangeUserPasswordMutation } from "../../features/user_management_api/user/userApi";
 
 const Login = () => {
   const hideLoginForm = useMediaQuery("(max-width: 958px)");
@@ -124,7 +108,6 @@ const schema = yup.object().shape({
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [changePasswordDetails, setChangePasswordDetails] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
 
   const [logIn, { isLoading }] = useSignInMutation();
   const dispatch = useDispatch();
@@ -223,6 +206,7 @@ const LoginForm = () => {
               autoComplete="off"
             />
           </Grid>
+
           <Grid item xs={12}>
             <TextField
               {...register("password")}
@@ -245,6 +229,7 @@ const LoginForm = () => {
             />
           </Grid>
         </Grid>
+
         <LoadingButton
           variant="contained"
           sx={{
@@ -258,6 +243,7 @@ const LoginForm = () => {
           Login
         </LoadingButton>
       </form>
+
       {showAlert && (
         <ReusableAlert
           severity={alertData.severity}
@@ -267,6 +253,7 @@ const LoginForm = () => {
           onClose={handleAlertClose}
         />
       )}
+
       <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} />
     </Container>
   );

@@ -19,9 +19,9 @@ const ReceiverCloseTickets = () => {
   const search = useDebounce(searchValue, 500);
 
   const { data: notification } = useNotification();
-  console.log("Closing Ticket: ", notification);
+  // console.log("Closing Ticket: ", notification);
 
-  console.log("Notification Close Ticket: ", notification);
+  // console.log("Notification Close Ticket: ", notification);
 
   const {
     data: closeTicketData,
