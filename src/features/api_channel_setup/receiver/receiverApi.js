@@ -9,7 +9,7 @@ export const receiverApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
 
       return headers;
     },
@@ -66,10 +66,4 @@ export const receiverApi = createApi({
   }),
 });
 
-export const {
-  useGetReceiverQuery,
-  useLazyGetReceiverListQuery,
-  useLazyGetReceiverBusinessListQuery,
-  useCreateEditReceiverMutation,
-  useArchiveReceiverMutation,
-} = receiverApi;
+export const { useGetReceiverQuery, useLazyGetReceiverListQuery, useLazyGetReceiverBusinessListQuery, useCreateEditReceiverMutation, useArchiveReceiverMutation } = receiverApi;

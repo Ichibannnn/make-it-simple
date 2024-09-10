@@ -9,7 +9,7 @@ export const concernIssueHandlerApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
 
       return headers;
     },
@@ -19,6 +19,7 @@ export const concernIssueHandlerApi = createApi({
       });
     },
   }),
+  
   endpoints: (builder) => ({
     // ISSUE HANDLER ---------------
     getIssueHandlerConcerns: builder.query({
@@ -43,7 +44,7 @@ export const concernIssueHandlerApi = createApi({
         url: "closing-ticket",
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: body,
       }),
@@ -55,7 +56,7 @@ export const concernIssueHandlerApi = createApi({
         url: "transfer-ticket/add-transfer",
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: body,
       }),

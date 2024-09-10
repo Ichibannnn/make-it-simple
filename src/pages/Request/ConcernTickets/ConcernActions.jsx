@@ -63,12 +63,12 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
           </MenuItem>
         )}
 
-        <MenuItem>
+        {/* <MenuItem>
           <ListItemIcon>
             <ReplyAllOutlined fontSize="small" />
           </ListItemIcon>
           Reply
-        </MenuItem>
+        </MenuItem> */}
 
         {(data?.concern_Status === "" || data?.concern_Status === "For Approval") && (
           <MenuItem onClick={() => onCancelAction(data)}>

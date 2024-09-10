@@ -72,7 +72,7 @@ import { useNotification } from "../../../context/NotificationContext";
 import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
 import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
 import { useDispatch } from "react-redux";
-import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -112,7 +112,7 @@ const ReceiverConcerns = () => {
   const fileInputRef = useRef();
   const today = moment();
 
-  const { data: notification } = useNotification();
+  const { data: notificationApi } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,
@@ -552,7 +552,7 @@ const ReceiverConcerns = () => {
                   label="Pending"
                   icon={
                     <Badge
-                      badgeContent={notification?.value?.receiverForApprovalNotif}
+                      badgeContent={notificationApi?.value?.receiverForApprovalNotif}
                       max={100000}
                       color="primary"
                       anchorOrigin={{
@@ -579,7 +579,7 @@ const ReceiverConcerns = () => {
                   label="Approved"
                   icon={
                     <Badge
-                      badgeContent={notification?.value?.receiverApproveNotif}
+                      badgeContent={notificationApi?.value?.receiverApproveNotif}
                       max={100000}
                       color="primary"
                       anchorOrigin={{

@@ -105,7 +105,7 @@ export const store = configureStore({
       sedarApi.middleware,
       ymirApi.middleware,
 
-      notificationMiddleware,
+      // notificationMiddleware,
     ]),
 });
 

@@ -9,7 +9,7 @@ export const roleApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
 
       return headers;
     },
@@ -66,11 +66,4 @@ export const roleApi = createApi({
   }),
 });
 
-export const {
-  useLazyGetRolesQuery,
-  useGetRolesQuery,
-  useCreateRoleMutation,
-  useUpdateRoleNameMutation,
-  useUpdateRolePermissionMutation,
-  useArchiveRoleMutation,
-} = roleApi;
+export const { useLazyGetRolesQuery, useGetRolesQuery, useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation, useArchiveRoleMutation } = roleApi;

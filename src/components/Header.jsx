@@ -57,8 +57,8 @@ const Header = () => {
 
   const logoutHandler = () => {
     try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
 
       dispatch(notificationApi.util.resetApiState());
       dispatch(concernApi.util.resetApiState());

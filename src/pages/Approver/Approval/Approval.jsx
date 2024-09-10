@@ -10,6 +10,7 @@ import ForTransfer from "./ForTransferApproval/ForTransfer";
 
 import { useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useNotification } from "../../../context/NotificationContext";
+import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -19,9 +20,9 @@ const Approval = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { data: notification } = useNotification();
+  const { data: notificationApi } = useGetNotificationQuery();
 
-  // console.log("Approval: ", notification);
+  // console.log("Approval Api: ", notificationApi);
 
   const {
     data: ticketApprovalData,
@@ -97,7 +98,7 @@ const Approval = () => {
               label="Tickets"
               icon={
                 <Badge
-                  badgeContent={notification?.value?.forApprovalClosingNotif}
+                  badgeContent={notificationApi?.value?.forApprovalClosingNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{
@@ -129,7 +130,7 @@ const Approval = () => {
               label="For Transfer"
               icon={
                 <Badge
-                  badgeContent={notification?.value?.forApprovalTransferNotif}
+                  badgeContent={notificationApi?.value?.forApprovalTransferNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{

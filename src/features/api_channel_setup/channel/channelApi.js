@@ -9,7 +9,7 @@ export const channelApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
 
       return headers;
     },
@@ -66,9 +66,7 @@ export const channelApi = createApi({
 
     getChannelMembers: builder.query({
       query: ({ DepartmentId }) => {
-        const departmentArray = DepartmentId.map(
-          (id) => `DepartmentId=${id}`
-        ).join(`&`);
+        const departmentArray = DepartmentId.map((id) => `DepartmentId=${id}`).join(`&`);
         return {
           url: `channel/member-list?${departmentArray}`,
           method: "GET",

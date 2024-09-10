@@ -9,7 +9,7 @@ export const unitApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
 
       return headers;
     },
@@ -39,5 +39,4 @@ export const unitApi = createApi({
   }),
 });
 
-export const { useGetUnitQuery, useSyncUnitMutation, useLazyGetUnitQuery } =
-  unitApi;
+export const { useGetUnitQuery, useSyncUnitMutation, useLazyGetUnitQuery } = unitApi;

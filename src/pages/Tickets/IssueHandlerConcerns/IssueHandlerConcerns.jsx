@@ -40,7 +40,7 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { useCancelTransferTicketMutation, useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { concernIssueHandlerApi, useCancelTransferTicketMutation, useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
@@ -55,6 +55,8 @@ import { toast, Toaster } from "sonner";
 import { useSignalR } from "../../../context/SignalRContext";
 import { useNotification } from "../../../context/NotificationContext";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useDispatch } from "react-redux";
+import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -80,13 +82,7 @@ const IssueHandlerConcerns = () => {
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
 
-  const connection = useSignalRConnection();
-
-  const { data: notification } = useNotification();
-
-  // console.log("Tickets: ", notification);
-  // console.log("Connection: ", connection);
-
+  const { data: notificationApi } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
@@ -203,14 +199,6 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
-  // useEffect(() => {
-  //   if (connection) {
-  //     connection.on("TicketNotifData", (data) => {
-  //       console.log("Data: ", data);
-  //     });
-  //   }
-  // }, [connection]);
-
   return (
     <Stack
       sx={{
@@ -240,7 +228,7 @@ const IssueHandlerConcerns = () => {
                 label="Open"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.openTicketNotif}
+                    badgeContent={notificationApi?.value?.openTicketNotif}
                     max={100000}
                     color="warning"
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
@@ -270,7 +258,7 @@ const IssueHandlerConcerns = () => {
                 label="For Transfer"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.forTransferNotif}
+                    badgeContent={notificationApi?.value?.forTransferNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
@@ -298,7 +286,7 @@ const IssueHandlerConcerns = () => {
                 label="For Closing"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.forCloseNotif}
+                    badgeContent={notificationApi?.value?.forCloseNotif}
                     max={100000}
                     // color="primary"
                     anchorOrigin={{
@@ -330,7 +318,7 @@ const IssueHandlerConcerns = () => {
                 label="For Confirmation"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.notConfirmCloseNotif}
+                    badgeContent={notificationApi?.value?.notConfirmCloseNotif}
                     max={100000}
                     anchorOrigin={{
                       vertical: "top",
@@ -361,7 +349,7 @@ const IssueHandlerConcerns = () => {
                 label="Closed"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.closedNotif}
+                    badgeContent={notificationApi?.value?.closedNotif}
                     max={100000}
                     color="success"
                     anchorOrigin={{
@@ -392,7 +380,7 @@ const IssueHandlerConcerns = () => {
                 label="History"
                 icon={
                   <Badge
-                    badgeContent={notification?.value?.allTicketNotif}
+                    badgeContent={notificationApi?.value?.allTicketNotif}
                     max={100000}
                     color="primary"
                     anchorOrigin={{
@@ -852,7 +840,7 @@ const IssueHandlerConcerns = () => {
                   </TableRow>
                 )}
 
-                {(isLoading || isFetching) && (
+                {/* {(isLoading || isFetching) && (
                   <TableRow>
                     <TableCell colSpan={9} align="center">
                       <CircularProgress />
@@ -861,7 +849,7 @@ const IssueHandlerConcerns = () => {
                       </Typography>
                     </TableCell>
                   </TableRow>
-                )}
+                )} */}
 
                 {isSuccess && !data?.value?.openTicket.length && (
                   <TableRow>

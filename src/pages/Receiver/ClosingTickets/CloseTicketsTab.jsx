@@ -15,11 +15,15 @@ import { toast, Toaster } from "sonner";
 import Swal from "sweetalert2";
 
 import { useCloseTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
-import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 import CloseDisappprove from "./CloseDisapprove";
 import ViewClosingDialog from "../../Approver/Approval/TicketApproval/ViewClosingDialog";
 import ClosingTicketActions from "./ClosingTicketActions";
+import { concernIssueHandlerApi, useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { useSignalR } from "../../../context/SignalRContext";
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useNotification } from "../../../context/NotificationContext";
 
 const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewClosingData, setViewClosingData] = useState(null);
@@ -103,11 +107,11 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
         approveTicket(payload)
           .unwrap()
           .then(() => {
+            dispatch(notificationApi.util.resetApiState());
             toast.success("Success!", {
               description: "Ticket closed successfully!",
               duration: 1500,
             });
-            dispatch(notificationApi.util.resetApiState());
             setSelectedTickets([]);
           })
           .catch((err) => {
@@ -120,6 +124,12 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
       }
     });
   };
+
+  // useEffect(() => {
+  //   if (connection) {
+  //     dispatch(concernIssueHandlerApi.util.resetApiState());
+  //   }
+  // }, [connection]);
 
   useEffect(() => {
     if (data?.value?.closingTicket) {

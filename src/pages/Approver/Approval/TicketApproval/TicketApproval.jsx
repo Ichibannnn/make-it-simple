@@ -9,6 +9,7 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 import TicketApprovalDialog from "./TicketApprovalDialog";
+import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
 
 const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewApprovalData, setViewApprovalData] = useState(null);

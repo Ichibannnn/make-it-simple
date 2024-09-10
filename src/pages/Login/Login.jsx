@@ -156,8 +156,8 @@ const LoginForm = () => {
         onToggle();
         reset();
       } else {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("user", JSON.stringify(user));
 
         dispatch(signIn());
         dispatch(setUserDetails(user));
@@ -302,8 +302,8 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
 
     const { token, ...user } = changePasswordDetails.value;
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("user", JSON.stringify(user));
 
     dispatch(setUserDetails(user));
 

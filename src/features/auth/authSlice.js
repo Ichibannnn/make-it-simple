@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const auth = createSlice({
   name: "auth",
-  initialState: !!localStorage.getItem("token"),
+  initialState: !!sessionStorage.getItem("token"),
   reducers: {
     signIn: () => {
       return true;

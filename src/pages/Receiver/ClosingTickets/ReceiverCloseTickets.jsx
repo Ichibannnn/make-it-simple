@@ -9,6 +9,7 @@ import { useGetClosingTicketsQuery } from "../../../features/api_ticketing/recei
 import { useNotification } from "../../../context/NotificationContext";
 
 import CloseTicketsTab from "./CloseTicketsTab";
+import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 const ReceiverCloseTickets = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -18,7 +19,7 @@ const ReceiverCloseTickets = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { data: notification } = useNotification();
+  const { data: notificationApi } = useGetNotificationQuery();
   // console.log("Closing Ticket: ", notification);
 
   // console.log("Notification Close Ticket: ", notification);
@@ -84,7 +85,7 @@ const ReceiverCloseTickets = () => {
               label="For Closing"
               icon={
                 <Badge
-                  badgeContent={notification?.value?.forApprovalClosingNotif}
+                  badgeContent={notificationApi?.value?.forApprovalClosingNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{

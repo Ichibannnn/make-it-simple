@@ -80,7 +80,7 @@ const UserAccounts = () => {
   };
 
   const onArchiveAction = (data) => {
-    const userJson = localStorage.getItem("user");
+    const userJson = sessionStorage.getItem("user");
     const user = JSON.parse(userJson);
     const userId = user.id;
 

@@ -9,7 +9,7 @@ export const subCategoryApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL,
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${localStorage.getItem("token")}`);
+      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
 
       return headers;
     },
@@ -48,9 +48,4 @@ export const subCategoryApi = createApi({
   }),
 });
 
-export const {
-  useGetSubCategoryQuery,
-  useLazyGetSubCategoryQuery,
-  useCreateEditSubCategoryMutation,
-  useArchiveSubCategoryMutation,
-} = subCategoryApi;
+export const { useGetSubCategoryQuery, useLazyGetSubCategoryQuery, useCreateEditSubCategoryMutation, useArchiveSubCategoryMutation } = subCategoryApi;

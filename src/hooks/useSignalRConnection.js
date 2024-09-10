@@ -1,53 +1,63 @@
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { concernIssueHandlerApi, useGetIssueHandlerConcernsQuery } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { notificationApi, useGetNotificationQuery } from "../features/api_notification/notificationApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
+import { useSelector } from "react-redux";
+import { useNotification } from "../context/NotificationContext";
+import { concernApi } from "../features/api_request/concerns/concernApi";
+import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
-  const dispatch = useDispatch();
+  const [notification, setNotification] = useState([]);
 
-  const { data: notification } = useGetNotificationQuery();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl(`https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${localStorage.getItem("token")}`, {
+      .withUrl(`https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${sessionStorage.getItem("token")}`, {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
       })
       .withAutomaticReconnect()
       .build();
 
-    newConnection
-      .start()
-      .then(() => {
-        console.log("SignalR Connected");
+    setConnection(newConnection);
+  }, []);
 
-        newConnection.on("ReceiveNotification", (hubNotification) => {
-          // console.log("Hub Data: ", hubNotification);
-          // console.log("Notification Api: ", notification);
-          // dispatch(notificationApi.util.resetApiState());
-          // if (dispatch(notificationApi.util.resetApiState())) {
-          //   dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
-          // }
-        });
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
+  useEffect(() => {
+    if (connection) {
+      connection
+        .start()
+        .then(() => {
+          console.log("Connected");
+          connection.on("ReceiveNotification", (data) => {
+            // console.log("ReceiveNotification: ", data);
+            setNotification({ data });
+          });
+        })
 
-    return () => {
-      if (newConnection) {
-        newConnection.stop().then(() => {
-          console.log("SignalR Stopped");
-        });
-      }
-    };
-  }, [dispatch]);
+        .catch((e) => console.log("Connection failed: ", e));
+    }
+  }, [connection]);
 
-  return connection;
+  console.log("Notification: ", notification);
+
+  useEffect(() => {
+    if (notification?.data?.value) {
+      dispatch(notificationApi.util.invalidateTags(["Notification"]));
+
+      dispatch(concernApi.util.invalidateTags(["Concern"]));
+      dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
+
+      dispatch(ticketApprovalApi.util.invalidateTags(["Ticket Approval"]));
+      dispatch(closingTicketApi.util.invalidateTags(["Closing Ticket"]));
+    }
+  }, [notification, dispatch]);
+
+  return notification;
 };
 
 export default useSignalRConnection;

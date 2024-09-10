@@ -1,20 +1,11 @@
-import React, { createContext, useContext } from "react";
-import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
-import { useSelector } from "react-redux";
+import React, { createContext, useState, useContext } from "react";
 
 const NotificationContext = createContext();
 
+export const useNotification = () => useContext(NotificationContext);
+
 export const NotificationProvider = ({ children }) => {
-  const isAuthenticated = useSelector((state) => state.auth === true);
+  const [notification, setNotification] = useState([]);
 
-  const { data, error, isLoading } = useGetNotificationQuery(undefined, {
-    skip: !isAuthenticated,
-    refetchOnMountOrArgChange: true,
-  });
-
-  return <NotificationContext.Provider value={{ data, error, isLoading }}>{children}</NotificationContext.Provider>;
-};
-
-export const useNotification = () => {
-  return useContext(NotificationContext);
+  return <NotificationContext.Provider value={{ notification, setNotification }}>{children}</NotificationContext.Provider>;
 };

@@ -9,9 +9,13 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 import TransferApprovalDialog from "./TransferApprovalDialog";
+import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
 
 const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewTransferData, setViewTransferData] = useState(null);
+  const { data: notificationApi } = useGetNotificationQuery();
+
+  console.log("Notification: ", notificationApi);
 
   const { open, onToggle, onClose } = useDisclosure();
 
