@@ -269,7 +269,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                     {` Ticket # : ${data?.ticketConcernId}`}
                   </Typography>
 
-                  {data?.getForClosingTickets?.[0]?.isApprove === true ? (
+                  {data?.getForTransferTickets?.[0]?.isApprove === true ? (
                     <Typography
                       sx={{
                         fontSize: "16px",
@@ -315,7 +315,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    Manage Transfer Ticket
+                    {data?.getForTransferTickets?.[0]?.isApprove === false ? "Manage Transfer Ticket" : "View Transfer Ticket"}
                   </Typography>
 
                   <Stack gap={0.5} mt={2}>
@@ -331,7 +331,19 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                       control={control}
                       name="TransferRemarks"
                       render={({ field: { ref, value, onChange } }) => {
-                        return <TextField inputRef={ref} size="medium" value={value} onChange={onChange} autoComplete="off" rows={6} multiline sx={{ fontSize: "10px" }} />;
+                        return (
+                          <TextField
+                            inputRef={ref}
+                            size="medium"
+                            value={value}
+                            onChange={onChange}
+                            disabled={data?.getForTransferTickets?.[0]?.isApprove === true ? true : false}
+                            autoComplete="off"
+                            rows={6}
+                            multiline
+                            sx={{ fontSize: "10px" }}
+                          />
+                        );
                       }}
                     />
 
@@ -345,9 +357,18 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                           Attachment:
                         </Typography>
 
-                        <Button size="small" variant="contained" color="warning" startIcon={<Add />} onClick={handleUploadButtonClick} sx={{ padding: "2px", borderRadius: "2px" }}>
-                          <Typography sx={{ fontSize: "12px" }}>Add</Typography>
-                        </Button>
+                        {data?.getForTransferTickets?.[0]?.isApprove === false && (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="warning"
+                            startIcon={<Add />}
+                            onClick={handleUploadButtonClick}
+                            sx={{ padding: "2px", borderRadius: "2px" }}
+                          >
+                            <Typography sx={{ fontSize: "12px" }}>Add</Typography>
+                          </Button>
+                        )}
                       </Stack>
 
                       {addAttachments?.length === 0 ? (
@@ -523,15 +544,17 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
-            <LoadingButton
-              type="submit"
-              form="closeticket"
-              variant="contained"
-              loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching}
-              disabled={!watch("TransferRemarks")}
-            >
-              Save
-            </LoadingButton>
+            {data?.getForTransferTickets?.[0]?.isApprove === false && (
+              <LoadingButton
+                type="submit"
+                form="closeticket"
+                variant="contained"
+                loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching}
+                disabled={!watch("TransferRemarks")}
+              >
+                Save
+              </LoadingButton>
+            )}
           </Stack>
         </DialogActions>
       </Dialog>

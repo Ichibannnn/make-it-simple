@@ -36,7 +36,7 @@ const schema = yup.object().shape({
   targetDate: yup.date().required("Target date is required"),
 });
 
-const ReceiverAddTicketDialog = ({ open, onClose }) => {
+const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -143,6 +143,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
             });
             setAddAttachments([]);
             reset();
+            setApproveStatus("false");
             onClose();
           })
           .catch((err) => {
@@ -221,9 +222,10 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
   };
 
   const onCloseHandler = () => {
-    onClose();
+    setApproveStatus("false");
     reset();
     setAddAttachments([]);
+    onClose();
   };
 
   return (

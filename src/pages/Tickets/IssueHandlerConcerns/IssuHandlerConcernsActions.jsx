@@ -80,7 +80,7 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
     );
   }
 
-  if (data?.ticket_Status === "For Transfer") {
+  if (data?.getForTransferTickets?.[0]?.isApprove === false && data?.ticket_Status === "For Transfer") {
     menuItems.push(
       <MenuItem key="manage-transfer" onClick={() => onManageTransferAction(data)}>
         <ListItemIcon>
@@ -88,6 +88,7 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
         </ListItemIcon>
         Manage Transfer
       </MenuItem>,
+
       <MenuItem key="cancel" onClick={() => onCancelTransferAction(data)}>
         <ListItemIcon>
           <CloseOutlined fontSize="small" color="error" />
@@ -96,6 +97,19 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
       </MenuItem>
     );
   }
+
+  if (data?.getForTransferTickets?.[0]?.isApprove === true && data?.ticket_Status === "For Transfer") {
+    menuItems.push(
+      <MenuItem key="manage-transfer" onClick={() => onManageTransferAction(data)}>
+        <ListItemIcon>
+          <MoveDownOutlined fontSize="small" />
+        </ListItemIcon>
+        View Transfer
+      </MenuItem>
+    );
+  }
+
+  console.log("Data: ", data);
 
   return (
     <>

@@ -20,7 +20,7 @@ const Approval = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { data: notificationApi } = useGetNotificationQuery();
+  const { data: notificationBadge } = useGetNotificationQuery();
 
   // console.log("Approval Api: ", notificationApi);
 
@@ -98,7 +98,7 @@ const Approval = () => {
               label="Tickets"
               icon={
                 <Badge
-                  badgeContent={notificationApi?.value?.forApprovalClosingNotif}
+                  badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{
@@ -130,7 +130,7 @@ const Approval = () => {
               label="For Transfer"
               icon={
                 <Badge
-                  badgeContent={notificationApi?.value?.forApprovalTransferNotif}
+                  badgeContent={notificationBadge?.value?.forApprovalTransferNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{

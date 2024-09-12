@@ -11,9 +11,9 @@ const App = () => {
       <CssBaseline />
 
       <SignalRProvider>
-        <NotificationProvider>
-          <RouterProvider router={router} />
-        </NotificationProvider>
+        {/* <NotificationProvider> */}
+        <RouterProvider router={router} />
+        {/* </NotificationProvider> */}
       </SignalRProvider>
     </ThemeProvider>
   );

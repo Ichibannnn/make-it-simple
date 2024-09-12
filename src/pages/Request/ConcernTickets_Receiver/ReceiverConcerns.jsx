@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
   IconButton,
   OutlinedInput,
   Paper,
@@ -23,7 +22,6 @@ import {
   Add,
   AttachFileOutlined,
   CheckOutlined,
-  ClearAllOutlined,
   DoneAllOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
@@ -112,7 +110,7 @@ const ReceiverConcerns = () => {
   const fileInputRef = useRef();
   const today = moment();
 
-  const { data: notificationApi } = useGetNotificationQuery();
+  const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,
@@ -268,7 +266,6 @@ const ReceiverConcerns = () => {
               description: "Approve concern successfully!",
               duration: 1500,
             });
-
             dispatch(notificationApi.util.resetApiState());
 
             setAddAttachments([]);
@@ -399,10 +396,10 @@ const ReceiverConcerns = () => {
   };
 
   const onAddNewTicketOnToggleAction = () => {
-    onToggle();
     setAddData(null);
     setViewApprovedData(null);
-    setApproveStatus(false);
+    setApproveStatus("false");
+    onToggle();
   };
 
   const onViewRemarksAction = (data) => {
@@ -552,7 +549,7 @@ const ReceiverConcerns = () => {
                   label="Pending"
                   icon={
                     <Badge
-                      badgeContent={notificationApi?.value?.receiverForApprovalNotif}
+                      badgeContent={notificationBadge?.value?.receiverForApprovalNotif}
                       max={100000}
                       color="primary"
                       anchorOrigin={{
@@ -579,7 +576,7 @@ const ReceiverConcerns = () => {
                   label="Approved"
                   icon={
                     <Badge
-                      badgeContent={notificationApi?.value?.receiverApproveNotif}
+                      badgeContent={notificationBadge?.value?.receiverApproveNotif}
                       max={100000}
                       color="primary"
                       anchorOrigin={{
@@ -802,14 +799,14 @@ const ReceiverConcerns = () => {
                 </Stack>
               )}
 
-              {(isLoading || isFetching) && (
+              {/* {(isLoading || isFetching) && (
                 <Stack width="100%" height="100%" justifyContent="center" alignItems="center">
                   <CircularProgress />
                   <Typography variant="h4" color="#EDF2F7">
                     Please wait...
                   </Typography>
                 </Stack>
-              )}
+              )} */}
             </Stack>
 
             <TablePagination
@@ -1832,7 +1829,7 @@ const ReceiverConcerns = () => {
           )}
         </Paper>
       </Stack>
-      <ReceiverAddTicketDialog open={open} onClose={onDialogClose} />
+      <ReceiverAddTicketDialog open={open} onClose={onDialogClose} setApproveStatus={setApproveStatus} />
       <ViewTransferRemarksDialog data={viewRemarksData} open={viewRemarksOpen} onClose={viewRemarksOnClose} />
     </Stack>
   );

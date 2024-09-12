@@ -19,7 +19,7 @@ export const concernIssueHandlerApi = createApi({
       });
     },
   }),
-  
+
   endpoints: (builder) => ({
     // ISSUE HANDLER ---------------
     getIssueHandlerConcerns: builder.query({
@@ -28,7 +28,7 @@ export const concernIssueHandlerApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern Issue Handler"],
+      // providesTags: ["Concern Issue Handler"],
     }),
 
     getTicketHistory: builder.query({

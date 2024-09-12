@@ -13,9 +13,8 @@ import { useGetNotificationQuery } from "../../../../features/api_notification/n
 
 const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewTransferData, setViewTransferData] = useState(null);
-  const { data: notificationApi } = useGetNotificationQuery();
 
-  console.log("Notification: ", notificationApi);
+  // console.log("Notification: ", notificationApi);
 
   const { open, onToggle, onClose } = useDisclosure();
 
@@ -225,7 +224,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
               </TableRow>
             )}
 
-            {(isLoading || isFetching) && (
+            {/* {(isLoading || isFetching) && (
               <TableRow>
                 <TableCell colSpan={7} align="center">
                   <CircularProgress />
@@ -234,7 +233,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
                   </Typography>
                 </TableCell>
               </TableRow>
-            )}
+            )} */}
 
             {isSuccess && !data?.value?.transferTicket?.length && (
               <TableRow>

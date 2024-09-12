@@ -9,7 +9,7 @@ const ViewTransferRemarksDialog = ({ data, open, onClose }) => {
     onClose();
   };
 
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
 
   return (
     <>

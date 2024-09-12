@@ -25,6 +25,11 @@ import { Toaster, toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
 import { notificationApi } from "../../features/api_notification/notificationApi";
 import { useChangeUserPasswordMutation } from "../../features/user_management_api/user/userApi";
+import { concernApi } from "../../features/api_request/concerns/concernApi";
+import { concernIssueHandlerApi } from "../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { ticketApprovalApi } from "../../features/api_ticketing/approver/ticketApprovalApi";
+import { closingTicketApi } from "../../features/api_ticketing/receiver/closingTicketApi";
+import { concernReceiverApi } from "../../features/api_request/concerns_receiver/concernReceiverApi";
 
 const Login = () => {
   const hideLoginForm = useMediaQuery("(max-width: 958px)");
@@ -163,6 +168,11 @@ const LoginForm = () => {
         dispatch(setUserDetails(user));
 
         dispatch(notificationApi.util.resetApiState());
+        dispatch(concernApi.util.resetApiState());
+        dispatch(concernReceiverApi.util.resetApiState());
+        dispatch(concernIssueHandlerApi.util.resetApiState());
+        dispatch(ticketApprovalApi.util.resetApiState());
+        dispatch(closingTicketApi.util.resetApiState());
 
         setAlertData({
           severity: "success",
@@ -171,6 +181,10 @@ const LoginForm = () => {
         });
         setShowAlert(true);
         navigate("/overview", { replace: true });
+
+        // setTimeout(() => {
+        //   console.log("Checked");
+        // }, 300);
       }
     } catch (error) {
       console.log("Error", error);

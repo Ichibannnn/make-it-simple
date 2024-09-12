@@ -56,7 +56,7 @@ import { useSignalR } from "../../../context/SignalRContext";
 import { useNotification } from "../../../context/NotificationContext";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
-import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -82,7 +82,8 @@ const IssueHandlerConcerns = () => {
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
 
-  const { data: notificationApi } = useGetNotificationQuery();
+  const dispatch = useDispatch();
+  const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
@@ -180,6 +181,7 @@ const IssueHandlerConcerns = () => {
               description: "Cancelled request transfer successfully!",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
           })
           .catch((err) => {
             toast.error("Error!", {
@@ -228,7 +230,7 @@ const IssueHandlerConcerns = () => {
                 label="Open"
                 icon={
                   <Badge
-                    badgeContent={notificationApi?.value?.openTicketNotif}
+                    badgeContent={notificationBadge?.value?.openTicketNotif}
                     max={100000}
                     color="warning"
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
@@ -258,7 +260,7 @@ const IssueHandlerConcerns = () => {
                 label="For Transfer"
                 icon={
                   <Badge
-                    badgeContent={notificationApi?.value?.forTransferNotif}
+                    badgeContent={notificationBadge?.value?.forTransferNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
@@ -286,7 +288,7 @@ const IssueHandlerConcerns = () => {
                 label="For Closing"
                 icon={
                   <Badge
-                    badgeContent={notificationApi?.value?.forCloseNotif}
+                    badgeContent={notificationBadge?.value?.forCloseNotif}
                     max={100000}
                     // color="primary"
                     anchorOrigin={{
@@ -318,7 +320,7 @@ const IssueHandlerConcerns = () => {
                 label="For Confirmation"
                 icon={
                   <Badge
-                    badgeContent={notificationApi?.value?.notConfirmCloseNotif}
+                    badgeContent={notificationBadge?.value?.notConfirmCloseNotif}
                     max={100000}
                     anchorOrigin={{
                       vertical: "top",
@@ -349,7 +351,7 @@ const IssueHandlerConcerns = () => {
                 label="Closed"
                 icon={
                   <Badge
-                    badgeContent={notificationApi?.value?.closedNotif}
+                    badgeContent={notificationBadge?.value?.closedNotif}
                     max={100000}
                     color="success"
                     anchorOrigin={{
@@ -380,7 +382,7 @@ const IssueHandlerConcerns = () => {
                 label="History"
                 icon={
                   <Badge
-                    badgeContent={notificationApi?.value?.allTicketNotif}
+                    badgeContent={notificationBadge?.value?.allTicketNotif}
                     max={100000}
                     color="primary"
                     anchorOrigin={{

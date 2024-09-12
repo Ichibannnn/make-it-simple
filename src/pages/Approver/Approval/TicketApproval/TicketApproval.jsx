@@ -222,7 +222,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </TableRow>
             )}
 
-            {(isLoading || isFetching) && (
+            {/* {(isLoading || isFetching) && (
               <TableRow>
                 <TableCell colSpan={7} align="center">
                   <CircularProgress />
@@ -231,7 +231,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                   </Typography>
                 </TableCell>
               </TableRow>
-            )}
+            )} */}
 
             {isSuccess && !data?.value?.closingTicket?.length && (
               <TableRow>

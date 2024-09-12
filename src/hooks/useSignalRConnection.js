@@ -8,6 +8,9 @@ import { useSelector } from "react-redux";
 import { useNotification } from "../context/NotificationContext";
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
+import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
+
+import bellRingtone from "../../src/assets/ringtone/bellRingtone.mp3";
 
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
@@ -47,9 +50,13 @@ const useSignalRConnection = () => {
 
   useEffect(() => {
     if (notification?.data?.value) {
+      const ring = new Audio(bellRingtone);
+      ring.play().catch((error) => console.error("Audio playback failed: ", error));
+
       dispatch(notificationApi.util.invalidateTags(["Notification"]));
 
       dispatch(concernApi.util.invalidateTags(["Concern"]));
+      dispatch(concernReceiverApi.util.invalidateTags(["Concern Receiver"]));
       dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
 
       dispatch(ticketApprovalApi.util.invalidateTags(["Ticket Approval"]));

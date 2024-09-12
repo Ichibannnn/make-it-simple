@@ -407,7 +407,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
               </TableRow>
             )}
 
-            {(isLoading || isFetching) && (
+            {/* {(isLoading || isFetching) && (
               <TableRow>
                 <TableCell colSpan={7} align="center">
                   <CircularProgress />
@@ -416,7 +416,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
                   </Typography>
                 </TableCell>
               </TableRow>
-            )}
+            )} */}
 
             {isSuccess && !data?.value?.closingTicket?.length && (
               <TableRow>

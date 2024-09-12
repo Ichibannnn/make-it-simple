@@ -19,7 +19,7 @@ const ReceiverCloseTickets = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { data: notificationApi } = useGetNotificationQuery();
+  const { data: notificationBadge } = useGetNotificationQuery();
   // console.log("Closing Ticket: ", notification);
 
   // console.log("Notification Close Ticket: ", notification);
@@ -85,7 +85,7 @@ const ReceiverCloseTickets = () => {
               label="For Closing"
               icon={
                 <Badge
-                  badgeContent={notificationApi?.value?.forApprovalClosingNotif}
+                  badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{
