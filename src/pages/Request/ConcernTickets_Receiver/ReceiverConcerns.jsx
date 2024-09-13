@@ -71,6 +71,7 @@ import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
 import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -109,6 +110,7 @@ const ReceiverConcerns = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   const today = moment();
+  useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
@@ -266,6 +268,7 @@ const ReceiverConcerns = () => {
               description: "Approve concern successfully!",
               duration: 1500,
             });
+
             dispatch(notificationApi.util.resetApiState());
 
             setAddAttachments([]);

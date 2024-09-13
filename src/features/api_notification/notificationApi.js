@@ -29,7 +29,7 @@ export const notificationApi = createApi({
         method: "GET",
         params: params,
       }),
-      // providesTags: ["Notification"],
+      providesTags: ["Notification"],
     }),
   }),
 });

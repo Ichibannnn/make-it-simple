@@ -83,6 +83,7 @@ const IssueHandlerConcerns = () => {
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
 
   const dispatch = useDispatch();
+  useSignalRConnection();
   const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,

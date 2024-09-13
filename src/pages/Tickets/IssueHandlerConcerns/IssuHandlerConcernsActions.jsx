@@ -109,7 +109,7 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
     );
   }
 
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
 
   return (
     <>

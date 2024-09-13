@@ -71,6 +71,7 @@ const ConcernTickets = () => {
   const [returnData, setReturnData] = useState(null);
 
   const dispatch = useDispatch();
+  useSignalRConnection();
 
   const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
   const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();

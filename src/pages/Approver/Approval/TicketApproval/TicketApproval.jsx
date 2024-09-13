@@ -10,9 +10,11 @@ import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 import TicketApprovalDialog from "./TicketApprovalDialog";
 import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
+import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 
 const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewApprovalData, setViewApprovalData] = useState(null);
+  useSignalRConnection();
 
   const { open, onToggle, onClose } = useDisclosure();
 

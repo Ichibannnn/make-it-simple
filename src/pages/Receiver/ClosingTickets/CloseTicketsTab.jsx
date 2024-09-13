@@ -1,4 +1,4 @@
-import { Checkbox, Chip, CircularProgress, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
+import { Checkbox, Chip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, LocalOffer } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 
@@ -15,23 +15,20 @@ import { toast, Toaster } from "sonner";
 import Swal from "sweetalert2";
 
 import { useCloseTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
-import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
 
 import CloseDisappprove from "./CloseDisapprove";
 import ViewClosingDialog from "../../Approver/Approval/TicketApproval/ViewClosingDialog";
 import ClosingTicketActions from "./ClosingTicketActions";
-import { concernIssueHandlerApi, useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { useSignalR } from "../../../context/SignalRContext";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { useNotification } from "../../../context/NotificationContext";
 
 const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewClosingData, setViewClosingData] = useState(null);
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
 
+  useSignalRConnection();
   const dispatch = useDispatch();
-
   const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useCloseTicketMutation();
 
   const { open, onToggle, onClose } = useDisclosure();
@@ -124,12 +121,6 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
       }
     });
   };
-
-  // useEffect(() => {
-  //   if (connection) {
-  //     dispatch(concernIssueHandlerApi.util.resetApiState());
-  //   }
-  // }, [connection]);
 
   useEffect(() => {
     if (data?.value?.closingTicket) {

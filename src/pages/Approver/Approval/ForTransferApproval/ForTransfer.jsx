@@ -10,9 +10,11 @@ import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 import TransferApprovalDialog from "./TransferApprovalDialog";
 import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
+import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 
 const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewTransferData, setViewTransferData] = useState(null);
+  useSignalRConnection();
 
   // console.log("Notification: ", notificationApi);
 

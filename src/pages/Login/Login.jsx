@@ -30,6 +30,7 @@ import { concernIssueHandlerApi } from "../../features/api_ticketing/issue_handl
 import { ticketApprovalApi } from "../../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../../features/api_ticketing/receiver/closingTicketApi";
 import { concernReceiverApi } from "../../features/api_request/concerns_receiver/concernReceiverApi";
+import useSignalRConnection from "../../hooks/useSignalRConnection";
 
 const Login = () => {
   const hideLoginForm = useMediaQuery("(max-width: 958px)");
@@ -149,10 +150,8 @@ const LoginForm = () => {
   const loginHandler = async (data) => {
     try {
       const res = await logIn(data).unwrap();
-
-      // console.log("Response: ", res);
       const { token, ...user } = res.value;
-
+      // console.log("Response: ", res);
       // console.log("Token: ", token);
       // console.log("User: ", user);
 
