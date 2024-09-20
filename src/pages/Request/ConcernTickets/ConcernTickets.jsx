@@ -56,6 +56,7 @@ import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
+import { useNavigate } from "react-router-dom";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -71,6 +72,7 @@ const ConcernTickets = () => {
   const [returnData, setReturnData] = useState(null);
 
   const dispatch = useDispatch();
+  // const navigate = useNavigate();
   useSignalRConnection();
 
   const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
@@ -246,6 +248,12 @@ const ConcernTickets = () => {
     setViewHistoryData(data);
   };
 
+  // const onNavigationAction = () => {
+  //   navigate("/overview");
+  //   // sessionStorage.removeItem("token");
+  //   // sessionStorage.removeItem("user");
+  // };
+
   useEffect(() => {
     if (searchValue) {
       setPageNumber(1);
@@ -274,6 +282,10 @@ const ConcernTickets = () => {
             <Button variant="contained" aria-hidden="false" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
               Add Request
             </Button>
+
+            {/* <Button variant="contained" aria-hidden="false" size="small" color="primary" startIcon={<AddOutlined />} onClick={onNavigationAction}>
+              Direct to Overview
+            </Button> */}
           </Stack>
         </Stack>
 

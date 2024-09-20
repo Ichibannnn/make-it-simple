@@ -31,7 +31,9 @@ import { ymirApi } from "../features/ymir/ymirApi";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
+
 import { notificationApi } from "../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../features/api_notification_message/notificationMessageApi";
 import notificationMiddleware from "../middleware/notificationMiddleware";
 
 export const store = configureStore({
@@ -41,6 +43,7 @@ export const store = configureStore({
     sidebar: sidebarReducer,
 
     [notificationApi.reducerPath]: notificationApi.reducer,
+    [notificationMessageApi.reducerPath]: notificationMessageApi.reducer,
 
     [loginApi.reducerPath]: loginApi.reducer,
 
@@ -75,6 +78,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleWare) =>
     getDefaultMiddleWare().concat([
       notificationApi.middleware,
+      notificationMessageApi.middleware,
 
       loginApi.middleware,
 

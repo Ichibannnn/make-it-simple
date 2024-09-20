@@ -139,12 +139,9 @@ const Category = () => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
           archiveCategory(data.id)
             .unwrap()
             .then(() => {
-              console.log("Data: ", data);
               toast.success("Success!", {
                 description: "Category restored successfully!",
               });

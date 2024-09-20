@@ -57,6 +57,7 @@ import { useNotification } from "../../../context/NotificationContext";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import { useGetNotificationMessageQuery } from "../../../features/api_notification_message/notificationMessageApi";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -85,6 +86,7 @@ const IssueHandlerConcerns = () => {
   const dispatch = useDispatch();
   useSignalRConnection();
   const { data: notificationBadge } = useGetNotificationQuery();
+  // const { data: notificationMessage } = useGetNotificationMessageQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
@@ -94,6 +96,8 @@ const IssueHandlerConcerns = () => {
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
+
+  // console.log("Request Notif: ", notificationMessage);
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);

@@ -1,10 +1,10 @@
-import { Box, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Badge, Box, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { theme } from "../theme/theme";
 
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { AccountCircleRounded, Password } from "@mui/icons-material";
+import { AccountCircleRounded, NotificationsNoneOutlined, NotificationsOffOutlined, NotificationsRounded, Password } from "@mui/icons-material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,23 +21,34 @@ import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../features/api_notification/notificationApi";
+import { notificationMessageApi, useGetNotificationMessageQuery, useGetNotificationNavMutation } from "../features/api_notification_message/notificationMessageApi";
+import useSignalRConnection from "../hooks/useSignalRConnection";
+import moment from "moment";
+import { useEffect } from "react";
+import { toast, Toaster } from "sonner";
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
   const hideMenu = useMediaQuery("(max-width: 1639px)");
 
+  const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const notificationOpen = Boolean(notificationAnchor);
 
+  const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  useSignalRConnection();
+
+  // console.log("Notification Message: ", notificationMessage);
 
   const fullName = useSelector((state) => state?.user?.fullname);
   const userName = useSelector((state) => state?.user?.username);
   const userRole = useSelector((state) => state?.user?.userRoleName);
 
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [notificationNav] = useGetNotificationNavMutation();
 
+  const { data: notificationMessage } = useGetNotificationMessageQuery();
   const { open: openChangePassword, onToggle: changePasswordOnToggle, onClose: changePasswordOnClose } = useDisclosure();
 
   const [showAlert, setShowAlert] = useState(false);
@@ -46,6 +57,11 @@ const Header = () => {
     title: "",
     description: "",
   });
+  const [showBadge, setShowBadge] = useState(false);
+
+  const notificationHandler = (event) => {
+    setNotificationAnchor(event.currentTarget);
+  };
 
   const menuHandler = (event) => {
     setAnchorEl(event.currentTarget);
@@ -55,12 +71,17 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  const notificationCloseHandler = () => {
+    setNotificationAnchor(null);
+  };
+
   const logoutHandler = () => {
     try {
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
 
       dispatch(notificationApi.util.resetApiState());
+      dispatch(notificationMessageApi.util.resetApiState());
       dispatch(concernApi.util.resetApiState());
       dispatch(concernReceiverApi.util.resetApiState());
       dispatch(concernIssueHandlerApi.util.resetApiState());
@@ -79,6 +100,26 @@ const Header = () => {
     }
   };
 
+  const onNavigateAction = (data) => {
+    console.log("Data: ", data);
+
+    const navigationId = {
+      id: data?.id,
+    };
+
+    notificationNav(navigationId)
+      .unwrap()
+      .then(() => {
+        dispatch(notificationMessageApi.util.resetApiState());
+        navigate(data?.modules);
+      })
+      .catch(() => {
+        toast.error("Error!", {
+          description: "Something went wrong",
+        });
+      });
+  };
+
   const handleAlertClose = () => {
     setShowAlert(false);
   };
@@ -90,6 +131,16 @@ const Header = () => {
   const toggleChangePasswordHandler = () => {
     changePasswordOnToggle();
   };
+
+  useEffect(() => {
+    if (notificationMessage?.value?.length > 0) {
+      setShowBadge(true);
+    } else {
+      setShowBadge(false);
+    }
+  }, [notificationMessage]);
+
+  console.log("Length: ", notificationMessage);
 
   return (
     <Stack
@@ -104,6 +155,7 @@ const Header = () => {
         paddingRight: "16px",
       }}
     >
+      <Toaster richColors position="top-right" />
       <Box>
         {hideMenu && (
           <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
@@ -124,9 +176,17 @@ const Header = () => {
             borderRadius: "20px",
           }}
         >
+          <IconButton onClick={notificationHandler} ml={1}>
+            <Tooltip title="Notifications">
+              <Badge color="error" variant="dot" invisible={!showBadge}>
+                <NotificationsNoneOutlined />
+              </Badge>
+            </Tooltip>
+          </IconButton>
+
           <IconButton onClick={menuHandler} ml={1}>
             <Tooltip title="Account">
-              <AccountCircleRounded sx={{ fontSize: "40px" }} />
+              <AccountCircleRounded />
             </Tooltip>
           </IconButton>
 
@@ -139,6 +199,55 @@ const Header = () => {
           </Stack>
         </Box>
 
+        {/* Notification */}
+        <Menu anchorEl={notificationAnchor} open={notificationOpen} onClose={notificationCloseHandler}>
+          <Stack sx={{ maxHeight: 400, width: "350px" }}>
+            <Stack sx={{ width: "100%", padding: "6px 16px" }}>
+              <Typography>Notifications</Typography>
+            </Stack>
+
+            {notificationMessage?.value?.length > 0 ? (
+              <List sx={{ maxHeight: 300, overflowY: "auto" }}>
+                {notificationMessage?.value?.map((data) => (
+                  <ListItem
+                    key={data.id}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: theme.palette.bgForm.black2,
+                      },
+                    }}
+                    onClick={() => onNavigateAction(data)}
+                  >
+                    <Stack direction="row" gap={0.5} alignItems="center">
+                      <AccountCircleRounded />
+
+                      <div style={{ flexGrow: 1, marginLeft: "10px" }}>
+                        <Typography variant="body2" sx={{ fontWeight: "semibold" }}>
+                          {data.message}
+                        </Typography>
+
+                        <Typography variant="caption" color="textSecondary">
+                          {moment(data.created_At).format("LLL")}
+                        </Typography>
+                      </div>
+                    </Stack>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Stack sx={{ width: "100%", justifyContent: "center", alignItems: "center", gap: 0.5, padding: 4 }}>
+                <NotificationsOffOutlined sx={{ color: theme.palette.text.secondary }} />
+                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>No notifications</Typography>
+              </Stack>
+            )}
+          </Stack>
+        </Menu>
+
+        {/* Account */}
         <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
           <MenuItem onClick={closeHandler}>
             <ListItemIcon>

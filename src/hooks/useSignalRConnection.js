@@ -9,6 +9,7 @@ import { useNotification } from "../context/NotificationContext";
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
+import { notificationMessageApi } from "../features/api_notification_message/notificationMessageApi";
 
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
@@ -34,7 +35,8 @@ const useSignalRConnection = () => {
         .start()
         .then(() => {
           console.log("Connected");
-          connection.on("ReceiveNotification", (data) => {
+          connection.on("TransactionData", (data) => {
+            console.log("TransactionData: ", data);
             setNotification({ data });
           });
         })
@@ -46,6 +48,7 @@ const useSignalRConnection = () => {
   useEffect(() => {
     if (notification?.data?.value) {
       dispatch(notificationApi.util.invalidateTags(["Notification"]));
+      dispatch(notificationMessageApi.util.invalidateTags(["Notification Message"]));
 
       dispatch(concernApi.util.invalidateTags(["Concern"]));
       dispatch(concernReceiverApi.util.invalidateTags(["Concern Receiver"]));

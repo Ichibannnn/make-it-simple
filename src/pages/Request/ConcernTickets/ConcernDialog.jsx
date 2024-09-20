@@ -13,6 +13,7 @@ import { Toaster, toast } from "sonner";
 import { useCreateEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const requestorSchema = yup.object().shape({
   RequestTransactionId: yup.string().nullable(),
@@ -45,6 +46,7 @@ const ConcernDialog = ({ open, onClose }) => {
     const payload = new FormData();
 
     payload.append("Concern", formData.Concern);
+    payload.append("Modules", "/receiver/receiver-concerns");
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
@@ -67,6 +69,7 @@ const ConcernDialog = ({ open, onClose }) => {
           duration: 1500,
         });
         dispatch(notificationApi.util.resetApiState());
+        dispatch(notificationMessageApi.util.resetApiState());
         setAttachments([]);
         reset();
         setIsLoading(false);

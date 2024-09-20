@@ -72,6 +72,7 @@ import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTr
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useGetNotificationMessageQuery } from "../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -113,12 +114,16 @@ const ReceiverConcerns = () => {
   useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
+  const { data: notificationMessage } = useGetNotificationMessageQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
+
+  console.log("Notification Message: ", notificationMessage);
+  // console.log("Receiver Notification: ", notificationMessage);
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
