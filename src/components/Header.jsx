@@ -1,4 +1,4 @@
-import { Badge, Box, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Avatar, Badge, Box, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { theme } from "../theme/theme";
 
@@ -26,6 +26,12 @@ import useSignalRConnection from "../hooks/useSignalRConnection";
 import moment from "moment";
 import { useEffect } from "react";
 import { toast, Toaster } from "sonner";
+
+const getInitials = (fullName) => {
+  const nameArray = fullName.trim().split(" ");
+  if (nameArray.length === 1) return nameArray[0][0].toUpperCase();
+  return nameArray.map((name) => name[0].toUpperCase()).join("");
+};
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -73,6 +79,16 @@ const Header = () => {
 
   const notificationCloseHandler = () => {
     setNotificationAnchor(null);
+  };
+
+  const trimLetters = (name) => {
+    if (!name) return "";
+    const nameArray = name.split(" ").filter((n) => n); // Split by space and remove empty strings
+    const initials = nameArray
+      .slice(0, 2) // Get only the first two words
+      .map((n) => n[0]) // Take the first letter of each word
+      .join(""); // Combine them
+    return initials.split("").reverse().join(""); // Reverse the initials
   };
 
   const logoutHandler = () => {
@@ -186,7 +202,7 @@ const Header = () => {
 
           <IconButton onClick={menuHandler} ml={1}>
             <Tooltip title="Account">
-              <AccountCircleRounded />
+              <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 38, height: 38 }}>{trimLetters(fullName)}</Avatar>
             </Tooltip>
           </IconButton>
 
@@ -223,7 +239,8 @@ const Header = () => {
                     onClick={() => onNavigateAction(data)}
                   >
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <AccountCircleRounded />
+                      {/* <AccountCircleRounded /> */}
+                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>{trimLetters(data.added_By)}</Avatar>
 
                       <div style={{ flexGrow: 1, marginLeft: "10px" }}>
                         <Typography variant="body2" sx={{ fontWeight: "semibold" }}>
@@ -231,7 +248,7 @@ const Header = () => {
                         </Typography>
 
                         <Typography variant="caption" color="textSecondary">
-                          {moment(data.created_At).format("LLL")}
+                          {moment(data.created_At).format("MMMM Do YYYY, h:mm:ss a")}
                         </Typography>
                       </div>
                     </Stack>

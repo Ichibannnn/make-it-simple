@@ -11,6 +11,8 @@ import { closingTicketApi } from "../features/api_ticketing/receiver/closingTick
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
 import { notificationMessageApi } from "../features/api_notification_message/notificationMessageApi";
 
+import ring2 from "../../src/assets/ringtone/ring2.wav";
+
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
   const [notification, setNotification] = useState([]);
@@ -47,6 +49,9 @@ const useSignalRConnection = () => {
 
   useEffect(() => {
     if (notification?.data?.value) {
+      const ring = new Audio(ring2);
+      ring.play().catch((error) => console.error("Audio playback failed: ", error));
+
       dispatch(notificationApi.util.invalidateTags(["Notification"]));
       dispatch(notificationMessageApi.util.invalidateTags(["Notification Message"]));
 
