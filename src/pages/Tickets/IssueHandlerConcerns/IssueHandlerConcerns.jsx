@@ -30,7 +30,7 @@ import {
   Search,
 } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 
@@ -58,6 +58,8 @@ import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import { useGetNotificationMessageQuery } from "../../../features/api_notification_message/notificationMessageApi";
+import { ParameterContext } from "../../../context/ParameterContext";
+import PrintServiceReport from "./PrintServiceReport";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -74,6 +76,9 @@ const IssueHandlerConcerns = () => {
   const [viewData, setViewData] = useState(null);
   const [closeTicketData, setCloseTicketData] = useState(null);
   const [transferTicketData, setTransferTicketData] = useState(null);
+  const [printData, setPrintData] = useState(null);
+
+  const { parameter } = useContext(ParameterContext);
 
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
 
@@ -82,11 +87,11 @@ const IssueHandlerConcerns = () => {
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
+  const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
 
   const dispatch = useDispatch();
   useSignalRConnection();
   const { data: notificationBadge } = useGetNotificationQuery();
-  // const { data: notificationMessage } = useGetNotificationMessageQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
@@ -96,8 +101,6 @@ const IssueHandlerConcerns = () => {
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
-
-  // console.log("Request Notif: ", notificationMessage);
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -142,9 +145,17 @@ const IssueHandlerConcerns = () => {
     setTransferTicketData(data);
   };
 
+  const onPrintTicketAction = (data) => {
+    // console.log("Print Data: ", data);
+
+    printTicketOnToggle();
+    setPrintData(data);
+  };
+
   const onDialogClose = () => {
     setCloseTicketData(null);
     setTransferTicketData(null);
+    setPrintData(null);
     closeTicketOnClose();
     // manageTicketOnClose();
   };
@@ -205,6 +216,16 @@ const IssueHandlerConcerns = () => {
       setDateTo(null);
     }
   }, [ticketStatus]);
+
+  useEffect(() => {
+    if (parameter) {
+      setTicketStatus("");
+
+      setTimeout(() => {
+        setTicketStatus(parameter);
+      }, 200);
+    }
+  }, [parameter]);
 
   return (
     <Stack
@@ -554,20 +575,16 @@ const IssueHandlerConcerns = () => {
                     </TableCell>
                   )}
 
-                  {ticketStatus !== "Closed" ? (
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      ACTION
-                    </TableCell>
-                  ) : (
-                    ""
-                  )}
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    ACTION
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
@@ -615,7 +632,7 @@ const IssueHandlerConcerns = () => {
                           }}
                           onClick={() => onViewAction(item)}
                         >
-                          {item.concern_Description.split("\r\n").map((line, index) => (
+                          {item.concern_Description?.split("\r\n").map((line, index) => (
                             <span key={index}>
                               {line}
                               <br />
@@ -812,27 +829,24 @@ const IssueHandlerConcerns = () => {
                           </TableCell>
                         )}
 
-                        {ticketStatus !== "Closed" ? (
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              maxWidth: "700px",
-                            }}
-                          >
-                            <IssueHandlerConcernsActions
-                              data={item}
-                              onCloseTicket={onCloseTicketAction}
-                              onManageTicket={onManageTicketAction}
-                              onTransferTicket={onTransferTicketAction}
-                              onManageTransfer={onManageTransferAction}
-                              onCancelTransfer={onCancelTransferAction}
-                            />
-                          </TableCell>
-                        ) : (
-                          ""
-                        )}
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            maxWidth: "700px",
+                          }}
+                        >
+                          <IssueHandlerConcernsActions
+                            data={item}
+                            onCloseTicket={onCloseTicketAction}
+                            onManageTicket={onManageTicketAction}
+                            onTransferTicket={onTransferTicketAction}
+                            onManageTransfer={onManageTransferAction}
+                            onCancelTransfer={onCancelTransferAction}
+                            onPrintTicket={onPrintTicketAction}
+                          />
+                        </TableCell>
                       </TableRow>
                     </React.Fragment>
                   ))}
@@ -905,6 +919,13 @@ const IssueHandlerConcerns = () => {
           open={manageTransferOpen}
           onClose={() => {
             manageTransferOnClose(setTransferTicketData(null));
+          }}
+        />
+        <PrintServiceReport
+          data={printData}
+          open={printTicketOpen}
+          onClose={() => {
+            printTicketOnClose(setPrintData(null));
           }}
         />
       </Stack>

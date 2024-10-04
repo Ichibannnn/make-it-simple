@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
-import { Box, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
@@ -13,13 +13,25 @@ import { notificationApi } from "../../../../features/api_notification/notificat
 
 import DisapprovedDialog from "./DisapprovedDialog";
 import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
+import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
+import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 
 const TicketApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
 
-  const dispatch = useDispatch();
+  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
 
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  useSignalRConnection();
+
+  const [getViewAttachment] = useLazyGetViewAttachmentQuery();
+  const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
   const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useApproveTicketMutation();
 
   const { open: disapproveOpen, onToggle: disapproveOnToggle, onClose: disapproveOnClose } = useDisclosure();
@@ -61,6 +73,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
           .unwrap()
           .then(() => {
             dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             toast.success("Success!", {
               description: "Approve request successfully!",
               duration: 1500,
@@ -97,6 +110,55 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
   const onDisapproveHandler = () => {
     disapproveOnToggle();
     setDisapproveData(data);
+  };
+
+  // Function to open image view dialog
+  const handleViewImage = async (file) => {
+    setViewLoading(true);
+    try {
+      const response = await getViewAttachment(file?.ticketAttachmentId);
+
+      if (response?.data) {
+        const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
+        setSelectedImage(imageUrl); // Set the image URL to state
+        setIsViewDialogOpen(true);
+        setViewLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
+  const handleDownloadAttachment = async (file) => {
+    setDownloadLoading(true);
+    try {
+      const response = await getDownloadAttachment(file?.ticketAttachmentId);
+
+      if (response?.data) {
+        const blob = new Blob([response.data], { type: response.data.type });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${file?.name || "attachment"}`); // Default to 'attachment' if no name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link); // Clean up after download
+        setDownloadLoading(false);
+      } else {
+        console.log("No data in the response");
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
   };
 
   return (
@@ -377,7 +439,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                           display: "flex",
                           width: "100%",
                           flexDirection: "column",
-                          justifyContent: "space-between",
+                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -410,20 +472,36 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <Tooltip title="Download">
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => {
-                                  window.location = fileName.link;
-                                }}
-                                style={{
-                                  background: "none",
-                                }}
-                              >
-                                <FileDownloadOutlined />
-                              </IconButton>
-                            </Tooltip>
+                            <>
+                              {isImageFile(fileName.name) && (
+                                <Tooltip title="View">
+                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
+                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
+                                  </IconButton>
+                                </Tooltip>
+                                // <ViewAttachment fileName={fileName} loading={loading} handleViewImage={handleViewImage} />
+                              )}
+                            </>
+
+                            {downloadLoading ? (
+                              <CircularProgress size={14} />
+                            ) : (
+                              <Tooltip title="Download">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  // onClick={() => {
+                                  //   window.location = fileName.link;
+                                  // }}
+                                  onClick={() => handleDownloadAttachment(fileName)}
+                                  style={{
+                                    background: "none",
+                                  }}
+                                >
+                                  <FileDownloadOutlined />
+                                </IconButton>
+                              </Tooltip>
+                            )}
                           </Box>
                         </Box>
                       </Box>
@@ -456,6 +534,17 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
         <DisapprovedDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} />
       </Dialog>
+
+      {selectedImage && (
+        <>
+          <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+            <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+            <DialogActions>
+              <Button onClick={handleViewClose}>Close</Button>
+            </DialogActions>
+          </Dialog>
+        </>
+      )}
     </>
   );
 };

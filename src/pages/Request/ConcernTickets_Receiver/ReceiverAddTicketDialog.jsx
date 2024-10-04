@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, Close, RemoveCircleOutline } from "@mui/icons-material";
+import { Add, CheckOutlined, Close, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -37,8 +37,11 @@ const schema = yup.object().shape({
 });
 
 const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
-  const [addAttachments, setAddAttachments] = useState([]);
+  const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
+
+  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
 
   const [startDateValidation, setStartDateValidation] = useState(null);
   const fileInputRef = useRef();
@@ -84,7 +87,6 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
   });
 
   const onSubmitAction = (formData) => {
-    // console.log("Form Data: ", formData);
     const payload = new FormData();
 
     payload.append("Requestor_By", formData.Requestor_By?.userId);
@@ -141,7 +143,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
               description: "Approve request successfully!",
               duration: 1500,
             });
-            setAddAttachments([]);
+            setAttachments([]);
             reset();
             setApproveStatus("false");
             onClose();
@@ -158,45 +160,32 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
+      file: file,
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name));
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
-    setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
 
   const handleUploadButtonClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
+  const handleDeleteFile = (fileNameToDelete) => {
+    console.log("File to Delete: ", fileNameToDelete);
 
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          removeAttachments: [
-            {
-              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-            },
-          ],
-        };
-        await deleteRequestorAttachment(deletePayload).unwrap();
-      }
+    setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
-      setAddAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-      setValue(
-        "RequestAttachmentsFiles",
-        watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
-      );
-    } catch (error) {}
+    setValue(
+      "RequestAttachmentsFiles",
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
+    );
   };
 
   const handleDragOver = (event) => {
@@ -217,15 +206,36 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter((fileName) => !addAttachments.includes(fileName));
-    setAddAttachments([...addAttachments, ...uniqueNewFiles]);
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
+    setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
   const onCloseHandler = () => {
     setApproveStatus("false");
     reset();
-    setAddAttachments([]);
+    setAttachments([]);
     onClose();
+  };
+
+  // Function to open image view dialog
+  const handleViewImage = (file) => {
+    console.log("File: ", file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedImage(e.target.result);
+      setIsViewDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
   return (
@@ -276,6 +286,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Department:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="department"
@@ -326,6 +337,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Requestor:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="Requestor_By"
@@ -365,6 +377,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Concern:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="concern_Details"
@@ -409,13 +422,11 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                       minHeight: "195px",
                       display: "flex",
                       width: "100%",
-                      display: "flex",
                       flexDirection: "column",
-                      justifyContent: "space-between",
                       padding: 1,
                     }}
                   >
-                    {addAttachments?.map((fileName, index) => (
+                    {attachments.map((fileName, index) => (
                       <Box
                         key={index}
                         sx={{
@@ -467,6 +478,19 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                         </Box>
 
                         <Box>
+                          {isImageFile(fileName.name) && (
+                            <Tooltip title="Remove">
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => handleViewImage(fileName.file)} // View image in dialog
+                                style={{ background: "none" }}
+                              >
+                                <VisibilityOutlined />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+
                           <Tooltip title="Remove">
                             <IconButton
                               size="small"
@@ -491,38 +515,20 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   render={({ field: { onChange, value } }) => (
                     <input
                       ref={fileInputRef}
-                      type="file"
                       accept=".png,.jpg,.jpeg,.docx"
+                      style={{ display: "none" }}
+                      multiple
+                      type="file"
                       onChange={(event) => {
-                        if (ticketAttachmentId) {
-                          const files = Array.from(event.target.files);
-                          files[0].ticketAttachmentId = ticketAttachmentId;
+                        handleAttachments(event);
+                        const files = Array.from(event.target.files);
+                        const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
-                          onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+                        console.log("Controller Files: ", files);
 
-                          setAddAttachments((prevFiles) => [
-                            ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                            {
-                              ticketAttachmentId: ticketAttachmentId,
-                              name: files[0].name,
-                              size: (files[0].size / (1024 * 1024)).toFixed(2),
-                            },
-                          ]);
-
-                          fileInputRef.current.value = "";
-                          setTicketAttachmentId(null);
-                        } else {
-                          handleAttachments(event);
-                          const files = Array.from(event.target.files);
-
-                          const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                          onChange([...value, ...uniqueNewFiles]);
-                          fileInputRef.current.value = "";
-                        }
+                        onChange([...value, ...uniqueNewFiles]);
+                        fileInputRef.current.value = "";
                       }}
-                      hidden
-                      multiple={!!ticketAttachmentId}
                     />
                   )}
                 />
@@ -549,6 +555,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Category:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="categoryId"
@@ -598,6 +605,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Sub Category:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="subCategoryId"
@@ -638,6 +646,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Channel Name:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="ChannelId"
@@ -683,6 +692,7 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
                   >
                     Assign To:
                   </Typography>
+
                   <Controller
                     control={control}
                     name="userId"
@@ -812,6 +822,14 @@ const ReceiverAddTicketDialog = ({ open, onClose, setApproveStatus }) => {
               Submit
             </LoadingButton>
           </Stack>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog to view image */}
+      <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+        <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+        <DialogActions>
+          <Button onClick={handleViewClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </>

@@ -84,8 +84,6 @@ const UserAccounts = () => {
     const user = JSON.parse(userJson);
     const userId = user.id;
 
-    console.log("user: ", userId);
-
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",

@@ -54,6 +54,7 @@ export const router = createBrowserRouter([
         path: "/overview",
         element: <Overview />,
       },
+
       {
         path: "/user-management",
         element: <UserManagement />,
@@ -68,6 +69,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "/masterlist",
         element: <MasterlistPage />,
@@ -118,6 +120,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "/requestor",
         element: <RequestsPage />,
@@ -128,6 +131,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "/receiver",
         element: <ReceiverPage />,
@@ -142,6 +146,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "/approver",
         element: <ApproverPage />,
@@ -152,6 +157,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "/ticketing",
         element: <TicketingPage />,

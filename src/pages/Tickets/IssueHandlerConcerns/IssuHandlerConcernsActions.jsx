@@ -1,11 +1,11 @@
-import { ChecklistRtlOutlined, CloseOutlined, ModeEditOutlineOutlined, MoreHoriz, MoveDownOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { ChecklistRtlOutlined, CloseOutlined, LocalPrintshopOutlined, ModeEditOutlineOutlined, MoreHoriz, MoveDownOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import React, { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
 
-const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTransferTicket, onManageTransfer, onCancelTransfer }) => {
+const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTransferTicket, onManageTransfer, onCancelTransfer, onPrintTicket }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -33,6 +33,11 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
   const onCancelTransferAction = (data) => {
     onToggle();
     onCancelTransfer(data);
+  };
+
+  const onPrintTicketAction = (data) => {
+    onToggle();
+    onPrintTicket(data);
   };
 
   const menuItems = [];
@@ -75,6 +80,15 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
             <VisibilityOutlined fontSize="small" />
           </ListItemIcon>
           <Typography>View Ticket</Typography>
+        </Stack>
+      </MenuItem>,
+
+      <MenuItem key="print" onClick={() => onPrintTicketAction(data)}>
+        <Stack direction="row" sx={{ alignItems: "center" }}>
+          <ListItemIcon>
+            <LocalPrintshopOutlined fontSize="small" color="success" />
+          </ListItemIcon>
+          <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Print</Typography>
         </Stack>
       </MenuItem>
     );

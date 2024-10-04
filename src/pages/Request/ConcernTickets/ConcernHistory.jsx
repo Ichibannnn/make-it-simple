@@ -6,10 +6,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
-import { Box, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { AccessTimeOutlined, AttachFileOutlined, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, PersonOutlineOutlined } from "@mui/icons-material";
+import {
+  AccessTimeOutlined,
+  AttachFileOutlined,
+  Close,
+  FiberManualRecord,
+  FileDownloadOutlined,
+  GetAppOutlined,
+  PersonOutlineOutlined,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
 const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -19,6 +29,12 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
+  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
+
   const fileInputRef = useRef();
 
   const { data: historyData } = useGetTicketHistoryQuery(data?.ticketRequestConcerns?.[0]?.ticketConcernId, {
@@ -26,6 +42,8 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
   });
 
   const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
+  const [getViewAttachment] = useLazyGetViewAttachmentQuery();
+  const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
   const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
 
@@ -68,6 +86,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
           name: item.fileName,
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
           link: item.attachment,
+          file: item,
         }))
       );
     } catch (error) {}
@@ -79,7 +98,56 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("Timeline data: ", data);
+  // Function to open image view dialog
+  const handleViewImage = async (file) => {
+    setViewLoading(true);
+    try {
+      const response = await getViewAttachment(file?.ticketAttachmentId);
+
+      console.log("Res: ", response);
+
+      if (response?.data) {
+        const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
+        setSelectedImage(imageUrl); // Set the image URL to state
+        setIsViewDialogOpen(true);
+        setViewLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const handleDownloadAttachment = async (file) => {
+    setDownloadLoading(true);
+    try {
+      const response = await getDownloadAttachment(file?.ticketAttachmentId);
+
+      if (response?.data) {
+        const blob = new Blob([response.data], { type: response.data.type });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${file?.name || "attachment"}`); // Default to 'attachment' if no name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link); // Clean up after download
+        setDownloadLoading(false);
+      } else {
+        console.log("No data in the response");
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+  };
 
   return (
     <>
@@ -485,19 +553,32 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                             </Box>
 
                             <Box>
-                              <Tooltip title="Download">
+                              {isImageFile(fileName.name) && (
                                 <IconButton
                                   size="small"
-                                  color="error"
-                                  onClick={() => {
-                                    window.location = fileName.link;
-                                  }}
-                                  style={{
-                                    background: "none",
-                                  }}
+                                  color="primary"
+                                  onClick={() => handleViewImage(fileName)} // View image in dialog
+                                  style={{ background: "none" }}
                                 >
-                                  <FileDownloadOutlined />
+                                  {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
                                 </IconButton>
+                              )}
+
+                              <Tooltip title="Download">
+                                {downloadLoading ? (
+                                  <CircularProgress size={14} />
+                                ) : (
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleDownloadAttachment(fileName)}
+                                    style={{
+                                      background: "none",
+                                    }}
+                                  >
+                                    <FileDownloadOutlined />
+                                  </IconButton>
+                                )}
                               </Tooltip>
                             </Box>
                           </Box>
@@ -670,6 +751,14 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
         </DialogContent>
 
         <DialogActions></DialogActions>
+      </Dialog>
+
+      {/* Dialog to view image */}
+      <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+        <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+        <DialogActions>
+          <Button onClick={handleViewClose}>Close</Button>
+        </DialogActions>
       </Dialog>
     </>
   );

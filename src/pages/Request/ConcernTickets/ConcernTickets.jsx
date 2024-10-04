@@ -57,6 +57,7 @@ import { notificationApi, useGetNotificationQuery } from "../../../features/api_
 
 import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useNavigate } from "react-router-dom";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -171,6 +172,7 @@ const ConcernTickets = () => {
           .unwrap()
           .then(() => {
             dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             toast.success("Success!", {
               description: "Confirm concern successfully!",
               duration: 1500,
@@ -247,12 +249,6 @@ const ConcernTickets = () => {
     viewHistoryOnToggle();
     setViewHistoryData(data);
   };
-
-  // const onNavigationAction = () => {
-  //   navigate("/overview");
-  //   // sessionStorage.removeItem("token");
-  //   // sessionStorage.removeItem("user");
-  // };
 
   useEffect(() => {
     if (searchValue) {

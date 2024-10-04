@@ -28,6 +28,7 @@ export const userApi = createApi({
       }),
       providesTags: ["Users"],
     }),
+
     createUser: builder.mutation({
       query: (body) => ({
         url: "User/AddNewUser",
@@ -36,6 +37,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
+
     updateUser: builder.mutation({
       query: (body) => ({
         url: "User/UpdateUser",
@@ -44,6 +46,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
+
     resetUserPassword: builder.mutation({
       query: (body) => ({
         url: "User/UserResetPassword",
@@ -52,6 +55,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
+
     archiveUser: builder.mutation({
       query: (body) => ({
         url: "User/UpdateUserStatus",
@@ -60,6 +64,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Users"]),
     }),
+
     changeUserPassword: builder.mutation({
       query: (body) => ({
         url: "User/UserChangePassword",

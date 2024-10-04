@@ -267,6 +267,10 @@ body {
   text-transform: capitalize !important;
 }
 
+.print-table {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -286,6 +290,23 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6e53a5;
 }
+
+.table-row {
+  a:hover {
+    background-color: transparent !important;
+  }
+}
+
+/* table,
+td,
+th {
+  border: 1px solid;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+} */
 
 /* li {
   position: relative;

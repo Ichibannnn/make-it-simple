@@ -35,6 +35,7 @@ import { closingTicketApi } from "../features/api_ticketing/receiver/closingTick
 import { notificationApi } from "../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../features/api_notification_message/notificationMessageApi";
 import notificationMiddleware from "../middleware/notificationMiddleware";
+import { attachmentsApi } from "../features/api_attachments/attachmentsApi";
 
 export const store = configureStore({
   reducer: {
@@ -44,6 +45,7 @@ export const store = configureStore({
 
     [notificationApi.reducerPath]: notificationApi.reducer,
     [notificationMessageApi.reducerPath]: notificationMessageApi.reducer,
+    [attachmentsApi.reducerPath]: attachmentsApi.reducer,
 
     [loginApi.reducerPath]: loginApi.reducer,
 
@@ -79,6 +81,7 @@ export const store = configureStore({
     getDefaultMiddleWare().concat([
       notificationApi.middleware,
       notificationMessageApi.middleware,
+      attachmentsApi.middleware,
 
       loginApi.middleware,
 

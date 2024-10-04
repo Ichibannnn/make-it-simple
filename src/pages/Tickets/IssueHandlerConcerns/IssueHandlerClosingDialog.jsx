@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
+import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -26,6 +26,9 @@ const schema = yup.object().shape({
 const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
+
+  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
@@ -133,6 +136,7 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
     const fileNames = newFiles.map((file) => ({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
+      file: file,
     }));
 
     const uniqueNewFiles = fileNames.filter((newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name));
@@ -194,6 +198,27 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((fileName) => !addAttachments.includes(fileName));
     setAddAttachments([...addAttachments, ...uniqueNewFiles]);
+  };
+
+  // Function to open image view dialog
+  const handleViewImage = (file) => {
+    console.log("File: ", file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedImage(e.target.result);
+      setIsViewDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
   useEffect(() => {
@@ -333,7 +358,7 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                           width: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          justifyContent: "space-between",
+                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -389,6 +414,19 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                             </Box>
 
                             <Box>
+                              {isImageFile(fileName.name) && (
+                                <Tooltip title="Remove">
+                                  <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => handleViewImage(fileName.file)} // View image in dialog
+                                    style={{ background: "none" }}
+                                  >
+                                    <VisibilityOutlined />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+
                               <Tooltip title="Remove">
                                 <IconButton
                                   size="small"
@@ -416,32 +454,14 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                           type="file"
                           accept=".png,.jpg,.jpeg,.docx"
                           onChange={(event) => {
-                            if (ticketAttachmentId) {
-                              const files = Array.from(event.target.files);
-                              files[0].ticketAttachmentId = ticketAttachmentId;
+                            handleAttachments(event);
+                            const files = Array.from(event.target.files);
+                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
-                              onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+                            console.log("Controller Files: ", files);
 
-                              setAddAttachments((prevFiles) => [
-                                ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                                {
-                                  ticketAttachmentId: ticketAttachmentId,
-                                  name: files[0].name,
-                                  size: (files[0].size / (1024 * 1024)).toFixed(2),
-                                },
-                              ]);
-
-                              fileInputRef.current.value = "";
-                              setTicketAttachmentId(null);
-                            } else {
-                              handleAttachments(event);
-                              const files = Array.from(event.target.files);
-
-                              const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                              onChange([...value, ...uniqueNewFiles]);
-                              fileInputRef.current.value = "";
-                            }
+                            onChange([...value, ...uniqueNewFiles]);
+                            fileInputRef.current.value = "";
                           }}
                           hidden
                           multiple={!!ticketAttachmentId}
@@ -454,7 +474,6 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
             </Stack>
           </Stack>
         </DialogContent>
-
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
             <LoadingButton
@@ -468,6 +487,14 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
             </LoadingButton>
           </Stack>
         </DialogActions>
+
+        {/* Dialog to view image */}
+        <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+          <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+          <DialogActions>
+            <Button onClick={handleViewClose}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Dialog>
     </>
   );

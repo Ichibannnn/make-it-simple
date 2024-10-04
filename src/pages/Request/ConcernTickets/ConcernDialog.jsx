@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
-import { RemoveCircleOutline } from "@mui/icons-material";
+import { Refresh, RemoveCircleOutline, Visibility, VisibilityOutlined, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,6 +14,7 @@ import { useCreateEditRequestorConcernMutation } from "../../../features/api_req
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useSelector } from "react-redux";
 
 const requestorSchema = yup.object().shape({
   RequestTransactionId: yup.string().nullable(),
@@ -25,6 +26,10 @@ const requestorSchema = yup.object().shape({
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+
+  const userRole = useSelector((state) => state?.user?.userRoleName);
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
@@ -46,7 +51,6 @@ const ConcernDialog = ({ open, onClose }) => {
     const payload = new FormData();
 
     payload.append("Concern", formData.Concern);
-    payload.append("Modules", "/receiver/receiver-concerns");
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
@@ -89,13 +93,12 @@ const ConcernDialog = ({ open, onClose }) => {
     const fileNames = newFiles.map((file) => ({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
+      file: file,
     }));
 
     const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
-
-    // updateAttachments(fileNames);
   };
 
   const handleUploadButtonClick = () => {
@@ -113,12 +116,10 @@ const ConcernDialog = ({ open, onClose }) => {
     );
   };
 
-  // Multiple files handler event
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
-  // Drag and Drop handler event
   const handleDrop = (event) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
@@ -161,6 +162,25 @@ const ConcernDialog = ({ open, onClose }) => {
     onClose();
     reset();
     setAttachments([]);
+  };
+
+  // Function to open image view dialog
+  const handleViewImage = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedImage(e.target.result);
+      setIsViewDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
   return (
@@ -326,24 +346,29 @@ const ConcernDialog = ({ open, onClose }) => {
                               </Typography>
                             </Box>
 
-                            <Divider
-                              variant="fullWidth"
-                              sx={{
-                                background: "#2D3748",
-                                marginTop: 1,
-                              }}
-                            />
+                            <Box>
+                              {isImageFile(fileName.name) && (
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  onClick={() => handleViewImage(fileName.file)} // View image in dialog
+                                  style={{ background: "none" }}
+                                >
+                                  <VisibilityOutlined />
+                                </IconButton>
+                              )}
 
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleDeleteFile(fileName)}
-                              style={{
-                                background: "none",
-                              }}
-                            >
-                              <RemoveCircleOutline />
-                            </IconButton>
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDeleteFile(fileName)}
+                                style={{
+                                  background: "none",
+                                }}
+                              >
+                                <RemoveCircleOutline />
+                              </IconButton>
+                            </Box>
                           </Box>
                         </Box>
                       ))}
@@ -405,6 +430,14 @@ const ConcernDialog = ({ open, onClose }) => {
             </LoadingButton>
           </DialogActions>
         </form>
+      </Dialog>
+
+      {/* Dialog to view image */}
+      <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+        <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+        <DialogActions>
+          <Button onClick={handleViewClose}>Close</Button>
+        </DialogActions>
       </Dialog>
     </>
   );

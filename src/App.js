@@ -4,6 +4,7 @@ import { router } from "./app/router";
 import { theme } from "./theme/theme";
 import { SignalRProvider } from "./context/SignalRContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { ParameterProvider } from "./context/ParameterContext";
 
 const App = () => {
   return (
@@ -11,9 +12,9 @@ const App = () => {
       <CssBaseline />
 
       <SignalRProvider>
-        {/* <NotificationProvider> */}
-        <RouterProvider router={router} />
-        {/* </NotificationProvider> */}
+        <ParameterProvider>
+          <RouterProvider router={router} />
+        </ParameterProvider>
       </SignalRProvider>
     </ThemeProvider>
   );

@@ -36,9 +36,9 @@ const useSignalRConnection = () => {
       connection
         .start()
         .then(() => {
-          console.log("Connected");
+          // console.log("Connected");
           connection.on("TransactionData", (data) => {
-            console.log("TransactionData: ", data);
+            // console.log("TransactionData: ", data);
             setNotification({ data });
           });
         })
@@ -49,8 +49,8 @@ const useSignalRConnection = () => {
 
   useEffect(() => {
     if (notification?.data?.value) {
-      const ring = new Audio(ring2);
-      ring.play().catch((error) => console.error("Audio playback failed: ", error));
+      // const ring = new Audio(ring2);
+      // ring.play().catch((error) => console.error("Audio playback failed: ", error));
 
       dispatch(notificationApi.util.invalidateTags(["Notification"]));
       dispatch(notificationMessageApi.util.invalidateTags(["Notification Message"]));

@@ -1,5 +1,5 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { AttachFileOutlined, CheckOutlined, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { AttachFileOutlined, CheckOutlined, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -8,9 +8,13 @@ import * as yup from "yup";
 
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 import { useCreateEditRequestorConcernMutation, useDeleteRequestorAttachmentMutation, useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useDispatch } from "react-redux";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
 const requestorSchema = yup.object().shape({
   RequestConcernId: yup.string().nullable(),
@@ -22,15 +26,21 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
 
   const fileInputRef = useRef();
+  const dispatch = useDispatch();
 
   const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
     useCreateEditRequestorConcernMutation();
 
-  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
-
   const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
+  const [getViewAttachment] = useLazyGetViewAttachmentQuery();
+  const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -67,38 +77,39 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     console.log("Payload Entries: ", [...payload.entries()]);
 
-    // createEditRequestorConcern(payload)
-    //   .unwrap()
-    //   .then(() => {
-    //     toast.success("Success!", {
-    //       description: "Concern updated successfully!",
-    //       duration: 1500,
-    //     });
-    //     setAttachments([]);
-    //     reset();
-    //     setIsLoading(false);
-    //     onClose();
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error", err);
-    //     toast.error("Error!", {
-    //       description: err.data.error.message,
-    //       duration: 1500,
-    //     });
-    //   });
+    createEditRequestorConcern(payload)
+      .unwrap()
+      .then(() => {
+        toast.success("Success!", {
+          description: "Concern updated successfully!",
+          duration: 1500,
+        });
+        dispatch(notificationApi.util.resetApiState());
+        dispatch(notificationMessageApi.util.resetApiState());
+        setAttachments([]);
+        reset();
+        setIsLoading(false);
+        onClose();
+      })
+      .catch((err) => {
+        console.log("Error", err);
+        toast.error("Error!", {
+          description: err.data.error.message,
+          duration: 1500,
+        });
+      });
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2),
+      file,
     }));
 
     const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
-
     setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
 
@@ -112,8 +123,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -180,12 +189,75 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     } catch (error) {}
   };
 
+  // Function to open image view dialog
+  const handleViewImage = async (file) => {
+    setViewLoading(true);
+    try {
+      const response = await getViewAttachment(file?.ticketAttachmentId);
+
+      if (response?.data) {
+        const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
+        setSelectedImage(imageUrl); // Set the image URL to state
+        setIsViewDialogOpen(true);
+        setViewLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const handleViewImageWithoutId = (file) => {
+    setViewLoading(true);
+    try {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        setIsViewDialogOpen(true);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const handleDownloadAttachment = async (file) => {
+    setDownloadLoading(true);
+    try {
+      const response = await getDownloadAttachment(file?.ticketAttachmentId);
+
+      if (response?.data) {
+        const blob = new Blob([response.data], { type: response.data.type });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${file?.name || "attachment"}`); // Default to 'attachment' if no name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link); // Clean up after download
+        setDownloadLoading(false);
+      } else {
+        console.log("No data in the response");
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
   useEffect(() => {
     if (editData) {
       setValue("RequestConcernId", editData?.requestConcernId);
       setValue("Concern", editData?.concern);
 
-      // getRequestorAttachment({ Id: editData?.requestGeneratorId });
       getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
     }
   }, [editData]);
@@ -375,6 +447,34 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               </Box>
 
                               <Box>
+                                {!!fileName.ticketAttachmentId ? (
+                                  <>
+                                    {isImageFile(fileName.name) && (
+                                      <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => handleViewImage(fileName)} // View image in dialog
+                                        style={{ background: "none" }}
+                                      >
+                                        {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
+                                      </IconButton>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    {isImageFile(fileName.name) && (
+                                      <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => handleViewImageWithoutId(fileName.file)} // View image in dialog
+                                        style={{ background: "none" }}
+                                      >
+                                        <VisibilityOutlined />
+                                      </IconButton>
+                                    )}
+                                  </>
+                                )}
+
                                 {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
                                   <Tooltip title="Remove">
                                     <IconButton
@@ -390,35 +490,25 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   </Tooltip>
                                 )}
 
-                                {((!!fileName.ticketAttachmentId && editData?.concern_Status === "For Approval") || editData?.concern_Status === "") && (
-                                  <Tooltip title="Upload">
-                                    <IconButton
-                                      size="small"
-                                      color="error"
-                                      onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
-                                      style={{
-                                        background: "none",
-                                      }}
-                                    >
-                                      <FileUploadOutlined />
-                                    </IconButton>
-                                  </Tooltip>
-                                )}
-
                                 {!!fileName.ticketAttachmentId && (
                                   <Tooltip title="Download">
-                                    <IconButton
-                                      size="small"
-                                      color="error"
-                                      onClick={() => {
-                                        window.location = fileName.link;
-                                      }}
-                                      style={{
-                                        background: "none",
-                                      }}
-                                    >
-                                      <FileDownloadOutlined />
-                                    </IconButton>
+                                    {downloadLoading ? (
+                                      <CircularProgress size={14} />
+                                    ) : (
+                                      <IconButton
+                                        size="small"
+                                        color="error"
+                                        // onClick={() => {
+                                        //   window.location = fileName.link;
+                                        // }}
+                                        onClick={() => handleDownloadAttachment(fileName)}
+                                        style={{
+                                          background: "none",
+                                        }}
+                                      >
+                                        <FileDownloadOutlined />
+                                      </IconButton>
+                                    )}
                                   </Tooltip>
                                 )}
                               </Box>
@@ -440,12 +530,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         onChange={(event) => {
                           if (ticketAttachmentId) {
                             const files = Array.from(event.target.files);
-
                             files[0].ticketAttachmentId = ticketAttachmentId;
-
-                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                            // console.log("Controlled Unique: ", uniqueNewFiles);
+                            const uniqueNewFiles = files.filter((item) => !value?.some((file) => file.name === item.name));
 
                             onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId), ...!uniqueNewFiles]);
 
@@ -463,10 +549,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           } else {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
-                            const uniqueNewFiles = files.filter((item) => !attachments.some((file) => file.name === item.name));
-
-                            // console.log("Edited Attachment: ", files);
-                            // console.log("Value: ", value);
+                            const uniqueNewFiles = files.filter((item) => !attachments?.some((file) => file.name === item.name));
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";
@@ -509,6 +592,18 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
           </DialogActions>
         </form>
       </Dialog>
+
+      {/* Dialog to view image */}
+      {selectedImage && (
+        <>
+          <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+            <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+            <DialogActions>
+              <Button onClick={handleViewClose}>Close</Button>
+            </DialogActions>
+          </Dialog>
+        </>
+      )}
     </>
   );
 };

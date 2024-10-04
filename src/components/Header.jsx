@@ -1,10 +1,10 @@
-import { Avatar, Badge, Box, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import React from "react";
+import { Avatar, Badge, Box, Divider, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import React, { useContext } from "react";
 import { theme } from "../theme/theme";
 
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { AccountCircleRounded, NotificationsNoneOutlined, NotificationsOffOutlined, NotificationsRounded, Password } from "@mui/icons-material";
+import { AccountCircleRounded, Close, NotificationsNoneOutlined, NotificationsOffOutlined, NotificationsRounded, Password, PersonOutlineOutlined } from "@mui/icons-material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,12 +26,7 @@ import useSignalRConnection from "../hooks/useSignalRConnection";
 import moment from "moment";
 import { useEffect } from "react";
 import { toast, Toaster } from "sonner";
-
-const getInitials = (fullName) => {
-  const nameArray = fullName.trim().split(" ");
-  if (nameArray.length === 1) return nameArray[0][0].toUpperCase();
-  return nameArray.map((name) => name[0].toUpperCase()).join("");
-};
+import { ParameterContext } from "../context/ParameterContext";
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -40,13 +35,16 @@ const Header = () => {
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const notificationOpen = Boolean(notificationAnchor);
+  const { parameter, setParameter } = useContext(ParameterContext);
 
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useSignalRConnection();
 
   // console.log("Notification Message: ", notificationMessage);
+  // console.log("Parameter: ", parameter);
 
   const fullName = useSelector((state) => state?.user?.fullname);
   const userName = useSelector((state) => state?.user?.username);
@@ -74,6 +72,10 @@ const Header = () => {
   };
 
   const closeHandler = () => {
+    setAnchorEl(null);
+  };
+
+  const closeNotificationHandler = () => {
     setAnchorEl(null);
   };
 
@@ -117,7 +119,7 @@ const Header = () => {
   };
 
   const onNavigateAction = (data) => {
-    console.log("Data: ", data);
+    // console.log("Data: ", data);
 
     const navigationId = {
       id: data?.id,
@@ -127,7 +129,26 @@ const Header = () => {
       .unwrap()
       .then(() => {
         dispatch(notificationMessageApi.util.resetApiState());
-        navigate(data?.modules);
+
+        if (data?.modules === null) {
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("user");
+
+          dispatch(notificationApi.util.resetApiState());
+          dispatch(notificationMessageApi.util.resetApiState());
+          dispatch(concernApi.util.resetApiState());
+          dispatch(concernReceiverApi.util.resetApiState());
+          dispatch(concernIssueHandlerApi.util.resetApiState());
+          dispatch(ticketApprovalApi.util.resetApiState());
+          dispatch(closingTicketApi.util.resetApiState());
+
+          dispatch(clearUserDetails());
+          navigate("/");
+        } else {
+          // console.log("Parameter: ", data?.modules_Parameter);
+          setParameter(data?.modules_Parameter);
+          navigate(data?.modules);
+        }
       })
       .catch(() => {
         toast.error("Error!", {
@@ -156,7 +177,7 @@ const Header = () => {
     }
   }, [notificationMessage]);
 
-  console.log("Length: ", notificationMessage);
+  // console.log("Length: ", notificationMessage);
 
   return (
     <Stack
@@ -239,7 +260,6 @@ const Header = () => {
                     onClick={() => onNavigateAction(data)}
                   >
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      {/* <AccountCircleRounded /> */}
                       <Avatar sx={{ bgcolor: theme.palette.primary.main }}>{trimLetters(data.added_By)}</Avatar>
 
                       <div style={{ flexGrow: 1, marginLeft: "10px" }}>
@@ -247,11 +267,22 @@ const Header = () => {
                           {data.message}
                         </Typography>
 
-                        <Typography variant="caption" color="textSecondary">
-                          {moment(data.created_At).format("MMMM Do YYYY, h:mm:ss a")}
-                        </Typography>
+                        <Stack>
+                          <Stack direction="row" gap={0}>
+                            {/* <PersonOutlineOutlined fontSize="small" /> */}
+
+                            <Typography variant="caption" color="textSecondary">
+                              {`From: ${data.added_By}`}
+                            </Typography>
+                          </Stack>
+
+                          <Typography variant="caption" color="textSecondary">
+                            {moment(data.created_At).format("MMMM Do YYYY, h:mm:ss a")}
+                          </Typography>
+                        </Stack>
                       </div>
                     </Stack>
+                    <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
                   </ListItem>
                 ))}
               </List>
