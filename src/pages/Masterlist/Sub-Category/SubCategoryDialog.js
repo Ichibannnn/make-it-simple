@@ -1,22 +1,4 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Drawer,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Box, Divider, Drawer, FormLabel, Stack, TextField, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -232,8 +214,6 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
               </LoadingButton>
             </Stack>
           </Box>
-
-          {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
         </form>
       </Drawer>
     </>

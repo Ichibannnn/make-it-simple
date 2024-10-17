@@ -161,8 +161,6 @@ const Category = () => {
     setEditData(data);
   };
 
-  console.log(editData);
-
   useEffect(() => {
     if (searchValue) {
       setPageNumber(1);
@@ -266,6 +264,18 @@ const Category = () => {
                 >
                   LINE NO.
                 </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
+                  CHANNEL NAME
+                </TableCell>
+
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -329,6 +339,16 @@ const Category = () => {
                       align="center"
                     >
                       {item.id}
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {item.channel_Name ? item.channel_Name : "-"}
                     </TableCell>
 
                     <TableCell

@@ -275,7 +275,7 @@ const ConcernTickets = () => {
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
-            <Button variant="contained" aria-hidden="false" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
+            <Button variant="contained" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
               Add Request
             </Button>
 

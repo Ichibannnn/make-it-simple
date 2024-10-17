@@ -1,30 +1,7 @@
-import {
-  Button,
-  Divider,
-  OutlinedInput,
-  Stack,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Button, Divider, OutlinedInput, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "../../../theme/theme";
-import {
-  AddOutlined,
-  EmailOutlined,
-  MarkEmailReadOutlined,
-  MarkEmailUnreadOutlined,
-  Search,
-  SendOutlined,
-  StickyNote2Outlined,
-} from "@mui/icons-material";
+import { AddOutlined, EmailOutlined, MarkEmailReadOutlined, MarkEmailUnreadOutlined, Search, SendOutlined, StickyNote2Outlined } from "@mui/icons-material";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -76,13 +53,7 @@ const RequestTickets = () => {
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
-            <Button
-              variant="contained"
-              size="large"
-              color="primary"
-              startIcon={<AddOutlined />}
-              onClick={onToggle}
-            >
+            <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
               Create Ticket
             </Button>
           </Stack>
@@ -160,24 +131,13 @@ const RequestTickets = () => {
               </Tabs>
             </Stack>
 
-            <Divider
-              variant="fullWidth"
-              sx={{ background: "#2D3748", marginTop: "1px" }}
-            />
+            <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ marginTop: "10px", padding: "20px" }}
-              gap={4}
-            >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
               <OutlinedInput
                 flex="1"
                 placeholder="Search Ticket #: eg 00001"
-                startAdornment={
-                  <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-                }
+                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 sx={{
@@ -374,71 +334,8 @@ const RequestTickets = () => {
               </Table>
             </TableContainer>
 
-            <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
-              rowsPerPageOptions={[5, 10, 25]}
-            />
+            <TablePagination sx={{ color: "#A0AEC0", fontWeight: 400 }} rowsPerPageOptions={[5, 10, 25]} />
           </Stack>
-
-          {/* QUICK TICKET */}
-          {/* <Stack
-            sx={{
-              backgroundColor: theme.palette.bgForm.black3,
-              borderRadius: "20px",
-              marginTop: "20px",
-            }}
-          >
-            <Stack direction="row" justifyContent="space-between">
-              <Tabs value={status} onChange={(_, value) => setStatus(value)}>
-                <Tab
-                  value=""
-                  className="tabs-styling"
-                  label="All Tickets"
-                  icon={<EmailOutlined />}
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                />
-                <Tab
-                  value="true"
-                  className="tabs-styling"
-                  label="Pending Tickets"
-                  icon={<MarkEmailUnreadOutlined />}
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                />
-                <Tab
-                  value="false"
-                  className="tabs-styling"
-                  label="Closed Tickets"
-                  icon={<MarkEmailReadOutlined />}
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                />
-              </Tabs>
-            </Stack>
-
-            <Divider
-              variant="fullWidth"
-              sx={{ background: "#2D3748", marginTop: "1px" }}
-            />
-
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ marginTop: "10px", padding: "20px" }}
-              gap={4}
-            ></Stack>
-          </Stack> */}
         </Stack>
       </Stack>
     </Stack>

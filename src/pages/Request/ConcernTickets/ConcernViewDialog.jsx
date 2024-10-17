@@ -1,4 +1,21 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { AttachFileOutlined, CheckOutlined, FileDownloadOutlined, FileUploadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -15,12 +32,19 @@ import { notificationApi } from "../../../features/api_notification/notification
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDispatch } from "react-redux";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
-
-const requestorSchema = yup.object().shape({
-  RequestConcernId: yup.string().nullable(),
-  Concern: yup.string().required().label("Concern Details"),
-  RequestAttachmentsFiles: yup.array().nullable(),
-});
+import { useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
+import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
+import { useLazyGetBusinessUnitQuery } from "../../../features/api masterlist/business-unit/businessUnitApi";
+import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
+import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
+import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
+import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
+import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
+import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
+import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -31,13 +55,51 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
+  const dateNeededValidation = new moment();
+
+  const requestorSchema = yup.object().shape({
+    RequestConcernId: yup.string().nullable(),
+    Concern: yup.string().required().label("Concern Details"),
+    RequestAttachmentsFiles: yup.array().nullable(),
+
+    Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
+    Contact_Number: yup.string().notRequired(),
+
+    UserId: yup.object().required().label("Requestor is required"),
+    CompanyId: yup.object().required().label("Company is required"),
+    BusinessUnitId: yup.object().required().label("Business Unit"),
+    DepartmentId: yup.object().required().label("Department is required"),
+    UnitId: yup.object().required().label("Unit is required"),
+    SubUnitId: yup.object().required().label("Sub Unit is required"),
+    LocationId: yup.object().required().label("Location is required"),
+
+    DateNeeded: yup.date().required("Date needed is required"),
+    ChannelId: yup.object().required().label("Channel"),
+    CategoryId: yup.object().required().label("Category"),
+    SubCategoryId: yup.object().required().label("Sub category"),
+
+    Notes: yup.string().notRequired(),
+  });
+
   const fileInputRef = useRef();
   const dispatch = useDispatch();
 
   const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
     useCreateEditRequestorConcernMutation();
 
-  const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
+  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
+
+  const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
@@ -45,6 +107,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const {
     control,
     handleSubmit,
+    register,
     setValue,
     watch,
     reset,
@@ -55,14 +118,51 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       Concern: "",
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
+
+      Request_Type: "",
+      Contact_Number: "",
+
+      UserId: null,
+      CompanyId: null,
+      BusinessUnitId: null,
+      DepartmentId: null,
+      UnitId: null,
+      SubUnitId: null,
+      LocationId: null,
+
+      DateNeeded: null,
+      ChannelId: null,
+      CategoryId: null,
+      SubCategoryId: null,
+
+      Notes: "",
     },
   });
 
   const onConcernFormSubmit = (formData) => {
+    console.log("FormData: ", formData);
+
     const payload = new FormData();
 
     payload.append("Concern", formData.Concern);
     payload.append("RequestConcernId", formData.RequestConcernId);
+
+    payload.append("Request_Type", formData.Request_Type);
+    payload.append("UserId", formData.UserId?.id);
+    payload.append("Contact_Number", formData.Contact_Number);
+    payload.append("CompanyId", formData.CompanyId?.id);
+    payload.append("BusinessUnitId", formData.BusinessUnitId?.id);
+    payload.append("DepartmentId", formData.DepartmentId?.id);
+    payload.append("UnitId", formData.UnitId?.id);
+    payload.append("SubUnitId", formData.SubUnitId?.id);
+    payload.append("LocationId", formData.LocationId?.location_Code);
+
+    payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
+    payload.append("ChannelId", formData.ChannelId?.id);
+    payload.append("CategoryId", formData.CategoryId?.id);
+    payload.append("SubCategoryId", formData.SubCategoryId?.id);
+
+    payload.append("Notes", formData.Notes);
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
@@ -255,20 +355,92 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   useEffect(() => {
     if (editData) {
+      if (!companyIsSuccess) getCompany();
+      if (!businessUnitIsSuccess) getBusinessUnit();
+      if (!departmentIsSuccess) getDepartment();
+      if (!unitIsSuccess) getUnit();
+      if (!subUnitIsSuccess) getSubUnit();
+      if (!locationIsSuccess) getLocation();
+
       setValue("RequestConcernId", editData?.requestConcernId);
       setValue("Concern", editData?.concern);
 
+      setValue("Request_Type", editData?.request_Type);
+      setValue("UserId", {
+        id: editData?.requestorId,
+        fullname: editData?.fullName,
+      });
+
+      if (editData.contact_Number === null) {
+        setValue("Contact_Number", "");
+      } else {
+        setValue("Contact_Number", editData.contact_Number);
+      }
+
+      setValue("CompanyId", {
+        id: editData?.companyId,
+        company_Code: editData?.company_Code,
+        company_Name: editData?.company_Name,
+      });
+      setValue("BusinessUnitId", {
+        id: editData?.busineesUnitId,
+        business_Code: editData?.businessUnit_Code,
+        business_Name: editData?.businessUnit_Name,
+      });
+      setValue("DepartmentId", {
+        id: editData?.departmentId,
+        department_Code: editData?.department_Code,
+        department_Name: editData?.department_Name,
+      });
+      setValue("UnitId", {
+        id: editData?.unitId,
+        unit_Code: editData?.unit_Code,
+        unit_Name: editData?.unit_Name,
+      });
+      setValue("SubUnitId", {
+        id: editData?.subUnitId,
+        subUnit_Code: editData?.subUnit_Code,
+        subUnit_Name: editData?.subUnit_Name,
+      });
+      setValue("LocationId", {
+        location_Code: editData?.location_Code,
+        location_Name: editData?.location_Name,
+      });
+
+      setValue("DateNeeded", moment(editData?.date_Needed));
+      setValue("ChannelId", {
+        id: editData?.channelId,
+        channel_Name: editData?.channel_Name,
+      });
+      setValue("CategoryId", {
+        id: editData?.categoryId,
+        category_Description: editData?.category_Description,
+      });
+      setValue("SubCategoryId", {
+        id: editData?.subCategoryId,
+        subCategory_Description: editData?.subCategory_Description,
+      });
+
+      if (editData.notes === null) {
+        setValue("Notes", "");
+      } else {
+        setValue("Notes", editData.notes);
+      }
+
       getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
     }
-  }, [editData]);
+  }, [editData, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
+
+  // console.log("Request Type: ", watch("Request_Type"));
+  // console.log("Edit Data: ", editData);
 
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog fullWidth maxWidth="md" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }}>
-            <Stack direction="column" sx={{ padding: "5px" }}>
+            <Stack direction="column" sx={{ padding: "1px", minHeight: "700px" }}>
               <Stack>
                 <Stack direction="row" gap={0.5}>
                   <Typography
@@ -278,23 +450,615 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       color: "#48BB78",
                     }}
                   >
-                    {!editData ? "Add Concern" : "View Concern"}
+                    {!editData ? "New Incident" : "View Incident"}
                   </Typography>
                 </Stack>
               </Stack>
 
-              <Stack padding={5} gap={3}>
+              <Stack padding={5}>
+                {/* REQUEST TYPE */}
                 <Stack
-                  direction="row"
+                  width="100%"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 1,
+                  }}
+                >
+                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Request Type:</Typography>
+                  <Controller
+                    name="Request_Type"
+                    control={control}
+                    render={({ field }) => (
+                      <Select {...field} displayEmpty size="small" inputProps={{ "aria-label": "Without label" }} sx={{ width: "100%", fontSize: "13px" }}>
+                        <MenuItem value="New Request" sx={{ fontSize: "13px" }}>
+                          New Request
+                        </MenuItem>
+                        <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
+                          Back Job
+                        </MenuItem>
+                      </Select>
+                    )}
+                  />
+                </Stack>
+
+                {/* REQUESTOR DETAILS */}
+                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mb: 1 }}>Requestor Details</Typography>
+                <Stack direction="row" sx={{ width: "100%" }}>
+                  <Stack direction="row" sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: "50%" }}>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Requestor Name:</Typography>
+                      <Controller
+                        control={control}
+                        name="UserId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={userData?.value?.users || []}
+                              loading={userIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!userIsSuccess)
+                                  getUser({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                setValue("CompanyId", {
+                                  id: value?.companyId,
+                                  company_Code: value?.company_Code,
+                                  company_Name: value?.company_Name,
+                                });
+                                setValue("BusinessUnitId", {
+                                  id: value?.businessUnitId,
+                                  business_Code: value?.businessUnit_Code,
+                                  business_Name: value?.businessUnit_Name,
+                                });
+                                setValue("DepartmentId", {
+                                  id: value?.departmentId,
+                                  department_Code: value?.department_Code,
+                                  department_Name: value?.department_Name,
+                                });
+                                setValue("UnitId", {
+                                  id: value?.unitId,
+                                  unit_Code: value?.unit_Code,
+                                  unit_Name: value?.unit_Name,
+                                });
+                                setValue("SubUnitId", {
+                                  id: value?.subUnitId,
+                                  subUnit_Code: value?.subUnit_Code,
+                                  subUnit_Name: value?.subUnit_Name,
+                                });
+                                setValue("LocationId", {
+                                  location_Code: value?.location_Code,
+                                  location_Name: value?.location_Name,
+                                });
+
+                                onChange(value);
+                              }}
+                              getOptionLabel={(option) => option?.fullname}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack></Stack>
+
+                    <Stack sx={{ width: "50%" }}>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Contact Number (Optional):</Typography>
+                      <Controller
+                        control={control}
+                        name="Contact_Number"
+                        rules={{
+                          required: "Contact number is required",
+                          pattern: {
+                            value: /^[0-9]{11}$/,
+                            message: "Contact number must be exactly 11 digits",
+                          },
+                        }}
+                        render={({ field: { ref, value, onChange } }) => {
+                          const handleChange = (e) => {
+                            // Allow only numbers
+                            const newValue = e.target.value.replace(/\D/g, "");
+                            onChange(newValue);
+                          };
+
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="small"
+                              value={value}
+                              placeholder="09xxxxxxxxx"
+                              onChange={handleChange}
+                              error={!!errors.Contact_Number}
+                              helperText={errors.Contact_Number ? errors.Contact_Number.message : ""}
+                              InputProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              autoComplete="off"
+                              sx={{
+                                width: "100%",
+                              }}
+                              fullWidth
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                  <Stack sx={{ width: "50%", gap: 1 }}>
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Company:</Typography>
+                      <Controller
+                        control={control}
+                        name="CompanyId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={companyData?.value?.company || []}
+                              loading={companyIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Company" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!companyIsSuccess) getCompany();
+                              }}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Business Unit:</Typography>
+                      <Controller
+                        control={control}
+                        name="BusinessUnitId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={businessUnitData?.value?.businessUnit.filter((item) => item.companyId === watch("CompanyId")?.id) || []}
+                              loading={businessUnitIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Business Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Department:</Typography>
+                      <Controller
+                        control={control}
+                        name="DepartmentId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={departmentData?.value?.department.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
+                              loading={departmentIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+
+                  <Stack sx={{ width: "50%", gap: 1 }}>
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Unit:</Typography>
+                      <Controller
+                        control={control}
+                        name="UnitId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={unitData?.value?.unit.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
+                              loading={unitIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Unit:</Typography>
+                      <Controller
+                        control={control}
+                        name="SubUnitId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={subUnitData?.value?.subUnit.filter((item) => item.unitId === watch("UnitId")?.id) || []}
+                              loading={subUnitIsLoading}
+                              onOpen={() => {
+                                if (!subUnitIsSuccess)
+                                  getSubUnit({
+                                    Status: true,
+                                  });
+                              }}
+                              renderInput={(params) => <TextField {...params} placeholder="Sub Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Location:</Typography>
+                      <Controller
+                        control={control}
+                        name="LocationId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={locationData?.value?.location.filter((item) => item.subUnits.some((subUnitItem) => subUnitItem.subUnitId === watch("SubUnitId")?.id)) || []}
+                              loading={locationIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Location" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                              isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                {/* OTHER INFORMATION */}
+                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Other Informations</Typography>
+                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                  <Stack sx={{ width: "50%", gap: 1 }}>
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="DateNeeded"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => {
+                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                field.onChange(formattedValue);
+                              }}
+                              slotProps={{
+                                textField: {
+                                  variant: "outlined",
+                                  sx: {
+                                    "& .MuiInputBase-input": {
+                                      padding: "8.5px 14px",
+                                    },
+                                    "& .MuiOutlinedInput-root": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                              minDate={dateNeededValidation}
+                              error={!!errors.DateNeeded}
+                              helperText={errors.DateNeeded}
+                            />
+                          )}
+                        />
+                        {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.targetDate.DateNeeded}</Typography>}
+                      </LocalizationProvider>
+                    </Stack>
+
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
+                      <Controller
+                        control={control}
+                        name="ChannelId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={channelData?.value?.channel || []}
+                              loading={channelIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!channelIsSuccess)
+                                  getChannel({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("CategoryId", null);
+                              }}
+                              getOptionLabel={(option) => option.channel_Name}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+
+                  <Stack sx={{ width: "50%", gap: 1 }}>
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
+                      <Controller
+                        control={control}
+                        name="CategoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                              loading={categoryIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!categoryIsSuccess)
+                                  getCategory({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("SubCategoryId", null);
+
+                                getSubCategory({
+                                  Status: true,
+                                });
+                              }}
+                              getOptionLabel={(option) => option.category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
+                      <Controller
+                        control={control}
+                        name="SubCategoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
+                              loading={subCategoryIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onChange={(_, value) => {
+                                // console.log("Value ", value);
+
+                                onChange(value || []);
+                              }}
+                              getOptionLabel={(option) => `${option.subCategory_Description}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              noOptionsText={"No sub category available"}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              // disabled
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                {/* DESCRIPTION AND ATTACHMENT */}
+                <Stack
                   width="100%"
                   sx={{
                     paddingTop: 2,
-                    gap: 2,
                     justifyContent: "space-between",
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography>Request Details*</Typography>
+                  <Typography sx={{ fontSize: "13px" }}>Description:</Typography>
 
                   <Controller
                     control={control}
@@ -305,10 +1069,20 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           inputRef={ref}
                           size="medium"
                           value={value}
-                          placeholder="Ex. System Name - Concern"
+                          placeholder="Ex. System Name - Description"
                           onChange={onChange}
                           sx={{
-                            width: "80%",
+                            width: "100%",
+                          }}
+                          InputProps={{
+                            style: {
+                              fontSize: "13px",
+                            },
+                          }}
+                          InputLabelProps={{
+                            style: {
+                              fontSize: "13px",
+                            },
                           }}
                           disabled={editData?.concern_Status === "Ongoing" || editData?.concern_Status === "For Confirmation" || editData?.concern_Status === "Done" ? true : false}
                           autoComplete="off"
@@ -320,22 +1094,63 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   />
                 </Stack>
 
-                {/* Attachments */}
                 <Stack
-                  direction="row"
                   width="100%"
                   sx={{
                     paddingTop: 2,
-                    gap: 2,
                     justifyContent: "space-between",
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography>Attachment*</Typography>
+                  <Typography sx={{ fontSize: "13px" }}>Notes (Optional):</Typography>
+
+                  <Controller
+                    control={control}
+                    name="Notes"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <TextField
+                          inputRef={ref}
+                          size="medium"
+                          value={value}
+                          placeholder="Add notes"
+                          onChange={onChange}
+                          sx={{
+                            width: "100%",
+                          }}
+                          InputProps={{
+                            style: {
+                              fontSize: "13px",
+                            },
+                          }}
+                          InputLabelProps={{
+                            style: {
+                              fontSize: "13px",
+                            },
+                          }}
+                          autoComplete="off"
+                          rows={4}
+                          multiline
+                        />
+                      );
+                    }}
+                  />
+                </Stack>
+
+                {/* ATTACHMENTS */}
+                <Stack
+                  width="100%"
+                  sx={{
+                    paddingTop: 2,
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Typography sx={{ fontSize: "13px" }}>Attachment:</Typography>
 
                   <Stack
                     sx={{
-                      width: "80%",
+                      width: "100%",
                       display: "flex",
                       border: "2px dashed #2D3748",
                       justifyContent: "left",
@@ -354,10 +1169,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         }}
                       >
                         <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
-                          Choose file
+                          <Typography sx={{ fontSize: "12px" }}>Choose File</Typography>
                         </Button>
 
-                        <Typography sx={{ color: theme.palette.text.secondary }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontSize: "13px" }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
                       </Box>
                     )}
 
@@ -374,7 +1189,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       <Stack sx={{ flexDirection: "column", maxHeight: "auto", padding: 4 }}>
                         <Stack direction="row" gap={0.5} justifyContent="center">
                           <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
-                          <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                          <Typography sx={{ color: theme.palette.text.secondary, fontSize: "13px" }}>No attached file</Typography>
                         </Stack>
                       </Stack>
                     ) : (
@@ -392,8 +1207,9 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               display: "flex",
                               width: "100%",
                               flexDirection: "column",
-                              justifyContent: "space-between",
                               padding: 1,
+                              maxWidth: "100%",
+                              overflow: "hidden",
                             }}
                           >
                             <Box
@@ -412,11 +1228,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   flexDirection: "column",
                                 }}
                               >
-                                <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
+                                <Typography sx={{ fontWeight: 500, fontSize: "13px" }}>{fileName.name}</Typography>
 
                                 <Typography
                                   sx={{
-                                    fontSize: 13,
+                                    fontSize: "13px",
                                     fontWeight: 500,
                                     color: theme.palette.text.secondary,
                                   }}
@@ -434,7 +1250,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                 >
                                   <Typography
                                     sx={{
-                                      fontSize: 13,
+                                      fontSize: "13px",
                                       fontWeight: 500,
                                       color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                     }}

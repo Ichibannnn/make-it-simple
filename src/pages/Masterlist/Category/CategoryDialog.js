@@ -1,4 +1,4 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Stack, TextField } from "@mui/material";
 import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -9,16 +9,20 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 import { useCreateEditCategoryMutation } from "../../../features/api masterlist/category_api/categoryApi";
+import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
+  channelId: yup.object().required().label("Channel Name"),
   category_Description: yup.string().required("Category is required."),
 });
 
 export const CategoryDialog = ({ data, open, onClose }) => {
   const [createEditCategory] = useCreateEditCategoryMutation();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
 
   const {
+    control,
     handleSubmit,
     register,
     watch,
@@ -29,6 +33,7 @@ export const CategoryDialog = ({ data, open, onClose }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       id: null,
+      channelId: null,
       category_Description: "",
     },
   });
@@ -36,6 +41,10 @@ export const CategoryDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       setValue("id", data?.id);
+      setValue("channelId", {
+        id: data?.channelId,
+        channel_Name: data?.channel_Name,
+      });
       setValue("category_Description", data?.category_Description);
     }
   }, [data]);
@@ -49,7 +58,13 @@ export const CategoryDialog = ({ data, open, onClose }) => {
     console.log("Form Data: ", formData);
 
     if (formData.id) {
-      createEditCategory(formData)
+      const editPayload = {
+        id: data.id,
+        channelId: formData?.channelId?.id,
+        category_Description: formData?.category_Description,
+      };
+
+      createEditCategory(editPayload)
         .unwrap()
         .then(() => {
           toast.success("Success!", {
@@ -67,7 +82,12 @@ export const CategoryDialog = ({ data, open, onClose }) => {
           });
         });
     } else {
-      createEditCategory(formData)
+      const addPayload = {
+        channelId: formData?.channelId?.id,
+        category_Description: formData?.category_Description,
+      };
+
+      createEditCategory(addPayload)
         .unwrap()
         .then(() => {
           toast.success("Success!", {
@@ -86,15 +106,11 @@ export const CategoryDialog = ({ data, open, onClose }) => {
         });
     }
   };
-  // console.log(watch("id"));
-  // console.log(watch("category_Description"));
-
-  // console.log("Error: ", errors);
 
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog fullWidth maxWidth="xs" open={open}>
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogTitle
           sx={{
             display: "flex",
@@ -109,9 +125,37 @@ export const CategoryDialog = ({ data, open, onClose }) => {
         >
           {data ? "Edit Category" : "Add Category"}
         </DialogTitle>
+
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ padding: "5px", gap: 1.5 }}>
+              <Controller
+                control={control}
+                name="channelId"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <Autocomplete
+                      ref={ref}
+                      value={value}
+                      options={channelData?.value?.channel || []}
+                      loading={channelIsLoading}
+                      renderInput={(params) => <TextField label="Channel Name" fullWidth {...params} />}
+                      onOpen={() => {
+                        if (!channelIsSuccess)
+                          getChannel({
+                            Status: true,
+                          });
+                      }}
+                      onChange={(_, value) => onChange(value)}
+                      getOptionLabel={(option) => option.channel_Name}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      fullWidth
+                      disablePortal
+                    />
+                  );
+                }}
+              />
+
               <TextField
                 {...register("category_Description")}
                 variant="outlined"
@@ -129,7 +173,7 @@ export const CategoryDialog = ({ data, open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
-              disabled={!watch("category_Description")}
+              disabled={!watch("category_Description") || !watch("channelId")}
               sx={{
                 ":disabled": {
                   backgroundColor: theme.palette.secondary.main,

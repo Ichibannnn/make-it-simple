@@ -1,5 +1,5 @@
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Stack, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,20 +21,12 @@ import { LoadingButton } from "@mui/lab";
 import useDisclosure from "../../../hooks/useDisclosure";
 import UserAccountWarningDialog from "./UserAccountWarningDialog";
 
-const schema = yup.object().shape({
-  empId: yup.object().required().label("Employee ID"),
-  fullname: yup.string().required().label("Fullname"),
-  username: yup.string().required().label("Username"),
-  userRoleId: yup.object().required().label("Role"),
-  companyId: yup.object().required().label("Company"),
-  businessUnitId: yup.object().required().label("Business Unit"),
-  departmentId: yup.object().required().label("Department "),
-  unitId: yup.object().required().label("Unit "),
-  subUnitId: yup.object().required().label("Sub-Unit "),
-  locationId: yup.object().required().label("Location"),
-});
-
 const UserAccountDialog = ({ data, open, onClose }) => {
+  const [storeCheckbox, setStoreCheckbox] = useState(false);
+  const [storeEmpId, setStoreEmpId] = useState(null);
+  const [storeFullname, setStoreFullname] = useState(null);
+  const [storeUsername, setStoreUsername] = useState(null);
+
   const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
 
@@ -51,17 +43,35 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   const { open: warningOpen, onToggle: warningOnToggle, onClose: warningOnClose } = useDisclosure();
 
+  const schema = useMemo(
+    () =>
+      yup.object().shape({
+        empId: !storeCheckbox && !data?.is_Store === true ? yup.object().required().label() : yup.string().nullable(),
+        fullname: yup.string().required().label("Fullname"),
+        username: yup.string().required().label("Username"),
+        userRoleId: yup.object().required().label("Role"),
+        companyId: yup.object().required().label("Company"),
+        businessUnitId: yup.object().required().label("Business Unit"),
+        departmentId: yup.object().required().label("Department"),
+        unitId: yup.object().required().label("Unit"),
+        subUnitId: yup.object().required().label("Sub-Unit"),
+        locationId: yup.object().required().label("Location"),
+      }),
+    [storeCheckbox]
+  );
+
   const {
     control,
     handleSubmit,
     watch,
     setValue,
     reset,
+    register,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      empId: null,
+      empId: !storeCheckbox ? null : "",
       fullname: "",
       username: "",
       userRoleId: null,
@@ -84,11 +94,28 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       if (!subUnitIsSuccess) getSubUnit();
       if (!locationIsSuccess) getLocation();
 
-      setValue("empId", {
-        general_info: {
-          full_id_number: data?.empId,
-        },
-      });
+      // setValue("empId", {
+      //   general_info: {
+      //     full_id_number: data?.empId,id:
+      //   },
+      // });
+
+      if (data?.is_Store === true) {
+        setStoreCheckbox(true);
+      }
+
+      if (data && data.is_Store !== true) {
+        setValue("empId", {
+          general_info: {
+            full_id_number: data.empId,
+          },
+        });
+      } else if (data && data.is_Store === true) {
+        setValue("empId", data?.empId);
+      } else {
+        setValue("empId", "");
+      }
+
       setValue("fullname", data?.fullname);
       setValue("username", data?.username);
       setValue("userRoleId", {
@@ -128,6 +155,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     }
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
+  // console.log("Data: ", data);
+
   const onSubmitHandler = (formData) => {
     if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
       setWarningData({
@@ -147,6 +176,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       if (data) {
         const submitUpdateUser = {
           id: data.id,
+          empId: data.empId,
+          fullname: data.fullname,
           userRoleId: formData.userRoleId.id,
           username: formData.username,
           departmentId: formData.departmentId.id,
@@ -156,6 +187,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           businessUnitId: formData.businessUnitId.id,
           locationCode: formData.locationId.location_Code,
         };
+
+        console.log("Update Payload: ", submitUpdateUser);
 
         Swal.fire({
           title: "Information",
@@ -197,8 +230,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         });
       } else {
         const submitAddUser = {
-          empId: formData.empId.general_info.full_id_number,
-          fullname: formData.empId.general_info.full_name,
+          empId: !storeCheckbox ? formData.empId.general_info.full_id_number : formData.empId,
+          fullname: !storeCheckbox ? formData.empId.general_info.full_name : formData.fullname,
           username: formData.username,
           userRoleId: formData.userRoleId.id,
           departmentId: formData.departmentId.id,
@@ -207,6 +240,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           companyId: formData.companyId.id,
           locationCode: formData.locationId.location_Code,
           businessUnitId: formData.businessUnitId.id,
+          is_Store: !storeCheckbox ? false : true,
         };
 
         Swal.fire({
@@ -237,6 +271,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 toast.success("Success!", {
                   description: "User added successfully!",
                 });
+                setStoreCheckbox(false);
                 reset();
                 onClose();
               })
@@ -253,9 +288,66 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   };
 
   const onCloseHandler = () => {
+    setStoreCheckbox(false);
     reset();
     onClose();
   };
+
+  const storeCheckboxHandler = (event) => {
+    setStoreCheckbox(event.target.checked);
+    reset();
+  };
+
+  const storeEmpIdHandler = (data) => {
+    setStoreEmpId(data);
+  };
+
+  const storeFullnameHandler = (data) => {
+    setStoreFullname(data);
+  };
+
+  const storeUsernameHandler = (data) => {
+    setStoreUsername(data);
+  };
+
+  // useEffect(() => {
+  //   reset({
+  //     empId: !storeCheckbox ? null : "",
+  //   });
+  // }, [storeCheckbox, reset]);
+
+  // useEffect(() => {
+  //   // const currentStoreValue = storeCheckbox;
+
+  //   if (!storeCheckbox) {
+  //     setValue("empId", null);
+  //     setValue("fullname", "");
+  //     setValue("username", "");
+  //     setValue("userRoleId", null);
+  //     setValue("companyId", null);
+  //     setValue("businessUnitId", null);
+  //     setValue("departmentId", null);
+  //     setValue("unitId", null);
+  //     setValue("subUnitId", null);
+  //     setValue("location", null);
+  //     reset();
+  //   } else if (storeCheckbox) {
+  //     setValue("empId", "");
+  //     setValue("fullname", "");
+  //     setValue("username", "");
+  //     setValue("userRoleId", null);
+  //     setValue("companyId", null);
+  //     setValue("businessUnitId", null);
+  //     setValue("departmentId", null);
+  //     setValue("unitId", null);
+  //     setValue("subUnitId", null);
+  //     setValue("location", null);
+  //     reset();
+  //   }
+  // }, [storeCheckbox]);
+
+  // console.log("Errors: ", errors);
+  // console.log("EmpId: ", watch("empId"));
 
   return (
     <>
@@ -275,81 +367,141 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               Basic Information
             </Typography>
 
+            {!data && (
+              <Stack direction="row" gap={0.5} alignItems="center">
+                <Checkbox
+                  checked={storeCheckbox || data?.is_Store === true}
+                  onChange={storeCheckboxHandler}
+                  size="small"
+                  disabled={data ? true : false}
+                  // inputProps={{ "aria-label": `select ticket ${item.closingTicketId}` }}
+                  sx={{
+                    padding: 0,
+                  }}
+                />
+
+                <Typography sx={{ fontSize: "15px", fontStyle: "italic", color: storeCheckbox ? theme.palette.text.main : theme.palette.text.secondary }}>
+                  Check if you want to create user for Store
+                </Typography>
+              </Stack>
+            )}
+
             <Stack direction="row" gap={1}>
-              <Controller
-                control={control}
-                name="empId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      size="small"
-                      value={value}
-                      options={employeeData}
-                      loading={emloyeeIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Employee ID" />}
-                      onOpen={() => {
-                        if (!employeeIsSuccess) getEmployees();
-                      }}
-                      onChange={(_, value) => {
-                        setValue("fullname", value?.general_info.full_name);
-                        setValue(
-                          "username",
-                          value?.general_info.first_name
-                            .split(" ")
-                            .map((item) => item.at(0))
-                            .join("")
-                            .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase()
-                        );
+              {!storeCheckbox && !data ? (
+                <Controller
+                  control={control}
+                  name="empId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={employeeData}
+                        loading={emloyeeIsLoading}
+                        renderInput={(params) => <TextField {...params} label="Employee ID" />}
+                        onOpen={() => {
+                          if (!employeeIsSuccess) getEmployees();
+                        }}
+                        onChange={(_, value) => {
+                          setValue("fullname", value?.general_info.full_name);
+                          setValue(
+                            "username",
+                            value?.general_info.first_name
+                              .split(" ")
+                              .map((item) => item.at(0))
+                              .join("")
+                              .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase()
+                          );
 
-                        onChange(value);
-                      }}
-                      getOptionLabel={(option) => option.general_info.full_id_number}
-                      isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
-                      disabled={data ? true : false}
-                      sx={{
-                        flex: 1,
-                      }}
-                      fullWidth
-                      disablePortal
-                      disableClearable
-                    />
-                  );
-                }}
-              />
+                          onChange(value);
+                        }}
+                        getOptionLabel={(option) => option.general_info.full_id_number}
+                        isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
+                        disabled={data ? true : false}
+                        sx={{
+                          flex: 1,
+                        }}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                      />
+                    );
+                  }}
+                />
+              ) : (
+                <TextField
+                  {...register("empId")}
+                  helperText={errors?.fullname?.message}
+                  error={!!errors?.fullname?.message}
+                  size="small"
+                  label="Employee ID Store"
+                  sx={{ borderColor: "primary", flex: 1 }}
+                  autoComplete="off"
+                  disabled={data ? true : false}
+                />
+              )}
 
-              <Controller
-                control={control}
-                name="fullname"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="small"
-                      value={value}
-                      label="Fullname"
-                      onChange={onChange}
-                      disabled={data ? true : false}
-                      inputProps={{
-                        readOnly: true,
-                      }}
-                      sx={{
-                        flex: 2,
-                      }}
-                      fullWidth
-                    />
-                  );
-                }}
-              />
+              {!storeCheckbox ? (
+                <Controller
+                  control={control}
+                  name="fullname"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <TextField
+                        inputRef={ref}
+                        size="small"
+                        value={value}
+                        label="Fullname"
+                        onChange={onChange}
+                        disabled={data ? true : false}
+                        inputProps={{
+                          readOnly: !storeCheckbox ? true : false,
+                        }}
+                        autoComplete="off"
+                        sx={{
+                          flex: 2,
+                        }}
+                        fullWidth
+                      />
+                    );
+                  }}
+                />
+              ) : (
+                <TextField
+                  {...register("fullname")}
+                  helperText={errors?.fullname?.message}
+                  error={!!errors?.fullname?.message}
+                  size="small"
+                  label="Fullname"
+                  sx={{ borderColor: "primary", flex: 1 }}
+                  autoComplete="off"
+                  disabled={data ? true : false}
+                  // onChange={(e) => storeFullnameHandler(e.target.value)}
+                />
+              )}
             </Stack>
 
-            <Controller
-              control={control}
-              name="username"
-              render={({ field: { ref, value, onChange } }) => {
-                return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} fullWidth />;
-              }}
-            />
+            {!storeCheckbox ? (
+              <Controller
+                control={control}
+                name="username"
+                render={({ field: { ref, value, onChange } }) => {
+                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth />;
+                }}
+              />
+            ) : (
+              <TextField
+                {...register("username")}
+                helperText={errors?.username?.message}
+                error={!!errors?.username?.message}
+                size="small"
+                label="Username"
+                sx={{ borderColor: "primary", flex: 1 }}
+                autoComplete="off"
+                // onChange={(e) => storeUsernameHandler(e.target.value)}
+              />
+            )}
 
             <Controller
               control={control}
@@ -547,6 +699,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={subUnitData?.value?.subUnit.filter((item) => item.unitId === watch("unitId")?.id) || []}
                     loading={subUnitIsLoading}
+                    onOpen={() => {
+                      if (!subUnitIsSuccess)
+                        getSubUnit({
+                          Status: true,
+                        });
+                    }}
                     renderInput={(params) => <TextField {...params} label="Sub Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
@@ -599,25 +757,48 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton
-            type="submit"
-            form="user"
-            variant="contained"
-            loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
-            disabled={
-              !watch("empId") ||
-              !watch("username") ||
-              !watch("userRoleId") ||
-              !watch("companyId") ||
-              !watch("businessUnitId") ||
-              !watch("departmentId") ||
-              !watch("unitId") ||
-              !watch("subUnitId") ||
-              !watch("locationId")
-            }
-          >
-            Save
-          </LoadingButton>
+          {!storeCheckbox ? (
+            <LoadingButton
+              type="submit"
+              form="user"
+              variant="contained"
+              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
+              disabled={
+                // !watch("empId") ||
+                !watch("username") ||
+                !watch("userRoleId") ||
+                !watch("companyId") ||
+                !watch("businessUnitId") ||
+                !watch("departmentId") ||
+                !watch("unitId") ||
+                !watch("subUnitId") ||
+                !watch("locationId")
+              }
+            >
+              Save
+            </LoadingButton>
+          ) : (
+            <LoadingButton
+              type="submit"
+              form="user"
+              variant="contained"
+              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
+              disabled={
+                // !watch("empId") ||
+                !watch("username") ||
+                !watch("userRoleId") ||
+                !watch("companyId") ||
+                !watch("businessUnitId") ||
+                !watch("departmentId") ||
+                !watch("unitId") ||
+                !watch("subUnitId") ||
+                !watch("locationId")
+              }
+            >
+              Save
+            </LoadingButton>
+          )}
+
           <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
