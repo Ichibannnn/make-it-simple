@@ -1,20 +1,5 @@
-import {
-  ArchiveOutlined,
-  BackspaceOutlined,
-  DoneAllOutlined,
-  EditOutlined,
-  MoreHoriz,
-  RefreshOutlined,
-  RemoveRedEyeOutlined,
-  RestoreOutlined,
-} from "@mui/icons-material";
-import {
-  IconButton,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { ArchiveOutlined, BackspaceOutlined, DoneAllOutlined, EditOutlined, MoreHoriz, RefreshOutlined, RemoveRedEyeOutlined, RestoreOutlined } from "@mui/icons-material";
+import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 
@@ -23,25 +8,13 @@ import { theme } from "../../../theme/theme";
 import { Toaster, toast } from "sonner";
 import { useApproveReceiverConcernMutation } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 
-export const ReceiverConcernsActions = ({
-  data,
-  onView,
-  onClose,
-  setAddData,
-  setEditData,
-}) => {
+export const ReceiverConcernsActions = ({ data, onView, onClose, setAddData, setEditData }) => {
   const ref = useRef(null);
   const { open, onToggle } = useDisclosure();
 
   const [disabledButton, setDisabledButton] = useState(false);
 
-  const [
-    approveReceiverConcern,
-    {
-      isLoading: approveReceiverConcernIsLoading,
-      isFetching: approveReceiverConcernIsFetching,
-    },
-  ] = useApproveReceiverConcernMutation();
+  const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
 
   const onViewAction = (data) => {
     onToggle();
@@ -75,10 +48,7 @@ export const ReceiverConcernsActions = ({
     }).then((result) => {
       if (result.isConfirmed) {
         const requestTransactionId = data?.requestTransactionId;
-        const issueHandler =
-          data?.ticketRequestConcerns[0]?.ticketConcerns?.map(
-            (item) => item.userId
-          );
+        const issueHandler = data?.ticketRequestConcerns[0]?.ticketConcerns?.map((item) => item.userId);
 
         const approvePayload = {
           requestTransactionId: requestTransactionId,
@@ -133,25 +103,11 @@ export const ReceiverConcernsActions = ({
       </IconButton>
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
-        {/* <MenuItem onClick={() => onViewAction(data)}>
-          <ListItemIcon>
-            <RemoveRedEyeOutlined fontSize="small" />
-          </ListItemIcon>
-          <Typography sx={{ color: theme.palette.text.secondary }}>
-            View Concern
-          </Typography>
-        </MenuItem> */}
-
-        <MenuItem
-          disabled={disabledButton}
-          onClick={() => onApproveAction(data)}
-        >
+        <MenuItem disabled={disabledButton} onClick={() => onApproveAction(data)}>
           <ListItemIcon>
             <DoneAllOutlined fontSize="small" color="success" />
           </ListItemIcon>
-          <Typography sx={{ color: theme.palette.success.main }}>
-            Approve
-          </Typography>
+          <Typography sx={{ color: theme.palette.success.main }}>Approve</Typography>
         </MenuItem>
       </Menu>
     </>

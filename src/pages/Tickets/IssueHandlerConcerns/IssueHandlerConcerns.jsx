@@ -27,6 +27,7 @@ import {
   HistoryToggleOffOutlined,
   MoveDownOutlined,
   PendingActionsOutlined,
+  PendingOutlined,
   Search,
 } from "@mui/icons-material";
 
@@ -299,6 +300,34 @@ const IssueHandlerConcerns = () => {
                     }}
                   >
                     <MoveDownOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                }}
+              />
+
+              <Tab
+                value="Open Ticket"
+                className="tabs-styling"
+                label="On Hold"
+                icon={
+                  <Badge
+                    badgeContent={notificationBadge?.value?.openTicketNotif}
+                    max={100000}
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                        background: "#ff7043",
+                        color: "#ffff",
+                      },
+                    }}
+                  >
+                    <PendingOutlined />
                   </Badge>
                 }
                 iconPosition="start"
@@ -860,17 +889,6 @@ const IssueHandlerConcerns = () => {
                     </TableCell>
                   </TableRow>
                 )}
-
-                {/* {(isLoading || isFetching) && (
-                  <TableRow>
-                    <TableCell colSpan={9} align="center">
-                      <CircularProgress />
-                      <Typography variant="h5" color="#EDF2F7">
-                        Please wait...
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )} */}
 
                 {isSuccess && !data?.value?.openTicket.length && (
                   <TableRow>

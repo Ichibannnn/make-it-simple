@@ -37,6 +37,7 @@ import TicketingPage from "../pages/Tickets/TicketingPage";
 import IssueHandlerConcerns from "../pages/Tickets/IssueHandlerConcerns/IssueHandlerConcerns";
 import ApproverPage from "../pages/Approver/ApproverPage";
 import Approval from "../pages/Approver/Approval/Approval";
+import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverConcern";
 
 export const router = createBrowserRouter([
   {
@@ -138,7 +139,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "/receiver/receiver-concerns",
-            element: <ReceiverConcerns />,
+            element: <NewReceiverConcern />,
           },
           {
             path: "/receiver/close-tickets",

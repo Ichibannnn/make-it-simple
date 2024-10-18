@@ -85,7 +85,6 @@ const TicketHistory = ({ data }) => {
             </TimelineOppositeContent>
 
             <TimelineSeparator>
-              {/* <TimelineConnector sx={{ backgroundColor: theme.palette.success.main }} /> */}
               <TimelineDot color={item.request === "Rejected" ? "error" : item.request === "Disapprove" ? "error" : item.request === "Cancel" ? "error" : "success"} />
               <TimelineConnector />
             </TimelineSeparator>

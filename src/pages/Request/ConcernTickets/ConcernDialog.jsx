@@ -134,7 +134,7 @@ const ConcernDialog = ({ open, onClose }) => {
     payload.append("DepartmentId", formData.DepartmentId?.id);
     payload.append("UnitId", formData.UnitId?.id);
     payload.append("SubUnitId", formData.SubUnitId?.id);
-    payload.append("LocationId", formData.LocationId?.location_Code);
+    payload.append("Location_Code", formData.LocationId?.location_Code);
 
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
     payload.append("ChannelId", formData.ChannelId?.id);
@@ -353,26 +353,6 @@ const ConcernDialog = ({ open, onClose }) => {
       location_Name: userInformation?.location_Name,
     });
   }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
-
-  // console.log("User Information: ", userInformation);
-  // console.log("Get Users: ", userApiData?.value?.users);
-  // console.log("Success: ", userApiIsSuccess);
-
-  // console.log("UserID: ", watch("UserId"));
-
-  // console.log("Company: ", watch("CompanyId"));
-  // console.log("Business Unit: ", businessUnitData);
-
-  // console.log("Errors: ", errors);
-  // console.log("Channel: ", channelData);
-  // console.log("Category: ", categoryData);
-
-  // console.log("Request Type: ", watch("Request_Type"));
-  // console.log("Concern: ", watch("Concern"));
-
-  // console.log("Employee: ", watch("UserId"));
-
-  console.log("UserCompany: ", userCompany);
 
   return (
     <>

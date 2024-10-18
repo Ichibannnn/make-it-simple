@@ -155,7 +155,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     }
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
-  // console.log("Data: ", data);
+  console.log("Data: ", data);
 
   const onSubmitHandler = (formData) => {
     if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {

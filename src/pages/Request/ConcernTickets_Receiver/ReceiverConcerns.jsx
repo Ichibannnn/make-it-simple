@@ -71,7 +71,6 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
-import { useNotification } from "../../../context/NotificationContext";
 
 import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
 import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
@@ -79,7 +78,6 @@ import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { notificationMessageApi, useGetNotificationMessageQuery } from "../../../features/api_notification_message/notificationMessageApi";
-import { ParameterContext } from "../../../context/ParameterContext";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
 const schema = yup.object().shape({
@@ -113,6 +111,7 @@ const ReceiverConcerns = () => {
   const [addData, setAddData] = useState(null);
   const [viewApprovedData, setViewApprovedData] = useState(null);
   const [viewRemarksData, setViewRemarksData] = useState(null);
+
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
   const [startDateValidation, setStartDateValidation] = useState(null);
@@ -122,15 +121,12 @@ const ReceiverConcerns = () => {
   const [loading, setLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
-  const { parameter, setParameter } = useContext(ParameterContext);
-
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   const today = moment();
   useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
-  const { data: notificationMessage } = useGetNotificationMessageQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,

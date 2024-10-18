@@ -155,7 +155,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     payload.append("DepartmentId", formData.DepartmentId?.id);
     payload.append("UnitId", formData.UnitId?.id);
     payload.append("SubUnitId", formData.SubUnitId?.id);
-    payload.append("LocationId", formData.LocationId?.location_Code);
+    payload.append("Location_Code", formData.LocationId?.location_Code);
 
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
     payload.append("ChannelId", formData.ChannelId?.id);
@@ -383,7 +383,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         company_Name: editData?.company_Name,
       });
       setValue("BusinessUnitId", {
-        id: editData?.busineesUnitId,
+        id: editData?.businessUnitId,
         business_Code: editData?.businessUnit_Code,
         business_Name: editData?.businessUnit_Name,
       });
