@@ -211,7 +211,6 @@ const ReceiverConcerns = () => {
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
-    // payload.append("Modules", "/requestor/requestor-concerns");
     payload.append("ChannelId", formData.ChannelId.id);
     payload.append("Requestor_By", formData.Requestor_By);
     payload.append("UserId", formData.userId?.userId);

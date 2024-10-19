@@ -781,8 +781,8 @@ const ConcernDialog = ({ open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                {/* OTHER INFORMATION */}
-                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Other Informations</Typography>
+                {/* CONCERN INFORMATION */}
+                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
                 <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
                   <Stack sx={{ width: "50%", gap: 1 }}>
                     <Stack>

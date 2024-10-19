@@ -330,7 +330,7 @@ const ConcernTickets = () => {
                 <Tab
                   value="For Approval"
                   className="tabs-styling"
-                  label="For Approval"
+                  label="Verification"
                   icon={
                     <Badge
                       badgeContent={notificationBadge?.value?.forTicketNotif}
@@ -486,7 +486,7 @@ const ConcernTickets = () => {
                       align="center"
                     >
                       <Stack direction="row" gap={0.2} justifyContent="center" alignItems="center">
-                        REQUEST NO.
+                        CONCERN NO.
                         <IconButton size="small" onClick={() => setAscending(!ascending)}>
                           {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                         </IconButton>
@@ -664,7 +664,17 @@ const ConcernTickets = () => {
                               color: theme.palette.text.main,
                               fontWeight: 800,
                             }}
-                            label={item.concern_Status ? item.concern_Status : ""}
+                            label={
+                              item.concern_Status === "For Approval"
+                                ? "Verification"
+                                : item.concern_Status === "Ongoing"
+                                ? "Ongoing"
+                                : item.concern_Status === "For Confirmation"
+                                ? "For Confirmation"
+                                : item.concern_Status === "Done"
+                                ? "Done"
+                                : ""
+                            }
                           />
                         </TableCell>
 

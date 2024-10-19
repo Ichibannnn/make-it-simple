@@ -455,7 +455,18 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 </Stack>
               </Stack>
 
-              <Stack padding={5}>
+              {/* <Stack mt={4}></Stack> */}
+
+              <Stack padding={3}>
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {`Request Number: ${editData?.requestConcernId}`}
+                </Typography>
+
                 {/* REQUEST TYPE */}
                 <Stack
                   width="100%"
@@ -463,6 +474,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     justifyContent: "space-between",
                     alignItems: "flex-start",
                     mb: 1,
+                    mt: 2,
                   }}
                 >
                   <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Request Type:</Typography>
@@ -542,6 +554,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               getOptionLabel={(option) => option?.fullname}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
+                              disabled={editData?.concern_Status === "For Approval" || "" ? true : false}
                               disablePortal
                               disableClearable
                               componentsProps={{
@@ -861,8 +874,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                {/* OTHER INFORMATION */}
-                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Other Informations</Typography>
+                {/* CONCERN INFORMATION */}
+                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
                 <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
                   <Stack sx={{ width: "50%", gap: 1 }}>
                     <Stack>

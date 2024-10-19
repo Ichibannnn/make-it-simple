@@ -24,6 +24,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { Add, AttachFileOutlined, CheckOutlined, FileDownloadOutlined, GetAppOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -36,12 +37,13 @@ const schema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
-const AssignTicketDrawer = ({ data, open, onClose }) => {
+const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOnClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [formClosed, setFormClosed] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
@@ -225,33 +227,18 @@ const AssignTicketDrawer = ({ data, open, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    if (data) {
-      if (!channelIsSuccess) getChannel();
+  const onCloseAction = () => {
+    reset();
+    setFormClosed((prev) => !prev);
+    onClose();
+  };
 
-      setValue("Requestor_By", data?.requestorId);
-      setValue("concern_Details", [data?.concern]);
-      setValue("ticketConcernId", data?.ticketRequestConcerns?.[0]?.ticketConcernId);
-
-      setValue("ChannelId", {
-        id: data?.channelId,
-        channel_Name: data?.channel_Name,
-      });
-
-      getAddAttachmentData(data.requestConcernId);
-    }
-  }, [data]);
-
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
+  // console.log("Requestor by: ", watch("Requestor_By"));
 
   const handleViewImageClose = () => {
     setIsViewDialogOpen(false);
     setSelectedImage(null);
-  };
-
-  const onCloseAction = () => {
-    onClose();
-    reset();
   };
 
   const onSubmitAction = (formData) => {
@@ -279,7 +266,94 @@ const AssignTicketDrawer = ({ data, open, onClose }) => {
     }
 
     console.log("Payload Entries: ", [...payload.entries()]);
+
+    const approvePayload = {
+      ticketConcernId: formData.ticketConcernId,
+    };
+
+    Swal.fire({
+      title: "Confirmation",
+      text: "Approve this concern?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        createEditReceiverConcern(payload)
+          .unwrap()
+          .then(() => {
+            // Approve API
+            approveReceiverConcern(approvePayload)
+              .unwrap()
+              .then(() => {
+                setData(null);
+                onClose();
+              })
+              .catch((err) => {
+                console.log("Error", err);
+                toast.error("Error!", {
+                  description: err.data.error.message,
+                  duration: 1500,
+                });
+              });
+
+            toast.success("Success!", {
+              description: "Approve concern successfully!",
+              duration: 1500,
+            });
+
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
+
+            setAttachments([]);
+            // setApproveStatus("false");
+            reset();
+            setData(null);
+            viewConcernDetailsOnClose();
+            onClose();
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
+
+  useEffect(() => {
+    if (data) {
+      if (!channelIsSuccess) getChannel();
+
+      setValue("Requestor_By", data?.requestorId);
+      setValue("concern_Details", [data?.concern]);
+      setValue("ticketConcernId", data?.ticketRequestConcerns?.[0]?.ticketConcernId);
+
+      setValue("ChannelId", {
+        id: data?.channelId,
+        channel_Name: data?.channel_Name,
+      });
+
+      getAddAttachmentData(data.requestConcernId);
+    }
+  }, [data, formClosed]);
 
   return (
     <>

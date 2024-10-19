@@ -18,7 +18,7 @@ const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
-const ViewConcernDetails = ({ data, open, onClose }) => {
+const ViewConcernDetails = ({ data, setData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -27,6 +27,8 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
 
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+
+  const [viewPendingData, setViewPendingData] = useState(null);
 
   const fileInputRef = useRef();
 
@@ -142,6 +144,8 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
     onClose();
   };
 
+  console.log("Data: ", data);
+
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open}>
@@ -170,7 +174,7 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
                 {/* REQUESTOR DETAILS */}
                 <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
                   <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: "16px" }}>
-                    Requestor Details
+                    Requestor Details:
                   </Typography>
 
                   <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "16px" }}></Typography>
@@ -253,12 +257,21 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
                     </Box>
                   </Stack>
 
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "50%", ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Location</Typography>
                     </Box>
                     <Box width={{ width: "50%", ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.location_Code} - ${data?.location_Name}`}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                    <Box sx={{ width: "50%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Created by</Typography>
+                    </Box>
+                    <Box width={{ width: "50%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.added_By}</Typography>
                     </Box>
                   </Stack>
                 </Stack>
@@ -272,7 +285,7 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
                 {/* CONCERN INFORMATION */}
                 <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
                   <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: "16px" }}>
-                    Concern Information
+                    Concern Information:
                   </Typography>
 
                   <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "16px" }}></Typography>
@@ -343,6 +356,47 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
           </Stack>
+
+          {data?.ticketRequestConcerns?.[0]?.is_Assigned === true && (
+            <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
+              <Stack gap={2} sx={{ borderRadius: "20px" }}>
+                <Stack sx={{ width: "100%" }}>
+                  {/* ASSIGNED TO */}
+                  <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
+                    <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: "16px" }}>
+                      Assigned To:
+                    </Typography>
+
+                    <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "16px" }}></Typography>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", mt: 1 }}>
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                      <Box sx={{ width: "50%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Issue Handler</Typography>
+                      </Box>
+                      <Box width={{ width: "50%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketRequestConcerns?.[0]?.issue_Handler}</Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%" }}>
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                      <Box sx={{ width: "50%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date</Typography>
+                      </Box>
+                      <Box width={{ width: "50%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                          {moment(data?.ticketRequestConcerns?.[0]?.target_Date).format("LL")}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
+          )}
 
           {/* ATTACHMENTS */}
           <Stack
@@ -489,11 +543,13 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Stack sx={{ width: "100%", padding: 2, justifyContent: "end" }}>
-            <Button size="small" variant="contained" color="success" startIcon={<Receipt sx={{ color: "#fff" }} />} onClick={() => onAssignAction()}>
-              <Typography sx={{ fontSize: "12px", color: "#fff" }}>Assign Ticket</Typography>
-            </Button>
-          </Stack>
+          {data?.ticketRequestConcerns?.[0]?.is_Assigned === false && (
+            <Stack sx={{ width: "100%", padding: 2, justifyContent: "end" }}>
+              <Button size="small" variant="contained" color="success" startIcon={<Receipt sx={{ color: "#fff" }} />} onClick={() => onAssignAction()}>
+                <Typography sx={{ fontSize: "12px", color: "#fff" }}>Assign Ticket</Typography>
+              </Button>
+            </Stack>
+          )}
         </DialogActions>
       </Dialog>
 
@@ -505,7 +561,7 @@ const ViewConcernDetails = ({ data, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      <AssignTicketDrawer data={data} open={assignTicketOpen} onClose={assignTicketOnClose} />
+      <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} viewConcernDetailsOnClose={onClose} />
     </>
   );
 };

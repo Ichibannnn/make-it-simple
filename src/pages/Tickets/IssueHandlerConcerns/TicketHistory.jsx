@@ -13,10 +13,10 @@ const TicketHistory = ({ data }) => {
     skip: !data?.ticketConcernId,
   });
 
-  const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
+  // const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
 
   return (
-    <Stack sx={{ width: isSmallScreen ? "100%" : "50%", height: "auto", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
+    <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
       <Timeline
         position="right"
         sx={{
@@ -31,7 +31,7 @@ const TicketHistory = ({ data }) => {
           <TimelineItem key={index}>
             <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
               <Stack direction="row">
-                <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} />
+                {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
                 <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
               </Stack>
             </TimelineOppositeContent>
@@ -79,7 +79,7 @@ const TicketHistory = ({ data }) => {
           <TimelineItem key={index}>
             <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
               <Stack direction="row">
-                <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} />
+                {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
                 <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
               </Stack>
             </TimelineOppositeContent>
@@ -93,7 +93,7 @@ const TicketHistory = ({ data }) => {
               <Typography
                 component="span"
                 sx={{
-                  fontSize: "19px",
+                  fontSize: "17px",
                   fontWeight: 900,
                   color:
                     item.request === "Rejected"

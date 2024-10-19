@@ -118,6 +118,8 @@ const NewReceiverConcern = () => {
     setConcernDetails(data);
   };
 
+  // console.log("Notif: ", notificationBadge);
+
   return (
     <Stack
       sx={{
@@ -135,13 +137,7 @@ const NewReceiverConcern = () => {
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h4">Concerns</Typography>
 
-          <Stack justifyItems="space-between" direction="row">
-            <Stack justifyItems="space-between" direction="row">
-              <Button variant="contained" size="large" color="primary" startIcon={<PostAddOutlined />}>
-                Create Ticket
-              </Button>
-            </Stack>
-          </Stack>
+          <Stack justifyItems="space-between" direction="row"></Stack>
         </Stack>
 
         <Stack sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "20px", marginTop: "10px", height: "730px" }}>
@@ -445,7 +441,7 @@ const NewReceiverConcern = () => {
             onRowsPerPageChange={onPageSizeChange}
           />
 
-          <ViewConcernDetails data={concernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
+          <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
         </Stack>
       </Stack>
     </Stack>

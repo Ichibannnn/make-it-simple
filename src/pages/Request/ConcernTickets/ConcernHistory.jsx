@@ -41,11 +41,11 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
     skip: !data?.ticketRequestConcerns?.[0]?.ticketConcernId,
   });
 
-  const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
+  const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
-  const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
+  // const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
 
   const { control } = useForm({
     resolver: yupResolver(requestorSchema),
@@ -64,8 +64,6 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
     }));
 
     const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
-
-    // console.log("uniqueFiles: ", uniqueNewFiles);
 
     setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
@@ -151,13 +149,13 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="lg" open={open}>
+      <Dialog fullWidth maxWidth="md" open={open}>
         <DialogContent>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
               <Stack>
-                <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "700", fontSize: "20px" }}>
-                  Concern Timeline
+                <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "700", fontSize: "18px" }}>
+                  {`Concern Number: ${data?.requestConcernId}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -172,9 +170,8 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
 
           <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-            <Stack gap={2} sx={{ flexDirection: isSmallScreen ? "column" : "row", padding: 2, borderRadius: "20px" }}>
-              <Stack sx={{ width: isSmallScreen ? "100%" : "50%", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
-                {/* CONCERN DETAILS */}
+            <Stack gap={2} sx={{ padding: 2, borderRadius: "20px" }}>
+              {/* <Stack sx={{ width: "100%", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
                 <Stack
                   marginTop={3}
                   padding={2}
@@ -483,7 +480,6 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                {/* ATTACHMENTS */}
                 <Stack
                   marginTop={3}
                   padding={4}
@@ -629,10 +625,16 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                     )}
                   />
                 </Stack>
+              </Stack> */}
+
+              <Stack>
+                <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "700", fontSize: "18px" }}>
+                  Timeline History
+                </Typography>
               </Stack>
 
               {/* TIMELINE */}
-              <Stack sx={{ width: isSmallScreen ? "100%" : "50%", height: "auto", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
+              <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
                 <Timeline
                   position="right"
                   sx={{
@@ -695,7 +697,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                     <TimelineItem key={index}>
                       <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
                         <Stack direction="row">
-                          <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} />
+                          {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
                           <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
                         </Stack>
                       </TimelineOppositeContent>
@@ -709,7 +711,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                         <Typography
                           component="span"
                           sx={{
-                            fontSize: "19px",
+                            fontSize: "17px",
                             fontWeight: 900,
                             color:
                               item.request === "Rejected"

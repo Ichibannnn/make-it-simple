@@ -58,7 +58,6 @@ import { useNotification } from "../../../context/NotificationContext";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
-import { useGetNotificationMessageQuery } from "../../../features/api_notification_message/notificationMessageApi";
 import { ParameterContext } from "../../../context/ParameterContext";
 import PrintServiceReport from "./PrintServiceReport";
 
@@ -310,12 +309,12 @@ const IssueHandlerConcerns = () => {
               />
 
               <Tab
-                value="Open Ticket"
+                value="On Hold"
                 className="tabs-styling"
                 label="On Hold"
                 icon={
                   <Badge
-                    badgeContent={notificationBadge?.value?.openTicketNotif}
+                    // badgeContent={notificationBadge?.value?.openTicketNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
