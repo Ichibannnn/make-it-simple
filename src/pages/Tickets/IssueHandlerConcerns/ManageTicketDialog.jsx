@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import {
   Add,
   AttachFileOutlined,
@@ -23,12 +23,20 @@ import Swal from "sweetalert2";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
+import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
   closingTicketId: yup.number(),
   resolution: yup.string().required().label("Resolution is required"),
   AddClosingAttachments: yup.array().nullable(),
+
+  ChannelId: yup.object().required().label("Channel"),
+  CategoryId: yup.object().required().label("Category"),
+  SubCategoryId: yup.object().required().label("Sub category"),
+
+  Notes: yup.string().notRequired(),
 });
 
 const ManageTicketDialog = ({ data, open, onClose }) => {
@@ -41,6 +49,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const [viewLoading, setViewLoading] = useState(false);
 
   const fileInputRef = useRef();
+
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
@@ -61,6 +72,12 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       closingTicketId: "",
       resolution: "",
       AddClosingAttachments: [],
+
+      ChannelId: null,
+      CategoryId: null,
+      SubCategoryId: null,
+
+      Notes: "",
     },
   });
 
@@ -173,6 +190,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         payload.append("ClosingTicketId", formData.closingTicketId);
         payload.append("Resolution", formData.resolution);
 
+        payload.append("CategoryId", formData.CategoryId.id);
+        payload.append("SubCategoryId", formData.SubCategoryId.id);
+        payload.append("Notes", formData.Notes);
+
         // Attachments
         const files = formData.AddClosingAttachments;
         for (let i = 0; i < files.length; i++) {
@@ -184,6 +205,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
           payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
           payload.append(`AddClosingAttachments[0].attachment`, "");
         }
+
+        console.log("Payload Entries: ", [...payload.entries()]);
 
         closeIssueHandlerTickets(payload)
           .unwrap()
@@ -217,6 +240,20 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       setValue("ticketConcernId", data?.ticketConcernId);
       setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
       setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
+
+      setValue("ChannelId", {
+        id: data?.channelId,
+        channel_Name: data?.channel_Name,
+      });
+      setValue("CategoryId", {
+        id: data?.categoryId,
+        category_Description: data?.category_Description,
+      });
+      setValue("SubCategoryId", {
+        id: data?.subCategoryId,
+        subCategory_Description: data?.subCategory_Description,
+      });
+      setValue("Notes", data?.notes);
 
       const manageTicketArray = data?.getForClosingTickets?.map((item) =>
         item?.getAttachmentForClosingTickets?.map((subItem) => {
@@ -304,7 +341,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
-  console.log("attachments: ", attachments);
+  console.log("Data: ", data);
 
   return (
     <>
@@ -336,8 +373,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
             <Stack id="closeticket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
-              <Stack sx={{ padding: 1, width: "100%" }}>
-                <Stack direction="row" gap={0.5} alignItems="center" mt={4}>
+              <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
+                <Stack direction="row" gap={0.5} alignItems="center">
                   <FiberManualRecord color="warning" fontSize="20px" />
                   <Typography
                     sx={{
@@ -365,67 +402,209 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   )}
                 </Stack>
 
-                <Stack gap={0.5} mt={4}>
-                  <Typography
-                    sx={{
-                      fontWeight: 500,
-                      fontSize: "14px",
-                      color: theme.palette.text.main,
-                    }}
-                  >
-                    Ticket Description:
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontWeight: 500,
-                      fontSize: "14px",
-                      color: theme.palette.text.secondary,
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html: data?.concern_Description.replace(/\r\n/g, "<br />"),
-                    }}
-                  />
+                <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
+                  <Box sx={{ width: "50%", ml: 2 }}>
+                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                  </Box>
+                  <Box width={{ width: "50%", ml: 2 }}>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      {data?.concern_Description?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </Typography>
+                  </Box>
                 </Stack>
 
-                <Stack sx={{ padding: 2, marginTop: 2, minHeight: "500px", bgcolor: theme.palette.bgForm.black2 }}>
+                <Stack sx={{ marginTop: 4, minHeight: "500px" }}>
                   <Typography
                     sx={{
                       fontWeight: 500,
                       fontSize: "16px",
-                      color: theme.palette.text.main,
+                      color: theme.palette.primary.main,
                     }}
                   >
                     {data?.getForClosingTickets?.[0]?.isApprove === false ? "Manage Ticket Form" : "View Ticket Form"}
                   </Typography>
 
                   <Stack gap={0.5} mt={2}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Resolution:
-                    </Typography>
+                    <Stack direction="row" gap={1}>
+                      <Stack gap={0.5} sx={{ width: "50%" }}>
+                        <Typography
+                          sx={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          Category:
+                        </Typography>
+                        <Controller
+                          control={control}
+                          name="CategoryId"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                                loading={categoryIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!categoryIsSuccess)
+                                    getCategory({
+                                      Status: true,
+                                    });
+                                }}
+                                onChange={(_, value) => {
+                                  onChange(value);
 
-                    <Controller
-                      control={control}
-                      name="resolution"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <TextField
-                            inputRef={ref}
-                            size="medium"
-                            value={value}
-                            onChange={onChange}
-                            disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
-                            autoComplete="off"
-                            rows={6}
-                            multiline
-                            sx={{ fontSize: "10px" }}
-                          />
-                        );
-                      }}
-                    />
+                                  setValue("SubCategoryId", null);
+
+                                  getSubCategory({
+                                    Status: true,
+                                  });
+                                }}
+                                getOptionLabel={(option) => option.category_Description || ""}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                sx={{
+                                  flex: 2,
+                                }}
+                                fullWidth
+                                disablePortal
+                                disableClearable
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </Stack>
+
+                      <Stack gap={0.5} sx={{ width: "50%" }}>
+                        <Typography
+                          sx={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          Sub Category:
+                        </Typography>
+                        <Controller
+                          control={control}
+                          name="SubCategoryId"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
+                                loading={subCategoryIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!subCategoryIsSuccess)
+                                    getSubCategory({
+                                      Status: true,
+                                    });
+                                }}
+                                onChange={(_, value) => {
+                                  // console.log("Value ", value);
+
+                                  onChange(value || []);
+                                }}
+                                getOptionLabel={(option) => `${option.subCategory_Description}`}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                noOptionsText={"No sub category available"}
+                                sx={{
+                                  flex: 2,
+                                }}
+                                fullWidth
+                                disablePortal
+                                disableClearable
+                                // disabled
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+
+                    <Stack mt={2} gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Resolution:
+                      </Typography>
+
+                      <Controller
+                        control={control}
+                        name="resolution"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="medium"
+                              value={value}
+                              onChange={onChange}
+                              disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
+                              autoComplete="off"
+                              rows={6}
+                              multiline
+                              sx={{ fontSize: "10px" }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack mt={2} gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Notes (Optional):
+                      </Typography>
+
+                      <Controller
+                        control={control}
+                        name="Notes"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="medium"
+                              value={value}
+                              // placeholder="Enter resolution"
+                              onChange={onChange}
+                              autoComplete="off"
+                              rows={4}
+                              multiline
+                              sx={{ fontSize: "10px" }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
 
                     <Stack gap={0.5} mt={2} onDragOver={handleDragOver} onDrop={handleDrop}>
                       <Stack direction="row" gap={0.5}>

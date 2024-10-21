@@ -1033,6 +1033,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
                               loading={subCategoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!subCategoryIsSuccess)
+                                  getSubCategory({
+                                    Status: true,
+                                  });
+                              }}
                               onChange={(_, value) => {
                                 // console.log("Value ", value);
 

@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -72,12 +73,16 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    // console.log("FormData: ", formData);
+    console.log("FormData: ", formData);
 
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("Resolution", formData.resolution);
+
+    payload.append("CategoryId", formData.CategoryId.id);
+    payload.append("SubCategoryId", formData.SubCategoryId.id);
+    payload.append("Notes", formData.Notes);
 
     // Attachments
     const files = formData.AddClosingAttachments;
@@ -123,13 +128,8 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
               duration: 1500,
             });
 
-            // connection();
-
-            // if (connection) {
-            //   refetch();
-            // }
-
             dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
 
             setAddAttachments([]);
             reset();
@@ -259,7 +259,10 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
     }
   }, [data]);
 
-  console.log("Channel: ", watch("ChannelId"));
+  // console.log("Data: ", data);
+  // console.log("Category: ", watch("CategoryId"));
+  // console.log("SubCategory: ", watch("SubCategoryId"));
+  // console.log("Sub Category Data: ", subCategoryData);
 
   return (
     <>
@@ -292,7 +295,7 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
-                <Stack direction="row" gap={0.5} alignItems="center" mt={4}>
+                <Stack direction="row" gap={0.5} alignItems="center" mt={2}>
                   <FiberManualRecord color="warning" fontSize="20px" />
                   <Typography
                     sx={{
@@ -304,37 +307,6 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                     {` Ticket Number : #${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
-
-                {/* <Stack gap={0.5} mt={4}>
-                  <Typography
-                    sx={{
-                      fontWeight: 500,
-                      fontSize: "14px",
-                      color: theme.palette.text.main,
-                    }}
-                  >
-                    Ticket Description:
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontWeight: 500,
-                      fontSize: "14px",
-                      color: theme.palette.text.secondary,
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html: data?.concern_Description.replace(/\r\n/g, "<br />"),
-                    }}
-                  />
-                </Stack> */}
-
-                {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "50%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
-                  </Box>
-                  <Box width={{ width: "50%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}> {`#${data?.ticketConcernId}`}</Typography>
-                  </Box>
-                </Stack> */}
 
                 <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                   <Box sx={{ width: "50%", ml: 2 }}>
@@ -363,7 +335,7 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                     Closing Ticket Form
                   </Typography>
 
-                  <Stack gap={0.5} mt={2}>
+                  <Stack mt={2} gap={0.5}>
                     <Stack direction="row" gap={1}>
                       <Stack gap={0.5} sx={{ width: "50%" }}>
                         <Typography
@@ -443,6 +415,12 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                                 options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!subCategoryIsSuccess)
+                                    getSubCategory({
+                                      Status: true,
+                                    });
+                                }}
                                 onChange={(_, value) => {
                                   // console.log("Value ", value);
 
@@ -496,6 +474,36 @@ const IssueHandlerClosingDialog = ({ data, refetch, open, onClose }) => {
                               onChange={onChange}
                               autoComplete="off"
                               rows={6}
+                              multiline
+                              sx={{ fontSize: "10px" }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack mt={2} gap={0.5}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        Notes (Optional):
+                      </Typography>
+
+                      <Controller
+                        control={control}
+                        name="Notes"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="medium"
+                              value={value}
+                              // placeholder="Enter resolution"
+                              onChange={onChange}
+                              autoComplete="off"
+                              rows={4}
                               multiline
                               sx={{ fontSize: "10px" }}
                             />
