@@ -845,6 +845,7 @@ const ConcernDialog = ({ open, onClose }) => {
                                 onChange(value);
 
                                 setValue("CategoryId", null);
+                                setValue("SubCategoryId", null);
                               }}
                               getOptionLabel={(option) => option.channel_Name}
                               isOptionEqualToValue={(option, value) => option.id === value.id}

@@ -434,6 +434,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   // console.log("Request Type: ", watch("Request_Type"));
   // console.log("Edit Data: ", editData);
 
+  // console.log("Date Needed ", dateNeededValidation);
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -938,6 +940,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                 onChange(value);
 
                                 setValue("CategoryId", null);
+                                setValue("SubCategoryId", null);
                               }}
                               getOptionLabel={(option) => option.channel_Name}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -1401,7 +1404,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
               color="primary"
               type="submit"
               loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-              disabled={!watch("Concern")}
+              disabled={!watch("Concern") || moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY")}
             >
               Save
             </LoadingButton>

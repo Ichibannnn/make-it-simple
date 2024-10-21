@@ -121,7 +121,7 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 >
                   {data?.requestor_Name}
                 </Typography>
-                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography>
+                {/* <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography> */}
               </Stack>
             </Stack>
           </Stack>
@@ -179,6 +179,15 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                 <Box sx={{ width: "50%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                </Box>
+                <Box width={{ width: "50%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "50%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
                 </Box>
                 <Box width={{ width: "50%", ml: 2 }}>
@@ -192,15 +201,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Box>
                 <Box width={{ width: "50%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>System:</Typography>
-                </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
                 </Box>
               </Stack>
 
@@ -246,6 +246,15 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Box>
               </Stack>
 
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "50%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
+                </Box>
+                <Box width={{ width: "50%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
+                </Box>
+              </Stack>
+
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
                 <Box sx={{ width: "50%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
@@ -254,309 +263,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
                 </Box>
               </Stack>
-
-              {/* CONCERN DETAILS */}
-              {/* <Stack
-                marginTop={3}
-                padding={2}
-                gap={1}
-                sx={{
-                  border: "1px solid #2D3748",
-                }}
-              >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Ticket Number:
-                    </Typography>
-                  </Stack>
-
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Concern Details:
-                    </Typography>
-                  </Stack>
-
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography
-                      sx={{ fontSize: "14px" }}
-                      dangerouslySetInnerHTML={{
-                        __html: data?.concern_Description.replace(/\r\n/g, "<br />"),
-                      }}
-                    />
-                  </Stack>
-                </Stack>
-
-                {data?.ticket_Status === "For Transfer" && (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    paddingLeft={8}
-                    paddingRight={8}
-                    gap={2}
-                    sx={{
-                      width: "100%",
-                    }}
-                  >
-                    <Stack
-                      sx={{
-                        width: "30%",
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          color: theme.palette.text.secondary,
-                        }}
-                      >
-                        Transfer Remarks
-                      </Typography>
-                    </Stack>
-
-                    <Stack
-                      direction="row"
-                      gap={1}
-                      sx={{
-                        width: "65%",
-                      }}
-                    >
-                      <FiberManualRecord color="primary" fontSize="20px" />
-                      <Typography sx={{ fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
-                    </Stack>
-                  </Stack>
-                )}
-
-                {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    paddingLeft={8}
-                    paddingRight={8}
-                    gap={2}
-                    sx={{
-                      width: "100%",
-                    }}
-                  >
-                    <Stack
-                      sx={{
-                        width: "30%",
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          color: theme.palette.text.secondary,
-                        }}
-                      >
-                        Resolution
-                      </Typography>
-                    </Stack>
-
-                    <Stack
-                      direction="row"
-                      gap={1}
-                      sx={{
-                        width: "65%",
-                      }}
-                    >
-                      <FiberManualRecord color="primary" fontSize="20px" />
-                      <Typography sx={{ fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
-                    </Stack>
-                  </Stack>
-                )}
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Category:
-                    </Typography>
-                  </Stack>
-
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.category_Description}</Typography>
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Sub Category:
-                    </Typography>
-                  </Stack>
-
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Assigned to:
-                    </Typography>
-                  </Stack>
-
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Stack>
-                      <Typography sx={{ fontSize: "15px" }}>{data?.issue_Handler}</Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "15px",
-                          color: theme.palette.text.secondary,
-                        }}
-                      >
-                        {data?.channel_Name}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "15px",
-                          color: theme.palette.text.secondary,
-                        }}
-                      >
-                        {data?.unitId} - {data?.unit_Name}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Stack> */}
 
               {/* ATTACHMENTS */}
               <Stack
