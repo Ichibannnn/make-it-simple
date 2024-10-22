@@ -39,6 +39,27 @@ export const concernIssueHandlerApi = createApi({
       providesTags: ["Concern Issue Handler"],
     }),
 
+    holdIssueHandlerTickets: builder.mutation({
+      query: (body) => ({
+        url: "on-hold/create",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
+
+    resumeIssueHandlerTickets: builder.mutation({
+      query: (body) => ({
+        url: "on-hold/resume",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
+
     closeIssueHandlerTickets: builder.mutation({
       query: (body) => ({
         url: "closing-ticket",
@@ -77,6 +98,8 @@ export const concernIssueHandlerApi = createApi({
 export const {
   useGetIssueHandlerConcernsQuery,
   useGetTicketHistoryQuery,
+  useHoldIssueHandlerTicketsMutation,
+  useResumeIssueHandlerTicketsMutation,
   useCloseIssueHandlerTicketsMutation,
   useTransferIssueHandlerTicketsMutation,
   useCancelTransferTicketMutation,

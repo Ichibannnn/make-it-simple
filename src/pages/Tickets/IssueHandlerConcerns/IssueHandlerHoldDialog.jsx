@@ -11,28 +11,22 @@ import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 
-import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
-import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
+import { useCloseIssueHandlerTicketsMutation, useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
-  resolution: yup.string().required().label("Resolution is required"),
-  AddClosingAttachments: yup.array().nullable(),
-
-  ChannelId: yup.object().required().label("Channel"),
-  CategoryId: yup.object().required().label("Category"),
-  SubCategoryId: yup.object().required().label("Sub category"),
-
-  Notes: yup.string().notRequired(),
+  Reason: yup.string().required().label("Resolution is required"),
+  OnHoldAttachments: yup.array().nullable(),
 });
 
-const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
+const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -43,10 +37,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
   const fileInputRef = useRef();
   useSignalRConnection();
 
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
-
-  const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
+  const [holdIssueHandlerTickets, { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching }] = useHoldIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -60,14 +51,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       ticketConcernId: "",
-      resolution: "",
-      AddClosingAttachments: [],
-
-      ChannelId: null,
-      CategoryId: null,
-      SubCategoryId: null,
-
-      Notes: "",
+      Reason: "",
+      OnHoldAttachments: [],
     },
   });
 
@@ -77,27 +62,23 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
-    payload.append("Resolution", formData.resolution);
-
-    payload.append("CategoryId", formData.CategoryId.id);
-    payload.append("SubCategoryId", formData.SubCategoryId.id);
-    payload.append("Notes", formData.Notes);
+    payload.append("Reason", formData.Reason);
 
     // Attachments
-    const files = formData.AddClosingAttachments;
+    const files = formData.OnHoldAttachments;
     for (let i = 0; i < files.length; i++) {
-      payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-      payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
+      payload.append(`OnHoldAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+      payload.append(`OnHoldAttachments[${i}].attachment`, files[i]);
     }
 
     if (files.length === 0) {
-      payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
-      payload.append(`AddClosingAttachments[0].attachment`, "");
+      payload.append(`OnHoldAttachments[0].ticketAttachmentId`, "");
+      payload.append(`OnHoldAttachments[0].attachment`, "");
     }
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
+      text: `Requesting to hold this ticket number ${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -119,7 +100,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         console.log("Payload Entries: ", [...payload.entries()]);
-        closeIssueHandlerTickets(payload)
+        holdIssueHandlerTickets(payload)
           .unwrap()
           .then(() => {
             toast.success("Success!", {
@@ -239,22 +220,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      // console.log("Data: ", data);
-
       setValue("ticketConcernId", data?.ticketConcernId);
-
-      setValue("ChannelId", {
-        id: data?.channelId,
-        channel_Name: data?.channel_Name,
-      });
-      setValue("CategoryId", {
-        id: data?.categoryId,
-        category_Description: data?.category_Description,
-      });
-      setValue("SubCategoryId", {
-        id: data?.subCategoryId,
-        subCategory_Description: data?.subCategory_Description,
-      });
     }
   }, [data]);
 
@@ -278,7 +244,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                     color: theme.palette.success.main,
                   }}
                 >
-                  Closing Ticket
+                  Hold Ticket
                 </Typography>
               </Stack>
 
@@ -290,7 +256,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
             </Stack>
 
             {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
-
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
@@ -331,138 +296,22 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                       color: theme.palette.primary.main,
                     }}
                   >
-                    Closing Ticket Form
+                    Hold Ticket Form
                   </Typography>
 
                   <Stack mt={2} gap={0.5}>
-                    <Stack direction="row" gap={1}>
-                      <Stack gap={0.5} sx={{ width: "50%" }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Category:
-                        </Typography>
-                        <Controller
-                          control={control}
-                          name="CategoryId"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <Autocomplete
-                                ref={ref}
-                                size="small"
-                                value={value}
-                                options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
-                                loading={categoryIsLoading}
-                                renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!categoryIsSuccess)
-                                    getCategory({
-                                      Status: true,
-                                    });
-                                }}
-                                onChange={(_, value) => {
-                                  onChange(value);
-
-                                  setValue("SubCategoryId", null);
-
-                                  getSubCategory({
-                                    Status: true,
-                                  });
-                                }}
-                                getOptionLabel={(option) => option.category_Description || ""}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                sx={{
-                                  flex: 2,
-                                }}
-                                fullWidth
-                                disablePortal
-                                disableClearable
-                                componentsProps={{
-                                  popper: {
-                                    sx: {
-                                      "& .MuiAutocomplete-listbox": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                              />
-                            );
-                          }}
-                        />
-                      </Stack>
-
-                      <Stack gap={0.5} sx={{ width: "50%" }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Sub Category:
-                        </Typography>
-                        <Controller
-                          control={control}
-                          name="SubCategoryId"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <Autocomplete
-                                ref={ref}
-                                size="small"
-                                value={value}
-                                options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
-                                loading={subCategoryIsLoading}
-                                renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!subCategoryIsSuccess)
-                                    getSubCategory({
-                                      Status: true,
-                                    });
-                                }}
-                                onChange={(_, value) => {
-                                  // console.log("Value ", value);
-
-                                  onChange(value || []);
-                                }}
-                                getOptionLabel={(option) => `${option.subCategory_Description}`}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                noOptionsText={"No sub category available"}
-                                sx={{
-                                  flex: 2,
-                                }}
-                                fullWidth
-                                disablePortal
-                                disableClearable
-                                // disabled
-                                componentsProps={{
-                                  popper: {
-                                    sx: {
-                                      "& .MuiAutocomplete-listbox": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                              />
-                            );
-                          }}
-                        />
-                      </Stack>
-                    </Stack>
-
-                    <Stack mt={2} gap={0.5}>
+                    <Stack gap={0.5}>
                       <Typography
                         sx={{
                           fontSize: "14px",
                         }}
                       >
-                        Resolution:
+                        Reason:
                       </Typography>
 
                       <Controller
                         control={control}
-                        name="resolution"
+                        name="Reason"
                         render={({ field: { ref, value, onChange } }) => {
                           return (
                             <TextField
@@ -473,45 +322,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                               onChange={onChange}
                               autoComplete="off"
                               rows={6}
-                              multiline
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    <Stack mt={2} gap={0.5}>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                        }}
-                      >
-                        Notes (Optional):
-                      </Typography>
-
-                      <Controller
-                        control={control}
-                        name="Notes"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="medium"
-                              value={value}
-                              // placeholder="Enter resolution"
-                              onChange={onChange}
-                              autoComplete="off"
-                              rows={4}
                               multiline
                               InputProps={{
                                 style: {
@@ -641,7 +451,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
                     <Controller
                       control={control}
-                      name="AddClosingAttachments"
+                      name="OnHoldAttachments"
                       render={({ field: { onChange, value } }) => (
                         <input
                           ref={fileInputRef}
@@ -674,8 +484,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               type="submit"
               form="closeTicket"
               variant="contained"
-              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
-              disabled={!watch("resolution") || !watch("CategoryId") || !watch("SubCategoryId")}
+              loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching}
+              disabled={!watch("Reason")}
             >
               Submit
             </LoadingButton>
@@ -694,4 +504,4 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
   );
 };
 
-export default IssueHandlerClosingDialog;
+export default IssueHandlerHoldDialog;

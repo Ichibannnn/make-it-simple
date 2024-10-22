@@ -60,6 +60,7 @@ import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import { ParameterContext } from "../../../context/ParameterContext";
 import PrintServiceReport from "./PrintServiceReport";
+import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -74,6 +75,7 @@ const IssueHandlerConcerns = () => {
   const [dateTo, setDateTo] = useState(null);
 
   const [viewData, setViewData] = useState(null);
+  const [holdTicketData, setHoldTicketData] = useState(null);
   const [closeTicketData, setCloseTicketData] = useState(null);
   const [transferTicketData, setTransferTicketData] = useState(null);
   const [printData, setPrintData] = useState(null);
@@ -83,6 +85,7 @@ const IssueHandlerConcerns = () => {
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
+  const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
@@ -123,6 +126,11 @@ const IssueHandlerConcerns = () => {
 
     viewOnToggle();
     setViewData(data);
+  };
+
+  const onHoldTicketAction = (data) => {
+    holdTicketOnToggle();
+    setHoldTicketData(data);
   };
 
   const onCloseTicketAction = (data) => {
@@ -867,6 +875,7 @@ const IssueHandlerConcerns = () => {
                         >
                           <IssueHandlerConcernsActions
                             data={item}
+                            onHoldTicket={onHoldTicketAction}
                             onCloseTicket={onCloseTicketAction}
                             onManageTicket={onManageTicketAction}
                             onTransferTicket={onTransferTicketAction}
@@ -916,7 +925,15 @@ const IssueHandlerConcerns = () => {
         </Stack>
 
         <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />
-        <IssueHandlerClosingDialog data={closeTicketData} refetch={refetch} open={closeTicketOpen} onClose={onDialogClose} />
+        <IssueHandlerHoldDialog
+          data={holdTicketData}
+          open={holdTicketOpen}
+          onClose={() => {
+            holdTicketOnClose(setHoldTicketData(null));
+          }}
+        />
+
+        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
         <ManageTicketDialog
           data={closeTicketData}
           open={manageTicketOpen}
@@ -924,6 +941,7 @@ const IssueHandlerConcerns = () => {
             manageTicketOnClose(setCloseTicketData(null));
           }}
         />
+
         <TicketForTransferDialog
           data={transferTicketData}
           open={transferTicketOpen}

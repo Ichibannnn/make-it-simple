@@ -569,7 +569,16 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                               autoComplete="off"
                               rows={6}
                               multiline
-                              sx={{ fontSize: "10px" }}
+                              InputProps={{
+                                style: {
+                                  fontSize: "14px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "14px",
+                                },
+                              }}
                             />
                           );
                         }}
@@ -599,7 +608,16 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                               autoComplete="off"
                               rows={4}
                               multiline
-                              sx={{ fontSize: "10px" }}
+                              InputProps={{
+                                style: {
+                                  fontSize: "14px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "14px",
+                                },
+                              }}
                             />
                           );
                         }}
@@ -668,11 +686,11 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   flexDirection: "column",
                                 }}
                               >
-                                <Typography sx={{ fontSize: "12px" }}>{fileName.name}</Typography>
+                                <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
 
                                 <Typography
                                   sx={{
-                                    fontSize: "11px",
+                                    fontSize: "12px",
                                     color: theme.palette.text.secondary,
                                   }}
                                 >
@@ -689,7 +707,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 >
                                   <Typography
                                     sx={{
-                                      fontSize: 11,
+                                      fontSize: "14px",
                                       fontWeight: 500,
                                       color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                     }}
@@ -744,21 +762,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     </IconButton>
                                   </Tooltip>
                                 )}
-
-                                {/* {!!fileName.ticketAttachmentId && data?.getForClosingTickets?.[0]?.isApprove === false && (
-                                  <Tooltip title="Upload">
-                                    <IconButton
-                                      size="small"
-                                      color="error"
-                                      onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
-                                      style={{
-                                        background: "none",
-                                      }}
-                                    >
-                                      <FileUploadOutlined />
-                                    </IconButton>
-                                  </Tooltip>
-                                )} */}
 
                                 {!!fileName.ticketAttachmentId && (
                                   <Tooltip title="Download">
@@ -844,7 +847,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                 form="closeticket"
                 variant="contained"
                 loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
-                disabled={!watch("resolution")}
+                disabled={!watch("resolution") || !watch("CategoryId") || !watch("SubCategoryId")}
               >
                 Save
               </LoadingButton>

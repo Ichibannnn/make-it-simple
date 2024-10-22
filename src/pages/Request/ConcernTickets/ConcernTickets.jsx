@@ -278,10 +278,6 @@ const ConcernTickets = () => {
             <Button variant="contained" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
               Add Request
             </Button>
-
-            {/* <Button variant="contained" aria-hidden="false" size="small" color="primary" startIcon={<AddOutlined />} onClick={onNavigationAction}>
-              Direct to Overview
-            </Button> */}
           </Stack>
         </Stack>
 

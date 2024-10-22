@@ -82,7 +82,6 @@ const NewReceiverConcern = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
-
   useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();

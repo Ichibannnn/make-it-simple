@@ -1,14 +1,28 @@
-import { ChecklistRtlOutlined, CloseOutlined, LocalPrintshopOutlined, ModeEditOutlineOutlined, MoreHoriz, MoveDownOutlined, VisibilityOutlined } from "@mui/icons-material";
+import {
+  ChecklistRtlOutlined,
+  CloseOutlined,
+  LocalPrintshopOutlined,
+  ModeEditOutlineOutlined,
+  MoreHoriz,
+  MoveDownOutlined,
+  PendingOutlined,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import React, { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
 
-const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTransferTicket, onManageTransfer, onCancelTransfer, onPrintTicket }) => {
+const IssueHandlerConcernsActions = ({ data, onHoldTicket, onCloseTicket, onManageTicket, onTransferTicket, onManageTransfer, onCancelTransfer, onPrintTicket }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
+
+  const onHoldTicketAction = (data) => {
+    onToggle();
+    onHoldTicket(data);
+  };
 
   const onCloseTicketAction = (data) => {
     onToggle();
@@ -44,6 +58,12 @@ const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTr
 
   if (data?.ticket_Status === "Open Ticket") {
     menuItems.push(
+      <MenuItem key="hold" onClick={() => onHoldTicketAction(data)}>
+        <ListItemIcon>
+          <PendingOutlined fontSize="small" />
+        </ListItemIcon>
+        Hold
+      </MenuItem>,
       <MenuItem key="close" onClick={() => onCloseTicketAction(data)}>
         <ListItemIcon>
           <ChecklistRtlOutlined fontSize="small" />
