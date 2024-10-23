@@ -61,6 +61,7 @@ import { notificationApi, useGetNotificationQuery } from "../../../features/api_
 import { ParameterContext } from "../../../context/ParameterContext";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
+import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -86,6 +87,7 @@ const IssueHandlerConcerns = () => {
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
+  const { open: manageHoldTicketOpen, onToggle: manageHoldTicketOnToggle, onClose: manageHoldTicketOnClose } = useDisclosure();
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
@@ -132,6 +134,13 @@ const IssueHandlerConcerns = () => {
     holdTicketOnToggle();
     setHoldTicketData(data);
   };
+
+  const onHoldManageTicketAction = (data) => {
+    manageHoldTicketOnToggle();
+    setHoldTicketData(data);
+  };
+
+  console.log("Manage OnHold: ", holdTicketData);
 
   const onCloseTicketAction = (data) => {
     closeTicketOnToggle();
@@ -317,19 +326,19 @@ const IssueHandlerConcerns = () => {
               />
 
               <Tab
-                value="On Hold"
+                value="On-Hold"
                 className="tabs-styling"
                 label="On Hold"
                 icon={
                   <Badge
-                    // badgeContent={notificationBadge?.value?.openTicketNotif}
+                    badgeContent={notificationBadge?.value?.onHold}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
                         fontWeight: 400,
-                        background: "#ff7043",
+                        background: "#ff6d00",
                         color: "#ffff",
                       },
                     }}
@@ -799,6 +808,8 @@ const IssueHandlerConcerns = () => {
                                 ? "Open"
                                 : item.ticket_Status === "For Transfer"
                                 ? "For Transfer"
+                                : item.ticket_Status === "On-Hold"
+                                ? "On-Hold"
                                 : item.ticket_Status === "For Closing Ticket"
                                 ? "For Closing"
                                 : item.ticket_Status === "For Confirmation"
@@ -813,6 +824,8 @@ const IssueHandlerConcerns = () => {
                                   ? "#ec9d29"
                                   : item.ticket_Status === "For Transfer"
                                   ? "#ff7043"
+                                  : item.ticket_Status === "On-Hold"
+                                  ? "#ff6d00"
                                   : item.ticket_Status === "For Closing Ticket"
                                   ? "#3A96FA"
                                   : item.ticket_Status === "For Confirmation"
@@ -876,6 +889,7 @@ const IssueHandlerConcerns = () => {
                           <IssueHandlerConcernsActions
                             data={item}
                             onHoldTicket={onHoldTicketAction}
+                            onHoldManageTicket={onHoldManageTicketAction}
                             onCloseTicket={onCloseTicketAction}
                             onManageTicket={onManageTicketAction}
                             onTransferTicket={onTransferTicketAction}
@@ -930,6 +944,14 @@ const IssueHandlerConcerns = () => {
           open={holdTicketOpen}
           onClose={() => {
             holdTicketOnClose(setHoldTicketData(null));
+          }}
+        />
+
+        <ManageOnHoldTicketDialog
+          data={holdTicketData}
+          open={manageHoldTicketOpen}
+          onClose={() => {
+            manageHoldTicketOnClose(setHoldTicketData(null));
           }}
         />
 

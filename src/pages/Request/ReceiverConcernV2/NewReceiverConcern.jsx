@@ -346,6 +346,7 @@ const NewReceiverConcern = () => {
                           fontSize: "12px",
                           fontWeight: 500,
                           minWidth: "300px",
+                          maxWidth: "300px",
                           "&:hover": {
                             background: "",
                             color: "#EDF2F7",

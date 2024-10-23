@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Add, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -17,24 +17,30 @@ import { notificationApi } from "../../../features/api_notification/notification
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
 const schema = yup.object().shape({
+  id: yup.number(),
   ticketConcernId: yup.number(),
   Reason: yup.string().required().label("Resolution is required"),
   OnHoldAttachments: yup.array().nullable(),
 });
 
-const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
+const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   useSignalRConnection();
 
+  const [getViewAttachment] = useLazyGetViewAttachmentQuery();
+  const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
   const [holdIssueHandlerTickets, { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching }] = useHoldIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
@@ -48,6 +54,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      id: "",
       ticketConcernId: "",
       Reason: "",
       OnHoldAttachments: [],
@@ -59,6 +66,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
 
     const payload = new FormData();
 
+    payload.append("Id", formData.id);
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("Reason", formData.Reason);
 
@@ -144,14 +152,14 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
+    console.log("File name: ", fileNameToDelete);
 
     try {
-      if (fileNameToDelete.ticketAttachmentId) {
+      if (fileNameToDelete.id) {
         const deletePayload = {
           removeAttachments: [
             {
-              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+              id: fileNameToDelete.id,
             },
           ],
         };
@@ -196,15 +204,58 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   };
 
   // Function to open image view dialog
-  const handleViewImage = (file) => {
-    console.log("File: ", file);
+  const handleViewImage = async (file) => {
+    setViewLoading(true);
+    try {
+      const response = await getViewAttachment(file?.ticketAttachmentId);
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedImage(e.target.result);
-      setIsViewDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
+      if (response?.data) {
+        const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
+        setSelectedImage(imageUrl); // Set the image URL to state
+        setIsViewDialogOpen(true);
+        setViewLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const handleViewImageWithoutId = (file) => {
+    setViewLoading(true);
+    try {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        setIsViewDialogOpen(true);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const handleDownloadAttachment = async (file) => {
+    setDownloadLoading(true);
+    try {
+      const response = await getDownloadAttachment(file?.ticketAttachmentId);
+
+      if (response?.data) {
+        const blob = new Blob([response.data], { type: response.data.type });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${file?.name || "attachment"}`); // Default to 'attachment' if no name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link); // Clean up after download
+        setDownloadLoading(false);
+      } else {
+        console.log("No data in the response");
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
   };
 
   const handleViewClose = () => {
@@ -219,6 +270,30 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       setValue("ticketConcernId", data?.ticketConcernId);
+      setValue("id", data?.getOnHolds?.[0]?.id);
+      setValue("Reason", data?.concern_Description);
+
+      const manageTicketArray = data?.getOnHolds?.map((item) =>
+        item?.getAttachmentForOnHoldTickets?.map((subItem) => {
+          return {
+            id: subItem.id,
+            ticketAttachmentId: subItem.ticketAttachmentId,
+            name: subItem.fileName,
+            size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
+            link: subItem.attachment,
+          };
+        })
+      );
+
+      setAddAttachments(
+        manageTicketArray?.[0]?.map((item) => ({
+          id: item.id,
+          ticketAttachmentId: item.ticketAttachmentId,
+          name: item.name,
+          size: item.size,
+          link: item.link,
+        }))
+      );
     }
   }, [data]);
 
@@ -242,7 +317,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
                     color: theme.palette.success.main,
                   }}
                 >
-                  Hold Ticket
+                  Manage Hold Ticket
                 </Typography>
               </Stack>
 
@@ -416,17 +491,32 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
                             </Box>
 
                             <Box>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="Remove">
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handleViewImage(fileName.file)} // View image in dialog
-                                    style={{ background: "none" }}
-                                  >
-                                    <VisibilityOutlined />
-                                  </IconButton>
-                                </Tooltip>
+                              {!!fileName.ticketAttachmentId ? (
+                                <>
+                                  {isImageFile(fileName.name) && (
+                                    <IconButton
+                                      size="small"
+                                      color="primary"
+                                      onClick={() => handleViewImage(fileName)} // View image in dialog
+                                      style={{ background: "none" }}
+                                    >
+                                      {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
+                                    </IconButton>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  {isImageFile(fileName.name) && (
+                                    <IconButton
+                                      size="small"
+                                      color="primary"
+                                      onClick={() => handleViewImageWithoutId(fileName.file)} // View image in dialog
+                                      style={{ background: "none" }}
+                                    >
+                                      <VisibilityOutlined />
+                                    </IconButton>
+                                  )}
+                                </>
                               )}
 
                               <Tooltip title="Remove">
@@ -441,6 +531,28 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
                                   <RemoveCircleOutline />
                                 </IconButton>
                               </Tooltip>
+
+                              {!!fileName.ticketAttachmentId && (
+                                <Tooltip title="Download">
+                                  {downloadLoading ? (
+                                    <CircularProgress size={14} />
+                                  ) : (
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      // onClick={() => {
+                                      //   window.location = fileName.link;
+                                      // }}
+                                      onClick={() => handleDownloadAttachment(fileName)}
+                                      style={{
+                                        background: "none",
+                                      }}
+                                    >
+                                      <FileDownloadOutlined />
+                                    </IconButton>
+                                  )}
+                                </Tooltip>
+                              )}
                             </Box>
                           </Box>
                         ))}
@@ -502,4 +614,4 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   );
 };
 
-export default IssueHandlerHoldDialog;
+export default ManageOnHoldTicketDialog;

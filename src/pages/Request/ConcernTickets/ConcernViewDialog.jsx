@@ -556,7 +556,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               getOptionLabel={(option) => option?.fullname}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
-                              disabled={editData?.concern_Status === "For Approval" || "" ? true : false}
+                              disabled
                               disablePortal
                               disableClearable
                               componentsProps={{

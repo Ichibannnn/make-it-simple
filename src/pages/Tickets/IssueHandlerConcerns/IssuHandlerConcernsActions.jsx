@@ -14,7 +14,17 @@ import React, { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
 
-const IssueHandlerConcernsActions = ({ data, onHoldTicket, onCloseTicket, onManageTicket, onTransferTicket, onManageTransfer, onCancelTransfer, onPrintTicket }) => {
+const IssueHandlerConcernsActions = ({
+  data,
+  onHoldTicket,
+  onHoldManageTicket,
+  onCloseTicket,
+  onManageTicket,
+  onTransferTicket,
+  onManageTransfer,
+  onCancelTransfer,
+  onPrintTicket,
+}) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -22,6 +32,11 @@ const IssueHandlerConcernsActions = ({ data, onHoldTicket, onCloseTicket, onMana
   const onHoldTicketAction = (data) => {
     onToggle();
     onHoldTicket(data);
+  };
+
+  const onHoldManageTicketAction = (data) => {
+    onToggle();
+    onHoldManageTicket(data);
   };
 
   const onCloseTicketAction = (data) => {
@@ -90,6 +105,17 @@ const IssueHandlerConcernsActions = ({ data, onHoldTicket, onCloseTicket, onMana
         </MenuItem>
       );
     }
+  }
+
+  if (data?.ticket_Status === "On-Hold") {
+    menuItems.push(
+      <MenuItem key="manage-onhold" onClick={() => onHoldManageTicketAction(data)}>
+        <ListItemIcon>
+          <ModeEditOutlineOutlined fontSize="small" />
+        </ListItemIcon>
+        Manage On-Hold
+      </MenuItem>
+    );
   }
 
   if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer") {
