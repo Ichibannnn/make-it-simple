@@ -41,7 +41,12 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { concernIssueHandlerApi, useCancelTransferTicketMutation, useGetIssueHandlerConcernsQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import {
+  concernIssueHandlerApi,
+  useCancelTransferTicketMutation,
+  useGetIssueHandlerConcernsQuery,
+  useResumeIssueHandlerTicketsMutation,
+} from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
@@ -62,6 +67,7 @@ import { ParameterContext } from "../../../context/ParameterContext";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -84,6 +90,7 @@ const IssueHandlerConcerns = () => {
   const { parameter } = useContext(ParameterContext);
 
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
+  const [resumeIssueHandlerTickets] = useResumeIssueHandlerTicketsMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
@@ -140,7 +147,7 @@ const IssueHandlerConcerns = () => {
     setHoldTicketData(data);
   };
 
-  console.log("Manage OnHold: ", holdTicketData);
+  // console.log("Manage OnHold: ", holdTicketData);
 
   const onCloseTicketAction = (data) => {
     closeTicketOnToggle();
@@ -167,6 +174,56 @@ const IssueHandlerConcerns = () => {
 
     printTicketOnToggle();
     setPrintData(data);
+  };
+
+  const onResumeTicketAction = (data) => {
+    const payload = {
+      ticketOnHoldId: data?.getOnHolds?.[0]?.id,
+    };
+
+    Swal.fire({
+      title: "Confirmation",
+      text: `Requesting to resume this ticket number ${data?.ticketConcernId}?`,
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        resumeIssueHandlerTickets(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Ticket resumed successfully!",
+              duration: 1500,
+            });
+
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
 
   const onDialogClose = () => {
@@ -889,6 +946,7 @@ const IssueHandlerConcerns = () => {
                           <IssueHandlerConcernsActions
                             data={item}
                             onHoldTicket={onHoldTicketAction}
+                            onResumeTicket={onResumeTicketAction}
                             onHoldManageTicket={onHoldManageTicketAction}
                             onCloseTicket={onCloseTicketAction}
                             onManageTicket={onManageTicketAction}

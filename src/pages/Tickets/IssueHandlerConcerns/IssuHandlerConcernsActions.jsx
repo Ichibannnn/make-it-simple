@@ -1,4 +1,6 @@
 import {
+  ArrowForwardOutlined,
+  ArrowRightOutlined,
   ChecklistRtlOutlined,
   CloseOutlined,
   LocalPrintshopOutlined,
@@ -18,6 +20,7 @@ const IssueHandlerConcernsActions = ({
   data,
   onHoldTicket,
   onHoldManageTicket,
+  onResumeTicket,
   onCloseTicket,
   onManageTicket,
   onTransferTicket,
@@ -37,6 +40,11 @@ const IssueHandlerConcernsActions = ({
   const onHoldManageTicketAction = (data) => {
     onToggle();
     onHoldManageTicket(data);
+  };
+
+  const onResumeTicketAction = (data) => {
+    onToggle();
+    onResumeTicket(data);
   };
 
   const onCloseTicketAction = (data) => {
@@ -114,6 +122,12 @@ const IssueHandlerConcernsActions = ({
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
         Manage On-Hold
+      </MenuItem>,
+      <MenuItem key="resume" onClick={() => onResumeTicketAction(data)}>
+        <ListItemIcon>
+          <ArrowForwardOutlined fontSize="small" color="warning" />
+        </ListItemIcon>
+        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.warning.main }}>Resume</Typography>
       </MenuItem>
     );
   }

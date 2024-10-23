@@ -664,7 +664,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                             width: "100%",
                             display: "flex",
                             flexDirection: "column",
-                            justifyContent: "space-between",
+                            // justifyContent: "space-between",
                             padding: 1,
                           }}
                         >

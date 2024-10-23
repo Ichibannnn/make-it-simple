@@ -45,7 +45,7 @@ const TicketHistory = ({ data }) => {
               <Typography
                 component="span"
                 sx={{
-                  fontSize: "19px",
+                  fontSize: "17px",
                   fontWeight: 900,
                   color: theme.palette.text.secondary,
                 }}

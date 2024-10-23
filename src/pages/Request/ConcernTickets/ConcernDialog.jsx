@@ -354,6 +354,8 @@ const ConcernDialog = ({ open, onClose }) => {
     });
   }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
+  console.log("Employee: ", watch("UserId"));
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -417,7 +419,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={userData?.value?.users || []}
+                              options={userData?.value?.users.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
                               loading={userIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {

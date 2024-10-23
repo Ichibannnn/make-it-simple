@@ -82,54 +82,29 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
       payload.append(`OnHoldAttachments[0].attachment`, "");
     }
 
-    Swal.fire({
-      title: "Confirmation",
-      text: `Requesting to hold this ticket number ${data?.ticketConcernId}?`,
-      icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("Payload Entries: ", [...payload.entries()]);
-        holdIssueHandlerTickets(payload)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "Ticket submitted successfully!",
-              duration: 1500,
-            });
+    console.log("Payload Entries: ", [...payload.entries()]);
+    holdIssueHandlerTickets(payload)
+      .unwrap()
+      .then(() => {
+        toast.success("Success!", {
+          description: "Ticket submitted successfully!",
+          duration: 1500,
+        });
 
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+        dispatch(notificationApi.util.resetApiState());
+        dispatch(notificationMessageApi.util.resetApiState());
 
-            setAddAttachments([]);
-            reset();
-            onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
-      }
-    });
+        setAddAttachments([]);
+        reset();
+        onClose();
+      })
+      .catch((err) => {
+        console.log("Error", err);
+        toast.error("Error!", {
+          description: err.data.error.message,
+          duration: 1500,
+        });
+      });
   };
 
   const handleAttachments = (event) => {
@@ -153,24 +128,28 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
 
   const handleDeleteFile = async (fileNameToDelete) => {
     console.log("File name: ", fileNameToDelete);
-
     try {
-      if (fileNameToDelete.id) {
+      if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
-          removeAttachments: [
-            {
-              id: fileNameToDelete.id,
-            },
-          ],
+          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
         };
-        await deleteRequestorAttachment(deletePayload).unwrap();
+        await deleteRequestorAttachment(deletePayload)
+          .unwrap()
+          .then()
+          .catch((err) => {
+            console.log("error: ", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
       }
 
       setAddAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
       setValue(
-        "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        "OnHoldAttachments",
+        watch("OnHoldAttachments").filter((file) => file.name !== fileNameToDelete.name)
       );
     } catch (error) {}
   };
@@ -271,12 +250,12 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
     if (data) {
       setValue("ticketConcernId", data?.ticketConcernId);
       setValue("id", data?.getOnHolds?.[0]?.id);
-      setValue("Reason", data?.concern_Description);
+      setValue("Reason", data?.getOnHolds?.[0]?.reason);
 
       const manageTicketArray = data?.getOnHolds?.map((item) =>
         item?.getAttachmentForOnHoldTickets?.map((subItem) => {
           return {
-            id: subItem.id,
+            id: item.id,
             ticketAttachmentId: subItem.ticketAttachmentId,
             name: subItem.fileName,
             size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
@@ -285,9 +264,10 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
         })
       );
 
+      console.log("manageTicketArray: ", manageTicketArray);
+
       setAddAttachments(
         manageTicketArray?.[0]?.map((item) => ({
-          id: item.id,
           ticketAttachmentId: item.ticketAttachmentId,
           name: item.name,
           size: item.size,
@@ -297,10 +277,8 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("Data: ", data);
-  // console.log("Category: ", watch("CategoryId"));
-  // console.log("SubCategory: ", watch("SubCategoryId"));
-  // console.log("Sub Category Data: ", subCategoryData);
+  //   console.log("Attachments: ", addAttachments);
+  console.log("Data: ", data);
 
   return (
     <>
