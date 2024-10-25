@@ -102,9 +102,8 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
   return (
     <>
+      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="md" open={viewOpen}>
-        <Toaster richColors position="top-right" closeButton />
-
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -233,6 +232,18 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                   </Box>
                   <Box width={{ width: "50%", ml: 2 }}>
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
+                  </Box>
+                </Stack>
+              )}
+
+              {/* Transfer Approval Remarks */}
+              {data?.ticket_Status === "Transfer Approval" && (
+                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                  <Box sx={{ width: "50%", ml: 2 }}>
+                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                  </Box>
+                  <Box width={{ width: "50%", ml: 2 }}>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
                   </Box>
                 </Stack>
               )}

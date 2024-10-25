@@ -90,25 +90,6 @@ const ConcernTickets = () => {
     PageSize: pageSize,
   });
 
-  // console.log("useSignalRConnection", useSignalRConnection);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     // const handleRequestApproved = (requestId) => {
-  //     //   dispatch(removeMaterial({ id: requestId }));
-  //     // };
-
-  //     connection.start().catch((err) => console.error("SignalR Connection Error: ", err));
-
-  //     connection.on("RequestApproved", data);
-
-  //     return () => {
-  //       connection.off("RequestApproved", data);
-  //       connection.stop();
-  //     };
-  //   }
-  // }, [data]);
-
   const [confirmConcern] = useConfirmConcernMutation();
   const [cancelConcern] = useCancelConcernMutation();
 
@@ -171,12 +152,13 @@ const ConcernTickets = () => {
         confirmConcern(payload)
           .unwrap()
           .then(() => {
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
             toast.success("Success!", {
               description: "Confirm concern successfully!",
               duration: 1500,
             });
+
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
           })
           .catch((err) => {
             console.log("Error", err);

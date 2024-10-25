@@ -39,6 +39,8 @@ import ApproverPage from "../pages/Approver/ApproverPage";
 import Approval from "../pages/Approver/Approval/Approval";
 import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverConcern";
 
+import ReportsPage from "../pages/Reports/ReportsPage";
+
 export const router = createBrowserRouter([
   {
     path: "*",
@@ -168,6 +170,11 @@ export const router = createBrowserRouter([
             element: <IssueHandlerConcerns />,
           },
         ],
+      },
+
+      {
+        path: "/reports",
+        element: <ReportsPage />,
       },
     ],
   },

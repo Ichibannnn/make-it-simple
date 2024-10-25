@@ -68,6 +68,7 @@ import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import ApproveTransferTicket from "./ApproveTransferTicket";
 
 const IssueHandlerConcerns = () => {
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
@@ -99,10 +100,12 @@ const IssueHandlerConcerns = () => {
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
+  const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
   const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
 
   const dispatch = useDispatch();
   useSignalRConnection();
+
   const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
@@ -147,8 +150,6 @@ const IssueHandlerConcerns = () => {
     setHoldTicketData(data);
   };
 
-  // console.log("Manage OnHold: ", holdTicketData);
-
   const onCloseTicketAction = (data) => {
     closeTicketOnToggle();
     setCloseTicketData(data);
@@ -166,6 +167,11 @@ const IssueHandlerConcerns = () => {
 
   const onManageTransferAction = (data) => {
     manageTransferOnToggle();
+    setTransferTicketData(data);
+  };
+
+  const onApproveTransferAction = (data) => {
+    approveTransferOnToggle();
     setTransferTicketData(data);
   };
 
@@ -226,14 +232,6 @@ const IssueHandlerConcerns = () => {
     });
   };
 
-  const onDialogClose = () => {
-    setCloseTicketData(null);
-    setTransferTicketData(null);
-    setPrintData(null);
-    closeTicketOnClose();
-    // manageTicketOnClose();
-  };
-
   const onCancelTransferAction = (data) => {
     console.log("Close Transfer: ", data);
 
@@ -283,6 +281,14 @@ const IssueHandlerConcerns = () => {
     });
   };
 
+  const onDialogClose = () => {
+    setCloseTicketData(null);
+    setTransferTicketData(null);
+    setPrintData(null);
+    closeTicketOnClose();
+    // manageTicketOnClose();
+  };
+
   useEffect(() => {
     if (ticketStatus !== "") {
       setFilterStatus(null);
@@ -321,7 +327,7 @@ const IssueHandlerConcerns = () => {
           <Stack justifyItems="space-between" direction="row"></Stack>
         </Stack>
 
-        <Stack sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "20px", marginTop: "10px", height: "730px" }}>
+        <Stack sx={{ borderRadius: "20px", marginTop: "10px", height: "730px" }}>
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
             <Tabs value={ticketStatus} onChange={onStatusChange}>
               <Tab
@@ -361,6 +367,34 @@ const IssueHandlerConcerns = () => {
                 icon={
                   <Badge
                     badgeContent={notificationBadge?.value?.forTransferNotif}
+                    max={100000}
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                        background: "#ff7043",
+                        color: "#ffff",
+                      },
+                    }}
+                  >
+                    <MoveDownOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                }}
+              />
+
+              <Tab
+                value="Transfer Approval"
+                className="tabs-styling"
+                label="Transfer Approval"
+                icon={
+                  <Badge
+                    // badgeContent={notificationBadge?.value?.forTransferNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
@@ -865,6 +899,8 @@ const IssueHandlerConcerns = () => {
                                 ? "Open"
                                 : item.ticket_Status === "For Transfer"
                                 ? "For Transfer"
+                                : item.ticket_Status === "Transfer Approval"
+                                ? "Transfer Approval"
                                 : item.ticket_Status === "On-Hold"
                                 ? "On-Hold"
                                 : item.ticket_Status === "For Closing Ticket"
@@ -880,6 +916,8 @@ const IssueHandlerConcerns = () => {
                                 item.ticket_Status === "Open Ticket"
                                   ? "#ec9d29"
                                   : item.ticket_Status === "For Transfer"
+                                  ? "#ff7043"
+                                  : item.ticket_Status === "Transfer Approval"
                                   ? "#ff7043"
                                   : item.ticket_Status === "On-Hold"
                                   ? "#ff6d00"
@@ -952,6 +990,7 @@ const IssueHandlerConcerns = () => {
                             onManageTicket={onManageTicketAction}
                             onTransferTicket={onTransferTicketAction}
                             onManageTransfer={onManageTransferAction}
+                            onApproveTransfer={onApproveTransferAction}
                             onCancelTransfer={onCancelTransferAction}
                             onPrintTicket={onPrintTicketAction}
                           />
@@ -1034,6 +1073,13 @@ const IssueHandlerConcerns = () => {
           open={manageTransferOpen}
           onClose={() => {
             manageTransferOnClose(setTransferTicketData(null));
+          }}
+        />
+        <ApproveTransferTicket
+          data={transferTicketData}
+          open={approveTransferOpen}
+          onClose={() => {
+            approveTransferOnClose(setTransferTicketData(null));
           }}
         />
         <PrintServiceReport

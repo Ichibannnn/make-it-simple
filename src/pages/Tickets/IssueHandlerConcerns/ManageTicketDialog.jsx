@@ -25,6 +25,10 @@ import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticke
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useDispatch } from "react-redux";
+import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -48,7 +52,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
+  const dispatch = useDispatch();
   const fileInputRef = useRef();
+  useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
@@ -56,7 +62,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
   const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -215,6 +221,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
               description: "Ticket updated successfully!",
               duration: 1500,
             });
+
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
+
             setAttachments([]);
             reset();
             onClose();
@@ -472,6 +482,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   flex: 2,
                                 }}
                                 fullWidth
+                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 disablePortal
                                 disableClearable
                                 componentsProps={{
@@ -529,7 +540,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 fullWidth
                                 disablePortal
                                 disableClearable
-                                // disabled
+                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 componentsProps={{
                                   popper: {
                                     sx: {
@@ -608,6 +619,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                               autoComplete="off"
                               rows={4}
                               multiline
+                              disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                               InputProps={{
                                 style: {
                                   fontSize: "14px",

@@ -309,12 +309,12 @@ const SidebarList = () => {
           path: "/receiver/receiver-concerns",
           icon: "DiscountOutlined",
         },
-        {
-          id: 2,
-          name: "Close Tickets",
-          path: "/receiver/close-tickets",
-          icon: "DiscountOutlined",
-        },
+        // {
+        //   id: 2,
+        //   name: "Close Tickets",
+        //   path: "/receiver/close-tickets",
+        //   icon: "DiscountOutlined",
+        // },
       ],
     },
     {
@@ -364,12 +364,18 @@ const SidebarList = () => {
     },
     {
       id: 7,
+      name: "Reports",
+      path: "/reports",
+      icon: "AssessmentOutlined",
+    },
+    {
+      id: 8,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 8,
+      id: 9,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",

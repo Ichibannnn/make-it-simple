@@ -2,7 +2,16 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import IcecreamOutlinedIcon from "@mui/icons-material/IcecreamOutlined";
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
 
-import { AttachFileOutlined, BallotOutlined, ConfirmationNumberOutlined, CreditScoreOutlined, DynamicFeedOutlined, EqualizerOutlined, NumbersOutlined } from "@mui/icons-material";
+import {
+  AssessmentOutlined,
+  AttachFileOutlined,
+  BallotOutlined,
+  ConfirmationNumberOutlined,
+  CreditScoreOutlined,
+  DynamicFeedOutlined,
+  EqualizerOutlined,
+  NumbersOutlined,
+} from "@mui/icons-material";
 
 export const getMenuIcon = (iconName) => {
   const iconMap = {
@@ -15,6 +24,7 @@ export const getMenuIcon = (iconName) => {
     BallotOutlined: <BallotOutlined />,
     ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
     CreditScoreOutlined: <CreditScoreOutlined />,
+    AssessmentOutlined: <AssessmentOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

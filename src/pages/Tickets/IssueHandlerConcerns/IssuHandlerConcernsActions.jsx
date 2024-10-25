@@ -25,6 +25,7 @@ const IssueHandlerConcernsActions = ({
   onManageTicket,
   onTransferTicket,
   onManageTransfer,
+  onApproveTransfer,
   onCancelTransfer,
   onPrintTicket,
 }) => {
@@ -65,6 +66,11 @@ const IssueHandlerConcernsActions = ({
   const onManageTransferAction = (data) => {
     onToggle();
     onManageTransfer(data);
+  };
+
+  const onApproveTransferAction = (data) => {
+    onToggle();
+    onApproveTransfer(data);
   };
 
   const onCancelTransferAction = (data) => {
@@ -113,6 +119,17 @@ const IssueHandlerConcernsActions = ({
         </MenuItem>
       );
     }
+  }
+
+  if (data?.ticket_Status === "Transfer Approval") {
+    menuItems.push(
+      <MenuItem key="resume" onClick={() => onApproveTransferAction(data)}>
+        <ListItemIcon>
+          <ArrowForwardOutlined fontSize="small" color="success" />
+        </ListItemIcon>
+        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Approve</Typography>
+      </MenuItem>
+    );
   }
 
   if (data?.ticket_Status === "On-Hold") {
