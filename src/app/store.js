@@ -37,6 +37,8 @@ import { notificationMessageApi } from "../features/api_notification_message/not
 import notificationMiddleware from "../middleware/notificationMiddleware";
 import { attachmentsApi } from "../features/api_attachments/attachmentsApi";
 
+import { reportsApi } from "../features/api_reports/reportsApi";
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -73,6 +75,8 @@ export const store = configureStore({
     [ticketApprovalApi.reducerPath]: ticketApprovalApi.reducer,
     [closingTicketApi.reducerPath]: closingTicketApi.reducer,
 
+    [reportsApi.reducerPath]: reportsApi.reducer,
+
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
   },
@@ -108,6 +112,8 @@ export const store = configureStore({
 
       ticketApprovalApi.middleware,
       closingTicketApi.middleware,
+
+      reportsApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,

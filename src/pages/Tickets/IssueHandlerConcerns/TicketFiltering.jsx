@@ -20,16 +20,6 @@ const TicketFiltering = ({ filterStatus, setFilterStatus, dateFrom, setDateFrom,
   const { open, onToggle } = useDisclosure();
 
   const onApplyAction = () => {
-    // if (!tempFilterStatus && !tempDateFrom && !tempDateTo) {
-    //   setFilterStatus(null);
-    //   setDateFrom(null);
-    //   setDateTo(null);
-    // } else {
-    //   setFilterStatus(tempFilterStatus);
-    //   setDateFrom(moment(tempDateFrom).format("YYYY-MM-DD"));
-    //   setDateTo(moment(tempDateTo).format("YYYY-MM-DD"));
-    // }
-
     setFilterStatus(tempFilterStatus ? tempFilterStatus : null);
     setDateFrom(tempDateFrom ? moment(tempDateFrom).format("YYYY-MM-DD") : null);
     setDateTo(tempDateTo ? moment(tempDateTo).format("YYYY-MM-DD") : null);
@@ -40,14 +30,7 @@ const TicketFiltering = ({ filterStatus, setFilterStatus, dateFrom, setDateFrom,
     setTempFilterStatus(null);
     setTempDateFrom(null);
     setTempDateTo(null);
-    // setFilterStatus("");
-    // setDateFrom("");
-    // setDateTo("");
   };
-
-  // console.log("Status: ", tempFilterStatus);
-  // console.log("Date From: ", tempDateFrom);
-  // console.log("Date To: ", tempDateTo);
 
   return (
     <>
