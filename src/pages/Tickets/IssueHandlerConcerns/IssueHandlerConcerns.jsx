@@ -642,20 +642,6 @@ const IssueHandlerConcerns = () => {
                   >
                     <Stack direction="row" alignItems="center" gap={0.5}>
                       <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                      START DATE
-                    </Stack>
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      <AccessTimeOutlined sx={{ fontSize: "16px" }} />
                       TARGET DATE
                     </Stack>
                   </TableCell>
@@ -774,32 +760,6 @@ const IssueHandlerConcerns = () => {
                               <br />
                             </span>
                           ))}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
-                          <Chip
-                            variant="filled"
-                            size="30px"
-                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                            sx={{
-                              fontSize: "12px",
-                              backgroundColor: "#1D1F3B",
-                              color: theme.palette.primary.main,
-                              fontWeight: 800,
-                            }}
-                            label={moment(item.start_Date).format("LL")}
-                          />
                         </TableCell>
 
                         <TableCell
