@@ -72,6 +72,15 @@ export const concernIssueHandlerApi = createApi({
       invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
     }),
 
+    cancelClosingIssueHandlerTickets: builder.mutation({
+      query: (body) => ({
+        url: "closing-ticket/cancel",
+        method: "DELETE",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
+
     transferIssueHandlerTickets: builder.mutation({
       query: (body) => ({
         url: "transfer-ticket/add-transfer",
@@ -110,6 +119,7 @@ export const {
   useHoldIssueHandlerTicketsMutation,
   useResumeIssueHandlerTicketsMutation,
   useCloseIssueHandlerTicketsMutation,
+  useCancelClosingIssueHandlerTicketsMutation,
   useTransferIssueHandlerTicketsMutation,
   useApproveTransferTicketMutation,
   useCancelTransferTicketMutation,

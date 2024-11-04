@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Chip,
   CircularProgress,
@@ -15,6 +16,8 @@ import {
   TableRow,
   Tabs,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
@@ -36,6 +39,10 @@ import { CategorySubCat } from "./CategorySubCat";
 import { useArchiveCategoryMutation, useGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 
 const Category = () => {
+  const theming = useTheme();
+  const isMobile = useMediaQuery(theming.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -175,7 +182,7 @@ const Category = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "44px 94px 94px 94px",
+        padding: isMobile ? "20px" : isTablet ? "30px 40px" : "44px 94px",
       }}
     >
       <Toaster richColors position="top-right" />
@@ -183,7 +190,14 @@ const Category = () => {
         <Stack direction="row" justifyContent="space-between">
           <Stack>
             <Stack justifyItems="left">
-              <Typography variant="h4">Category</Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
+                }}
+              >
+                Category
+              </Typography>
             </Stack>
             <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
           </Stack>
@@ -198,7 +212,24 @@ const Category = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange}>
+          <Tabs
+            value={status}
+            onChange={onStatusChange}
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{
+              ".MuiTab-root": {
+                minWidth: isMobile ? "80px" : "120px",
+                fontSize: { xs: "10px", sm: "12px", md: "14px" },
+              },
+              ".MuiTabs-scrollButtons": {
+                color: "#fff",
+                "&.Mui-disabled": {
+                  opacity: 0.3,
+                },
+              },
+            }}
+          >
             <Tab
               value=""
               label="All"
@@ -249,10 +280,16 @@ const Category = () => {
           </Button>
         </Stack>
 
-        <TableContainer>
-          <Table sx={{ borderBottom: "none" }}>
+        <TableContainer
+          component={Box}
+          sx={{
+            overflowX: { xs: "auto", md: "initial" },
+            width: "100%",
+          }}
+        >
+          <Table sx={{ borderBottom: "none", fontSize: { xs: "10px", sm: "12px", md: "14px" }, overflowX: { xs: "auto", md: "initial" }, width: "100%" }}>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{ display: { xs: "block", md: "table-row" } }}>
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -329,7 +366,7 @@ const Category = () => {
                 !isLoading &&
                 !isFetching &&
                 data?.value?.category?.map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.id} sx={{ display: { xs: "block", md: "table-row" } }}>
                     <TableCell
                       sx={{
                         color: "#EDF2F7",
@@ -431,7 +468,7 @@ const Category = () => {
               {isSuccess && !data?.value?.category.length && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.
                     </Typography>

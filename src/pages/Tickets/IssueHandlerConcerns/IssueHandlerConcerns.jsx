@@ -17,6 +17,8 @@ import {
   Tabs,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   AccessTimeOutlined,
@@ -43,6 +45,7 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import {
   concernIssueHandlerApi,
+  useCancelClosingIssueHandlerTicketsMutation,
   useCancelTransferTicketMutation,
   useGetIssueHandlerConcernsQuery,
   useResumeIssueHandlerTicketsMutation,
@@ -71,6 +74,10 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import ApproveTransferTicket from "./ApproveTransferTicket";
 
 const IssueHandlerConcerns = () => {
+  const theming = useTheme();
+  const isMobile = useMediaQuery(theming.breakpoints.down("sm")); // For screens <= 600px
+  const isTablet = useMediaQuery(theming.breakpoints.between("sm", "md"));
+
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -92,6 +99,7 @@ const IssueHandlerConcerns = () => {
 
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
   const [resumeIssueHandlerTickets] = useResumeIssueHandlerTicketsMutation();
+  const [cancelClosingTickets] = useCancelClosingIssueHandlerTicketsMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
@@ -233,8 +241,6 @@ const IssueHandlerConcerns = () => {
   };
 
   const onCancelTransferAction = (data) => {
-    console.log("Close Transfer: ", data);
-
     const payload = {
       transferTicketId: data?.getForTransferTickets?.[0]?.transferTicketConcernId,
     };
@@ -266,7 +272,55 @@ const IssueHandlerConcerns = () => {
           .unwrap()
           .then(() => {
             toast.success("Success!", {
-              description: "Cancelled request transfer successfully!",
+              description: "Cancel request transfer successfully!",
+              duration: 1500,
+            });
+            dispatch(notificationApi.util.resetApiState());
+          })
+          .catch((err) => {
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
+  };
+
+  const onCancelCloseAction = (data) => {
+    const payload = {
+      closingTicketId: data?.getForClosingTickets?.[0]?.closingTicketId,
+    };
+
+    console.log("payload: ", payload);
+    Swal.fire({
+      title: "Confirmation",
+      text: `Cancel ticket number ${data?.ticketConcernId}?`,
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        cancelClosingTickets(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Cancel ticket successfully!",
               duration: 1500,
             });
             dispatch(notificationApi.util.resetApiState());
@@ -315,7 +369,7 @@ const IssueHandlerConcerns = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "14px 44px 44px 44px",
+        padding: isMobile ? "20px" : isTablet ? "30px 40px" : "44px 94px",
       }}
     >
       <Toaster richColors position="top-right" closeButton />
@@ -329,7 +383,24 @@ const IssueHandlerConcerns = () => {
 
         <Stack sx={{ borderRadius: "20px", marginTop: "10px", height: "730px" }}>
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
-            <Tabs value={ticketStatus} onChange={onStatusChange}>
+            <Tabs
+              value={ticketStatus}
+              onChange={onStatusChange}
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              sx={{
+                ".MuiTab-root": {
+                  minWidth: isMobile ? "80px" : "120px",
+                  fontSize: { xs: "10px", sm: "12px", md: "14px" },
+                },
+                ".MuiTabs-scrollButtons": {
+                  color: "#fff",
+                  "&.Mui-disabled": {
+                    opacity: 0.3,
+                  },
+                },
+              }}
+            >
               <Tab
                 value="Open Ticket"
                 className="tabs-styling"
@@ -394,7 +465,7 @@ const IssueHandlerConcerns = () => {
                 label="Transfer Approval"
                 icon={
                   <Badge
-                    // badgeContent={notificationBadge?.value?.forTransferNotif}
+                    badgeContent={notificationBadge?.value?.transferApprovalNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
@@ -947,6 +1018,7 @@ const IssueHandlerConcerns = () => {
                             onResumeTicket={onResumeTicketAction}
                             onHoldManageTicket={onHoldManageTicketAction}
                             onCloseTicket={onCloseTicketAction}
+                            onCancelCloseTicket={onCancelCloseAction}
                             onManageTicket={onManageTicketAction}
                             onTransferTicket={onTransferTicketAction}
                             onManageTransfer={onManageTransferAction}

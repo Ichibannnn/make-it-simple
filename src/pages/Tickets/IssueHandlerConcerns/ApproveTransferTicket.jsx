@@ -49,6 +49,8 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
   });
 
   const onSubmitAction = (formData) => {
+    console.log("FormData: ", formData);
+
     const approvePayload = {
       transferTicketId: formData?.transferTicketId,
       target_Date: moment(formData?.targetDate).format("YYYY-MM-DD"),

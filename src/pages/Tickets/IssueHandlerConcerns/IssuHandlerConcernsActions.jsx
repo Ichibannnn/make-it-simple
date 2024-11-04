@@ -22,6 +22,7 @@ const IssueHandlerConcernsActions = ({
   onHoldManageTicket,
   onResumeTicket,
   onCloseTicket,
+  onCancelCloseTicket,
   onManageTicket,
   onTransferTicket,
   onManageTransfer,
@@ -51,6 +52,11 @@ const IssueHandlerConcernsActions = ({
   const onCloseTicketAction = (data) => {
     onToggle();
     onCloseTicket(data);
+  };
+
+  const onCancelCloseTicketAction = (data) => {
+    onToggle();
+    onCancelCloseTicket(data);
   };
 
   const onManageTicketAction = (data) => {
@@ -116,6 +122,12 @@ const IssueHandlerConcernsActions = ({
             </ListItemIcon>
             <Typography>Manage Ticket</Typography>
           </Stack>
+        </MenuItem>,
+        <MenuItem key="resume" onClick={() => onCancelCloseTicketAction(data)}>
+          <ListItemIcon>
+            <ArrowForwardOutlined fontSize="small" color="error" />
+          </ListItemIcon>
+          <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Cancel Ticket</Typography>
         </MenuItem>
       );
     }
