@@ -1,8 +1,8 @@
 import {
   ArrowForwardOutlined,
-  ArrowRightOutlined,
   ChecklistRtlOutlined,
   CloseOutlined,
+  KeyboardBackspaceOutlined,
   LocalPrintshopOutlined,
   ModeEditOutlineOutlined,
   MoreHoriz,
@@ -28,6 +28,7 @@ const IssueHandlerConcernsActions = ({
   onManageTransfer,
   onApproveTransfer,
   onCancelTransfer,
+  onRejectTransferTicket,
   onPrintTicket,
 }) => {
   const ref = useRef(null);
@@ -84,6 +85,11 @@ const IssueHandlerConcernsActions = ({
     onCancelTransfer(data);
   };
 
+  const onRejectTransferAction = (data) => {
+    onToggle();
+    onRejectTransferTicket(data);
+  };
+
   const onPrintTicketAction = (data) => {
     onToggle();
     onPrintTicket(data);
@@ -93,12 +99,6 @@ const IssueHandlerConcernsActions = ({
 
   if (data?.ticket_Status === "Open Ticket") {
     menuItems.push(
-      <MenuItem key="hold" onClick={() => onHoldTicketAction(data)}>
-        <ListItemIcon>
-          <PendingOutlined fontSize="small" />
-        </ListItemIcon>
-        Hold
-      </MenuItem>,
       <MenuItem key="close" onClick={() => onCloseTicketAction(data)}>
         <ListItemIcon>
           <ChecklistRtlOutlined fontSize="small" />
@@ -110,6 +110,12 @@ const IssueHandlerConcernsActions = ({
           <MoveDownOutlined fontSize="small" />
         </ListItemIcon>
         Transfer
+      </MenuItem>,
+      <MenuItem key="hold" onClick={() => onHoldTicketAction(data)}>
+        <ListItemIcon>
+          <PendingOutlined fontSize="small" />
+        </ListItemIcon>
+        Hold
       </MenuItem>
     );
   } else {
@@ -120,7 +126,7 @@ const IssueHandlerConcernsActions = ({
             <ListItemIcon>
               <ModeEditOutlineOutlined fontSize="small" />
             </ListItemIcon>
-            <Typography>Manage Ticket</Typography>
+            <Typography>Update Ticket</Typography>
           </Stack>
         </MenuItem>,
         <MenuItem key="resume" onClick={() => onCancelCloseTicketAction(data)}>
@@ -140,6 +146,12 @@ const IssueHandlerConcernsActions = ({
           <ArrowForwardOutlined fontSize="small" color="success" />
         </ListItemIcon>
         <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Approve</Typography>
+      </MenuItem>,
+      <MenuItem key="reject-transfer" onClick={() => onRejectTransferAction(data)}>
+        <ListItemIcon>
+          <KeyboardBackspaceOutlined fontSize="small" color="error" />
+        </ListItemIcon>
+        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Return</Typography>
       </MenuItem>
     );
   }
@@ -150,7 +162,7 @@ const IssueHandlerConcernsActions = ({
         <ListItemIcon>
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
-        Manage On-Hold
+        Update On-Hold
       </MenuItem>,
       <MenuItem key="resume" onClick={() => onResumeTicketAction(data)}>
         <ListItemIcon>
@@ -189,7 +201,7 @@ const IssueHandlerConcernsActions = ({
         <ListItemIcon>
           <MoveDownOutlined fontSize="small" />
         </ListItemIcon>
-        Manage Transfer
+        Update Transfer
       </MenuItem>,
 
       <MenuItem key="cancel" onClick={() => onCancelTransferAction(data)}>
@@ -228,131 +240,3 @@ const IssueHandlerConcernsActions = ({
 };
 
 export default IssueHandlerConcernsActions;
-
-// OLD CODE ---
-// import { ChecklistRtlOutlined, CloseOutlined, ModeEditOutlineOutlined, MoreHoriz, MoveDownOutlined, VisibilityOutlined } from "@mui/icons-material";
-// import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
-// import React, { useRef } from "react";
-
-// import useDisclosure from "../../../hooks/useDisclosure";
-// import { theme } from "../../../theme/theme";
-
-// const IssueHandlerConcernsActions = ({ data, onCloseTicket, onManageTicket, onTransferTicket }) => {
-//   const ref = useRef(null);
-
-//   const { open, onToggle } = useDisclosure();
-
-//   const onCloseTicketAction = (data) => {
-//     onToggle();
-//     onCloseTicket(data);
-//   };
-
-//   const onManageTicketAction = (data) => {
-//     onToggle();
-//     onManageTicket(data);
-//   };
-
-//   const onTransferTicketAction = (data) => {
-//     onToggle();
-//     onTransferTicket(data);
-//   };
-
-//   return (
-//     <>
-//       <IconButton ref={ref} onClick={onToggle}>
-//         <MoreHoriz />
-//       </IconButton>
-
-//       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
-//         {data?.ticket_Status === "Open Ticket" ? (
-//           <>
-//             <MenuItem onClick={() => onCloseTicketAction(data)}>
-//               <ListItemIcon>
-//                 <ChecklistRtlOutlined fontSize="small" />
-//               </ListItemIcon>
-//               Close
-//             </MenuItem>
-
-//             <MenuItem onClick={() => onTransferTicketAction(data)}>
-//               <ListItemIcon>
-//                 <MoveDownOutlined fontSize="small" />
-//               </ListItemIcon>
-//               Transfer
-//             </MenuItem>
-//           </>
-//         ) : (
-//           <MenuItem onClick={() => onManageTicketAction(data)}>
-//             {data?.getForClosingTickets?.[0]?.isApprove === false ? (
-//               <>
-//                 <Stack direction="row" sx={{ alignItems: "center" }}>
-//                   <ListItemIcon>
-//                     <ModeEditOutlineOutlined fontSize="small" />
-//                   </ListItemIcon>
-
-//                   <Typography>Manage Ticket</Typography>
-//                 </Stack>
-//               </>
-//             ) : (
-//               ""
-//             )}
-//           </MenuItem>
-//         )}
-
-//         {data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" ? (
-//           <>
-//             <MenuItem onClick={() => onManageTicketAction(data)}>
-//               <Stack direction="row" sx={{ alignItems: "center" }}>
-//                 <ListItemIcon>
-//                   <VisibilityOutlined fontSize="small" />
-//                 </ListItemIcon>
-//                 <Typography>View Ticket</Typography>
-//               </Stack>
-//             </MenuItem>
-//           </>
-//         ) : (
-//           ""
-//         )}
-
-//         {data?.ticket_Status === "For Transfer" ? (
-//           <>
-//             <MenuItem onClick={() => onTransferTicketAction(data)}>
-//               <ListItemIcon>
-//                 <MoveDownOutlined fontSize="small" />
-//               </ListItemIcon>
-//               Manage Transfer
-//             </MenuItem>
-
-//             <MenuItem onClick={() => onTransferTicketAction(data)}>
-//               <ListItemIcon>
-//                 <CloseOutlined fontSize="small" color="error" />
-//               </ListItemIcon>
-//               <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Cancel</Typography>
-//             </MenuItem>
-//           </>
-//         ) : (
-//           ""
-//         )}
-
-//         {/* {data?.ticket_Status === "Open Ticket" && (
-//           <MenuItem>
-//             <ListItemIcon>
-//               <HistoryOutlined fontSize="small" />
-//             </ListItemIcon>
-//             Reticket
-//           </MenuItem>
-//         )}
-
-//         {data?.ticket_Status === "Open Ticket" && (
-//           <MenuItem>
-//             <ListItemIcon>
-//               <EventRepeatOutlined fontSize="small" />{" "}
-//             </ListItemIcon>
-//             Redate
-//           </MenuItem>
-//         )} */}
-//       </Menu>
-//     </>
-//   );
-// };
-
-// export default IssueHandlerConcernsActions;

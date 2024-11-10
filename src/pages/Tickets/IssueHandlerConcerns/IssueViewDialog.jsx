@@ -24,8 +24,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
-  // const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
-
   const getAttachmentData = async (id) => {
     try {
       const res = await getRequestorAttachment({ Id: id }).unwrap();
@@ -143,28 +141,31 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ width: "100%", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Request Type:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Request Type:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.request_Type}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern Details:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern Details:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                     {data?.concern_Description?.split("\r\n").map((line, index) => (
                       <span key={index}>
@@ -177,37 +178,41 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Assigned to:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Assigned to:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.issue_Handler}</Typography>
                 </Box>
               </Stack>
@@ -215,10 +220,11 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
               {/* Resoulution */}
               {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
                 <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "50%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Resolution:</Typography>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Resolution:</Typography>
                   </Box>
-                  <Box width={{ width: "50%", ml: 2 }}>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
                   </Box>
                 </Stack>
@@ -227,10 +233,11 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
               {/* Transfer Remarks */}
               {data?.ticket_Status === "For Transfer" && (
                 <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "50%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
                   </Box>
-                  <Box width={{ width: "50%", ml: 2 }}>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
                   </Box>
                 </Stack>
@@ -239,38 +246,42 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
               {/* Transfer Approval Remarks */}
               {data?.ticket_Status === "Transfer Approval" && (
                 <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "50%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
                   </Box>
-                  <Box width={{ width: "50%", ml: 2 }}>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
                   </Box>
                 </Stack>
               )}
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Date Needed:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Date Needed:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
                 </Box>
               </Stack>
 
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                <Box sx={{ width: "50%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
                 </Box>
-                <Box width={{ width: "50%", ml: 2 }}>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
                 </Box>
               </Stack>

@@ -324,6 +324,14 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiAccordionSummary: {
+      styleOverrides: {
+        expandIconWrapper: {
+          color: "#ffff",
+        },
+      },
+    },
   },
 });
 

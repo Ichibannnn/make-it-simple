@@ -415,7 +415,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           flex: 2,
                         }}
                         fullWidth
-                        disabled
                         disablePortal
                         disableClearable
                       />

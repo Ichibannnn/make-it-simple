@@ -213,8 +213,6 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const handleDeleteFile = (fileNameToDelete) => {
-    console.log("File to Delete: ", fileNameToDelete);
-
     setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
     setValue(
@@ -302,7 +300,7 @@ const ConcernDialog = ({ open, onClose }) => {
       if (getUserInfo) {
         setUserInformation(getUserInfo);
       } else {
-        setUserInformation(null); // Clear state if user not found
+        setUserInformation(null);
       }
     }
   }, [userApiIsSuccess, userApiData, userId]);
@@ -354,7 +352,7 @@ const ConcernDialog = ({ open, onClose }) => {
     });
   }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
-  console.log("Employee: ", watch("UserId"));
+  // console.log("Employee: ", watch("UserId"));
 
   return (
     <>
@@ -824,56 +822,6 @@ const ConcernDialog = ({ open, onClose }) => {
                     </Stack>
 
                     <Stack>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
-                      <Controller
-                        control={control}
-                        name="ChannelId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={channelData?.value?.channel || []}
-                              loading={channelIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!channelIsSuccess)
-                                  getChannel({
-                                    Status: true,
-                                  });
-                              }}
-                              onChange={(_, value) => {
-                                onChange(value);
-
-                                setValue("CategoryId", null);
-                                setValue("SubCategoryId", null);
-                              }}
-                              getOptionLabel={(option) => option.channel_Name}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                  <Stack sx={{ width: "50%", gap: 1 }}>
-                    <Stack>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
                       <Controller
                         control={control}
@@ -903,6 +851,57 @@ const ConcernDialog = ({ open, onClose }) => {
                                 });
                               }}
                               getOptionLabel={(option) => option.category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disabled={!watch("ChannelId")}
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                  <Stack sx={{ width: "50%", gap: 1 }}>
+                    <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
+                      <Controller
+                        control={control}
+                        name="ChannelId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={channelData?.value?.channel || []}
+                              loading={channelIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!channelIsSuccess)
+                                  getChannel({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("CategoryId", null);
+                                setValue("SubCategoryId", null);
+                              }}
+                              getOptionLabel={(option) => option.channel_Name}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               sx={{
                                 flex: 2,
@@ -953,7 +952,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               fullWidth
                               disablePortal
                               disableClearable
-                              // disabled
+                              disabled={!watch("ChannelId")}
                               componentsProps={{
                                 popper: {
                                   sx: {
@@ -1205,8 +1204,6 @@ const ConcernDialog = ({ open, onClose }) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
                           const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                          console.log("Controller Files: ", files);
 
                           onChange([...value, ...uniqueNewFiles]);
                           fileInputRef.current.value = "";

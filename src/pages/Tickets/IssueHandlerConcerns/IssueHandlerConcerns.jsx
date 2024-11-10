@@ -44,7 +44,6 @@ import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import {
-  concernIssueHandlerApi,
   useCancelClosingIssueHandlerTicketsMutation,
   useCancelTransferTicketMutation,
   useGetIssueHandlerConcernsQuery,
@@ -72,6 +71,7 @@ import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ApproveTransferTicket from "./ApproveTransferTicket";
+import RejectTransfer from "./RejectTransfer";
 
 const IssueHandlerConcerns = () => {
   const theming = useTheme();
@@ -107,6 +107,7 @@ const IssueHandlerConcerns = () => {
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
   const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
   const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
+  const { open: rejectTransferOpen, onToggle: rejectTransferOnToggle, onClose: rejectTransferOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
   const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
   const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
@@ -170,6 +171,11 @@ const IssueHandlerConcerns = () => {
 
   const onTransferTicketAction = (data) => {
     transferTicketOnToggle();
+    setTransferTicketData(data);
+  };
+
+  const onRejectTransferTicketAction = (data) => {
+    rejectTransferOnToggle();
     setTransferTicketData(data);
   };
 
@@ -1021,6 +1027,7 @@ const IssueHandlerConcerns = () => {
                             onCancelCloseTicket={onCancelCloseAction}
                             onManageTicket={onManageTicketAction}
                             onTransferTicket={onTransferTicketAction}
+                            onRejectTransferTicket={onRejectTransferTicketAction}
                             onManageTransfer={onManageTransferAction}
                             onApproveTransfer={onApproveTransferAction}
                             onCancelTransfer={onCancelTransferAction}
@@ -1030,6 +1037,7 @@ const IssueHandlerConcerns = () => {
                       </TableRow>
                     </React.Fragment>
                   ))}
+
                 {isError && (
                   <TableRow>
                     <TableCell colSpan={9} align="center">
@@ -1107,6 +1115,7 @@ const IssueHandlerConcerns = () => {
             manageTransferOnClose(setTransferTicketData(null));
           }}
         />
+
         <ApproveTransferTicket
           data={transferTicketData}
           open={approveTransferOpen}
@@ -1114,6 +1123,9 @@ const IssueHandlerConcerns = () => {
             approveTransferOnClose(setTransferTicketData(null));
           }}
         />
+
+        <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />
+
         <PrintServiceReport
           data={printData}
           open={printTicketOpen}

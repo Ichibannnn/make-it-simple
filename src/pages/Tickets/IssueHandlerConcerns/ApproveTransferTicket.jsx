@@ -18,7 +18,7 @@ import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
-import { useApproveTransferMutation } from "../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useApproveTransferTicketMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
 const schema = yup.object().shape({
   transferTicketId: yup.string().nullable(),
@@ -28,7 +28,7 @@ const schema = yup.object().shape({
 const ApproveTransferTicket = ({ data, open, onClose }) => {
   console.log("Data: ", data);
 
-  const [approveTransferTicket, { isLoading: approveTransferTicketIsLoading, isFetching: approveTransferTicketIsFetching }] = useApproveTransferMutation();
+  const [approveTransferTicket, { isLoading: approveTransferTicketIsLoading, isFetching: approveTransferTicketIsFetching }] = useApproveTransferTicketMutation();
 
   const dispatch = useDispatch();
   useSignalRConnection();

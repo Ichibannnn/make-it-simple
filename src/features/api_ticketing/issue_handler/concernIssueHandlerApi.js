@@ -110,6 +110,15 @@ export const concernIssueHandlerApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
     }),
+
+    rejectTransferTicket: builder.mutation({
+      query: (body) => ({
+        url: "transfer-ticket/reject",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+    }),
   }),
 });
 
@@ -123,4 +132,5 @@ export const {
   useTransferIssueHandlerTicketsMutation,
   useApproveTransferTicketMutation,
   useCancelTransferTicketMutation,
+  useRejectTransferTicketMutation,
 } = concernIssueHandlerApi;

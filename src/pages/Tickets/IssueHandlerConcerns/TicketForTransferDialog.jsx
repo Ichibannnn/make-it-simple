@@ -17,6 +17,7 @@ import { notificationApi } from "../../../features/api_notification/notification
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+import { useSelector } from "react-redux";
 
 const schema = yup.object().shape({
   TransferRemarks: yup.string().required().label("Remarks is required"),
@@ -33,6 +34,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
 
+  const userId = useSelector((state) => state?.user?.id);
   const fileInputRef = useRef();
   const dispatch = useDispatch();
   useSignalRConnection();
@@ -219,7 +221,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   }, [data]);
 
   // console.log("Attachments: ", attachments);
-  console.log("Trasfer to: ", watch("Transfer_To"));
+  console.log("Channel Name: ", watch("ChannelId"));
+  console.log("UserId: ", userId);
   // console.log("Users: ", channelData);
 
   return (
@@ -377,6 +380,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                         }}
                         getOptionLabel={(option) => option.fullname}
                         isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                        getOptionDisabled={(option) => userId === option.userId}
                         fullWidth
                         disablePortal
                         disableClearable
