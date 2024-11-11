@@ -30,6 +30,15 @@ export const concernApi = createApi({
       providesTags: ["Concern"],
     }),
 
+    getBackjobTickets: builder.query({
+      query: (params) => ({
+        url: "request-concern/backjob",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Concern"],
+    }),
+
     createEditRequestorConcern: builder.mutation({
       query: (body) => ({
         url: "request-concern/add-request-concern",
@@ -94,6 +103,7 @@ export const concernApi = createApi({
 
 export const {
   useGetRequestorConcernsQuery,
+  useLazyGetBackjobTicketsQuery,
   useCreateEditRequestorConcernMutation,
   useLazyGetRequestorAttachmentQuery,
   useGetRequestorAttachmentQuery,

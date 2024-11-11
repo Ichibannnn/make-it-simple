@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Add, Warning, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -19,6 +19,7 @@ import { notificationApi } from "../../../features/api_notification/notification
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import moment from "moment";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -95,6 +96,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
       payload.append(`AddClosingAttachments[0].attachment`, "");
     }
 
+    const fourPM = moment("16:00", "HH:mm");
+
+    const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
+
+    const isFourPMGreater = fourPM.isAfter(moment().set({ hour: 16, minute: 0 }));
+    console.log(isFourPMGreater);
+
     Swal.fire({
       title: "Confirmation",
       text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
@@ -116,6 +124,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
+      footer:
+        '<span style="color: orange; border-color: none !important;">' +
+        '<Warning style="margin-right: 5px;" />' +
+        "Please note that closing of tickets are only available until 4:00pm.</span>",
     }).then((result) => {
       if (result.isConfirmed) {
         console.log("Payload Entries: ", [...payload.entries()]);
@@ -308,10 +320,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                 </Stack>
 
                 <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                  <Box sx={{ width: "50%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
                   </Box>
-                  <Box width={{ width: "50%", ml: 2 }}>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
                         <span key={index}>

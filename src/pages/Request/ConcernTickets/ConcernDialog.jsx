@@ -10,7 +10,7 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import { useCreateEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
+import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
@@ -48,6 +48,7 @@ const ConcernDialog = ({ open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
+    BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().notRequired(),
 
     UserId: yup.object().required().label("Requestor is required"),
@@ -66,8 +67,6 @@ const ConcernDialog = ({ open, onClose }) => {
     Notes: yup.string().notRequired(),
   });
 
-  // console.log("UserID: ", userId);
-
   const dispatch = useDispatch();
   const fileInputRef = useRef();
 
@@ -76,6 +75,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -104,6 +104,7 @@ const ConcernDialog = ({ open, onClose }) => {
       RequestAttachmentsFiles: [],
 
       Request_Type: "New Request",
+      BackJobId: null,
       Contact_Number: "",
 
       UserId: null,
@@ -124,6 +125,8 @@ const ConcernDialog = ({ open, onClose }) => {
   });
 
   const onConcernFormSubmit = (formData) => {
+    console.log("FormData:", formData);
+
     const payload = new FormData();
 
     payload.append("Request_Type", formData.Request_Type);
@@ -274,7 +277,6 @@ const ConcernDialog = ({ open, onClose }) => {
     onClose();
   };
 
-  // Function to open image view dialog
   const handleViewImage = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -292,6 +294,12 @@ const ConcernDialog = ({ open, onClose }) => {
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
+
+  useEffect(() => {
+    if (watch("Request_Type") === "New Request") {
+      setValue("BackJobId", null);
+    }
+  }, [watch("Request_Type")]);
 
   useEffect(() => {
     if (userApiIsSuccess && userApiData?.value?.users) {
@@ -352,7 +360,9 @@ const ConcernDialog = ({ open, onClose }) => {
     });
   }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
-  // console.log("Employee: ", watch("UserId"));
+  // console.log("RequestType: ", watch("Request_Type"));
+  console.log("Ticket Number:", backjobTicketData);
+  // console.log("TicketId: ", watch("BackJobId"));
 
   return (
     <>
@@ -394,13 +404,56 @@ const ConcernDialog = ({ open, onClose }) => {
                         <MenuItem value="New Request" sx={{ fontSize: "13px" }}>
                           New Request
                         </MenuItem>
-                        <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
-                          Back Job
-                        </MenuItem>
+
+                        {!backjobTicketData?.value?.length && (
+                          <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
+                            Back Job
+                          </MenuItem>
+                        )}
                       </Select>
                     )}
                   />
                 </Stack>
+
+                {watch("Request_Type") === "Back Job" && (
+                  <Stack sx={{ width: "100%", mb: 1 }}>
+                    <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
+                    <Controller
+                      control={control}
+                      name="BackJobId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={backjobTicketData?.value || []}
+                            loading={backjobTicketIsLoading}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Ticket Number" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                            onOpen={() => {
+                              if (!backjobTicketIsSuccess) getBackjobTicket();
+                            }}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
+                            isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                            componentsProps={{
+                              popper: {
+                                sx: {
+                                  "& .MuiAutocomplete-listbox": {
+                                    fontSize: "13px",
+                                  },
+                                },
+                              },
+                            }}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+                )}
 
                 {/* REQUESTOR DETAILS */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mb: 1 }}>Requestor Details</Typography>
@@ -1235,7 +1288,8 @@ const ConcernDialog = ({ open, onClose }) => {
                 !watch("DateNeeded") ||
                 !watch("ChannelId") ||
                 !watch("CategoryId") ||
-                !watch("SubCategoryId")
+                !watch("SubCategoryId") ||
+                (watch("Request_Type") === "Back Job" && !watch("BackJobId"))
               }
             >
               Save

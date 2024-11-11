@@ -238,6 +238,8 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
+  console.log("Data: ", data);
+
   return (
     <Stack
       sx={{
@@ -632,6 +634,8 @@ const ConcernTickets = () => {
                                     },
                                   }}
                                 />
+                              ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                <FiberManualRecord fontSize="small" color="warning" />
                               ) : (
                                 <FiberManualRecord fontSize="small" color="success" />
                               )
@@ -645,6 +649,8 @@ const ConcernTickets = () => {
                             label={
                               item.concern_Status === "For Approval"
                                 ? "Verification"
+                                : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                ? "Ongoing/On Hold"
                                 : item.concern_Status === "Ongoing"
                                 ? "Ongoing"
                                 : item.concern_Status === "For Confirmation"

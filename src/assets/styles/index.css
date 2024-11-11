@@ -81,6 +81,10 @@ body {
   padding: 2px;
 }
 
+.my-swal {
+  z-index: 99999999 !important;
+}
+
 /* .my-swal {
   z-index: 99999999 !important;
 }

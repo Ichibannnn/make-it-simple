@@ -431,10 +431,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [editData, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
-  // console.log("Request Type: ", watch("Request_Type"));
-  // console.log("Edit Data: ", editData);
-
-  // console.log("Date Needed ", dateNeededValidation);
+  console.log("Edit Data: ", editData);
 
   return (
     <>
@@ -1404,16 +1401,21 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
           </DialogContent>
 
           <DialogActions>
-            <LoadingButton
-              size="large"
-              variant="contained"
-              color="primary"
-              type="submit"
-              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-              disabled={!watch("Concern") || moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY")}
-            >
-              Save
-            </LoadingButton>
+            {editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? (
+              <LoadingButton
+                size="large"
+                variant="contained"
+                color="primary"
+                type="submit"
+                loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
+                disabled={!watch("Concern") || moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY")}
+              >
+                Save
+              </LoadingButton>
+            ) : (
+              ""
+            )}
+
             <Button
               variant="text"
               disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}

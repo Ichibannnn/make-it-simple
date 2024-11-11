@@ -332,6 +332,14 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+          color: "#A0AEC0",
+        },
+      },
+    },
   },
 });
 

@@ -26,12 +26,16 @@ import {
 } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
+import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
   concern_Details: yup.array().nullable(),
   ticketConcernId: yup.string().nullable(),
   ChannelId: yup.object().required().label("Channel"),
+  CategoryId: yup.object().required().label("Category"),
+  SubCategoryId: yup.object().required().label("Sub category"),
   userId: yup.object().required().label("Issue handler"),
   targetDate: yup.date().required("Target date is required"),
   RequestConcernId: yup.string().nullable(),
@@ -55,6 +59,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
   useSignalRConnection();
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
   const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
@@ -79,6 +85,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       ticketConcernId: "",
 
       ChannelId: null,
+      CategoryId: null,
+      SubCategoryId: null,
       userId: null,
       targetDate: null,
 
@@ -249,6 +257,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
 
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("ChannelId", formData.ChannelId.id);
+    payload.append("CategoryId", formData.CategoryId?.id);
+    payload.append("SubCategoryId", formData.SubCategoryId?.id);
     payload.append("Requestor_By", formData.Requestor_By);
     payload.append("UserId", formData.userId?.userId);
     payload.append("Concern_Details", formData.concern_Details);
@@ -351,6 +361,14 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
         id: data?.channelId,
         channel_Name: data?.channel_Name,
       });
+      setValue("CategoryId", {
+        id: data?.categoryId,
+        category_Description: data?.category_Description,
+      });
+      setValue("SubCategoryId", {
+        id: data?.subCategoryId,
+        subCategory_Description: data?.subCategory_Description,
+      });
 
       getAddAttachmentData(data.requestConcernId);
     }
@@ -381,7 +399,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
               <Stack gap={0.5}>
                 <Typography
                   sx={{
-                    fontSize: "14px",
+                    fontSize: "13px",
                   }}
                 >
                   Channel Name:
@@ -397,7 +415,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                         value={value}
                         options={channelData?.value?.channel || []}
                         loading={channelIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Channel Name" />}
+                        renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                         onOpen={() => {
                           if (!channelIsSuccess)
                             getChannel({
@@ -407,12 +425,23 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                         onChange={(_, value) => {
                           onChange(value);
 
+                          setValue("CategoryId", null);
+                          setValue("SubCategoryId", null);
                           setValue("userId", null);
                         }}
                         getOptionLabel={(option) => option.channel_Name}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         sx={{
                           flex: 2,
+                        }}
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
                         }}
                         fullWidth
                         disablePortal
@@ -424,9 +453,111 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
               </Stack>
 
               <Stack gap={0.5}>
+                <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
+                <Controller
+                  control={control}
+                  name="CategoryId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                        loading={categoryIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                        onOpen={() => {
+                          if (!categoryIsSuccess)
+                            getCategory({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => {
+                          onChange(value);
+
+                          setValue("SubCategoryId", null);
+
+                          getSubCategory({
+                            Status: true,
+                          });
+                        }}
+                        getOptionLabel={(option) => option.category_Description || ""}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        sx={{
+                          flex: 2,
+                        }}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0.5}>
+                <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
+                <Controller
+                  control={control}
+                  name="SubCategoryId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
+                        loading={subCategoryIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                        onOpen={() => {
+                          if (!subCategoryIsSuccess)
+                            getSubCategory({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => {
+                          // console.log("Value ", value);
+
+                          onChange(value || []);
+                        }}
+                        getOptionLabel={(option) => `${option.subCategory_Description}`}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        noOptionsText={"No sub category available"}
+                        sx={{
+                          flex: 2,
+                        }}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        // disabled
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Stack>
+
+              <Stack gap={0.5}>
                 <Typography
                   sx={{
-                    fontSize: "14px",
+                    fontSize: "13px",
                   }}
                 >
                   Assign To:
@@ -443,7 +574,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                         value={value}
                         options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
                         loading={issueHandlerIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Issue Handler" />}
+                        renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                         onOpen={() => {
                           if (!issueHandlerIsSuccess) getIssueHandler();
                         }}
@@ -455,6 +586,15 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                         // getOptionDisabled={(option) => watch("userId")?.some((item) => item?.userId === option?.userId)}
                         sx={{
                           flex: 2,
+                        }}
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
                         }}
                         fullWidth
                         disablePortal
@@ -468,7 +608,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
               <Stack gap={0.5}>
                 <Typography
                   sx={{
-                    fontSize: "14px",
+                    fontSize: "13px",
                   }}
                 >
                   Target Date:
@@ -493,7 +633,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                                 padding: "10.5px 14px",
                               },
                               "& .MuiOutlinedInput-root": {
-                                fontSize: "15px",
+                                fontSize: "13px",
                               },
                             },
                           },
@@ -723,8 +863,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
             <LoadingButton
               type="submit"
               variant="contained"
-              //   loading={isLoading || isFetching}
-              disabled={!watch("ChannelId") || !watch("userId") || !watch("targetDate")}
+              loading={isCreateEditReceiverConcernLoading || isCreateEditReceiverConcernFetching}
+              disabled={!watch("ChannelId") || !watch("CategoryId") || !watch("SubCategoryId") || !watch("userId") || !watch("targetDate")}
               sx={{
                 ":disabled": {
                   backgroundColor: theme.palette.secondary.main,
