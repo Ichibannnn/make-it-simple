@@ -39,6 +39,14 @@ export const concernIssueHandlerApi = createApi({
       providesTags: ["Concern Issue Handler"],
     }),
 
+    getForTransferUsers: builder.query({
+      query: (id) => ({
+        url: `transfer-ticket/transfer-user?TicketConcernId=${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Concern Issue Handler"],
+    }),
+
     holdIssueHandlerTickets: builder.mutation({
       query: (body) => ({
         url: "on-hold/create",
@@ -125,6 +133,7 @@ export const concernIssueHandlerApi = createApi({
 export const {
   useGetIssueHandlerConcernsQuery,
   useGetTicketHistoryQuery,
+  useLazyGetForTransferUsersQuery,
   useHoldIssueHandlerTicketsMutation,
   useResumeIssueHandlerTicketsMutation,
   useCloseIssueHandlerTicketsMutation,

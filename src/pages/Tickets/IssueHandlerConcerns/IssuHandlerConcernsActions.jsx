@@ -182,8 +182,12 @@ const IssueHandlerConcernsActions = ({
           </ListItemIcon>
           <Typography>View Ticket</Typography>
         </Stack>
-      </MenuItem>,
+      </MenuItem>
+    );
+  }
 
+  if (data?.ticket_Status === "Closed") {
+    menuItems.push(
       <MenuItem key="print" onClick={() => onPrintTicketAction(data)}>
         <Stack direction="row" sx={{ alignItems: "center" }}>
           <ListItemIcon>

@@ -20,7 +20,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
     onClose();
   };
 
-  // console.log("data: ", data);
+  console.log("data: ", data);
 
   return (
     <>
@@ -60,7 +60,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
 
                   <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black" }}>
-                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>SYSTEM:{"  "}</Typography>
+                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CHANNEL:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.channel_Name} </Typography>
                   </Stack>
                 </Stack>
@@ -105,39 +105,23 @@ const PrintServiceReport = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack sx={{ marginTop: 8, minHeight: "600px", gap: 4 }}>
-                <Stack sx={{ width: "100%", minHeight: 170, border: "1px solid black" }}>
+                <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                   <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET DESCRIPTION:{"  "}</Typography>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 2 }}>
-                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
-                      In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying
-                      on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a
-                      placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a
-                      placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual
-                      form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available. In
-                      publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on
-                      meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.
-                    </Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>{data?.concern_Description}</Typography>
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ width: "100%", minHeight: 170, border: "1px solid black" }}>
+                <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                   <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>RESOLUTION:{"  "}</Typography>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 2 }}>
-                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
-                      In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying
-                      on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a
-                      placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a
-                      placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual
-                      form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available. In
-                      publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on
-                      meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.
-                    </Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
                   </Stack>
                 </Stack>
               </Stack>

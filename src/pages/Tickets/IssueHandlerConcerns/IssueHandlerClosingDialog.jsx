@@ -124,10 +124,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
-      footer:
-        '<span style="color: orange; border-color: none !important;">' +
-        '<Warning style="margin-right: 5px;" />' +
-        "Please note that closing of tickets are only available until 4:00pm.</span>",
+      footer: isAfter4PM
+        ? '<span style="color: orange; border-color: none !important;">' +
+          '<Warning style="margin-right: 5px;" />' +
+          "Please note that closing of tickets are only available until 4:00pm.</span>"
+        : "",
     }).then((result) => {
       if (result.isConfirmed) {
         console.log("Payload Entries: ", [...payload.entries()]);

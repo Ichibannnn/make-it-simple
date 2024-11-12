@@ -278,7 +278,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   }, [data]);
 
   //   console.log("Attachments: ", addAttachments);
-  console.log("Data: ", data);
 
   return (
     <>

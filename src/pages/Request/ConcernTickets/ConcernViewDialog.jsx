@@ -490,6 +490,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         </MenuItem>
                       </Select>
                     )}
+                    disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                   />
                 </Stack>
 
@@ -612,6 +613,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                 },
                               }}
                               autoComplete="off"
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                               sx={{
                                 width: "100%",
                               }}
@@ -906,6 +908,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               minDate={dateNeededValidation}
                               error={!!errors.DateNeeded}
                               helperText={errors.DateNeeded}
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                             />
                           )}
                         />
@@ -945,6 +948,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                 flex: 2,
                               }}
                               fullWidth
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                               disablePortal
                               disableClearable
                               componentsProps={{
@@ -1001,6 +1005,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               fullWidth
                               disablePortal
                               disableClearable
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                               componentsProps={{
                                 popper: {
                                   sx: {
@@ -1050,7 +1055,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               fullWidth
                               disablePortal
                               disableClearable
-                              // disabled
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                               componentsProps={{
                                 popper: {
                                   sx: {
@@ -1150,6 +1155,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           autoComplete="off"
                           rows={4}
                           multiline
+                          disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                         />
                       );
                     }}

@@ -116,6 +116,7 @@ const IssueHandlerConcerns = () => {
   useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
+
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
