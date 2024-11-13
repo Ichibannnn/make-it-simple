@@ -130,6 +130,7 @@ const ConcernDialog = ({ open, onClose }) => {
     const payload = new FormData();
 
     payload.append("Request_Type", formData.Request_Type);
+    payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id);
     payload.append("Contact_Number", formData.Contact_Number);
     payload.append("CompanyId", formData.CompanyId?.id);
@@ -361,8 +362,10 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   // console.log("RequestType: ", watch("Request_Type"));
-  console.log("Ticket Number:", backjobTicketData);
-  // console.log("TicketId: ", watch("BackJobId"));
+  // console.log("Ticket Number:", backjobTicketData);
+  console.log("TicketId: ", watch("BackJobId"));
+
+  // console.log("backjobTicketData", backjobTicketData);
 
   return (
     <>
@@ -405,11 +408,15 @@ const ConcernDialog = ({ open, onClose }) => {
                           New Request
                         </MenuItem>
 
-                        {!backjobTicketData?.value?.length && (
+                        <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
+                          Back Job
+                        </MenuItem>
+
+                        {/* {backjobTicketData?.value?.length > 0 && (
                           <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
                             Back Job
                           </MenuItem>
-                        )}
+                        )} */}
                       </Select>
                     )}
                   />
@@ -435,6 +442,7 @@ const ConcernDialog = ({ open, onClose }) => {
                             }}
                             onChange={(_, value) => onChange(value)}
                             getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
+                            noOptionsText={"No tickets available for backjob request"}
                             isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
                             fullWidth
                             disablePortal

@@ -58,6 +58,7 @@ import { notificationApi, useGetNotificationQuery } from "../../../features/api_
 import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useNavigate } from "react-router-dom";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { LoadingButton } from "@mui/lab";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -238,8 +239,6 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
-  console.log("Data: ", data);
-
   return (
     <Stack
       sx={{
@@ -259,9 +258,17 @@ const ConcernTickets = () => {
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
-            <Button variant="contained" size="small" color="primary" startIcon={<AddOutlined />} onClick={addConcernOnToggle}>
+            <LoadingButton
+              size="large"
+              variant="contained"
+              color="primary"
+              startIcon={<AddOutlined />}
+              loading={isLoading || isFetching}
+              loadingPosition="start"
+              onClick={addConcernOnToggle}
+            >
               Add Request
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
 

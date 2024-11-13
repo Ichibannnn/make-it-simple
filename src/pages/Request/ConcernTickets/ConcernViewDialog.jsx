@@ -27,7 +27,12 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast, Toaster } from "sonner";
 
-import { useCreateEditRequestorConcernMutation, useDeleteRequestorAttachmentMutation, useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
+import {
+  useCreateEditRequestorConcernMutation,
+  useDeleteRequestorAttachmentMutation,
+  useLazyGetBackjobTicketsQuery,
+  useLazyGetRequestorAttachmentQuery,
+} from "../../../features/api_request/concerns/concernApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDispatch } from "react-redux";
@@ -63,6 +68,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
+    BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().notRequired(),
 
     UserId: yup.object().required().label("Requestor is required"),
@@ -88,6 +94,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     useCreateEditRequestorConcernMutation();
 
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -120,6 +127,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       RequestAttachmentsFiles: [],
 
       Request_Type: "",
+      BackJobId: null,
       Contact_Number: "",
 
       UserId: null,
@@ -148,6 +156,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     payload.append("RequestConcernId", formData.RequestConcernId);
 
     payload.append("Request_Type", formData.Request_Type);
+    payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id);
     payload.append("Contact_Number", formData.Contact_Number);
     payload.append("CompanyId", formData.CompanyId?.id);
@@ -354,6 +363,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   };
 
   useEffect(() => {
+    if (watch("Request_Type") === "New Request") {
+      setValue("BackJobId", null);
+    }
+  }, [watch("Request_Type")]);
+
+  useEffect(() => {
     if (editData) {
       if (!companyIsSuccess) getCompany();
       if (!businessUnitIsSuccess) getBusinessUnit();
@@ -366,6 +381,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       setValue("Concern", editData?.concern);
 
       setValue("Request_Type", editData?.request_Type);
+      setValue("BackJobId", {
+        ticketConcernId: editData?.backJobId,
+        concern: editData?.back_Job_Concern,
+      });
       setValue("UserId", {
         id: editData?.requestorId,
         fullname: editData?.fullName,
@@ -431,7 +450,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [editData, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
-  console.log("Edit Data: ", editData);
+  // console.log("Edit Data: ", editData);
 
   return (
     <>
@@ -493,6 +512,47 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                   />
                 </Stack>
+
+                {watch("Request_Type") === "Back Job" && (
+                  <Stack sx={{ width: "100%", mb: 1 }}>
+                    <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
+                    <Controller
+                      control={control}
+                      name="BackJobId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={backjobTicketData?.value || []}
+                            loading={backjobTicketIsLoading}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Ticket Number" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                            onOpen={() => {
+                              if (!backjobTicketIsSuccess) getBackjobTicket();
+                            }}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
+                            noOptionsText={"No tickets available for backjob request"}
+                            isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                            componentsProps={{
+                              popper: {
+                                sx: {
+                                  "& .MuiAutocomplete-listbox": {
+                                    fontSize: "13px",
+                                  },
+                                },
+                              },
+                            }}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+                )}
 
                 {/* REQUESTOR DETAILS */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mb: 1 }}>Requestor Details</Typography>
@@ -1414,7 +1474,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 color="primary"
                 type="submit"
                 loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-                disabled={!watch("Concern") || moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY")}
+                disabled={
+                  !watch("Concern") ||
+                  moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY") ||
+                  (watch("Request_Type") === "Back Job" && !watch("BackJobId"))
+                }
               >
                 Save
               </LoadingButton>
