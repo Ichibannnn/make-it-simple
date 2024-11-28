@@ -2,7 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { theme } from "../../../theme/theme";
 
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
@@ -10,6 +26,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 
 import TicketHistory from "./TicketHistory";
 import moment from "moment";
+import ViewTicketMenuActions from "./ViewTicketMenuActions";
 
 const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -98,6 +115,8 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
     setSelectedImage(null);
   };
 
+  console.log("Data", data);
+
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -118,7 +137,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 >
                   {data?.requestor_Name}
                 </Typography>
-                {/* <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography> */}
               </Stack>
             </Stack>
           </Stack>
@@ -160,6 +178,18 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Box>
               </Stack>
 
+              {data?.request_Type === "Back Job" && (
+                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Backjob Ticket Number:</Typography>
+                  </Box>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                  </Box>
+                </Stack>
+              )}
+
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                 <Box sx={{ width: "15%", ml: 2 }}>
                   <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern Details:</Typography>
@@ -193,7 +223,24 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Box>
                 <Box sx={{ width: "10%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getOpenTicketCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.category_Description ? item.category_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                  {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography> */}
                 </Box>
               </Stack>
 
@@ -203,6 +250,23 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Box>
                 <Box sx={{ width: "10%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getOpenTicketSubCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
                 </Box>
               </Stack>
@@ -370,14 +434,15 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                           </Box>
 
                           <Box>
-                            <>
+                            <ViewTicketMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
+
+                            {/* <>
                               {isImageFile(fileName.name) && (
                                 <Tooltip title="View">
                                   <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
                                     {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
                                   </IconButton>
                                 </Tooltip>
-                                // <ViewAttachment fileName={fileName} loading={loading} handleViewImage={handleViewImage} />
                               )}
                             </>
 
@@ -399,7 +464,7 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                                   <FileDownloadOutlined />
                                 </IconButton>
                               </Tooltip>
-                            )}
+                            )} */}
                           </Box>
                         </Box>
                       </Box>

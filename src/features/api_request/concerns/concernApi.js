@@ -39,6 +39,15 @@ export const concernApi = createApi({
       providesTags: ["Concern"],
     }),
 
+    getTechnicians: builder.query({
+      query: (params) => ({
+        url: "closing-ticket/technician",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Concern"],
+    }),
+
     createEditRequestorConcern: builder.mutation({
       query: (body) => ({
         url: "request-concern/add-request-concern",
@@ -104,6 +113,7 @@ export const concernApi = createApi({
 export const {
   useGetRequestorConcernsQuery,
   useLazyGetBackjobTicketsQuery,
+  useLazyGetTechniciansQuery,
   useCreateEditRequestorConcernMutation,
   useLazyGetRequestorAttachmentQuery,
   useGetRequestorAttachmentQuery,

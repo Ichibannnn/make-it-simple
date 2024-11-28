@@ -7,12 +7,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { AttachFileOutlined, Attachment, Close, FileDownloadOutlined, Receipt, VisibilityOutlined } from "@mui/icons-material";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import AssignTicketDrawer from "./AssignTicketDrawer";
+import MenuActions from "./MenuActions";
 
 const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -144,7 +145,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
     onClose();
   };
 
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
 
   return (
     <>
@@ -183,7 +184,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                 <Stack sx={{ width: "100%", mt: 1 }}>
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
                     <Box sx={{ width: "15%" }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Requestor Type</Typography>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Requestor Type:</Typography>
                     </Box>
 
                     <Box sx={{ width: "10%" }} />
@@ -192,6 +193,20 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.request_Type}</Typography>
                     </Box>
                   </Stack>
+
+                  {data?.request_Type === "Back Job" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%" }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Backjob Ticket Number:</Typography>
+                      </Box>
+
+                      <Box sx={{ width: "10%" }} />
+
+                      <Box width={{ width: "75%" }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%" }}>
@@ -354,7 +369,25 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                     <Box sx={{ width: "10%" }} />
 
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getRequestTicketCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.category_Description ? item.category_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Stack>
+
+                      {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography> */}
                     </Box>
                   </Stack>
 
@@ -366,9 +399,59 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                     <Box sx={{ width: "10%" }} />
 
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getRequestSubTicketCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Stack>
+                      {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography> */}
                     </Box>
                   </Stack>
+
+                  {/* TECHNICIANS */}
+                  {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Technicians:</Typography>
+                    </Box>
+
+                    <Box sx={{ width: "10%" }} />
+
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getTechnicians?.length === 0 ? (
+                          <>
+                            {data?.getTechnicians?.map((item) => (
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                                sx={{
+                                  backgroundColor: theme.palette.bgForm.black_1,
+                                  color: "#ffffff",
+                                  borderRadius: "none",
+                                  maxWidth: "300px",
+                                }}
+                              />
+                            ))}
+                          </>
+                        ) : (
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>-</Typography>
+                        )}
+                      </Stack>
+                    </Box>
+                  </Stack> */}
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
@@ -518,7 +601,9 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                       </Box>
 
                       <Box>
-                        {isImageFile(fileName.name) && (
+                        <MenuActions fileName={fileName} onView={handleViewImage} isImageFile={isImageFile} onDownload={handleDownloadAttachment} />
+
+                        {/* {isImageFile(fileName.name) && (
                           <IconButton
                             size="small"
                             color="primary"
@@ -544,7 +629,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                               <FileDownloadOutlined />
                             </IconButton>
                           )}
-                        </Tooltip>
+                        </Tooltip> */}
                       </Box>
                     </Box>
                   </Box>

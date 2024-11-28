@@ -27,15 +27,18 @@ import {
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import AssignDialogMenuAction from "./AssignDialogMenuAction";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
   concern_Details: yup.array().nullable(),
   ticketConcernId: yup.string().nullable(),
   ChannelId: yup.object().required().label("Channel"),
-  CategoryId: yup.object().required().label("Category"),
-  SubCategoryId: yup.object().required().label("Sub category"),
+  CategoryId: yup.array().required().label("Category"),
+  SubCategoryId: yup.array().required().label("Sub category"),
+  // CategoryId: yup.object().required().label("Category"),
+  // SubCategoryId: yup.object().required().label("Sub category"),
   userId: yup.object().required().label("Issue handler"),
   targetDate: yup.date().required("Target date is required"),
   RequestConcernId: yup.string().nullable(),
@@ -60,7 +63,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
   const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
@@ -85,8 +88,10 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       ticketConcernId: "",
 
       ChannelId: null,
-      CategoryId: null,
-      SubCategoryId: null,
+      CategoryId: [],
+      SubCategoryId: [],
+      // CategoryId: null,
+      // SubCategoryId: null,
       userId: null,
       targetDate: null,
 
@@ -242,27 +247,46 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     onClose();
   };
 
-  // console.log("Data: ", data);
-  // console.log("Requestor by: ", watch("Requestor_By"));
-
   const handleViewImageClose = () => {
     setIsViewDialogOpen(false);
     setSelectedImage(null);
   };
 
   const onSubmitAction = (formData) => {
-    // console.log("FormData: ", formData);
+    console.log("FormData: ", formData);
 
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("ChannelId", formData.ChannelId.id);
-    payload.append("CategoryId", formData.CategoryId?.id);
-    payload.append("SubCategoryId", formData.SubCategoryId?.id);
+    // payload.append("CategoryId", formData.CategoryId?.id);
+    // payload.append("SubCategoryId", formData.SubCategoryId?.id);
     payload.append("Requestor_By", formData.Requestor_By);
     payload.append("UserId", formData.userId?.userId);
-    payload.append("Concern_Details", formData.concern_Details);
+    payload.append("Concern", formData.concern_Details);
     payload.append("Target_Date", moment(formData.targetDate).format("YYYY-MM-DD"));
+
+    const category = formData.CategoryId;
+    for (let i = 0; i < category.length; i++) {
+      payload.append(`RequestorTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+      payload.append(`RequestorTicketCategories[${i}].categoryId`, category[i]?.id);
+    }
+
+    if (category.length === 0) {
+      payload.append(`RequestorTicketCategories[0].ticketCategoryId`, "");
+      payload.append(`RequestorTicketCategories[0].categoryId`, "");
+    }
+
+    const subCategory = formData.SubCategoryId;
+    for (let i = 0; i < subCategory.length; i++) {
+      payload.append(`RequestorTicketSubCategories[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+      payload.append(`RequestorTicketSubCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+    }
+
+    if (subCategory.length === 0) {
+      payload.append(`RequestorTicketSubCategories[0].ticketSubCategoryId`, "");
+      payload.append(`RequestorTicketSubCategories[0].subCategoryId`, "");
+    }
 
     // Attachments
     const files = formData.RequestAttachmentsFiles;
@@ -281,6 +305,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     const approvePayload = {
       ticketConcernId: formData.ticketConcernId,
     };
+
+    console.log("ApprovePayload: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -361,18 +387,56 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
         id: data?.channelId,
         channel_Name: data?.channel_Name,
       });
-      setValue("CategoryId", {
-        id: data?.categoryId,
-        category_Description: data?.category_Description,
-      });
-      setValue("SubCategoryId", {
-        id: data?.subCategoryId,
-        subCategory_Description: data?.subCategory_Description,
-      });
+
+      const category = data?.getRequestTicketCategories?.map((item) => ({
+        ticketCategoryId: item.ticketCategoryId,
+        id: item.categoryId,
+        category_Description: item.category_Description,
+      }));
+
+      const subCategory = data?.getRequestSubTicketCategories.map((item) => ({
+        ticketSubCategoryId: item.ticketSubCategoryId,
+        subCategoryId: item.subCategoryId,
+        sub_Category_Description: item.subCategory_Description,
+      }));
+
+      const categoryIdParams = data?.getRequestTicketCategories?.map((item) => item?.categoryId);
+
+      setValue("CategoryId", category);
+      setValue("SubCategoryId", subCategory);
+
+      // setValue("CategoryId", {
+      //   id: data?.categoryId,
+      //   category_Description: data?.category_Description,
+      // });
+      // setValue("SubCategoryId", {
+      //   id: data?.subCategoryId,
+      //   subCategory_Description: data?.subCategory_Description,
+      // });
 
       getAddAttachmentData(data.requestConcernId);
+      getSubCategory({
+        CategoryId: categoryIdParams,
+      });
     }
   }, [data, formClosed]);
+
+  useEffect(() => {
+    const selectedCategories = watch("CategoryId");
+    const selectedSubCategories = watch("SubCategoryId");
+
+    if (selectedCategories.length > 0) {
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+      );
+      setValue("SubCategoryId", filteredSubCategories);
+    } else {
+      setValue("SubCategoryId", []);
+    }
+  }, [subCategoryData]);
+
+  console.log("Category: ", watch("CategoryId"));
+  console.log("SubCategory: ", watch("SubCategoryId"));
 
   return (
     <>
@@ -425,8 +489,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                         onChange={(_, value) => {
                           onChange(value);
 
-                          setValue("CategoryId", null);
-                          setValue("SubCategoryId", null);
+                          setValue("CategoryId", []);
+                          setValue("SubCategoryId", []);
                           setValue("userId", null);
                         }}
                         getOptionLabel={(option) => option.channel_Name}
@@ -455,6 +519,60 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
               <Stack gap={0.5}>
                 <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
                 <Controller
+                  control={control}
+                  name="CategoryId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        multiple
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                        loading={categoryIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                        onOpen={() => {
+                          if (!categoryIsSuccess)
+                            getCategory({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => {
+                          onChange(value);
+
+                          const categoryIdParams = value?.map((category) => category?.id);
+
+                          if (watch("CategoryId").length === 0) {
+                            setValue("SubCategoryId", []);
+                          }
+
+                          getSubCategory({
+                            CategoryId: categoryIdParams,
+                          });
+                        }}
+                        getOptionLabel={(option) => option.category_Description || ""}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
+                        sx={{
+                          flex: 2,
+                        }}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+                {/* <Controller
                   control={control}
                   name="CategoryId"
                   render={({ field: { ref, value, onChange } }) => {
@@ -501,12 +619,58 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                       />
                     );
                   }}
-                />
+                /> */}
               </Stack>
 
               <Stack gap={0.5}>
                 <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
                 <Controller
+                  control={control}
+                  name="SubCategoryId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        multiple
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
+                        options={subCategoryData?.value || []}
+                        loading={subCategoryIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                        onOpen={() => {
+                          if (!subCategoryIsSuccess) getSubCategory();
+                        }}
+                        onChange={(_, value) => {
+                          // console.log("Value ", value);
+
+                          onChange(value);
+                        }}
+                        getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                        isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                        getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
+                        noOptionsText={"No sub category available"}
+                        sx={{
+                          flex: 2,
+                        }}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        disabled={!watch("ChannelId")}
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+                {/* <Controller
                   control={control}
                   name="SubCategoryId"
                   render={({ field: { ref, value, onChange } }) => {
@@ -551,7 +715,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                       />
                     );
                   }}
-                />
+                /> */}
               </Stack>
 
               <Stack gap={0.5}>
@@ -737,7 +901,16 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           </Box>
 
                           <Box>
-                            {!!fileName.ticketAttachmentId ? (
+                            <AssignDialogMenuAction
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onViewWithoutId={handleViewImageWithoutId}
+                              onDelete={handleDeleteFile}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                            />
+
+                            {/* {!!fileName.ticketAttachmentId ? (
                               <>
                                 {isImageFile(fileName.name) && (
                                   <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
@@ -771,20 +944,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                               </Tooltip>
                             )}
 
-                            {/* {fileName.ticketAttachmentId === null && (
-                                    <Tooltip title="Upload">
-                                      <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() => handleUpdateFile(fileName.ticketAttachmentId)}
-                                        style={{
-                                          background: "none",
-                                        }}
-                                      >
-                                        <FileUploadOutlined />
-                                      </IconButton>
-                                    </Tooltip>
-                                  )} */}
 
                             {!!fileName.ticketAttachmentId && (
                               <Tooltip title="Download">
@@ -794,9 +953,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                                   <IconButton
                                     size="small"
                                     color="error"
-                                    // onClick={() => {
-                                    //   window.location = fileName.link;
-                                    // }}
                                     onClick={() => handleDownloadAttachment(fileName)}
                                     style={{
                                       background: "none",
@@ -806,7 +962,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                                   </IconButton>
                                 )}
                               </Tooltip>
-                            )}
+                            )} */}
                           </Box>
                         </Box>
                       </Box>
@@ -864,7 +1020,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
               type="submit"
               variant="contained"
               loading={isCreateEditReceiverConcernLoading || isCreateEditReceiverConcernFetching}
-              disabled={!watch("ChannelId") || !watch("CategoryId") || !watch("SubCategoryId") || !watch("userId") || !watch("targetDate")}
+              disabled={!watch("ChannelId") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || !watch("userId") || !watch("targetDate")}
               sx={{
                 ":disabled": {
                   backgroundColor: theme.palette.secondary.main,

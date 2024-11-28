@@ -174,6 +174,8 @@ const Category = () => {
     }
   }, [searchValue]);
 
+  console.log("Data: ", data);
+
   return (
     <Stack
       sx={{

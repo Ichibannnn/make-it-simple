@@ -40,7 +40,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   useSignalRConnection();
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
+  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
+  // const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [transferTicket, { isLoading: transferTicketIsLoading, isFetching: transferTicketIsFetching }] = useTransferIssueHandlerTicketsMutation();
 
   const {
@@ -70,7 +71,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
     payload.append("TicketConcernId", data?.ticketConcernId);
     payload.append("TransferRemarks", formData?.TransferRemarks);
 
-    payload.append("Transfer_To", formData?.Transfer_To?.userId);
+    payload.append("Transfer_To", formData?.Transfer_To?.id);
 
     // Attachments
     const files = formData.AddTransferAttachments;
@@ -217,6 +218,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
         id: data?.channelId,
         channel_Name: data?.channel_Name,
       });
+
+      getIssueHandler(data?.ticketConcernId);
     }
   }, [data]);
 
@@ -224,6 +227,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   // console.log("Channel Name: ", watch("ChannelId"));
   // console.log("UserId: ", userId);
   // console.log("Users: ", channelData);
+
+  // console.log("Data: ", data);
 
   return (
     <>
@@ -305,7 +310,51 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                 >
                   Channel Name:
                 </Typography>
+
                 <Controller
+                  control={control}
+                  name="ChannelId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={channelData?.value?.channel || []}
+                        loading={channelIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
+                        onOpen={() => {
+                          if (!channelIsSuccess)
+                            getChannel({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => {
+                          onChange(value);
+
+                          setValue("Transfer_To", null);
+                        }}
+                        getOptionLabel={(option) => option.channel_Name}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        fullWidth
+                        disablePortal
+                        disabled
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+
+                {/* <Controller
                   control={control}
                   name="ChannelId"
                   render={({ field: { ref, value, onChange } }) => {
@@ -350,7 +399,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                       />
                     );
                   }}
-                />
+                /> */}
               </Stack>
 
               <Stack gap={0.5} mt={2}>
@@ -361,7 +410,46 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                 >
                   Transfer to:
                 </Typography>
+
                 <Controller
+                  control={control}
+                  name="Transfer_To"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={issueHandlerData?.value || []}
+                        loading={issueHandlerIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
+                        onOpen={() => {
+                          if (!issueHandlerIsSuccess) getIssueHandler();
+                        }}
+                        onChange={(_, value) => {
+                          onChange(value);
+                        }}
+                        getOptionLabel={(option) => option.fullname}
+                        isOptionEqualToValue={(option, value) => option?.id === value?.id}
+                        // getOptionDisabled={(option) => userId === option.userId}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "14px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+
+                {/* <Controller
                   control={control}
                   name="Transfer_To"
                   render={({ field: { ref, value, onChange } }) => {
@@ -397,7 +485,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                       />
                     );
                   }}
-                />
+                /> */}
               </Stack>
 
               <Stack sx={{ gap: 0.5, mt: 2 }}>

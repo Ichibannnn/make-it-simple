@@ -1,5 +1,5 @@
 import { Badge, Divider, OutlinedInput, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { DiscountOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons-material";
+import { DiscountOutlined, PendingOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
@@ -7,8 +7,9 @@ import useDebounce from "../../../hooks/useDebounce";
 
 import TicketApproval from "./TicketApproval/TicketApproval";
 import ForTransfer from "./ForTransferApproval/ForTransfer";
+import OnHoldApproval from "./OnHoldApproval/OnHoldApproval";
 
-import { useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useGetOnHoldApprovalQuery, useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useNotification } from "../../../context/NotificationContext";
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
@@ -43,6 +44,18 @@ const Approval = () => {
     isSuccess: transferIsSuccess,
     isError: transferIsError,
   } = useGetTransferApprovalQuery({
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
+
+  const {
+    data: onHoldData,
+    isLoading: onHoldIsLoading,
+    isFetching: onHoldIsFetching,
+    isSuccess: onHoldIsSuccess,
+    isError: onHoldIsError,
+  } = useGetOnHoldApprovalQuery({
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
@@ -124,6 +137,7 @@ const Approval = () => {
                 },
               }}
             />
+
             <Tab
               value="2"
               className="tabs-styling"
@@ -145,6 +159,39 @@ const Approval = () => {
                   }}
                 >
                   <WifiProtectedSetupOutlined />
+                </Badge>
+              }
+              iconPosition="start"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+                ".MuiBadge-badge": {
+                  color: "#ffff",
+                },
+              }}
+            />
+
+            <Tab
+              value="3"
+              className="tabs-styling"
+              label="On Hold"
+              icon={
+                <Badge
+                  // badgeContent={notificationBadge?.value?.forApprovalTransferNotif}
+                  max={100000}
+                  color="warning"
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    ".MuiBadge-badge": {
+                      fontSize: "0.55rem",
+                      fontWeight: 400,
+                    },
+                  }}
+                >
+                  <PendingOutlined />
                 </Badge>
               }
               iconPosition="start"
@@ -189,7 +236,7 @@ const Approval = () => {
                 setPageSize={setPageSize}
               />
             </>
-          ) : (
+          ) : tabNavigation === "2" ? (
             <>
               <ForTransfer
                 data={transferData}
@@ -197,6 +244,18 @@ const Approval = () => {
                 isFetching={transferIsFetching}
                 isSuccess={transferIsSuccess}
                 isError={transferIsError}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
+              />
+            </>
+          ) : (
+            <>
+              <OnHoldApproval
+                data={onHoldData}
+                isLoading={onHoldIsLoading}
+                isFetching={onHoldIsFetching}
+                isSuccess={onHoldIsSuccess}
+                isError={onHoldIsError}
                 setPageNumber={setPageNumber}
                 setPageSize={setPageSize}
               />

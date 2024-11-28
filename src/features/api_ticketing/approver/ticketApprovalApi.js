@@ -78,6 +78,34 @@ export const ticketApprovalApi = createApi({
       }),
       invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
     }),
+
+    // Approvel OnHold Approval
+    getOnHoldApproval: builder.query({
+      query: (params) => ({
+        url: "on-hold/page?UserType=Approver&IsHold=false&IsReject=false",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Ticket Approval"],
+    }),
+
+    approveOnHold: builder.mutation({
+      query: (body) => ({
+        url: "on-hold/approval",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+    }),
+
+    rejectOnHold: builder.mutation({
+      query: (body) => ({
+        url: "on-hold/reject",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+    }),
   }),
 });
 
@@ -88,4 +116,7 @@ export const {
   useGetTransferApprovalQuery,
   useApproveTransferMutation,
   useRejectTransferMutation,
+  useGetOnHoldApprovalQuery,
+  useApproveOnHoldMutation,
+  useRejectOnHoldMutation,
 } = ticketApprovalApi;

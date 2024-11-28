@@ -32,6 +32,7 @@ import {
   useDeleteRequestorAttachmentMutation,
   useLazyGetBackjobTicketsQuery,
   useLazyGetRequestorAttachmentQuery,
+  useLazyGetTechniciansQuery,
 } from "../../../features/api_request/concerns/concernApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
@@ -46,19 +47,22 @@ import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-uni
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
+import ConcernViewMenuActions from "./ConcernViewMenuAction";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
+
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dateNeededValidation = new moment();
 
@@ -81,8 +85,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     DateNeeded: yup.date().required("Date needed is required"),
     ChannelId: yup.object().required().label("Channel"),
-    CategoryId: yup.object().required().label("Category"),
-    SubCategoryId: yup.object().required().label("Sub category"),
+    CategoryId: yup.array().required().label("Category"),
+    SubCategoryId: yup.array().required().label("Sub category"),
+    Technicians: yup.array().notRequired(),
+    // CategoryId: yup.object().required().label("Category"),
+    // SubCategoryId: yup.object().required().label("Sub category"),
 
     Notes: yup.string().notRequired(),
   });
@@ -104,7 +111,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
+  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
@@ -140,8 +148,9 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
       DateNeeded: null,
       ChannelId: null,
-      CategoryId: null,
-      SubCategoryId: null,
+      CategoryId: [],
+      SubCategoryId: [],
+      Technicians: [],
 
       Notes: "",
     },
@@ -152,7 +161,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     const payload = new FormData();
 
-    payload.append("Concern", formData.Concern);
     payload.append("RequestConcernId", formData.RequestConcernId);
 
     payload.append("Request_Type", formData.Request_Type);
@@ -168,9 +176,32 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
     payload.append("ChannelId", formData.ChannelId?.id);
-    payload.append("CategoryId", formData.CategoryId?.id);
-    payload.append("SubCategoryId", formData.SubCategoryId?.id);
+    // payload.append("CategoryId", formData.CategoryId?.id);
+    // payload.append("SubCategoryId", formData.SubCategoryId?.id);
 
+    const category = formData.CategoryId;
+    for (let i = 0; i < category.length; i++) {
+      payload.append(`AddRequestTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+      payload.append(`AddRequestTicketCategories[${i}].categoryId`, category[i]?.id);
+    }
+
+    if (category.length === 0) {
+      payload.append(`AddRequestTicketCategories[0].ticketCategoryId`, "");
+      payload.append(`AddRequestTicketCategories[0].categoryId`, "");
+    }
+
+    const subCategory = formData.SubCategoryId;
+    for (let i = 0; i < subCategory.length; i++) {
+      payload.append(`AddRequestTicketSubCategories[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+      payload.append(`AddRequestTicketSubCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+    }
+
+    if (subCategory.length === 0) {
+      payload.append(`AddRequestTicketSubCategories[0].ticketSubCategoryId`, "");
+      payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
+    }
+
+    payload.append("Concern", formData.Concern);
     payload.append("Notes", formData.Notes);
 
     const files = formData.RequestAttachmentsFiles;
@@ -196,7 +227,19 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         dispatch(notificationApi.util.resetApiState());
         dispatch(notificationMessageApi.util.resetApiState());
         setAttachments([]);
-        reset();
+        reset({
+          Request_Type: "New Request",
+          BackJobId: null,
+          Contact_Number: "",
+
+          DateNeeded: null,
+          ChannelId: null,
+          CategoryId: [],
+          SubCategoryId: [],
+
+          Concern: "",
+          Notes: "",
+        });
         setIsLoading(false);
         onClose();
       })
@@ -301,6 +344,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   // Function to open image view dialog
   const handleViewImage = async (file) => {
     setViewLoading(true);
+    setIsMenuOpen(true);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
@@ -309,6 +353,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
         setViewLoading(false);
+        setIsMenuOpen(false);
       }
     } catch (error) {
       console.error("Error fetching image:", error);
@@ -381,10 +426,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       setValue("Concern", editData?.concern);
 
       setValue("Request_Type", editData?.request_Type);
+
       setValue("BackJobId", {
         ticketConcernId: editData?.backJobId,
         concern: editData?.back_Job_Concern,
       });
+
       setValue("UserId", {
         id: editData?.requestorId,
         fullname: editData?.fullName,
@@ -401,44 +448,69 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         company_Code: editData?.company_Code,
         company_Name: editData?.company_Name,
       });
+
       setValue("BusinessUnitId", {
         id: editData?.businessUnitId,
         business_Code: editData?.businessUnit_Code,
         business_Name: editData?.businessUnit_Name,
       });
+
       setValue("DepartmentId", {
         id: editData?.departmentId,
         department_Code: editData?.department_Code,
         department_Name: editData?.department_Name,
       });
+
       setValue("UnitId", {
         id: editData?.unitId,
         unit_Code: editData?.unit_Code,
         unit_Name: editData?.unit_Name,
       });
+
       setValue("SubUnitId", {
         id: editData?.subUnitId,
         subUnit_Code: editData?.subUnit_Code,
         subUnit_Name: editData?.subUnit_Name,
       });
+
       setValue("LocationId", {
         location_Code: editData?.location_Code,
         location_Name: editData?.location_Name,
       });
 
       setValue("DateNeeded", moment(editData?.date_Needed));
+
       setValue("ChannelId", {
         id: editData?.channelId,
         channel_Name: editData?.channel_Name,
       });
-      setValue("CategoryId", {
-        id: editData?.categoryId,
-        category_Description: editData?.category_Description,
-      });
-      setValue("SubCategoryId", {
-        id: editData?.subCategoryId,
-        subCategory_Description: editData?.subCategory_Description,
-      });
+
+      const category = editData?.getRequestTicketCategories?.map((item) => ({
+        ticketCategoryId: item.ticketCategoryId,
+        id: item.categoryId,
+        category_Description: item.category_Description,
+      }));
+
+      const subCategory = editData?.getRequestSubTicketCategories.map((item) => ({
+        ticketSubCategoryId: item.ticketSubCategoryId,
+        subCategoryId: item.subCategoryId,
+        sub_Category_Description: item.subCategory_Description,
+      }));
+
+      const categoryIdParams = editData?.getRequestTicketCategories?.map((item) => item?.categoryId);
+
+      setValue("CategoryId", category);
+      setValue("SubCategoryId", subCategory);
+
+      // setValue("CategoryId", {
+      //   id: editData?.categoryId,
+      //   category_Description: editData?.category_Description,
+      // });
+
+      // setValue("SubCategoryId", {
+      //   id: editData?.subCategoryId,
+      //   subCategory_Description: editData?.subCategory_Description,
+      // });
 
       if (editData.notes === null) {
         setValue("Notes", "");
@@ -447,10 +519,30 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       }
 
       getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
+      getSubCategory({
+        CategoryId: categoryIdParams,
+      });
     }
   }, [editData, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
+  useEffect(() => {
+    const selectedCategories = watch("CategoryId");
+    const selectedSubCategories = watch("SubCategoryId");
+
+    if (selectedCategories.length > 0) {
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+      );
+      setValue("SubCategoryId", filteredSubCategories);
+    } else {
+      setValue("SubCategoryId", []);
+    }
+  }, [subCategoryData]);
+
   // console.log("Edit Data: ", editData);
+  console.log("Category: ", watch("CategoryId"));
+  console.log("SubCategory: ", watch("SubCategoryId"));
+  // console.log("SubCategory Data: ", subCategoryData?.value);
 
   return (
     <>
@@ -977,6 +1069,68 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     </Stack>
 
                     <Stack>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
+                      <Controller
+                        control={control}
+                        name="CategoryId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              multiple
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                              loading={categoryIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!categoryIsSuccess)
+                                  getCategory({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                // console.log("Value:", value);
+                                onChange(value);
+
+                                const categoryIdParams = value?.map((category) => category?.id);
+
+                                if (watch("CategoryId").length === 0) {
+                                  setValue("SubCategoryId", []);
+                                }
+
+                                getSubCategory({
+                                  CategoryId: categoryIdParams,
+                                });
+                              }}
+                              getOptionLabel={(option) => option.category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+
+                  <Stack sx={{ width: "50%", gap: 1 }}>
+                    <Stack>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
                       <Controller
                         control={control}
@@ -999,8 +1153,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               onChange={(_, value) => {
                                 onChange(value);
 
-                                setValue("CategoryId", null);
-                                setValue("SubCategoryId", null);
+                                setValue("CategoryId", []);
+                                setValue("SubCategoryId", []);
                               }}
                               getOptionLabel={(option) => option.channel_Name}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -1025,47 +1179,42 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         }}
                       />
                     </Stack>
-                  </Stack>
 
-                  <Stack sx={{ width: "50%", gap: 1 }}>
                     <Stack>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
                       <Controller
                         control={control}
-                        name="CategoryId"
+                        name="SubCategoryId"
                         render={({ field: { ref, value, onChange } }) => {
                           return (
                             <Autocomplete
+                              multiple
                               ref={ref}
                               size="small"
                               value={value}
-                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
-                              loading={categoryIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
+                              options={subCategoryData?.value || []}
+                              loading={subCategoryIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
-                                if (!categoryIsSuccess)
-                                  getCategory({
-                                    Status: true,
-                                  });
+                                if (!subCategoryIsSuccess) getSubCategory();
                               }}
                               onChange={(_, value) => {
+                                // console.log("Value ", value);
+
                                 onChange(value);
-
-                                setValue("SubCategoryId", null);
-
-                                getSubCategory({
-                                  Status: true,
-                                });
                               }}
-                              getOptionLabel={(option) => option.category_Description || ""}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                              getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
+                              noOptionsText={"No sub category available"}
                               sx={{
                                 flex: 2,
                               }}
                               fullWidth
                               disablePortal
                               disableClearable
-                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                              disabled={!watch("ChannelId")}
                               componentsProps={{
                                 popper: {
                                   sx: {
@@ -1080,42 +1229,42 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         }}
                       />
                     </Stack>
+                  </Stack>
+                </Stack>
 
+                {/* TECHNICIANS */}
+                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                  <Stack sx={{ width: "100%", gap: 1 }}>
                     <Stack>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Technicians (Optional):</Typography>
                       <Controller
                         control={control}
-                        name="SubCategoryId"
+                        name="Technicians"
                         render={({ field: { ref, value, onChange } }) => {
                           return (
                             <Autocomplete
+                              multiple
                               ref={ref}
                               size="small"
                               value={value}
-                              options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
-                              loading={subCategoryIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              options={technicianData?.value || []}
+                              loading={technicianIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
-                                if (!subCategoryIsSuccess)
-                                  getSubCategory({
-                                    Status: true,
-                                  });
+                                if (!technicianIsSuccess) getTechnicians();
                               }}
                               onChange={(_, value) => {
-                                // console.log("Value ", value);
-
-                                onChange(value || []);
+                                onChange(value);
                               }}
-                              getOptionLabel={(option) => `${option.subCategory_Description}`}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              noOptionsText={"No sub category available"}
+                              getOptionLabel={(option) => option.technician_Name || ""}
+                              isOptionEqualToValue={(option, value) => option.technicianId === value.technicianId}
+                              getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
                               sx={{
                                 flex: 2,
                               }}
                               fullWidth
                               disablePortal
                               disableClearable
-                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                               componentsProps={{
                                 popper: {
                                   sx: {
@@ -1348,15 +1497,24 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               </Box>
 
                               <Box>
-                                {!!fileName.ticketAttachmentId ? (
+                                <ConcernViewMenuActions
+                                  editData={editData}
+                                  fileName={fileName}
+                                  onView={handleViewImage}
+                                  onViewWithoutId={handleViewImageWithoutId}
+                                  onDelete={handleDeleteFile}
+                                  onDownload={handleDownloadAttachment}
+                                  isImageFile={isImageFile}
+                                  // viewLoading={viewLoading}
+                                  // setIsLoading={setViewLoading}
+                                  // downloadLoading={downloadLoading}
+                                  // setIsMenuOpen={setIsMenuOpen}
+                                />
+
+                                {/* {!!fileName.ticketAttachmentId ? (
                                   <>
                                     {isImageFile(fileName.name) && (
-                                      <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => handleViewImage(fileName)} // View image in dialog
-                                        style={{ background: "none" }}
-                                      >
+                                      <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
                                         {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
                                       </IconButton>
                                     )}
@@ -1364,12 +1522,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                 ) : (
                                   <>
                                     {isImageFile(fileName.name) && (
-                                      <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => handleViewImageWithoutId(fileName.file)} // View image in dialog
-                                        style={{ background: "none" }}
-                                      >
+                                      <IconButton size="small" color="primary" onClick={() => handleViewImageWithoutId(fileName.file)} style={{ background: "none" }}>
                                         <VisibilityOutlined />
                                       </IconButton>
                                     )}
@@ -1399,9 +1552,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                       <IconButton
                                         size="small"
                                         color="error"
-                                        // onClick={() => {
-                                        //   window.location = fileName.link;
-                                        // }}
                                         onClick={() => handleDownloadAttachment(fileName)}
                                         style={{
                                           background: "none",
@@ -1411,7 +1561,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                       </IconButton>
                                     )}
                                   </Tooltip>
-                                )}
+                                )} */}
                               </Box>
                             </Box>
                           </Box>
@@ -1477,6 +1627,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 disabled={
                   !watch("Concern") ||
                   moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY") ||
+                  watch("CategoryId").length === 0 ||
+                  watch("SubCategoryId").length === 0 ||
                   (watch("Request_Type") === "Back Job" && !watch("BackJobId"))
                 }
               >

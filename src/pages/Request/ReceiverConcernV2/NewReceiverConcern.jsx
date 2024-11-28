@@ -230,10 +230,10 @@ const NewReceiverConcern = () => {
                       fontWeight: 700,
                       fontSize: "12px",
                     }}
+                    align="center"
                   >
-                    REQUESTOR
+                    CONCERN NO.
                   </TableCell>
-
                   <TableCell
                     sx={{
                       background: "#1C2536",
@@ -241,9 +241,8 @@ const NewReceiverConcern = () => {
                       fontWeight: 700,
                       fontSize: "12px",
                     }}
-                    align="center"
                   >
-                    CONCERN NO.
+                    REQUESTOR
                   </TableCell>
 
                   <TableCell
@@ -300,8 +299,25 @@ const NewReceiverConcern = () => {
                     >
                       <TableCell
                         sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                        align="center"
+                        onClick={() => onViewAction(item)}
+                      >
+                        {item.requestConcernId}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
                           maxWidth: "150px",
                         }}
+                        onClick={() => onViewAction(item)}
                       >
                         <Typography
                           sx={{
@@ -321,22 +337,6 @@ const NewReceiverConcern = () => {
                         >
                           {item.department_Name}
                         </Typography>
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                        align="center"
-                        onClick={() => onViewAction(item)}
-                      >
-                        {item.requestConcernId}
                       </TableCell>
 
                       <TableCell

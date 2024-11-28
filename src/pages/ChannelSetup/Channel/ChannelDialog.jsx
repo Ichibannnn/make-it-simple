@@ -160,11 +160,11 @@ const ChannelDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("Members data: ", memberData);
+  console.log("Members data: ", memberData);
 
-  console.log("department: ", channelFormWatch("deparmentId"));
+  // console.log("department: ", channelFormWatch("deparmentId"));
 
-  console.log("data: ", data);
+  // console.log("data: ", data);
 
   return (
     <>

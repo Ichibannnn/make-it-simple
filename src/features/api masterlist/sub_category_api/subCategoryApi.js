@@ -29,6 +29,17 @@ export const subCategoryApi = createApi({
       providesTags: ["Sub Category"],
     }),
 
+    getSubCategoryArray: builder.query({
+      query: ({ CategoryId }) => {
+        const categoryArray = CategoryId.map((id) => `CategoryId=${id}`).join(`&`);
+        return {
+          url: `request-concern/multiple-sub-category?${categoryArray}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Sub Category"],
+    }),
+
     createEditSubCategory: builder.mutation({
       query: (body) => ({
         url: "sub-category",
@@ -48,4 +59,5 @@ export const subCategoryApi = createApi({
   }),
 });
 
-export const { useGetSubCategoryQuery, useLazyGetSubCategoryQuery, useCreateEditSubCategoryMutation, useArchiveSubCategoryMutation } = subCategoryApi;
+export const { useGetSubCategoryQuery, useLazyGetSubCategoryQuery, useLazyGetSubCategoryArrayQuery, useCreateEditSubCategoryMutation, useArchiveSubCategoryMutation } =
+  subCategoryApi;

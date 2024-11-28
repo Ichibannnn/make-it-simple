@@ -8,13 +8,15 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import TicketApprovalDialog from "./TicketApprovalDialog";
 import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+import OnHoldApprovalDialog from "./OnHoldApprovalDialog";
 
-const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
-  const [viewApprovalData, setViewApprovalData] = useState(null);
+const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
+  const [viewOnHoldData, setViewOnHoldData] = useState(null);
   useSignalRConnection();
+
+  // console.log("Notification: ", notificationApi);
 
   const { open, onToggle, onClose } = useDisclosure();
 
@@ -28,13 +30,13 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   };
 
   const onDialogClose = () => {
-    setViewApprovalData(null);
+    setViewOnHoldData(null);
     onClose();
   };
 
   const onViewAction = (data) => {
     onToggle();
-    setViewApprovalData(data);
+    setViewOnHoldData(data);
   };
 
   return (
@@ -111,7 +113,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.closingTicket?.map((item) => (
+              data?.value?.onHoldTicket?.map((item) => (
                 <TableRow key={item.ticketConcernId} onClick={() => onViewAction(item)}>
                   <TableCell
                     sx={{
@@ -164,11 +166,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                         maxWidth: "300px",
                       }}
                     >
-                      {item.concern_Details?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
+                      {item?.concern_Details.split("\r\n").map((line, index) => (
+                        <div key={index}>{line}</div>
                       ))}
                     </TableCell>
                   </Tooltip>
@@ -238,7 +237,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </TableRow>
             )} */}
 
-            {isSuccess && !data?.value?.closingTicket?.length && (
+            {isSuccess && !data?.value?.onHoldTicket?.length && (
               <TableRow>
                 <TableCell colSpan={7} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
@@ -263,9 +262,9 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         onRowsPerPageChange={onPageSizeChange}
       />
 
-      <TicketApprovalDialog data={viewApprovalData} open={open} onClose={onDialogClose} />
+      <OnHoldApprovalDialog data={viewOnHoldData} open={open} onClose={onDialogClose} />
     </Stack>
   );
 };
 
-export default TicketApproval;
+export default OnHoldApproval;
