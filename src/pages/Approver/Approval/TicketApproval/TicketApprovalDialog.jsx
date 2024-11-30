@@ -2,7 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
@@ -16,6 +32,7 @@ import { useApproveTicketMutation } from "../../../../features/api_ticketing/app
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+import TicketApprovalMenuActions from "./MenuActions/TicketApprovalMenuActions";
 
 const TicketApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -251,19 +268,61 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                 </Box>
                 <Box sx={{ width: "10%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getClosingTicketCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.category_Description ? item.category_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
                 </Box>
               </Stack>
 
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                 <Box sx={{ width: "15%", ml: 2 }}>
                   <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
                 </Box>
                 <Box sx={{ width: "10%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategoryDescription}</Typography>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getClosingTicketSubCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
                 </Box>
               </Stack>
+
+              {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Technicians:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategoryDescription}</Typography>
+                </Box>
+              </Stack> */}
 
               {/* ATTACHMENTS */}
               <Stack
@@ -335,14 +394,14 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <>
+                            <TicketApprovalMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
+                            {/* <>
                               {isImageFile(fileName.name) && (
                                 <Tooltip title="View">
                                   <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
                                     {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
                                   </IconButton>
                                 </Tooltip>
-                                // <ViewAttachment fileName={fileName} loading={loading} handleViewImage={handleViewImage} />
                               )}
                             </>
 
@@ -353,9 +412,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                                 <IconButton
                                   size="small"
                                   color="error"
-                                  // onClick={() => {
-                                  //   window.location = fileName.link;
-                                  // }}
                                   onClick={() => handleDownloadAttachment(fileName)}
                                   style={{
                                     background: "none",
@@ -364,7 +420,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                                   <FileDownloadOutlined />
                                 </IconButton>
                               </Tooltip>
-                            )}
+                            )} */}
                           </Box>
                         </Box>
                       </Box>

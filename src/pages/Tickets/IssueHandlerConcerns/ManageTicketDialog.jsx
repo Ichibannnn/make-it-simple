@@ -20,15 +20,16 @@ import * as yup from "yup";
 import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
-import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
+import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useDispatch } from "react-redux";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -37,8 +38,9 @@ const schema = yup.object().shape({
   AddClosingAttachments: yup.array().nullable(),
 
   ChannelId: yup.object().required().label("Channel"),
-  CategoryId: yup.object().required().label("Category"),
-  SubCategoryId: yup.object().required().label("Sub category"),
+  CategoryId: yup.array().required().label("Category"),
+  SubCategoryId: yup.array().required().label("Sub Category"),
+  Technicians: yup.array().notRequired(),
 
   Notes: yup.string().notRequired(),
 });
@@ -57,7 +59,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
+  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
@@ -80,8 +83,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       AddClosingAttachments: [],
 
       ChannelId: null,
-      CategoryId: null,
-      SubCategoryId: null,
+      CategoryId: [],
+      SubCategoryId: [],
+      Technicians: [],
 
       Notes: "",
     },
@@ -196,9 +200,42 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         payload.append("ClosingTicketId", formData.closingTicketId);
         payload.append("Resolution", formData.resolution);
 
-        payload.append("CategoryId", formData.CategoryId.id);
-        payload.append("SubCategoryId", formData.SubCategoryId.id);
+        // payload.append("CategoryId", formData.CategoryId.id);
+        // payload.append("SubCategoryId", formData.SubCategoryId.id);
         payload.append("Notes", formData.Notes);
+
+        const category = formData.CategoryId;
+        for (let i = 0; i < category.length; i++) {
+          payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+          payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
+        }
+
+        if (category.length === 0) {
+          payload.append(`ClosingTicketCategories[0].ticketAttachmentId`, "");
+          payload.append(`ClosingTicketCategories[0].categoryId`, "");
+        }
+
+        const subCategory = formData.SubCategoryId;
+        for (let i = 0; i < subCategory.length; i++) {
+          payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i].ticketCategoryId || "");
+          payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+        }
+
+        if (subCategory.length === 0) {
+          payload.append(`ClosingSubTicketCategories[0].ticketSubCategoryId`, "");
+          payload.append(`ClosingSubTicketCategories[0].subCategoryId`, "");
+        }
+
+        const technicians = formData.Technicians;
+        for (let i = 0; i < technicians.length; i++) {
+          payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, technicians[i].ticketTechnicianId || "");
+          payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
+        }
+
+        if (technicians.length === 0) {
+          payload.append(`AddClosingTicketTechnicians[0].ticketTechnicianId`, "");
+          payload.append(`AddClosingTicketTechnicians[0].technician_By`, "");
+        }
 
         // Attachments
         const files = formData.AddClosingAttachments;
@@ -255,14 +292,35 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         id: data?.channelId,
         channel_Name: data?.channel_Name,
       });
-      setValue("CategoryId", {
-        id: data?.categoryId,
-        category_Description: data?.category_Description,
+
+      const category = data?.getOpenTicketCategories?.map((item) => ({
+        ticketCategoryId: item.ticketCategoryId,
+        id: item.categoryId,
+        category_Description: item.category_Description,
+      }));
+
+      const subCategory = data?.getOpenTicketSubCategories.map((item) => ({
+        ticketSubCategoryId: item.ticketSubCategoryId,
+        subCategoryId: item.subCategoryId,
+        sub_Category_Description: item.subCategory_Description,
+      }));
+
+      const technicians = data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap((item) => ({
+        ticketTechnicianId: item.ticketTechnicianId,
+        technician_Name: item.fullname,
+        technicianId: item.technician_By,
+      }));
+
+      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
+
+      setValue("CategoryId", category);
+      setValue("SubCategoryId", subCategory);
+      setValue("Technicians", technicians);
+
+      getSubCategory({
+        CategoryId: categoryIdParams,
       });
-      setValue("SubCategoryId", {
-        id: data?.subCategoryId,
-        subCategory_Description: data?.subCategory_Description,
-      });
+
       setValue("Notes", data?.notes);
 
       const manageTicketArray = data?.getForClosingTickets?.map((item) =>
@@ -286,6 +344,20 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       );
     }
   }, [data]);
+
+  useEffect(() => {
+    const selectedCategories = watch("CategoryId");
+    const selectedSubCategories = watch("SubCategoryId");
+
+    if (selectedCategories.length > 0) {
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+      );
+      setValue("SubCategoryId", filteredSubCategories);
+    } else {
+      setValue("SubCategoryId", []);
+    }
+  }, [subCategoryData]);
 
   // Function to open image view dialog
   const handleViewImage = async (file) => {
@@ -352,6 +424,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   };
 
   console.log("Data: ", data);
+  // console.log("Error: ", errors);
 
   return (
     <>
@@ -456,6 +529,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                           render={({ field: { ref, value, onChange } }) => {
                             return (
                               <Autocomplete
+                                multiple
                                 ref={ref}
                                 size="small"
                                 value={value}
@@ -469,21 +543,26 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     });
                                 }}
                                 onChange={(_, value) => {
+                                  // console.log("Value:", value);
                                   onChange(value);
 
-                                  setValue("SubCategoryId", null);
+                                  const categoryIdParams = value?.map((category) => category?.id);
+
+                                  if (watch("CategoryId").length === 0) {
+                                    setValue("SubCategoryId", []);
+                                  }
 
                                   getSubCategory({
-                                    Status: true,
+                                    CategoryId: categoryIdParams,
                                   });
                                 }}
                                 getOptionLabel={(option) => option.category_Description || ""}
                                 isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                                 sx={{
                                   flex: 2,
                                 }}
                                 fullWidth
-                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 disablePortal
                                 disableClearable
                                 componentsProps={{
@@ -515,25 +594,25 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                           render={({ field: { ref, value, onChange } }) => {
                             return (
                               <Autocomplete
+                                multiple
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
+                                // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
+                                options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                                 onOpen={() => {
-                                  if (!subCategoryIsSuccess)
-                                    getSubCategory({
-                                      Status: true,
-                                    });
+                                  if (!subCategoryIsSuccess) getSubCategory();
                                 }}
                                 onChange={(_, value) => {
                                   // console.log("Value ", value);
 
-                                  onChange(value || []);
+                                  onChange(value);
                                 }}
-                                getOptionLabel={(option) => `${option.subCategory_Description}`}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                                isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                                getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                                 noOptionsText={"No sub category available"}
                                 sx={{
                                   flex: 2,
@@ -541,7 +620,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 fullWidth
                                 disablePortal
                                 disableClearable
-                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 componentsProps={{
                                   popper: {
                                     sx: {
@@ -595,6 +673,56 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                           );
                         }}
                       />
+                    </Stack>
+
+                    {/* TECHNICIANS */}
+                    <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                      <Stack sx={{ width: "100%", gap: 1 }}>
+                        <Stack>
+                          <Typography sx={{ fontSize: "14px", mb: 0.5 }}>Technicians (Optional):</Typography>
+                          <Controller
+                            control={control}
+                            name="Technicians"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <Autocomplete
+                                  multiple
+                                  ref={ref}
+                                  size="small"
+                                  value={value}
+                                  options={technicianData?.value || []}
+                                  loading={technicianIsLoading}
+                                  renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                  onOpen={() => {
+                                    if (!technicianIsSuccess) getTechnicians();
+                                  }}
+                                  onChange={(_, value) => {
+                                    onChange(value);
+                                  }}
+                                  getOptionLabel={(option) => option.technician_Name || ""}
+                                  isOptionEqualToValue={(option, value) => option.technicianId === value.technicianId}
+                                  getOptionDisabled={(option) => watch("Technicians")?.some((item) => item.technicianId === option.technicianId)}
+                                  sx={{
+                                    flex: 2,
+                                  }}
+                                  fullWidth
+                                  disablePortal
+                                  disableClearable
+                                  componentsProps={{
+                                    popper: {
+                                      sx: {
+                                        "& .MuiAutocomplete-listbox": {
+                                          fontSize: "13px",
+                                        },
+                                      },
+                                    },
+                                  }}
+                                />
+                              );
+                            }}
+                          />
+                        </Stack>
+                      </Stack>
                     </Stack>
 
                     <Stack mt={2} gap={0.5}>
@@ -733,7 +861,17 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                               </Box>
 
                               <Box>
-                                {!!fileName.ticketAttachmentId ? (
+                                <ManageForClosingMenuActions
+                                  data={data}
+                                  fileName={fileName}
+                                  onView={handleViewImage}
+                                  onViewWithoutId={handleViewImageWithoutId}
+                                  onDelete={handleDeleteFile}
+                                  onDownload={handleDownloadAttachment}
+                                  isImageFile={isImageFile}
+                                />
+
+                                {/* {!!fileName.ticketAttachmentId ? (
                                   <>
                                     {isImageFile(fileName.name) && (
                                       <IconButton
@@ -784,9 +922,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                       <IconButton
                                         size="small"
                                         color="error"
-                                        // onClick={() => {
-                                        //   window.location = fileName.link;
-                                        // }}
                                         onClick={() => handleDownloadAttachment(fileName)}
                                         style={{
                                           background: "none",
@@ -796,7 +931,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                       </IconButton>
                                     )}
                                   </Tooltip>
-                                )}
+                                )} */}
                               </Box>
                             </Box>
                           ))}
@@ -860,7 +995,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                 form="closeticket"
                 variant="contained"
                 loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
-                disabled={!watch("resolution") || !watch("CategoryId") || !watch("SubCategoryId")}
+                disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0}
               >
                 Save
               </LoadingButton>

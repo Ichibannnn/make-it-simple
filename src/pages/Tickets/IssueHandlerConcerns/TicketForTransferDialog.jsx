@@ -18,6 +18,7 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useSelector } from "react-redux";
+import TransferDialogMenuActions from "./MenuActions/TransferDialogMenuActions";
 
 const schema = yup.object().shape({
   TransferRemarks: yup.string().required().label("Remarks is required"),
@@ -598,7 +599,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                         </Box>
 
                         <Box>
-                          {isImageFile(fileName.name) && (
+                          <TransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                          {/* {isImageFile(fileName.name) && (
                             <Tooltip title="Remove">
                               <IconButton
                                 size="small"
@@ -622,7 +624,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                             >
                               <RemoveCircleOutline />
                             </IconButton>
-                          </Tooltip>
+                          </Tooltip> */}
                         </Box>
                       </Box>
                     ))}

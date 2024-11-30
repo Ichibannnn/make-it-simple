@@ -26,7 +26,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 
 import TicketHistory from "./TicketHistory";
 import moment from "moment";
-import ViewTicketMenuActions from "./ViewTicketMenuActions";
+import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
 
 const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);

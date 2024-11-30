@@ -1077,23 +1077,9 @@ const IssueHandlerConcerns = () => {
         </Stack>
 
         <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />
-        <IssueHandlerHoldDialog
-          data={holdTicketData}
-          open={holdTicketOpen}
-          onClose={() => {
-            holdTicketOnClose(setHoldTicketData(null));
-          }}
-        />
-
-        <ManageOnHoldTicketDialog
-          data={holdTicketData}
-          open={manageHoldTicketOpen}
-          onClose={() => {
-            manageHoldTicketOnClose(setHoldTicketData(null));
-          }}
-        />
 
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
+
         <ManageTicketDialog
           data={closeTicketData}
           open={manageTicketOpen}
@@ -1109,6 +1095,7 @@ const IssueHandlerConcerns = () => {
             transferTicketOnClose(setTransferTicketData(null));
           }}
         />
+
         <ManageTransferDialog
           data={transferTicketData}
           open={manageTransferOpen}
@@ -1126,6 +1113,22 @@ const IssueHandlerConcerns = () => {
         />
 
         <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />
+
+        <IssueHandlerHoldDialog
+          data={holdTicketData}
+          open={holdTicketOpen}
+          onClose={() => {
+            holdTicketOnClose(setHoldTicketData(null));
+          }}
+        />
+
+        <ManageOnHoldTicketDialog
+          data={holdTicketData}
+          open={manageHoldTicketOpen}
+          onClose={() => {
+            manageHoldTicketOnClose(setHoldTicketData(null));
+          }}
+        />
 
         <PrintServiceReport
           data={printData}

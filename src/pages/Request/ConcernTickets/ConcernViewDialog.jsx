@@ -150,7 +150,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
-      Technicians: [],
+      // Technicians: [],
 
       Notes: "",
     },
@@ -502,16 +502,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
 
-      // setValue("CategoryId", {
-      //   id: editData?.categoryId,
-      //   category_Description: editData?.category_Description,
-      // });
-
-      // setValue("SubCategoryId", {
-      //   id: editData?.subCategoryId,
-      //   subCategory_Description: editData?.subCategory_Description,
-      // });
-
       if (editData.notes === null) {
         setValue("Notes", "");
       } else {
@@ -540,8 +530,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   }, [subCategoryData]);
 
   // console.log("Edit Data: ", editData);
-  console.log("Category: ", watch("CategoryId"));
-  console.log("SubCategory: ", watch("SubCategoryId"));
+  // console.log("Category: ", watch("CategoryId"));
+  // console.log("SubCategory: ", watch("SubCategoryId"));
   // console.log("SubCategory Data: ", subCategoryData?.value);
 
   return (
@@ -1214,57 +1204,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               fullWidth
                               disablePortal
                               disableClearable
-                              disabled={!watch("ChannelId")}
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                {/* TECHNICIANS */}
-                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
-                  <Stack sx={{ width: "100%", gap: 1 }}>
-                    <Stack>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Technicians (Optional):</Typography>
-                      <Controller
-                        control={control}
-                        name="Technicians"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              multiple
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={technicianData?.value || []}
-                              loading={technicianIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!technicianIsSuccess) getTechnicians();
-                              }}
-                              onChange={(_, value) => {
-                                onChange(value);
-                              }}
-                              getOptionLabel={(option) => option.technician_Name || ""}
-                              isOptionEqualToValue={(option, value) => option.technicianId === value.technicianId}
-                              getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
+                              disabled={(!watch("ChannelId") && editData?.concern_Status === "") || editData?.concern_Status === "For Approval" ? false : true}
                               componentsProps={{
                                 popper: {
                                   sx: {

@@ -1,22 +1,22 @@
-import { FileDownloadOutlined, MoreHoriz, VisibilityOutlined } from "@mui/icons-material";
+import { MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
 import React, { useRef } from "react";
-import useDisclosure from "../../../hooks/useDisclosure";
+import useDisclosure from "../../../../hooks/useDisclosure";
 
-const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile }) => {
+const TransferDialogMenuActions = ({ fileName, onView, onDelete, isImageFile }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
 
   const onViewAction = (fileName) => {
     onToggle();
-    onView(fileName);
+    onView(fileName.file);
   };
 
-  const onDownloadAction = (fileName) => {
+  const onDeleteAction = (fileName) => {
     onToggle();
-    onDownload(fileName);
+    onDelete(fileName);
   };
 
   return (
@@ -25,7 +25,7 @@ const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile }) =>
         <MoreHoriz />
       </IconButton>
 
-      <Menu anchorEl={ref.current} open={open} onClose={onToggle} disableAutoFocusItem={true}>
+      <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
         {isImageFile(fileName.name) && (
           <MenuItem onClick={() => onViewAction(fileName)}>
             <ListItemIcon>
@@ -35,15 +35,15 @@ const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile }) =>
           </MenuItem>
         )}
 
-        <MenuItem onClick={() => onDownloadAction(fileName)}>
+        <MenuItem onClick={() => onDeleteAction(fileName)}>
           <ListItemIcon>
-            <FileDownloadOutlined fontSize="small" />
+            <RemoveCircleOutline fontSize="small" />
           </ListItemIcon>
-          Download
+          Delete
         </MenuItem>
       </Menu>
     </>
   );
 };
 
-export default ViewTicketMenuActions;
+export default TransferDialogMenuActions;

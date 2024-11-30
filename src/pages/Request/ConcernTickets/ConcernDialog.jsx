@@ -64,9 +64,6 @@ const ConcernDialog = ({ open, onClose }) => {
     ChannelId: yup.object().required().label("Channel"),
     CategoryId: yup.array().required().label("Category"),
     SubCategoryId: yup.array().required().label("Sub Category"),
-    Technicians: yup.array().notRequired(),
-    // CategoryId: yup.object().required().label("Category"),
-    // SubCategoryId: yup.object().required().label("Sub category"),
 
     Notes: yup.string().notRequired(),
   });
@@ -124,9 +121,6 @@ const ConcernDialog = ({ open, onClose }) => {
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
-      Technicians: [],
-      // CategoryId: null,
-      // SubCategoryId: null,
 
       Notes: "",
     },
@@ -1093,7 +1087,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* TECHNICIANS */}
-                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                {/* <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
                   <Stack sx={{ width: "100%", gap: 1 }}>
                     <Stack>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Technicians (Optional):</Typography>
@@ -1140,7 +1134,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       />
                     </Stack>
                   </Stack>
-                </Stack>
+                </Stack> */}
 
                 {/* DESCRIPTION AND ATTACHMENT */}
                 <Stack

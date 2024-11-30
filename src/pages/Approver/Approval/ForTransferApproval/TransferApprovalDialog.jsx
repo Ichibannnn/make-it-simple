@@ -14,6 +14,7 @@ import { notificationApi } from "../../../../features/api_notification/notificat
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+import ForTransferDialogMenuActions from "./MenuActions/ForTransferDialogMenuActions";
 
 const TransferApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -474,14 +475,14 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <>
+                            <ForTransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
+                            {/* <>
                               {isImageFile(fileName.name) && (
                                 <Tooltip title="View">
                                   <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
                                     {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
                                   </IconButton>
                                 </Tooltip>
-                                // <ViewAttachment fileName={fileName} loading={loading} handleViewImage={handleViewImage} />
                               )}
                             </>
 
@@ -492,9 +493,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                                 <IconButton
                                   size="small"
                                   color="error"
-                                  // onClick={() => {
-                                  //   window.location = fileName.link;
-                                  // }}
                                   onClick={() => handleDownloadAttachment(fileName)}
                                   style={{
                                     background: "none",
@@ -503,7 +501,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                                   <FileDownloadOutlined />
                                 </IconButton>
                               </Tooltip>
-                            )}
+                            )} */}
                           </Box>
                         </Box>
                       </Box>

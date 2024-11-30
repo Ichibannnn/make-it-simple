@@ -11,15 +11,16 @@ import { Toaster, toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 
-import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
+import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import moment from "moment";
+import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -27,8 +28,9 @@ const schema = yup.object().shape({
   AddClosingAttachments: yup.array().nullable(),
 
   ChannelId: yup.object().required().label("Channel"),
-  CategoryId: yup.object().required().label("Category"),
-  SubCategoryId: yup.object().required().label("Sub category"),
+  CategoryId: yup.array().required().label("Category"),
+  SubCategoryId: yup.array().required().label("Sub Category"),
+  Technicians: yup.array().notRequired(),
 
   Notes: yup.string().notRequired(),
 });
@@ -45,7 +47,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
   useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
+  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
@@ -65,8 +68,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
       AddClosingAttachments: [],
 
       ChannelId: null,
-      CategoryId: null,
-      SubCategoryId: null,
+      CategoryId: [],
+      SubCategoryId: [],
+      Technicians: [],
 
       Notes: "",
     },
@@ -80,9 +84,42 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("Resolution", formData.resolution);
 
-    payload.append("CategoryId", formData.CategoryId.id);
-    payload.append("SubCategoryId", formData.SubCategoryId.id);
+    // payload.append("CategoryId", formData.CategoryId.id);
+    // payload.append("SubCategoryId", formData.SubCategoryId.id);
     payload.append("Notes", formData.Notes);
+
+    const category = formData.CategoryId;
+    for (let i = 0; i < category.length; i++) {
+      payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, "");
+      payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
+    }
+
+    if (category.length === 0) {
+      payload.append(`ClosingTicketCategories[0].ticketAttachmentId`, "");
+      payload.append(`ClosingTicketCategories[0].categoryId`, "");
+    }
+
+    const subCategory = formData.SubCategoryId;
+    for (let i = 0; i < subCategory.length; i++) {
+      payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, "");
+      payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+    }
+
+    if (subCategory.length === 0) {
+      payload.append(`ClosingSubTicketCategories[0].ticketSubCategoryId`, "");
+      payload.append(`ClosingSubTicketCategories[0].subCategoryId`, "");
+    }
+
+    const technicians = formData.Technicians;
+    for (let i = 0; i < technicians.length; i++) {
+      payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, "");
+      payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
+    }
+
+    if (technicians.length === 0) {
+      payload.append(`AddClosingTicketTechnicians[0].ticketTechnicianId`, "");
+      payload.append(`AddClosingTicketTechnicians[0].technician_By`, "");
+    }
 
     // Attachments
     const files = formData.AddClosingAttachments;
@@ -101,7 +138,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
 
     const isFourPMGreater = fourPM.isAfter(moment().set({ hour: 16, minute: 0 }));
-    console.log(isFourPMGreater);
+    // console.log(isFourPMGreater);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     Swal.fire({
       title: "Confirmation",
@@ -131,7 +169,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         : "",
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log("Payload Entries: ", [...payload.entries()]);
         closeIssueHandlerTickets(payload)
           .unwrap()
           .then(() => {
@@ -139,10 +176,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               description: "Ticket submitted successfully!",
               duration: 1500,
             });
-
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
-
             setAddAttachments([]);
             reset();
             onClose();
@@ -260,16 +295,43 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         id: data?.channelId,
         channel_Name: data?.channel_Name,
       });
-      setValue("CategoryId", {
-        id: data?.categoryId,
-        category_Description: data?.category_Description,
-      });
-      setValue("SubCategoryId", {
-        id: data?.subCategoryId,
-        subCategory_Description: data?.subCategory_Description,
+
+      const category = data?.getOpenTicketCategories?.map((item) => ({
+        ticketCategoryId: item.ticketCategoryId,
+        id: item.categoryId,
+        category_Description: item.category_Description,
+      }));
+
+      const subCategory = data?.getOpenTicketSubCategories.map((item) => ({
+        ticketSubCategoryId: item.ticketSubCategoryId,
+        subCategoryId: item.subCategoryId,
+        sub_Category_Description: item.subCategory_Description,
+      }));
+
+      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
+
+      setValue("CategoryId", category);
+      setValue("SubCategoryId", subCategory);
+
+      getSubCategory({
+        CategoryId: categoryIdParams,
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    const selectedCategories = watch("CategoryId");
+    const selectedSubCategories = watch("SubCategoryId");
+
+    if (selectedCategories.length > 0) {
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+      );
+      setValue("SubCategoryId", filteredSubCategories);
+    } else {
+      setValue("SubCategoryId", []);
+    }
+  }, [subCategoryData]);
 
   // console.log("Data: ", data);
   // console.log("Category: ", watch("CategoryId"));
@@ -364,6 +426,61 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           render={({ field: { ref, value, onChange } }) => {
                             return (
                               <Autocomplete
+                                multiple
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                                loading={categoryIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!categoryIsSuccess)
+                                    getCategory({
+                                      Status: true,
+                                    });
+                                }}
+                                onChange={(_, value) => {
+                                  // console.log("Value:", value);
+                                  onChange(value);
+
+                                  const categoryIdParams = value?.map((category) => category?.id);
+
+                                  if (watch("CategoryId").length === 0) {
+                                    setValue("SubCategoryId", []);
+                                  }
+
+                                  getSubCategory({
+                                    CategoryId: categoryIdParams,
+                                  });
+                                }}
+                                getOptionLabel={(option) => option.category_Description || ""}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
+                                sx={{
+                                  flex: 2,
+                                }}
+                                fullWidth
+                                disablePortal
+                                disableClearable
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                        {/* <Controller
+                          control={control}
+                          name="CategoryId"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
                                 ref={ref}
                                 size="small"
                                 value={value}
@@ -405,7 +522,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                               />
                             );
                           }}
-                        />
+                        /> */}
                       </Stack>
 
                       <Stack gap={0.5} sx={{ width: "50%" }}>
@@ -417,6 +534,51 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           Sub Category:
                         </Typography>
                         <Controller
+                          control={control}
+                          name="SubCategoryId"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
+                                multiple
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
+                                options={subCategoryData?.value || []}
+                                loading={subCategoryIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!subCategoryIsSuccess) getSubCategory();
+                                }}
+                                onChange={(_, value) => {
+                                  // console.log("Value ", value);
+
+                                  onChange(value);
+                                }}
+                                getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                                isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                                getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
+                                noOptionsText={"No sub category available"}
+                                sx={{
+                                  flex: 2,
+                                }}
+                                fullWidth
+                                disablePortal
+                                disableClearable
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                        {/* <Controller
                           control={control}
                           name="SubCategoryId"
                           render={({ field: { ref, value, onChange } }) => {
@@ -461,7 +623,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                               />
                             );
                           }}
-                        />
+                        /> */}
                       </Stack>
                     </Stack>
 
@@ -502,6 +664,56 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           );
                         }}
                       />
+                    </Stack>
+
+                    {/* TECHNICIANS */}
+                    <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                      <Stack sx={{ width: "100%", gap: 1 }}>
+                        <Stack>
+                          <Typography sx={{ fontSize: "14px", mb: 0.5 }}>Technicians (Optional):</Typography>
+                          <Controller
+                            control={control}
+                            name="Technicians"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <Autocomplete
+                                  multiple
+                                  ref={ref}
+                                  size="small"
+                                  value={value}
+                                  options={technicianData?.value || []}
+                                  loading={technicianIsLoading}
+                                  renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                  onOpen={() => {
+                                    if (!technicianIsSuccess) getTechnicians();
+                                  }}
+                                  onChange={(_, value) => {
+                                    onChange(value);
+                                  }}
+                                  getOptionLabel={(option) => option.technician_Name || ""}
+                                  isOptionEqualToValue={(option, value) => option.technicianId === value.technicianId}
+                                  getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
+                                  sx={{
+                                    flex: 2,
+                                  }}
+                                  fullWidth
+                                  disablePortal
+                                  disableClearable
+                                  componentsProps={{
+                                    popper: {
+                                      sx: {
+                                        "& .MuiAutocomplete-listbox": {
+                                          fontSize: "13px",
+                                        },
+                                      },
+                                    },
+                                  }}
+                                />
+                              );
+                            }}
+                          />
+                        </Stack>
+                      </Stack>
                     </Stack>
 
                     <Stack mt={2} gap={0.5}>
@@ -622,7 +834,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                             </Box>
 
                             <Box>
-                              {isImageFile(fileName.name) && (
+                              <ClosingDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                              {/* {isImageFile(fileName.name) && (
                                 <Tooltip title="Remove">
                                   <IconButton
                                     size="small"
@@ -646,7 +859,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                                 >
                                   <RemoveCircleOutline />
                                 </IconButton>
-                              </Tooltip>
+                              </Tooltip> */}
                             </Box>
                           </Box>
                         ))}
@@ -689,7 +902,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               form="closeTicket"
               variant="contained"
               loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
-              disabled={!watch("resolution") || !watch("CategoryId") || !watch("SubCategoryId")}
+              disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0}
             >
               Submit
             </LoadingButton>
