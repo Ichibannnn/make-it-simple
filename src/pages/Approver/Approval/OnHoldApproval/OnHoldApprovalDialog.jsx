@@ -1,5 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
@@ -13,6 +29,8 @@ import { notificationApi } from "../../../../features/api_notification/notificat
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+import OnHoldApprovalMenuActions from "./MenuActions/OnHoldApprovalMenuActions";
+import DisapprovedOnHoldDialog from "./DisapprovedOnHoldDialog";
 
 const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -34,7 +52,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
   const onApproveAction = () => {
     const approvePayload = {
-      transferTicketId: data?.transferTicketId,
+      onHoldTicketId: data?.ticketOnHoldId,
     };
 
     Swal.fire({
@@ -85,7 +103,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       setAttachments(
-        data?.transferAttachments?.map((item) => ({
+        data?.onHoldAttachments?.map((item) => ({
           ticketAttachmentId: item.ticketAttachmentId,
           name: item.fileName,
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
@@ -153,7 +171,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
     setSelectedImage(null);
   };
 
-  console.log("Approval Data: ", data);
+  // console.log("Approval Data: ", data);
 
   return (
     <>
@@ -186,12 +204,116 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
             </Stack>
           </Stack>
 
-          <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
-
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               {/* CONCERN DETAILS */}
-              <Stack
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    {data?.concern_Details?.split("\r\n").map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Reason:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    {data?.reason?.split("\r\n").map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getOnHoldTicketCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.category_Description ? item.category_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getOnHoldTicketSubCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
+              </Stack>
+
+              {/* <Stack
                 marginTop={3}
                 padding={2}
                 gap={1}
@@ -317,7 +439,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     <Typography
                       sx={{ fontSize: "14px" }}
                       dangerouslySetInnerHTML={{
-                        __html: data?.onHold_Remarks.replace(/\r\n/g, "<br />"),
+                        __html: data?.onHold_Remarks?.replace(/\r\n/g, "<br />"),
                       }}
                     />
                   </Stack>
@@ -398,7 +520,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     <Typography sx={{ fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
                   </Stack>
                 </Stack>
-              </Stack>
+              </Stack> */}
 
               {/* ATTACHMENTS */}
               <Stack
@@ -470,14 +592,14 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <>
+                            <OnHoldApprovalMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
+                            {/* <>
                               {isImageFile(fileName.name) && (
                                 <Tooltip title="View">
                                   <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
                                     {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
                                   </IconButton>
                                 </Tooltip>
-                                // <ViewAttachment fileName={fileName} loading={loading} handleViewImage={handleViewImage} />
                               )}
                             </>
 
@@ -488,9 +610,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                                 <IconButton
                                   size="small"
                                   color="error"
-                                  // onClick={() => {
-                                  //   window.location = fileName.link;
-                                  // }}
+
                                   onClick={() => handleDownloadAttachment(fileName)}
                                   style={{
                                     background: "none",
@@ -499,7 +619,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                                   <FileDownloadOutlined />
                                 </IconButton>
                               </Tooltip>
-                            )}
+                            )} */}
                           </Box>
                         </Box>
                       </Box>
@@ -530,7 +650,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
           </Stack>
         </DialogActions>
 
-        {/* <TransferDisapproveDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} /> */}
+        <DisapprovedOnHoldDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} />
       </Dialog>
 
       {selectedImage && (

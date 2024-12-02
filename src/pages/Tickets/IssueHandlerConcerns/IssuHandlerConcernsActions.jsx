@@ -156,14 +156,19 @@ const IssueHandlerConcernsActions = ({
     );
   }
 
-  if (data?.ticket_Status === "On-Hold") {
+  if (data?.ticket_Status === "For On-Hold") {
     menuItems.push(
       <MenuItem key="manage-onhold" onClick={() => onHoldManageTicketAction(data)}>
         <ListItemIcon>
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
         Update On-Hold
-      </MenuItem>,
+      </MenuItem>
+    );
+  }
+
+  if (data?.ticket_Status === "On-Hold") {
+    menuItems.push(
       <MenuItem key="resume" onClick={() => onResumeTicketAction(data)}>
         <ListItemIcon>
           <ArrowForwardOutlined fontSize="small" color="warning" />

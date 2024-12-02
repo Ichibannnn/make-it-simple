@@ -467,19 +467,19 @@ const IssueHandlerConcerns = () => {
               />
 
               <Tab
-                value="Transfer Approval"
+                value="For On-Hold"
                 className="tabs-styling"
-                label="Transfer Approval"
+                label="Hold Approval"
                 icon={
                   <Badge
-                    badgeContent={notificationBadge?.value?.transferApprovalNotif}
+                    badgeContent={notificationBadge?.value?.forOnHoldNotif}
                     max={100000}
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
                         fontWeight: 400,
-                        background: "#ff7043",
+                        background: "#ffb74d",
                         color: "#ffff",
                       },
                     }}
@@ -937,8 +937,8 @@ const IssueHandlerConcerns = () => {
                                 ? "Open"
                                 : item.ticket_Status === "For Transfer"
                                 ? "For Transfer"
-                                : item.ticket_Status === "Transfer Approval"
-                                ? "Transfer Approval"
+                                : item.ticket_Status === "For On-Hold"
+                                ? "Hold Approval"
                                 : item.ticket_Status === "On-Hold"
                                 ? "On-Hold"
                                 : item.ticket_Status === "For Closing Ticket"
@@ -955,8 +955,8 @@ const IssueHandlerConcerns = () => {
                                   ? "#ec9d29"
                                   : item.ticket_Status === "For Transfer"
                                   ? "#ff7043"
-                                  : item.ticket_Status === "Transfer Approval"
-                                  ? "#ff7043"
+                                  : item.ticket_Status === "For On-Hold"
+                                  ? "#ffb74d"
                                   : item.ticket_Status === "On-Hold"
                                   ? "#ff6d00"
                                   : item.ticket_Status === "For Closing Ticket"

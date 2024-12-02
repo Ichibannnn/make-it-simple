@@ -294,11 +294,24 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Stack>
               )}
 
+              {/* For OnHold Remarks */}
+              {data?.ticket_Status === "For On-Hold" && (
+                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Hold Reason:</Typography>
+                  </Box>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForOnHolds?.[0]?.reason}</Typography>
+                  </Box>
+                </Stack>
+              )}
+
               {/* OnHold Remarks */}
               {data?.ticket_Status === "On-Hold" && (
                 <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                   <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>On Hold Remarks:</Typography>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>On Hold Reason:</Typography>
                   </Box>
                   <Box sx={{ width: "10%" }} />
                   <Box width={{ width: "75%", ml: 2 }}>

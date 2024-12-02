@@ -87,7 +87,6 @@ const ConcernDialog = ({ open, onClose }) => {
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
-  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const {
     control,
@@ -407,7 +406,7 @@ const ConcernDialog = ({ open, onClose }) => {
   // console.log("Ticket Number:", backjobTicketData);
   // console.log("TicketId: ", watch("BackJobId"));
   // console.log("backjobTicketData", backjobTicketData);
-  // console.log("Category: ", watch("CategoryId"));
+  console.log("Category: ", watch("CategoryId"));
   // console.log("SubCategory", subCategoryData?.value);
 
   // console.log("Technicians: ", watch("Technicians"));
@@ -1068,7 +1067,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               fullWidth
                               disablePortal
                               disableClearable
-                              disabled={!watch("ChannelId")}
+                              disabled={!watch("ChannelId") || watch("CategoryId")?.length === 0}
                               componentsProps={{
                                 popper: {
                                   sx: {

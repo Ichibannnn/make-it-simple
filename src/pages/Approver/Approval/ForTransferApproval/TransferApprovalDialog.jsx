@@ -1,7 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
+
+import * as yup from "yup";
+import moment from "moment";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import Swal from "sweetalert2";
 import { Toaster, toast } from "sonner";
@@ -15,6 +36,14 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import ForTransferDialogMenuActions from "./MenuActions/ForTransferDialogMenuActions";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { ThemeContext } from "@emotion/react";
+
+const schema = yup.object().shape({
+  // transferTicketId: yup.string().nullable(),
+  targetDate: yup.date().notRequired(),
+});
 
 const TransferApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -34,10 +63,29 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
   const { open: disapproveOpen, onToggle: disapproveOnToggle, onClose: disapproveOnClose } = useDisclosure();
 
-  const onApproveAction = () => {
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      targetDate: null,
+    },
+  });
+
+  const onApproveAction = (formData) => {
+    // console.log("FormData: ", formData);`
+
     const approvePayload = {
       transferTicketId: data?.transferTicketId,
+      target_Date: data?.approver_Level === 1 ? watch("targetDate") : moment(watch("targetDate")).format("YYYY-MM-DD"),
     };
+
+    console.log("approvePayload: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -94,6 +142,12 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           link: item.attachment,
         }))
       );
+
+      if (data?.approver_Level === 2) {
+        setValue("targetDate", data?.target_Date);
+      } else {
+        setValue("targetDate", null);
+      }
     }
   }, [data]);
 
@@ -156,6 +210,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
   };
 
   // console.log("Approval Data: ", data);
+  // console.log("Target Date: ", moment(watch("targetDate")).format("YYYY-MM-DD`"));
 
   return (
     <>
@@ -191,12 +246,116 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
             </Stack>
           </Stack>
 
-          <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
-
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               {/* CONCERN DETAILS */}
-              <Stack
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    {data?.concern_Details?.split("\r\n").map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getTransferTicketCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.category_Description ? item.category_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                    {data?.getTransferTicketSubCategories?.map((item, i) => (
+                      <Box key={i}>
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                          sx={{
+                            backgroundColor: theme.palette.bgForm.black_1,
+                            color: "#ffffff",
+                            borderRadius: "none",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
+              </Stack>
+
+              {/* <Stack
                 marginTop={3}
                 padding={2}
                 gap={1}
@@ -403,12 +562,12 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     <Typography sx={{ fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
                   </Stack>
                 </Stack>
-              </Stack>
+              </Stack> */}
 
               {/* ATTACHMENTS */}
               <Stack
                 marginTop={3}
-                padding={4}
+                padding={2}
                 sx={{
                   border: "1px solid #2D3748",
                 }}
@@ -509,13 +668,73 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                   </Stack>
                 )}
               </Stack>
+
+              <Stack sx={{ width: "100%", gap: 1, mt: 2 }}>
+                <Stack gap={0.5}>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      color: theme.palette.primary.main,
+                    }}
+                  >
+                    Target Date:
+                  </Typography>
+
+                  <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <Controller
+                      control={control}
+                      name="targetDate"
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value ? moment(field.value) : null}
+                          onChange={(newValue) => {
+                            const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                            field.onChange(formattedValue);
+                          }}
+                          // label="Select Target Date"
+                          slotProps={{
+                            textField: {
+                              variant: "outlined",
+                              sx: {
+                                "& .MuiInputBase-input": {
+                                  padding: "10.5px 14px",
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                  fontSize: "15px",
+                                },
+                              },
+                            },
+                          }}
+                          minDate={new moment()}
+                          error={!!errors.targetDate}
+                          helperText={errors.targetDate ? errors.targetDate.message : null}
+                        />
+                      )}
+                    />
+                    {errors.targetDate && <Typography>{errors.targetDate.message}</Typography>}
+                  </LocalizationProvider>
+                </Stack>
+              </Stack>
             </Stack>
           </Stack>
         </DialogContent>
 
         <DialogActions>
           <Stack sx={{ flexDirection: "row", gap: 0.5, padding: 2 }}>
-            <LoadingButton variant="contained" color="success" onClick={onApproveAction} loading={approveTransferIsLoading || approveTransferIsFetching} startIcon={<Check />}>
+            <LoadingButton
+              variant="contained"
+              color="success"
+              onClick={onApproveAction}
+              disabled={data?.approver_Level === 1 && !watch("targetDate") ? true : false}
+              loading={approveTransferIsLoading || approveTransferIsFetching}
+              startIcon={<Check />}
+              sx={{
+                ":disabled": {
+                  backgroundColor: "",
+                  color: "black",
+                },
+              }}
+            >
               Approve
             </LoadingButton>
 

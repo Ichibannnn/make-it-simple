@@ -21,6 +21,15 @@ export const reportsApi = createApi({
   }),
 
   endpoints: (builder) => ({
+    getAllTickets: builder.query({
+      query: (params) => ({
+        url: "reports/all-tickets",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: ["Reports"],
+    }),
+
     getOpenTickets: builder.query({
       query: (params) => ({
         url: "reports/open",
@@ -100,11 +109,13 @@ export const reportsApi = createApi({
 });
 
 export const {
+  useGetAllTicketsQuery,
   useGetOpenTicketsQuery,
   useGetClosedTicketsQuery,
   useGetTransferredTicketsQuery,
   useGetOnHoldTicketsQuery,
 
+  useLazyGetAllTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,

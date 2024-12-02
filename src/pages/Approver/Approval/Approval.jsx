@@ -74,6 +74,8 @@ const Approval = () => {
     }
   }, [searchValue]);
 
+  console.log("Notification: ", notificationBadge);
+
   return (
     <Stack
       sx={{
@@ -177,7 +179,7 @@ const Approval = () => {
               label="On Hold"
               icon={
                 <Badge
-                  // badgeContent={notificationBadge?.value?.forApprovalTransferNotif}
+                  badgeContent={notificationBadge?.value?.forApprovalOnHoldNotif}
                   max={100000}
                   color="warning"
                   anchorOrigin={{

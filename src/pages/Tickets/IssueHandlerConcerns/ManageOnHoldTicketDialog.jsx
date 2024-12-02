@@ -249,10 +249,10 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       setValue("ticketConcernId", data?.ticketConcernId);
-      setValue("id", data?.getOnHolds?.[0]?.id);
-      setValue("Reason", data?.getOnHolds?.[0]?.reason);
+      setValue("id", data?.getForOnHolds?.[0]?.id);
+      setValue("Reason", data?.getForOnHolds?.[0]?.reason);
 
-      const manageTicketArray = data?.getOnHolds?.map((item) =>
+      const manageTicketArray = data?.getForOnHolds?.map((item) =>
         item?.getAttachmentForOnHoldTickets?.map((subItem) => {
           return {
             id: item.id,

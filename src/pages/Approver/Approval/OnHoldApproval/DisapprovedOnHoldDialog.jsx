@@ -10,7 +10,7 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
 import { useDispatch } from "react-redux";
-import { useRejectTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+import { useRejectOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 
@@ -18,8 +18,10 @@ const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
 });
 
-const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
-  const [disapproveTransfer, { isLoading, isFetching }] = useRejectTransferMutation();
+const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
+  const [disapproveOnHold, { isLoading, isFetching }] = useRejectOnHoldMutation();
+
+  console.log("Disapproved Data: ", data);
 
   const dispatch = useDispatch();
 
@@ -38,7 +40,7 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
 
   const onSubmitAction = (formData) => {
     const disapprovePayload = {
-      transferTicketId: data?.transferTicketId,
+      onHoldTicketId: data?.ticketOnHoldId,
       reject_Remarks: formData?.reject_Remarks,
     };
 
@@ -46,7 +48,7 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Disapproved this request transfer ticket number ${data?.ticketConcernId}?`,
+      text: `Disapproved this request hold ticket number ${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -67,7 +69,7 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        disapproveTransfer(disapprovePayload)
+        disapproveOnHold(disapprovePayload)
           .unwrap()
           .then(() => {
             toast.success("Success!", {
@@ -114,6 +116,7 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
         >
           Disapprove Remarks
         </DialogTitle>
+
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ padding: "5px", gap: 0.5 }}>
@@ -166,4 +169,4 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
   );
 };
 
-export default TransferDisapproveDialog;
+export default DisapprovedOnHoldDialog;

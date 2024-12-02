@@ -27,6 +27,7 @@ import {
   useLazyGetDownloadOpenTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,
 } from "../../features/api_reports/reportsApi";
+import AllTicketsHistory from "./AllTicketsHistory";
 
 const schema = yup.object().shape({
   UnitId: yup.object().nullable(),
@@ -49,7 +50,7 @@ const ReportsPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const categoryOptions = ["Open Tickets", "Closed Tickets", "Transferred Tickets", "On-Hold Tickets"];
+  const categoryOptions = ["All Tickets", "Open Tickets", "Closed Tickets", "Transferred Tickets", "On-Hold Tickets"];
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
 
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
@@ -405,7 +406,22 @@ const ReportsPage = () => {
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
           <Stack>
-            {reportNavigation === "Open Tickets" ? (
+            {reportNavigation === "All Tickets" ? (
+              <AllTicketsHistory
+                search={search}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                unit={unit}
+                user={user}
+                remarks={remarks}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+              />
+            ) : reportNavigation === "Open Tickets" ? (
               <OpenTicketsHistory
                 search={search}
                 searchValue={searchValue}

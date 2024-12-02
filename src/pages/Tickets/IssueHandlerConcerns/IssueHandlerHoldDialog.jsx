@@ -17,6 +17,7 @@ import { notificationApi } from "../../../features/api_notification/notification
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import OnHoldMenuActions from "./MenuActions/OnHoldMenuActions";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -417,7 +418,9 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
                             </Box>
 
                             <Box>
-                              {isImageFile(fileName.name) && (
+                              <OnHoldMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+
+                              {/* {isImageFile(fileName.name) && (
                                 <Tooltip title="Remove">
                                   <IconButton
                                     size="small"
@@ -441,7 +444,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
                                 >
                                   <RemoveCircleOutline />
                                 </IconButton>
-                              </Tooltip>
+                              </Tooltip> */}
                             </Box>
                           </Box>
                         ))}

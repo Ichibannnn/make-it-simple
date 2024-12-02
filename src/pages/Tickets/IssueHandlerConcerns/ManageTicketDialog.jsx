@@ -423,7 +423,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
   // console.log("Error: ", errors);
 
   return (

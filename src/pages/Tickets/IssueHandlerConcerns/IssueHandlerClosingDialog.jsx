@@ -139,6 +139,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
     const isFourPMGreater = fourPM.isAfter(moment().set({ hour: 16, minute: 0 }));
     // console.log(isFourPMGreater);
+
     console.log("Payload Entries: ", [...payload.entries()]);
 
     Swal.fire({
