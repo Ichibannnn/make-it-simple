@@ -210,7 +210,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="md" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogContent sx={{ paddingBottom: 10 }}>
           <Stack direction="column" sx={{ padding: "5px" }}>

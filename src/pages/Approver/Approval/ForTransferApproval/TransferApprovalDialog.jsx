@@ -143,10 +143,10 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
         }))
       );
 
-      if (data?.approver_Level === 2) {
+      if (data?.approver_Level >= 2) {
         setValue("targetDate", data?.target_Date);
       } else {
-        setValue("targetDate", null);
+        setValue("targetDate", data?.current_Target_Date);
       }
     }
   }, [data]);
@@ -209,7 +209,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     setSelectedImage(null);
   };
 
-  // console.log("Approval Data: ", data);
+  console.log("Data: ", data);
   // console.log("Target Date: ", moment(watch("targetDate")).format("YYYY-MM-DD`"));
 
   return (
@@ -677,7 +677,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                       color: theme.palette.primary.main,
                     }}
                   >
-                    Target Date:
+                    New Target Date:
                   </Typography>
 
                   <LocalizationProvider dateAdapter={AdapterMoment}>

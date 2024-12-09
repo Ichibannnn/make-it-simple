@@ -233,7 +233,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="md" open={open}>
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>

@@ -271,6 +271,35 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 </Box>
               </Stack>
 
+              {/* {data?.ticket_Status === "For Closing Ticket" && (
+                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                  <Box sx={{ width: "15%", ml: 2 }}>
+                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Technicians:</Typography>
+                  </Box>
+                  <Box sx={{ width: "10%" }} />
+                  <Box width={{ width: "75%", ml: 2 }}>
+                    <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                      {data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap((item, i) => (
+                        <Box key={i} sx={{ maxWidth: "200px", maxHeight: "200px" }}>
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={item.fullname ? item.fullname : "-"}
+                            sx={{
+                              backgroundColor: theme.palette.bgForm.black_1,
+                              color: "#ffffff",
+                              borderRadius: "none",
+                              maxWidth: "300px",
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Stack>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
+                  </Box>
+                </Stack>
+              )} */}
+
               <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                 <Box sx={{ width: "15%", ml: 2 }}>
                   <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Assigned to:</Typography>

@@ -96,7 +96,7 @@ const RejectTransfer = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{

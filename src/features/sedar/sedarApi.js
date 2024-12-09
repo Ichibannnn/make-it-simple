@@ -5,13 +5,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const sedarApi = createApi({
   reducerPath: "sedarApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://rdfsedar.com/api",
+    baseUrl: "https://rdfsedar.com/api",
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set(
-        "Authorization",
-        `Bearer ${process.env.REACT_APP_SEDAR_TOKEN}`
-      );
+      headers.set("Authorization", `Bearer ${process.env.REACT_APP_SEDAR_TOKEN}`);
 
       return headers;
     },

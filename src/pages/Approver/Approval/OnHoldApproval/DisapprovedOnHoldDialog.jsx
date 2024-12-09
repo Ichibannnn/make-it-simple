@@ -100,7 +100,7 @@ const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{

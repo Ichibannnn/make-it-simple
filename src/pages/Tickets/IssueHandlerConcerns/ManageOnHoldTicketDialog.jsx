@@ -281,7 +281,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="md" open={open}>
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>

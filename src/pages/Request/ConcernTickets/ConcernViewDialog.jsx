@@ -73,8 +73,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
     Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
     BackJobId: yup.object().notRequired(),
-    Contact_Number: yup.string().notRequired(),
-
+    Contact_Number: yup.string().matches(/^09\d{9}$/, {
+      message: "Must start with 09 and be 11 digits long",
+      excludeEmptyString: true,
+    }),
     UserId: yup.object().required().label("Requestor is required"),
     CompanyId: yup.object().required().label("Company is required"),
     BusinessUnitId: yup.object().required().label("Business Unit"),
@@ -536,7 +538,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }}>
@@ -554,8 +555,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   </Typography>
                 </Stack>
               </Stack>
-
-              {/* <Stack mt={4}></Stack> */}
 
               <Stack padding={3}>
                 <Typography
@@ -729,10 +728,22 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           },
                         }}
                         render={({ field: { ref, value, onChange } }) => {
-                          const handleChange = (e) => {
-                            // Allow only numbers
-                            const newValue = e.target.value.replace(/\D/g, "");
-                            onChange(newValue);
+                          const handleInputChange = (event) => {
+                            let input = event.target.value;
+
+                            // Ensure "09" prefix is added if value is not empty
+                            if (input && !input.startsWith("09")) {
+                              input = "09" + input.replace(/[^0-9]/g, "");
+                            } else {
+                              input = input.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+                            }
+
+                            // Limit to 11 characters
+                            if (input.length > 11) {
+                              input = input.slice(0, 11);
+                            }
+
+                            onChange(input || null); // Allow null if empty
                           };
 
                           return (
@@ -740,8 +751,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               inputRef={ref}
                               size="small"
                               value={value}
-                              placeholder="09xxxxxxxxx"
-                              onChange={handleChange}
+                              placeholder="09"
+                              onChange={handleInputChange}
                               error={!!errors.Contact_Number}
                               helperText={errors.Contact_Number ? errors.Contact_Number.message : ""}
                               InputProps={{

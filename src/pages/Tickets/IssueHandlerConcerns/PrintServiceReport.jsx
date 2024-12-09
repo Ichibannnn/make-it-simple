@@ -43,17 +43,23 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                     width: "100%",
                   }}
                 >
-                  <Typography align="center" sx={{ fontWeight: "bold", color: "black" }}>
-                    RDF FEED, LIVESTOCK AND FOODS, INC.
+                  <Typography align="center" sx={{ fontWeight: "semibold", color: "black", borderBottom: "1px solid black", fontSize: "11px", fontStyle: "italic" }}>
+                    This document is for INTERNAL USE ONLY. Limited copies may be made only by RDF employees. or by the contractors and third party who have signed an appropriate
+                    nondisclosure agreement or with prior consent from the management.
                   </Typography>
-                  <Typography align="center" sx={{ fontWeight: "bold", color: "black", borderTop: "1px solid black" }}>
+
+                  <Typography align="center" sx={{ fontWeight: "bold", color: "black" }}>
                     SERVICE REPORT
+                  </Typography>
+
+                  <Typography align="center" sx={{ fontWeight: "bold", color: "black", borderTop: "1px solid black" }}>
+                    MANAGEMENT INFORMATION SYSTEM
                   </Typography>
                 </Stack>
               </Stack>
 
               <Stack direction="row" sx={{ borderBottom: "1px solid black", borderLeft: "1px solid black", borderRight: "1px solid black" }}>
-                <Stack sx={{ width: "50%" }}>
+                <Stack sx={{ width: "75%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black", borderRight: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET NUMBER:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.ticketConcernId} </Typography>
@@ -65,7 +71,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ width: "50%" }}>
+                <Stack sx={{ width: "25%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>DATE NEEDED:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
@@ -79,19 +85,37 @@ const PrintServiceReport = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack direction="row" sx={{ borderBottom: "1px solid black", borderLeft: "1px solid black", borderRight: "1px solid black" }}>
-                <Stack sx={{ width: "50%" }}>
+                <Stack sx={{ width: "75%" }}>
                   <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black", borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CATEGORY:{"  "}</Typography>
-                    <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.category_Description} </Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px" }}>
+                      <Stack direction="row" spacing={1}>
+                        {data?.getOpenTicketCategories?.map((item, i) => (
+                          <React.Fragment key={i}>
+                            {item.category_Description}
+                            {i < data.getOpenTicketCategories.length - 1 && ", "}
+                          </React.Fragment>
+                        ))}
+                      </Stack>
+                    </Typography>
                   </Stack>
 
                   <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black" }}>
-                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>SUB-CATEGORY:{"  "}</Typography>
-                    <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.subCategory_Description} </Typography>
+                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "13px", marginLeft: 1 }}>SUB-CATEGORY:{"  "}</Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px" }}>
+                      <Stack direction="row" spacing={1}>
+                        {data?.getOpenTicketSubCategories?.map((item, i) => (
+                          <React.Fragment key={i}>
+                            {item.subCategory_Description}
+                            {i < data.getOpenTicketSubCategories.length - 1 && ", "}
+                          </React.Fragment>
+                        ))}
+                      </Stack>
+                    </Typography>
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ width: "50%" }}>
+                <Stack sx={{ width: "25%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TARGET DATE:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.target_Date).format("MM/DD/YYYY")} </Typography>
@@ -107,7 +131,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
               <Stack sx={{ marginTop: 8, minHeight: "600px", gap: 4 }}>
                 <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                   <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
-                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET DESCRIPTION:{"  "}</Typography>
+                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>A. TICKET DESCRIPTION:{"  "}</Typography>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 2 }}>
@@ -117,7 +141,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
 
                 <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                   <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
-                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>RESOLUTION:{"  "}</Typography>
+                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>B. RESOLUTION:{"  "}</Typography>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 2 }}>

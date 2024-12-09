@@ -111,7 +111,7 @@ const Overview = () => {
                       gap: 3,
                       width: "100%",
                       mt: 4,
-                      backgroundColor: "#111927",
+                      // backgroundColor: "#111927",
                       padding: 4,
                     }}
                   >
@@ -133,7 +133,7 @@ const Overview = () => {
                     </Box> */}
 
                     {/* Pie Chart */}
-                    <PieChart width={400} height={400}>
+                    <PieChart width={300} height={300}>
                       <Pie data={units} cx="50%" cy="50%" labelLine={false} outerRadius={150} fill="#8884d8" dataKey="value">
                         {units.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />

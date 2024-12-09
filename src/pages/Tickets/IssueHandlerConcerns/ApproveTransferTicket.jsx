@@ -117,7 +117,7 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="xs" open={open}>
         <DialogTitle
           sx={{

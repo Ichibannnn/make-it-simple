@@ -93,7 +93,7 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{
@@ -109,6 +109,7 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
         >
           Remarks Form
         </DialogTitle>
+
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ padding: "5px", gap: 0.5 }}>

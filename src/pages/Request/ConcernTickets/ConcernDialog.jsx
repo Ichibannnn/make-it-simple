@@ -29,6 +29,7 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
+import PhoneInput from "react-phone-number-input/input";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -39,6 +40,7 @@ const ConcernDialog = ({ open, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const dateNeededValidation = new moment();
+  const [phoneValue, setPhoneValue] = useState();
 
   const userId = useSelector((state) => state?.user?.id);
 
@@ -50,8 +52,10 @@ const ConcernDialog = ({ open, onClose }) => {
 
     Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
     BackJobId: yup.object().notRequired(),
-    Contact_Number: yup.string().notRequired(),
-
+    Contact_Number: yup.string().matches(/^09\d{9}$/, {
+      message: "Must start with 09 and be 11 digits long",
+      excludeEmptyString: true,
+    }),
     UserId: yup.object().required().label("Requestor is required"),
     CompanyId: yup.object().required().label("Company is required"),
     BusinessUnitId: yup.object().required().label("Business Unit"),
@@ -406,10 +410,12 @@ const ConcernDialog = ({ open, onClose }) => {
   // console.log("Ticket Number:", backjobTicketData);
   // console.log("TicketId: ", watch("BackJobId"));
   // console.log("backjobTicketData", backjobTicketData);
-  console.log("Category: ", watch("CategoryId"));
+  // console.log("Category: ", watch("CategoryId"));
   // console.log("SubCategory", subCategoryData?.value);
 
   // console.log("Technicians: ", watch("Technicians"));
+
+  // console.log("Cellphone: ", watch("Contact_Number"));
 
   return (
     <>
@@ -591,18 +597,23 @@ const ConcernDialog = ({ open, onClose }) => {
                       <Controller
                         control={control}
                         name="Contact_Number"
-                        rules={{
-                          required: "Contact number is required",
-                          pattern: {
-                            value: /^[0-9]{11}$/,
-                            message: "Contact number must be exactly 11 digits",
-                          },
-                        }}
                         render={({ field: { ref, value, onChange } }) => {
-                          const handleChange = (e) => {
-                            // Allow only numbers
-                            const newValue = e.target.value.replace(/\D/g, "");
-                            onChange(newValue);
+                          const handleInputChange = (event) => {
+                            let input = event.target.value;
+
+                            // Ensure "09" prefix is added if value is not empty
+                            if (input && !input.startsWith("09")) {
+                              input = "09" + input.replace(/[^0-9]/g, "");
+                            } else {
+                              input = input.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+                            }
+
+                            // Limit to 11 characters
+                            if (input.length > 11) {
+                              input = input.slice(0, 11);
+                            }
+
+                            onChange(input || ""); // Allow null if empty
                           };
 
                           return (
@@ -610,8 +621,8 @@ const ConcernDialog = ({ open, onClose }) => {
                               inputRef={ref}
                               size="small"
                               value={value}
-                              placeholder="09xxxxxxxxx"
-                              onChange={handleChange}
+                              placeholder="09"
+                              onChange={handleInputChange}
                               error={!!errors.Contact_Number}
                               helperText={errors.Contact_Number ? errors.Contact_Number.message : ""}
                               InputProps={{
@@ -633,6 +644,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           );
                         }}
                       />
+                      {/* <PhoneInput international countryCallingCodeEditable={false} defaultCountry="PH" value={phoneValue} onChange={setPhoneValue} /> */}
                     </Stack>
                   </Stack>
                 </Stack>

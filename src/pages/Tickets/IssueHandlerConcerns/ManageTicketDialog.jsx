@@ -428,7 +428,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="md" open={open}>
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
@@ -563,6 +563,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   flex: 2,
                                 }}
                                 fullWidth
+                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 disablePortal
                                 disableClearable
                                 componentsProps={{
@@ -618,6 +619,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   flex: 2,
                                 }}
                                 fullWidth
+                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 disablePortal
                                 disableClearable
                                 componentsProps={{
@@ -706,6 +708,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     flex: 2,
                                   }}
                                   fullWidth
+                                  disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                   disablePortal
                                   disableClearable
                                   componentsProps={{

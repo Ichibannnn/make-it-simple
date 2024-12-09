@@ -169,7 +169,7 @@ const NewReceiverConcern = () => {
               <Tab
                 className="tabs-styling"
                 value="true"
-                label="Approved"
+                label="Verified"
                 icon={
                   <Badge
                     badgeContent={notificationBadge?.value?.receiverApproveNotif}
