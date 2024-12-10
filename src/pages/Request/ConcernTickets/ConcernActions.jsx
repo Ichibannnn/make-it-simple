@@ -34,7 +34,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
   return (
     <>
       <IconButton ref={ref} onClick={onToggle}>
-        <MoreHoriz />
+        <MoreHoriz sx={{ color: "#fff" }} />
       </IconButton>
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>

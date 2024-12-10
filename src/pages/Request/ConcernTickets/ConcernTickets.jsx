@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   Badge,
   Button,
+  Card,
+  CardContent,
   Chip,
   CircularProgress,
   Divider,
@@ -29,6 +31,8 @@ import {
   ClearAllOutlined,
   FiberManualRecord,
   HowToRegOutlined,
+  KeyboardDoubleArrowDown,
+  KeyboardDoubleArrowUp,
   PendingActionsOutlined,
   RotateRightOutlined,
   Search,
@@ -75,7 +79,7 @@ const ConcernTickets = () => {
   const [returnData, setReturnData] = useState(null);
 
   const dispatch = useDispatch();
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // const navigate = useNavigate();
   useSignalRConnection();
 
@@ -249,19 +253,19 @@ const ConcernTickets = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "17px",
+        padding: isScreenSmall ? "20px" : "44px 94px 94px 94px",
       }}
     >
       <Toaster richColors position="top-right" closeButton />
       <Stack>
-        <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isTablet ? "column" : "row" }}>
+        <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
           <Stack justifyItems="left">
-            <Typography variant="h4">Request Concerns</Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>Request Concerns</Typography>
           </Stack>
 
-          <Stack>
+          <Stack justifyItems="space-between" direction="row" marginTop={1}>
             <LoadingButton
-              size="large"
+              size={isScreenSmall ? "medium" : "large"}
               variant="contained"
               color="primary"
               startIcon={<AddOutlined />}
@@ -459,277 +463,442 @@ const ConcernTickets = () => {
                   lineHeight: "1.4375rem",
                 }}
               />
+
+              {isScreenSmall && (
+                <IconButton size="small" onClick={() => setAscending(!ascending)}>
+                  {ascending === true ? <KeyboardDoubleArrowUp sx={{ fontSize: "25px" }} /> : <KeyboardDoubleArrowDown sx={{ fontSize: "25px" }} />}
+                </IconButton>
+              )}
             </Stack>
 
-            <TableContainer sx={{ minHeight: "542px", maxHeight: "542px" }}>
-              <Table stickyHeader sx={{ borderBottom: "none" }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      <Stack direction="row" gap={0.2} justifyContent="center" alignItems="center">
-                        CONCERN NO.
-                        <IconButton size="small" onClick={() => setAscending(!ascending)}>
-                          {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
-
-                    {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
-                      <TableCell
+            {isScreenSmall ? (
+              <Stack spacing={2}>
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.requestConcern?.map((item, index) => (
+                    <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                      <CardContent
                         sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
+                          cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: "#1A222F",
+                            color: "#9e77ed", // Change the text color when hovering
+                          },
                         }}
-                        align="center"
                       >
-                        TICKET NO.
-                      </TableCell>
-                    )}
+                        <Stack spacing={1}>
+                          <Stack spacing={1} onClick={() => onViewHistoryAction(item)}>
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>CONCERN NUMBER:</Typography>
+                              <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
+                            </Stack>
 
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      REQUEST DETAILS
-                    </TableCell>
+                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>TICKET NUMBER:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                </Typography>
+                              </Stack>
+                            )}
 
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      DATE CREATED
-                    </TableCell>
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>REQUEST DETAILS:</Typography>
+                              <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                {item.concern.split("\r\n").map((line, index) => (
+                                  <span key={index}>
+                                    {line}
+                                    <br />
+                                  </span>
+                                ))}
+                              </Typography>
+                            </Stack>
 
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      STATUS
-                    </TableCell>
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>DATE CREATED:</Typography>
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: "#1D1F3B",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
+                                }}
+                                label={moment(item.created_At).format("LL")}
+                              />
+                            </Stack>
 
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ACTION
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>STATUS:</Typography>
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={
+                                  item.concern_Status === "For Approval" ? (
+                                    <FiberManualRecord fontSize="small" color="info" />
+                                  ) : item.concern_Status === "Ongoing" ? (
+                                    <FiberManualRecord fontSize="small" color="warning" />
+                                  ) : item.concern_Status === "For Confirmation" ? (
+                                    <FiberManualRecord
+                                      fontSize="small"
+                                      sx={{
+                                        "&.MuiSvgIcon-root": {
+                                          color: "#009688",
+                                        },
+                                      }}
+                                    />
+                                  ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                    <FiberManualRecord fontSize="small" color="warning" />
+                                  ) : (
+                                    <FiberManualRecord fontSize="small" color="success" />
+                                  )
+                                }
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: theme.palette.bgForm.black1,
+                                  color: theme.palette.text.main,
+                                  fontWeight: 800,
+                                }}
+                                label={
+                                  item.concern_Status === "For Approval"
+                                    ? "Verification"
+                                    : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                    ? "Ongoing/On Hold"
+                                    : item.concern_Status === "Ongoing"
+                                    ? "Ongoing"
+                                    : item.concern_Status === "For Confirmation"
+                                    ? "For Confirmation"
+                                    : item.concern_Status === "Done"
+                                    ? "Done"
+                                    : ""
+                                }
+                              />
+                            </Stack>
+                          </Stack>
 
-                <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
-                    data?.value?.requestConcern?.map((item, index) => (
-                      <TableRow key={index}>
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>ACTION:</Typography>
+                            <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                          </Stack>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                {isError && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                    <Typography variant="h6" color="error" align="center">
+                      Something went wrong.
+                    </Typography>
+                  </Stack>
+                )}
+
+                {(isLoading || isFetching) && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <CircularProgress />
+                    <Typography variant="h5" color="#EDF2F7">
+                      Please wait...
+                    </Typography>
+                  </Stack>
+                )}
+
+                {isSuccess && !data?.value?.requestConcern.length && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                    <Typography variant="h6" align="center">
+                      No records found.
+                    </Typography>
+                  </Stack>
+                )}
+
+                <TablePagination
+                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={data?.value?.totalCount || 0}
+                  rowsPerPage={data?.value?.pageSize || 5}
+                  page={data?.value?.currentPage - 1 || 0}
+                  onPageChange={onPageNumberChange}
+                  onRowsPerPageChange={onPageSizeChange}
+                />
+              </Stack>
+            ) : (
+              <>
+                <TableContainer sx={{ minHeight: "542px", maxHeight: "542px" }}>
+                  <Table stickyHeader sx={{ borderBottom: "none" }}>
+                    <TableHead>
+                      <TableRow>
                         <TableCell
                           sx={{
-                            color: "#EDF2F7",
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
                             fontSize: "12px",
-                            fontWeight: 500,
                           }}
                           align="center"
-                          onClick={() => onViewHistoryAction(item)}
                         >
-                          {item.requestConcernId}
+                          <Stack direction="row" gap={0.2} justifyContent="center" alignItems="center">
+                            CONCERN NO.
+                            <IconButton size="small" onClick={() => setAscending(!ascending)}>
+                              {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                            </IconButton>
+                          </Stack>
                         </TableCell>
 
                         {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
                           <TableCell
                             sx={{
-                              color: "#EDF2F7",
+                              background: "#1C2536",
+                              color: "#D65DB1",
+                              fontWeight: 700,
                               fontSize: "12px",
-                              fontWeight: 500,
                             }}
                             align="center"
-                            onClick={() => onViewHistoryAction(item)}
                           >
-                            {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                            TICKET NO.
                           </TableCell>
                         )}
 
-                        {/* <Tooltip title={item.concern} placement="bottom-start"> */}
                         <TableCell
-                          // className="ellipsis-styling"
                           sx={{
-                            color: "#EDF2F7",
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
                             fontSize: "12px",
-                            fontWeight: 500,
-                            maxWidth: "500px",
                           }}
-                          onClick={() => onViewHistoryAction(item)}
                         >
-                          {item.concern.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
-                        </TableCell>
-                        {/* </Tooltip> */}
-
-                        <TableCell
-                          sx={{
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                          onClick={() => onViewHistoryAction(item)}
-                        >
-                          <Chip
-                            variant="filled"
-                            size="30px"
-                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                            sx={{
-                              fontSize: "12px",
-                              backgroundColor: "#1D1F3B",
-                              color: theme.palette.primary.main,
-                              fontWeight: 800,
-                            }}
-                            label={moment(item.created_At).format("LL")}
-                          />
+                          REQUEST DETAILS
                         </TableCell>
 
                         <TableCell
                           sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          onClick={() => onViewHistoryAction(item)}
-                        >
-                          <Chip
-                            variant="filled"
-                            size="30px"
-                            icon={
-                              item.concern_Status === "For Approval" ? (
-                                <FiberManualRecord fontSize="small" color="info" />
-                              ) : item.concern_Status === "Ongoing" ? (
-                                <FiberManualRecord fontSize="small" color="warning" />
-                              ) : item.concern_Status === "For Confirmation" ? (
-                                <FiberManualRecord
-                                  fontSize="small"
-                                  sx={{
-                                    "&.MuiSvgIcon-root": {
-                                      color: "#009688",
-                                    },
-                                  }}
-                                />
-                              ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                <FiberManualRecord fontSize="small" color="warning" />
-                              ) : (
-                                <FiberManualRecord fontSize="small" color="success" />
-                              )
-                            }
-                            sx={{
-                              fontSize: "12px",
-                              backgroundColor: theme.palette.bgForm.black1,
-                              color: theme.palette.text.main,
-                              fontWeight: 800,
-                            }}
-                            label={
-                              item.concern_Status === "For Approval"
-                                ? "Verification"
-                                : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                ? "Ongoing/On Hold"
-                                : item.concern_Status === "Ongoing"
-                                ? "Ongoing"
-                                : item.concern_Status === "For Confirmation"
-                                ? "For Confirmation"
-                                : item.concern_Status === "Done"
-                                ? "Done"
-                                : ""
-                            }
-                          />
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
                           }}
                           align="center"
                         >
-                          <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                          DATE CREATED
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                        >
+                          STATUS
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                          align="center"
+                        >
+                          ACTION
                         </TableCell>
                       </TableRow>
-                    ))}
+                    </TableHead>
 
-                  {isError && (
-                    <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                          Something went wrong.
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
+                    <TableBody>
+                      {isSuccess &&
+                        !isLoading &&
+                        !isFetching &&
+                        data?.value?.requestConcern?.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                              }}
+                              align="center"
+                              onClick={() => onViewHistoryAction(item)}
+                            >
+                              {item.requestConcernId}
+                            </TableCell>
 
-                  {(isLoading || isFetching) && (
-                    <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <CircularProgress />
-                        <Typography variant="h5" color="#EDF2F7">
-                          Please wait...
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
+                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                                align="center"
+                                onClick={() => onViewHistoryAction(item)}
+                              >
+                                {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                              </TableCell>
+                            )}
 
-                  {isSuccess && !data?.value?.requestConcern?.length && (
-                    <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                          No records found.
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                            {/* <Tooltip title={item.concern} placement="bottom-start"> */}
+                            <TableCell
+                              // className="ellipsis-styling"
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                maxWidth: "500px",
+                              }}
+                              onClick={() => onViewHistoryAction(item)}
+                            >
+                              {item.concern.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                            </TableCell>
+                            {/* </Tooltip> */}
 
-            <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
-              onPageChange={onPageNumberChange}
-              onRowsPerPageChange={onPageSizeChange}
-            />
+                            <TableCell
+                              sx={{
+                                fontSize: "14px",
+                                fontWeight: 500,
+                              }}
+                              align="center"
+                              onClick={() => onViewHistoryAction(item)}
+                            >
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: "#1D1F3B",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
+                                }}
+                                label={moment(item.created_At).format("LL")}
+                              />
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "14px",
+                                fontWeight: 500,
+                              }}
+                              onClick={() => onViewHistoryAction(item)}
+                            >
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={
+                                  item.concern_Status === "For Approval" ? (
+                                    <FiberManualRecord fontSize="small" color="info" />
+                                  ) : item.concern_Status === "Ongoing" ? (
+                                    <FiberManualRecord fontSize="small" color="warning" />
+                                  ) : item.concern_Status === "For Confirmation" ? (
+                                    <FiberManualRecord
+                                      fontSize="small"
+                                      sx={{
+                                        "&.MuiSvgIcon-root": {
+                                          color: "#009688",
+                                        },
+                                      }}
+                                    />
+                                  ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                    <FiberManualRecord fontSize="small" color="warning" />
+                                  ) : (
+                                    <FiberManualRecord fontSize="small" color="success" />
+                                  )
+                                }
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: theme.palette.bgForm.black1,
+                                  color: theme.palette.text.main,
+                                  fontWeight: 800,
+                                }}
+                                label={
+                                  item.concern_Status === "For Approval"
+                                    ? "Verification"
+                                    : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                    ? "Ongoing/On Hold"
+                                    : item.concern_Status === "Ongoing"
+                                    ? "Ongoing"
+                                    : item.concern_Status === "For Confirmation"
+                                    ? "For Confirmation"
+                                    : item.concern_Status === "Done"
+                                    ? "Done"
+                                    : ""
+                                }
+                              />
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "14px",
+                                fontWeight: 500,
+                              }}
+                              align="center"
+                            >
+                              <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+
+                      {isError && (
+                        <TableRow>
+                          <TableCell colSpan={7} align="center">
+                            <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                            <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                              Something went wrong.
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+
+                      {(isLoading || isFetching) && (
+                        <TableRow>
+                          <TableCell colSpan={7} align="center">
+                            <CircularProgress />
+                            <Typography variant="h5" color="#EDF2F7">
+                              Please wait...
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+
+                      {isSuccess && !data?.value?.requestConcern?.length && (
+                        <TableRow>
+                          <TableCell colSpan={7} align="center">
+                            <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                            <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                              No records found.
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                <TablePagination
+                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={data?.value?.totalCount || 0}
+                  rowsPerPage={data?.value?.pageSize || 5}
+                  page={data?.value?.currentPage - 1 || 0}
+                  onPageChange={onPageNumberChange}
+                  onRowsPerPageChange={onPageSizeChange}
+                />
+              </>
+            )}
 
             <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
-import { Refresh, RemoveCircleOutline, Visibility, VisibilityOutlined, ZoomIn, ZoomOut } from "@mui/icons-material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,7 +9,7 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 
-import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
+import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
@@ -21,27 +20,25 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
-import { useGetUsersQuery, useLazyGetUsersQuery, userApi } from "../../../features/user_management_api/user/userApi";
+import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
-import PhoneInput from "react-phone-number-input/input";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
-  const [userInformation, setUserInformation] = useState(null); // get the user information to autofill from the dialog
-  const [userCompany, setUserCompany] = useState(null);
+  const [userInformation, setUserInformation] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const dateNeededValidation = new moment();
-  const [phoneValue, setPhoneValue] = useState();
 
+  const dateNeededValidation = new moment();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const userId = useSelector((state) => state?.user?.id);
 
   const requestorSchema = yup.object().shape({
@@ -406,17 +403,6 @@ const ConcernDialog = ({ open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  // console.log("RequestType: ", watch("Request_Type"));
-  // console.log("Ticket Number:", backjobTicketData);
-  // console.log("TicketId: ", watch("BackJobId"));
-  // console.log("backjobTicketData", backjobTicketData);
-  // console.log("Category: ", watch("CategoryId"));
-  // console.log("SubCategory", subCategoryData?.value);
-
-  // console.log("Technicians: ", watch("Technicians"));
-
-  // console.log("Cellphone: ", watch("Contact_Number"));
-
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -516,8 +502,8 @@ const ConcernDialog = ({ open, onClose }) => {
                 {/* REQUESTOR DETAILS */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mb: 1 }}>Requestor Details</Typography>
                 <Stack direction="row" sx={{ width: "100%" }}>
-                  <Stack direction="row" sx={{ width: "100%", gap: 1 }}>
-                    <Stack sx={{ width: "50%" }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Requestor Name:</Typography>
                       <Controller
                         control={control}
@@ -590,9 +576,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       />
                     </Stack>
 
-                    <Stack></Stack>
-
-                    <Stack sx={{ width: "50%" }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Contact Number (Optional):</Typography>
                       <Controller
                         control={control}
@@ -601,19 +585,17 @@ const ConcernDialog = ({ open, onClose }) => {
                           const handleInputChange = (event) => {
                             let input = event.target.value;
 
-                            // Ensure "09" prefix is added if value is not empty
                             if (input && !input.startsWith("09")) {
                               input = "09" + input.replace(/[^0-9]/g, "");
                             } else {
-                              input = input.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+                              input = input.replace(/[^0-9]/g, "");
                             }
 
-                            // Limit to 11 characters
                             if (input.length > 11) {
                               input = input.slice(0, 11);
                             }
 
-                            onChange(input || ""); // Allow null if empty
+                            onChange(input || "");
                           };
 
                           return (
@@ -644,14 +626,13 @@ const ConcernDialog = ({ open, onClose }) => {
                           );
                         }}
                       />
-                      {/* <PhoneInput international countryCallingCodeEditable={false} defaultCountry="PH" value={phoneValue} onChange={setPhoneValue} /> */}
                     </Stack>
                   </Stack>
                 </Stack>
 
-                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
-                  <Stack sx={{ width: "50%", gap: 1 }}>
-                    <Stack>
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Company:</Typography>
                       <Controller
                         control={control}
@@ -693,7 +674,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       />
                     </Stack>
 
-                    <Stack>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Business Unit:</Typography>
                       <Controller
                         control={control}
@@ -731,8 +712,12 @@ const ConcernDialog = ({ open, onClose }) => {
                         }}
                       />
                     </Stack>
+                  </Stack>
+                </Stack>
 
-                    <Stack>
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Department:</Typography>
                       <Controller
                         control={control}
@@ -770,10 +755,8 @@ const ConcernDialog = ({ open, onClose }) => {
                         }}
                       />
                     </Stack>
-                  </Stack>
 
-                  <Stack sx={{ width: "50%", gap: 1 }}>
-                    <Stack>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Unit:</Typography>
                       <Controller
                         control={control}
@@ -811,8 +794,12 @@ const ConcernDialog = ({ open, onClose }) => {
                         }}
                       />
                     </Stack>
+                  </Stack>
+                </Stack>
 
-                    <Stack>
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Unit:</Typography>
                       <Controller
                         control={control}
@@ -857,7 +844,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       />
                     </Stack>
 
-                    <Stack>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Location:</Typography>
                       <Controller
                         control={control}
@@ -900,9 +887,10 @@ const ConcernDialog = ({ open, onClose }) => {
 
                 {/* CONCERN INFORMATION */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
-                <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
-                  <Stack sx={{ width: "50%", gap: 1 }}>
-                    <Stack>
+
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
@@ -938,7 +926,60 @@ const ConcernDialog = ({ open, onClose }) => {
                       </LocalizationProvider>
                     </Stack>
 
-                    <Stack>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
+                      <Controller
+                        control={control}
+                        name="ChannelId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={channelData?.value?.channel || []}
+                              loading={channelIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!channelIsSuccess)
+                                  getChannel({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("CategoryId", []);
+                                setValue("SubCategoryId", []);
+                              }}
+                              getOptionLabel={(option) => option.channel_Name}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "12px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
                       <Controller
                         control={control}
@@ -996,59 +1037,8 @@ const ConcernDialog = ({ open, onClose }) => {
                         }}
                       />
                     </Stack>
-                  </Stack>
 
-                  <Stack sx={{ width: "50%", gap: 1 }}>
-                    <Stack>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
-                      <Controller
-                        control={control}
-                        name="ChannelId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={channelData?.value?.channel || []}
-                              loading={channelIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!channelIsSuccess)
-                                  getChannel({
-                                    Status: true,
-                                  });
-                              }}
-                              onChange={(_, value) => {
-                                onChange(value);
-
-                                setValue("CategoryId", []);
-                                setValue("SubCategoryId", []);
-                              }}
-                              getOptionLabel={(option) => option.channel_Name}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "12px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    <Stack>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
                       <Controller
                         control={control}
@@ -1096,56 +1086,6 @@ const ConcernDialog = ({ open, onClose }) => {
                     </Stack>
                   </Stack>
                 </Stack>
-
-                {/* TECHNICIANS */}
-                {/* <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
-                  <Stack sx={{ width: "100%", gap: 1 }}>
-                    <Stack>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Technicians (Optional):</Typography>
-                      <Controller
-                        control={control}
-                        name="Technicians"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              multiple
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={technicianData?.value || []}
-                              loading={technicianIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!technicianIsSuccess) getTechnicians();
-                              }}
-                              onChange={(_, value) => {
-                                onChange(value);
-                              }}
-                              getOptionLabel={(option) => option.technician_Name || ""}
-                              isOptionEqualToValue={(option, value) => option.technicianId === value.technicianId}
-                              getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack> */}
 
                 {/* DESCRIPTION AND ATTACHMENT */}
                 <Stack
