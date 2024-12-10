@@ -141,7 +141,7 @@ const NewReceiverConcern = () => {
 
         <Stack sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "20px", marginTop: "10px", height: "730px" }}>
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
-            <Tabs value={approveStatus} onChange={onStatusChange}>
+            <Tabs value={approveStatus} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
               <Tab
                 className="tabs-styling"
                 value="false"

@@ -16,6 +16,7 @@ import {
   TableRow,
   Tabs,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
@@ -46,6 +47,7 @@ const UserAccounts = () => {
 
   const [editData, setEditData] = useState(null);
 
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetUsersQuery({
@@ -256,7 +258,7 @@ const UserAccounts = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange}>
+          <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
             <Tab
               value=""
               label="All"

@@ -18,6 +18,7 @@ import {
   TableRow,
   Tabs,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import {
   AddOutlined,
@@ -74,6 +75,7 @@ const ConcernTickets = () => {
   const [returnData, setReturnData] = useState(null);
 
   const dispatch = useDispatch();
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   // const navigate = useNavigate();
   useSignalRConnection();
 
@@ -252,12 +254,12 @@ const ConcernTickets = () => {
     >
       <Toaster richColors position="top-right" closeButton />
       <Stack>
-        <Stack direction="row" justifyContent="space-between" width="100%">
+        <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isTablet ? "column" : "row" }}>
           <Stack justifyItems="left">
             <Typography variant="h4">Request Concerns</Typography>
           </Stack>
 
-          <Stack justifyItems="space-between" direction="row">
+          <Stack>
             <LoadingButton
               size="large"
               variant="contained"
@@ -283,7 +285,7 @@ const ConcernTickets = () => {
             }}
           >
             <Stack direction="row" justifyContent="space-between">
-              <Tabs value={status} onChange={onStatusChange}>
+              <Tabs value={status} variant="scrollable" scrollButtons="auto" onChange={onStatusChange}>
                 <Tab
                   value=""
                   className="tabs-styling"

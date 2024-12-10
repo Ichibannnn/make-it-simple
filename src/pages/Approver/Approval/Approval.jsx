@@ -106,7 +106,7 @@ const Approval = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={tabNavigation} onChange={onStatusChange}>
+          <Tabs value={tabNavigation} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
             <Tab
               value="1"
               className="tabs-styling"

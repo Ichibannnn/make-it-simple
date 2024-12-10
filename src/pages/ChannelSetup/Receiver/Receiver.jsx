@@ -203,7 +203,7 @@ const Receiver = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange}>
+          <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
             <Tab
               value=""
               label="All"

@@ -393,8 +393,8 @@ const IssueHandlerConcerns = () => {
             <Tabs
               value={ticketStatus}
               onChange={onStatusChange}
+              variant="scrollable"
               scrollButtons="auto"
-              allowScrollButtonsMobile
               sx={{
                 ".MuiTab-root": {
                   minWidth: isMobile ? "80px" : "120px",

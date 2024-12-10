@@ -421,7 +421,7 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, da
 
             {isSuccess && !data?.value?.reports.length && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

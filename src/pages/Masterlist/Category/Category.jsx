@@ -217,8 +217,8 @@ const Category = () => {
           <Tabs
             value={status}
             onChange={onStatusChange}
+            variant="scrollable"
             scrollButtons="auto"
-            allowScrollButtonsMobile
             sx={{
               ".MuiTab-root": {
                 minWidth: isMobile ? "80px" : "120px",
@@ -282,16 +282,10 @@ const Category = () => {
           </Button>
         </Stack>
 
-        <TableContainer
-          component={Box}
-          sx={{
-            overflowX: { xs: "auto", md: "initial" },
-            width: "100%",
-          }}
-        >
-          <Table sx={{ borderBottom: "none", fontSize: { xs: "10px", sm: "12px", md: "14px" }, overflowX: { xs: "auto", md: "initial" }, width: "100%" }}>
+        <TableContainer>
+          <Table sx={{ borderBottom: "none", fontSize: { xs: "10px", sm: "12px", md: "14px" } }}>
             <TableHead>
-              <TableRow sx={{ display: { xs: "block", md: "table-row" } }}>
+              <TableRow>
                 <TableCell
                   sx={{
                     background: "#1C2536",
@@ -368,7 +362,7 @@ const Category = () => {
                 !isLoading &&
                 !isFetching &&
                 data?.value?.category?.map((item) => (
-                  <TableRow key={item.id} sx={{ display: { xs: "block", md: "table-row" } }}>
+                  <TableRow key={item.id}>
                     <TableCell
                       sx={{
                         color: "#EDF2F7",
