@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { Add, Warning, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -44,6 +44,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
@@ -334,14 +335,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  // console.log("Data: ", data);
-  // console.log("Category: ", watch("CategoryId"));
-  // console.log("SubCategory: ", watch("SubCategoryId"));
-  // console.log("Sub Category Data: ", subCategoryData);
-
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="md" open={open}>
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
@@ -365,8 +360,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
-
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
@@ -383,12 +376,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                   </Typography>
                 </Stack>
 
-                <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
+                {isScreenSmall ? (
+                  <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                     <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
+
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
                         <span key={index}>
@@ -397,8 +388,25 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                         </span>
                       ))}
                     </Typography>
-                  </Box>
-                </Stack>
+                  </Stack>
+                ) : (
+                  <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                )}
 
                 <Stack sx={{ marginTop: 4, minHeight: "500px" }}>
                   <Typography
@@ -412,8 +420,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                   </Typography>
 
                   <Stack mt={2} gap={0.5}>
-                    <Stack direction="row" gap={1}>
-                      <Stack gap={0.5} sx={{ width: "50%" }}>
+                    <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
+                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -441,7 +449,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                                     });
                                 }}
                                 onChange={(_, value) => {
-                                  // console.log("Value:", value);
                                   onChange(value);
 
                                   const categoryIdParams = value?.map((category) => category?.id);
@@ -476,57 +483,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                             );
                           }}
                         />
-                        {/* <Controller
-                          control={control}
-                          name="CategoryId"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <Autocomplete
-                                ref={ref}
-                                size="small"
-                                value={value}
-                                options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
-                                loading={categoryIsLoading}
-                                renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!categoryIsSuccess)
-                                    getCategory({
-                                      Status: true,
-                                    });
-                                }}
-                                onChange={(_, value) => {
-                                  onChange(value);
-
-                                  setValue("SubCategoryId", null);
-
-                                  getSubCategory({
-                                    Status: true,
-                                  });
-                                }}
-                                getOptionLabel={(option) => option.category_Description || ""}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                sx={{
-                                  flex: 2,
-                                }}
-                                fullWidth
-                                disablePortal
-                                disableClearable
-                                componentsProps={{
-                                  popper: {
-                                    sx: {
-                                      "& .MuiAutocomplete-listbox": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                              />
-                            );
-                          }}
-                        /> */}
                       </Stack>
 
-                      <Stack gap={0.5} sx={{ width: "50%" }}>
+                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -552,8 +511,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                                   if (!subCategoryIsSuccess) getSubCategory();
                                 }}
                                 onChange={(_, value) => {
-                                  // console.log("Value ", value);
-
                                   onChange(value);
                                 }}
                                 getOptionLabel={(option) => option?.sub_Category_Description || ""}
@@ -579,52 +536,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                             );
                           }}
                         />
-                        {/* <Controller
-                          control={control}
-                          name="SubCategoryId"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <Autocomplete
-                                ref={ref}
-                                size="small"
-                                value={value}
-                                options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
-                                loading={subCategoryIsLoading}
-                                renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!subCategoryIsSuccess)
-                                    getSubCategory({
-                                      Status: true,
-                                    });
-                                }}
-                                onChange={(_, value) => {
-                                  // console.log("Value ", value);
-
-                                  onChange(value || []);
-                                }}
-                                getOptionLabel={(option) => `${option.subCategory_Description}`}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                noOptionsText={"No sub category available"}
-                                sx={{
-                                  flex: 2,
-                                }}
-                                fullWidth
-                                disablePortal
-                                disableClearable
-                                // disabled
-                                componentsProps={{
-                                  popper: {
-                                    sx: {
-                                      "& .MuiAutocomplete-listbox": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                              />
-                            );
-                          }}
-                        /> */}
                       </Stack>
                     </Stack>
 
@@ -646,7 +557,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                               inputRef={ref}
                               size="medium"
                               value={value}
-                              // placeholder="Enter resolution"
                               onChange={onChange}
                               autoComplete="off"
                               rows={6}
@@ -763,7 +673,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                             fontSize: "14px",
                           }}
                         >
-                          Attachment:
+                          Attachment (Optional):
                         </Typography>
 
                         <Button size="small" variant="contained" color="warning" startIcon={<Add />} onClick={handleUploadButtonClick} sx={{ padding: "2px", borderRadius: "2px" }}>
@@ -779,7 +689,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           width: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -836,31 +745,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
                             <Box>
                               <ClosingDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                              {/* {isImageFile(fileName.name) && (
-                                <Tooltip title="Remove">
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handleViewImage(fileName.file)} // View image in dialog
-                                    style={{ background: "none" }}
-                                  >
-                                    <VisibilityOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip> */}
                             </Box>
                           </Box>
                         ))}

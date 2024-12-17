@@ -119,7 +119,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="md" open={viewOpen}>
         <DialogContent>
           {/* REQUESTOR */}

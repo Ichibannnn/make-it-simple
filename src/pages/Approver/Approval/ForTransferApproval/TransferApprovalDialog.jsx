@@ -55,6 +55,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
   const [downloadLoading, setDownloadLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   useSignalRConnection();
 
   const [approveTransfer, { isLoading: approveTransferIsLoading, isFetching: approveTransferIsFetching }] = useApproveTransferMutation();
@@ -209,9 +210,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     setSelectedImage(null);
   };
 
-  console.log("Data: ", data);
-  // console.log("Target Date: ", moment(watch("targetDate")).format("YYYY-MM-DD`"));
-
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
@@ -220,22 +218,21 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
-              <AccountCircleRounded sx={{ fontSize: "70px" }} />
+              <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
               <Stack>
-                <Typography sx={{ fontSize: "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>
+                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>
                   for transfer approval:{" "}
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: "15px",
+                    fontSize: isScreenSmall ? "13px" : "15px",
                     color: "#6dc993",
                     fontWeight: 700,
                   }}
                 >
                   {data?.fullname}
                 </Typography>
-                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography>
-                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.channel_Name}</Typography>
+                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.text.secondary }}>{data?.channel_Name}</Typography>
               </Stack>
             </Stack>
 
@@ -249,320 +246,217 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               {/* CONCERN DETAILS */}
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
-                </Box>
-              </Stack>
 
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                    {data?.concern_Details?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                    {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                    {data?.getTransferTicketCategories?.map((item, i) => (
-                      <Box key={i}>
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          label={item.category_Description ? item.category_Description : "-"}
-                          sx={{
-                            backgroundColor: theme.palette.bgForm.black_1,
-                            color: "#ffffff",
-                            borderRadius: "none",
-                            maxWidth: "300px",
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </Stack>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                    {data?.getTransferTicketSubCategories?.map((item, i) => (
-                      <Box key={i}>
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                          sx={{
-                            backgroundColor: theme.palette.bgForm.black_1,
-                            color: "#ffffff",
-                            borderRadius: "none",
-                            maxWidth: "300px",
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </Stack>
-                </Box>
-              </Stack>
-
-              {/* <Stack
-                marginTop={3}
-                padding={2}
-                gap={1}
-                sx={{
-                  border: "1px solid #2D3748",
-                }}
-              >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Ticket Number:
-                    </Typography>
+              {isScreenSmall ? (
+                <>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.ticketConcernId}</Typography>
+                    </Box>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Concern Details:
-                    </Typography>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                        {data?.concern_Details?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography
-                      sx={{ fontSize: "14px" }}
-                      dangerouslySetInnerHTML={{
-                        __html: data?.concern_Details.replace(/\r\n/g, "<br />"),
-                      }}
-                    />
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Transfer Remarks:
-                    </Typography>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Transfer Remarks:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                        {" "}
+                        {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography
-                      sx={{ fontSize: "14px" }}
-                      dangerouslySetInnerHTML={{
-                        __html: data?.transfer_Remarks.replace(/\r\n/g, "<br />"),
-                      }}
-                    />
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Category:
-                    </Typography>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
+                    </Box>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.category_Description}</Typography>
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  paddingLeft={8}
-                  paddingRight={8}
-                  gap={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    sx={{
-                      width: "30%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Sub Category:
-                    </Typography>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Category:</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
+                      {data?.getTransferTicketCategories?.map((item, i) => (
+                        <Box key={i}>
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={item.category_Description ? item.category_Description : "-"}
+                            sx={{
+                              backgroundColor: theme.palette.bgForm.black_1,
+                              fontSize: "11px",
+                              color: "#ffffff",
+                              borderRadius: "none",
+                              maxWidth: "300px",
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    sx={{
-                      width: "65%",
-                    }}
-                  >
-                    <FiberManualRecord color="primary" fontSize="20px" />
-                    <Typography sx={{ fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px " }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Sub Category:</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
+                      {data?.getTransferTicketSubCategories?.map((item, i) => (
+                        <Box key={i}>
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                            sx={{
+                              backgroundColor: theme.palette.bgForm.black_1,
+                              fontSize: "11px",
+                              color: "#ffffff",
+                              borderRadius: "none",
+                              maxWidth: "300px",
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
                   </Stack>
-                </Stack>
-              </Stack> */}
+                </>
+              ) : (
+                <>
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Details?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getTransferTicketCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.category_Description ? item.category_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Stack>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getTransferTicketSubCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Stack>
+                    </Box>
+                  </Stack>
+                </>
+              )}
 
               {/* ATTACHMENTS */}
               <Stack
@@ -570,6 +464,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                 padding={2}
                 sx={{
                   border: "1px solid #2D3748",
+                  borderRadius: "20px",
                 }}
               >
                 <Stack direction="row" gap={1} alignItems="center">
@@ -673,7 +568,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                 <Stack gap={0.5}>
                   <Typography
                     sx={{
-                      fontSize: "14px",
+                      fontSize: isScreenSmall ? "13px" : "14px",
                       color: theme.palette.primary.main,
                     }}
                   >
@@ -700,7 +595,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                                   padding: "10.5px 14px",
                                 },
                                 "& .MuiOutlinedInput-root": {
-                                  fontSize: "15px",
+                                  fontSize: "13px",
                                 },
                               },
                             },

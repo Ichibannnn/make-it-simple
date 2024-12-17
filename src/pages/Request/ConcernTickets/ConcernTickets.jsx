@@ -253,7 +253,7 @@ const ConcernTickets = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: isScreenSmall ? "20px" : "44px 94px 94px 94px",
+        padding: isScreenSmall ? "20px" : "24px 94px 34px 94px",
       }}
     >
       <Toaster richColors position="top-right" closeButton />
@@ -289,7 +289,24 @@ const ConcernTickets = () => {
             }}
           >
             <Stack direction="row" justifyContent="space-between">
-              <Tabs value={status} variant="scrollable" scrollButtons="auto" onChange={onStatusChange}>
+              <Tabs
+                value={status}
+                variant="scrollable"
+                scrollButtons="auto"
+                onChange={onStatusChange}
+                sx={{
+                  ".MuiTab-root": {
+                    minWidth: isScreenSmall ? "80px" : "120px",
+                    fontSize: { xs: "10px", sm: "12px", md: "13px" },
+                  },
+                  ".MuiTabs-scrollButtons": {
+                    color: "#fff",
+                    "&.Mui-disabled": {
+                      opacity: 0.3,
+                    },
+                  },
+                }}
+              >
                 <Tab
                   value=""
                   className="tabs-styling"
@@ -472,6 +489,7 @@ const ConcernTickets = () => {
             </Stack>
 
             {isScreenSmall ? (
+              // Card
               <Stack spacing={2}>
                 {isSuccess &&
                   !isLoading &&
@@ -490,22 +508,22 @@ const ConcernTickets = () => {
                         <Stack spacing={1}>
                           <Stack spacing={1} onClick={() => onViewHistoryAction(item)}>
                             <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>CONCERN NUMBER:</Typography>
-                              <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NUMBER:</Typography>
+                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
                             </Stack>
 
                             {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>TICKET NUMBER:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
                                   {item.ticketRequestConcerns?.[0]?.ticketConcernId}
                                 </Typography>
                               </Stack>
                             )}
 
                             <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>REQUEST DETAILS:</Typography>
-                              <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
+                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
                                 {item.concern.split("\r\n").map((line, index) => (
                                   <span key={index}>
                                     {line}
@@ -516,7 +534,7 @@ const ConcernTickets = () => {
                             </Stack>
 
                             <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>DATE CREATED:</Typography>
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
                               <Chip
                                 variant="filled"
                                 size="30px"
@@ -532,7 +550,7 @@ const ConcernTickets = () => {
                             </Stack>
 
                             <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>STATUS:</Typography>
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
                               <Chip
                                 variant="filled"
                                 size="30px"
@@ -580,7 +598,7 @@ const ConcernTickets = () => {
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.secondary }}>ACTION:</Typography>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
                             <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
                           </Stack>
                         </Stack>
@@ -628,7 +646,8 @@ const ConcernTickets = () => {
               </Stack>
             ) : (
               <>
-                <TableContainer sx={{ minHeight: "542px", maxHeight: "542px" }}>
+                {/* Table */}
+                <TableContainer sx={{ minHeight: "528px", maxHeight: "545px" }}>
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>

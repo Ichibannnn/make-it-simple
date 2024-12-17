@@ -4,8 +4,8 @@ import { AttachFileOutlined, CheckOutlined } from "@mui/icons-material";
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
+import * as yup from "yup";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import {
   useLazyGetBackjobTicketsQuery,
   useLazyGetRequestorAttachmentQuery,
 } from "../../../features/api_request/concerns/concernApi";
+
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDispatch } from "react-redux";
@@ -40,8 +41,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
-  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,7 +55,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     Concern: yup.string().required().label("Concern Details"),
     RequestAttachmentsFiles: yup.array().nullable(),
 
-    Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
+    Request_Type: yup.string().required("Request Type is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
@@ -299,9 +300,21 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   };
 
   const onCloseAction = () => {
-    onClose();
-    reset();
+    reset({
+      Request_Type: "",
+      BackJobId: null,
+      Contact_Number: "",
+
+      DateNeeded: null,
+      ChannelId: null,
+      CategoryId: [],
+      SubCategoryId: [],
+
+      Concern: "",
+      Notes: "",
+    });
     setAttachments([]);
+    onClose();
   };
 
   const getAttachmentData = async (id) => {
@@ -387,11 +400,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
-  useEffect(() => {
-    if (watch("Request_Type") === "New Request") {
-      setValue("BackJobId", null);
-    }
-  }, [watch("Request_Type")]);
+  // useEffect(() => {
+  //   if (watch("Request_Type") === "New Request") {
+  //     setValue("BackJobId", null);
+  //   }
+  // }, [watch("Request_Type")]);
 
   useEffect(() => {
     if (editData) {
@@ -509,7 +522,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  console.log("Request Type: ", watch("Request_Type"));
+  console.log("EditData: ", editData);
+  console.log("RequestType: ", watch("Request_Type"));
 
   return (
     <>
@@ -556,7 +570,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     name="Request_Type"
                     control={control}
                     render={({ field }) => (
-                      <Select {...field} displayEmpty size="small" inputProps={{ "aria-label": "Without label" }} sx={{ width: "100%", fontSize: "13px" }}>
+                      <Select {...field} label="Select Request type" size="small" sx={{ width: "100%", fontSize: "13px" }}>
                         <MenuItem value="New Request" sx={{ fontSize: "13px" }}>
                           New Request
                         </MenuItem>

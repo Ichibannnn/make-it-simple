@@ -1,5 +1,20 @@
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import {
   Add,
   AttachFileOutlined,
@@ -56,6 +71,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
@@ -428,7 +444,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="md" open={open}>
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
@@ -485,12 +500,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   )}
                 </Stack>
 
-                <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
+                {isScreenSmall ? (
+                  <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                     <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
+
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
                         <span key={index}>
@@ -499,8 +512,25 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         </span>
                       ))}
                     </Typography>
-                  </Box>
-                </Stack>
+                  </Stack>
+                ) : (
+                  <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                )}
 
                 <Stack sx={{ marginTop: 4, minHeight: "500px" }}>
                   <Typography
@@ -514,8 +544,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   </Typography>
 
                   <Stack gap={0.5} mt={2}>
-                    <Stack direction="row" gap={1}>
-                      <Stack gap={0.5} sx={{ width: "50%" }}>
+                    <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
+                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -581,7 +611,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         />
                       </Stack>
 
-                      <Stack gap={0.5} sx={{ width: "50%" }}>
+                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                         <Typography
                           sx={{
                             fontSize: "14px",

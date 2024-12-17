@@ -19,7 +19,7 @@ const schema = yup.object().shape({
   unitId: yup.object().required().label("Unit"),
   subUnit_Code: yup.string().required().label("Sub Unit Code"),
   subUnit_Name: yup.string().required().label("Sub Unit Name"),
-  locations: yup.object().required().label("Locations"),
+  locations: yup.object().notRequired(),
 });
 
 const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
@@ -84,6 +84,8 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
         subUnit_Name: formData.subUnit_Name,
       };
 
+      console.log("Edit Payload: ", editPayload);
+
       createEditSubUnit(editPayload)
         .unwrap()
         .then(() => {
@@ -92,9 +94,11 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
             duration: 1500,
           });
           reset();
+          setData(null);
           onClose();
         })
         .catch((error) => {
+          console.log("Error: ", error);
           toast.error("Error!", {
             description: error.data.error.message,
             duration: 1500,
@@ -128,13 +132,12 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   //   console.log("Sub Unit Name: ", watch("subUnit_Name"));
   // console.log("Location: ", watch("locations"));
 
-  // console.log("Edit Data: ", data);
+  // console.log("Validation Error: ", errors);
+  // console.log("Data: ", data);
 
   return (
     <div>
       <Dialog fullWidth maxWidth="sm" open={open} PaperProps={{ style: { overflow: "unset" } }}>
-        <Toaster richColors position="top-right" />
-
         <IconButton
           aria-label="close"
           onClick={onCloseAction}

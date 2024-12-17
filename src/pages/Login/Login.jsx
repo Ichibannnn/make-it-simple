@@ -33,7 +33,8 @@ import { concernReceiverApi } from "../../features/api_request/concerns_receiver
 import useSignalRConnection from "../../hooks/useSignalRConnection";
 
 const Login = () => {
-  const hideLoginForm = useMediaQuery("(max-width: 958px)");
+  // const hideLoginForm = useMediaQuery("(max-width: 958px)");
+  const hideLoginForm = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Stack
@@ -47,13 +48,13 @@ const Login = () => {
         overflow: "hidden",
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={-5} mt={10}>
+      <Stack direction="row" alignItems="center" spacing={hideLoginForm ? 0 : -5} mt={10} sx={{ width: "100%", justifyContent: "center" }}>
         <Paper
           elevation={6}
           className="paper-color"
           sx={{
             display: hideLoginForm ? "none" : "flex",
-            width: "32rem",
+            width: "30rem",
             height: "33rem",
           }}
         >
@@ -68,6 +69,7 @@ const Login = () => {
             <img src={background} alt="background" className="svg-styling" />
           </Box>
         </Paper>
+
         <Paper
           className="login-paper"
           elevation={6}
@@ -82,7 +84,6 @@ const Login = () => {
               <img src={logo} alt="dotek-icon" className="login-icon" />
             </Box>
             <Typography color="white" fontWeight="bold" variant="h5">
-              {" "}
               Sign in your Account
             </Typography>
             <Typography color="gray" fontSize="sm">

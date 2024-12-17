@@ -1,6 +1,8 @@
 import {
   Badge,
   Box,
+  Card,
+  CardContent,
   Chip,
   CircularProgress,
   Divider,
@@ -113,6 +115,7 @@ const IssueHandlerConcerns = () => {
   const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
 
   const dispatch = useDispatch();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
@@ -376,19 +379,26 @@ const IssueHandlerConcerns = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: isMobile ? "20px" : isTablet ? "30px 40px" : "44px 94px",
+        padding: isScreenSmall ? "20px" : "24px 94px 34px 94px",
       }}
     >
       <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack justifyItems="left">
-            <Typography variant="h4">Tickets</Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>Tickets</Typography>
           </Stack>
           <Stack justifyItems="space-between" direction="row"></Stack>
         </Stack>
 
-        <Stack sx={{ borderRadius: "20px", marginTop: "10px", height: "730px" }}>
+        <Stack
+          sx={{
+            backgroundColor: theme.palette.bgForm.black3,
+            borderRadius: "20px",
+            marginTop: "10px",
+            width: "100%",
+          }}
+        >
           <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
             <Tabs
               value={ticketStatus}
@@ -398,7 +408,7 @@ const IssueHandlerConcerns = () => {
               sx={{
                 ".MuiTab-root": {
                   minWidth: isMobile ? "80px" : "120px",
-                  fontSize: { xs: "10px", sm: "12px", md: "14px" },
+                  fontSize: { xs: "10px", sm: "12px", md: "13px" },
                 },
                 ".MuiTabs-scrollButtons": {
                   color: "#fff",
@@ -658,19 +668,6 @@ const IssueHandlerConcerns = () => {
                   setDateTo={setDateTo}
                 />
               )}
-
-              <OutlinedInput
-                placeholder="Search"
-                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                sx={{
-                  borderRadius: "15px",
-                  fontSize: "small",
-                  fontWeight: 400,
-                  lineHeight: "1.4375rem",
-                }}
-              />
             </Stack>
           </Stack>
 
@@ -678,257 +675,119 @@ const IssueHandlerConcerns = () => {
             variant="fullWidth"
             sx={{
               background: "#2D3748",
-              marginBottom: 2,
+              marginBottom: 1,
               lineHeight: 1,
             }}
           />
 
-          <TableContainer sx={{ minHeight: "589px", maxHeight: "589px" }}>
-            <Table stickyHeader sx={{ borderBottom: "none" }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                    align="center"
-                  >
-                    TICKET NO.
-                  </TableCell>
+          <Stack sx={{ width: "100%", padding: 1 }}>
+            <OutlinedInput
+              placeholder="Search"
+              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              sx={{
+                borderRadius: "15px",
+                fontSize: "small",
+                fontWeight: 400,
+                lineHeight: "1.4375rem",
+              }}
+            />
+          </Stack>
 
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    TICKET DESCRIPTION
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                      TARGET DATE
-                    </Stack>
-                  </TableCell>
-
-                  {(ticketStatus === "Closed" || ticketStatus === "") && (
-                    <TableCell
+          {isScreenSmall ? (
+            // Card
+            <Stack spacing={2}>
+              {isSuccess &&
+                !isLoading &&
+                !isFetching &&
+                data?.value?.openTicket?.map((item) => (
+                  <Card key={item.ticketConcernId} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                    <CardContent
                       sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "#1A222F",
+                          color: "#9e77ed",
+                        },
                       }}
                     >
-                      <Stack direction="row" alignItems="center" gap={0.5}>
-                        <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                        CLOSED DATE
-                      </Stack>
-                    </TableCell>
-                  )}
+                      <Stack spacing={1}>
+                        <Stack spacing={1} onClick={() => onViewAction(item)}>
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketConcernId}</Typography>
+                          </Stack>
 
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    REMARKS
-                  </TableCell>
+                          <Stack direction="row" gap={0.5} alignItems="center" sx={{ maxWidth: "700px" }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET DESCRIPTION:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {item.concern_Description.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                            </Typography>
+                          </Stack>
 
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    STATUS
-                  </TableCell>
-
-                  {(ticketStatus === "Closed" || ticketStatus === "") && (
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      CLOSING STATUS
-                    </TableCell>
-                  )}
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    ACTION
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {isSuccess &&
-                  !isLoading &&
-                  !isFetching &&
-                  data?.value?.openTicket?.map((item) => (
-                    <React.Fragment key={item.ticketConcernId}>
-                      <TableRow
-                        key={item.ticketConcernId}
-                        sx={{
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
-                          }}
-                          align="center"
-                          onClick={() => onViewAction(item)}
-                        >
-                          {item.ticketConcernId}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            maxWidth: "400px",
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
-                          {item.concern_Description?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
-                          <Chip
-                            variant="filled"
-                            size="30px"
-                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                            sx={{
-                              fontSize: "12px",
-                              backgroundColor: "#1D1F3B",
-                              color: theme.palette.primary.main,
-                              fontWeight: 800,
-                            }}
-                            label={moment(item.target_Date).format("LL")}
-                          />
-                        </TableCell>
-
-                        {(ticketStatus === "Closed" || ticketStatus === "") && (
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                            }}
-                            onClick={() => onViewAction(item)}
-                          >
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE: </Typography>
                             <Chip
                               variant="filled"
                               size="30px"
-                              icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
-                              label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
+                              icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                               sx={{
                                 fontSize: "12px",
-                                backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                backgroundColor: "#1D1F3B",
                                 color: theme.palette.primary.main,
                                 fontWeight: 800,
                               }}
+                              label={moment(item.target_Date).format("LL")}
                             />
-                          </TableCell>
-                        )}
+                          </Stack>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            maxWidth: "700px",
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
-                          <Box>
-                            <Tooltip title={item.remarks} placement="bottom-start">
+                          {(ticketStatus === "Closed" || ticketStatus === "") && (
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CLOSED DATE: </Typography>
                               <Chip
                                 variant="filled"
-                                size="small"
-                                label={item.remarks ? item.remarks : ""}
+                                size="30px"
+                                icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
+                                label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
                                 sx={{
-                                  backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
-                                  color: "#ffffff",
-                                  borderRadius: "none",
-                                  maxWidth: "300px",
-                                  cursor: "pointer",
+                                  fontSize: "12px",
+                                  backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
                                 }}
                               />
-                            </Tooltip>
-                          </Box>
-                        </TableCell>
+                            </Stack>
+                          )}
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            "&:hover": {
-                              background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
-                              color: "#EDF2F7",
-                            },
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REMARKS: </Typography>
+                            <Box sx={{ maxWidth: "20px" }}>
+                              <Tooltip title={item.remarks} placement="bottom-start">
+                                <Chip
+                                  variant="filled"
+                                  size="small"
+                                  label={item.remarks ? item.remarks : ""}
+                                  sx={{
+                                    backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                    color: "#ffffff",
+                                    borderRadius: "none",
+                                    maxWidth: "300px",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </Tooltip>
+                            </Box>
+                          </Stack>
+                        </Stack>
+
+                        <Stack direction="row" gap={0.5} alignItems="center">
+                          <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS: </Typography>
                           <Chip
                             variant="filled"
                             size="small"
@@ -970,16 +829,11 @@ const IssueHandlerConcerns = () => {
                               borderRadius: "20px",
                             }}
                           />
-                        </TableCell>
+                        </Stack>
 
                         {(ticketStatus === "Closed" || ticketStatus === "") && (
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                          >
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CLOSING STATUS:</Typography>
                             <Chip
                               variant="filled"
                               size="30px"
@@ -1008,17 +862,12 @@ const IssueHandlerConcerns = () => {
                                 )
                               }
                             />
-                          </TableCell>
+                          </Stack>
                         )}
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            maxWidth: "700px",
-                          }}
-                        >
+                        <Stack direction="row" gap={0.5} alignItems="center">
+                          <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+
                           <IssueHandlerConcernsActions
                             data={item}
                             onHoldTicket={onHoldTicketAction}
@@ -1034,46 +883,445 @@ const IssueHandlerConcerns = () => {
                             onCancelTransfer={onCancelTransferAction}
                             onPrintTicket={onPrintTicketAction}
                           />
+                        </Stack>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                ))}
+
+              {isError && (
+                <Stack justifyContent="center" alignItems="center" padding={4}>
+                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                  <Typography variant="h6" color="error" align="center">
+                    Something went wrong.
+                  </Typography>
+                </Stack>
+              )}
+
+              {(isLoading || isFetching) && (
+                <Stack justifyContent="center" alignItems="center" padding={4}>
+                  <CircularProgress />
+                  <Typography variant="h5" color="#EDF2F7">
+                    Please wait...
+                  </Typography>
+                </Stack>
+              )}
+
+              {isSuccess && !data?.value?.openTicket.length && (
+                <Stack justifyContent="center" alignItems="center" padding={4}>
+                  <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                  <Typography variant="h6" align="center">
+                    No records found.
+                  </Typography>
+                </Stack>
+              )}
+
+              <TablePagination
+                sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={data?.value?.totalCount || 0}
+                rowsPerPage={data?.value?.pageSize || 5}
+                page={data?.value?.currentPage - 1 || 0}
+                onPageChange={onPageNumberChange}
+                onRowsPerPageChange={onPageSizeChange}
+              />
+            </Stack>
+          ) : (
+            <>
+              <TableContainer sx={{ minHeight: "528px", maxHeight: "545px" }}>
+                <Table stickyHeader sx={{ borderBottom: "none" }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                        align="center"
+                      >
+                        TICKET NO.
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        TICKET DESCRIPTION
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        <Stack direction="row" alignItems="center" gap={0.5}>
+                          <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                          TARGET DATE
+                        </Stack>
+                      </TableCell>
+
+                      {(ticketStatus === "Closed" || ticketStatus === "") && (
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" gap={0.5}>
+                            <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                            CLOSED DATE
+                          </Stack>
+                        </TableCell>
+                      )}
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        REMARKS
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        STATUS
+                      </TableCell>
+
+                      {(ticketStatus === "Closed" || ticketStatus === "") && (
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                        >
+                          CLOSING STATUS
+                        </TableCell>
+                      )}
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        ACTION
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {isSuccess &&
+                      !isLoading &&
+                      !isFetching &&
+                      data?.value?.openTicket?.map((item) => (
+                        <React.Fragment key={item.ticketConcernId}>
+                          <TableRow
+                            key={item.ticketConcernId}
+                            sx={{
+                              "&:hover": {
+                                background: "",
+                                color: "#EDF2F7",
+                              },
+                            }}
+                          >
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              align="center"
+                              onClick={() => onViewAction(item)}
+                            >
+                              {item.ticketConcernId}
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                maxWidth: "400px",
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              {item.concern_Description?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: "#1D1F3B",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
+                                }}
+                                label={moment(item.target_Date).format("LL")}
+                              />
+                            </TableCell>
+
+                            {(ticketStatus === "Closed" || ticketStatus === "") && (
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                                onClick={() => onViewAction(item)}
+                              >
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
+                                  label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                    color: theme.palette.primary.main,
+                                    fontWeight: 800,
+                                  }}
+                                />
+                              </TableCell>
+                            )}
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                maxWidth: "700px",
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              <Box>
+                                <Tooltip title={item.remarks} placement="bottom-start">
+                                  <Chip
+                                    variant="filled"
+                                    size="small"
+                                    label={item.remarks ? item.remarks : ""}
+                                    sx={{
+                                      backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                      color: "#ffffff",
+                                      borderRadius: "none",
+                                      maxWidth: "300px",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </Tooltip>
+                              </Box>
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                label={
+                                  item.ticket_Status === "Open Ticket"
+                                    ? "Open"
+                                    : item.ticket_Status === "For Transfer"
+                                    ? "For Transfer"
+                                    : item.ticket_Status === "For On-Hold"
+                                    ? "Hold Approval"
+                                    : item.ticket_Status === "On-Hold"
+                                    ? "On-Hold"
+                                    : item.ticket_Status === "For Closing Ticket"
+                                    ? "For Closing"
+                                    : item.ticket_Status === "For Confirmation"
+                                    ? "For Confirmation"
+                                    : item.ticket_Status === "Closed"
+                                    ? "Closed"
+                                    : ""
+                                }
+                                sx={{
+                                  backgroundColor:
+                                    item.ticket_Status === "Open Ticket"
+                                      ? "#ec9d29"
+                                      : item.ticket_Status === "For Transfer"
+                                      ? "#ff7043"
+                                      : item.ticket_Status === "For On-Hold"
+                                      ? "#ffb74d"
+                                      : item.ticket_Status === "On-Hold"
+                                      ? "#ff6d00"
+                                      : item.ticket_Status === "For Closing Ticket"
+                                      ? "#3A96FA"
+                                      : item.ticket_Status === "For Confirmation"
+                                      ? "#009688"
+                                      : item.ticket_Status === "Closed"
+                                      ? "#00913c"
+                                      : "transparent",
+                                  color: "#ffffffde",
+                                  borderRadius: "20px",
+                                }}
+                              />
+                            </TableCell>
+
+                            {(ticketStatus === "Closed" || ticketStatus === "") && (
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={
+                                    item?.closed_Status === "On-Time" ? (
+                                      <FiberManualRecord fontSize="small" color="success" />
+                                    ) : item?.closed_Status === "Delay" ? (
+                                      <FiberManualRecord fontSize="small" color="error" />
+                                    ) : (
+                                      ""
+                                    )
+                                  }
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
+                                    color: theme.palette.text.main,
+                                    fontWeight: 800,
+                                  }}
+                                  label={
+                                    item?.closed_Status === "On-Time" ? (
+                                      <Typography sx={{ color: theme.palette.success.main, fontSize: "13px", fontWeight: 800 }}>On-Time</Typography>
+                                    ) : item?.closed_Status === "Delay" ? (
+                                      <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}>Delayed</Typography>
+                                    ) : (
+                                      <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}></Typography>
+                                    )
+                                  }
+                                />
+                              </TableCell>
+                            )}
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                maxWidth: "700px",
+                              }}
+                            >
+                              <IssueHandlerConcernsActions
+                                data={item}
+                                onHoldTicket={onHoldTicketAction}
+                                onResumeTicket={onResumeTicketAction}
+                                onHoldManageTicket={onHoldManageTicketAction}
+                                onCloseTicket={onCloseTicketAction}
+                                onCancelCloseTicket={onCancelCloseAction}
+                                onManageTicket={onManageTicketAction}
+                                onTransferTicket={onTransferTicketAction}
+                                onRejectTransferTicket={onRejectTransferTicketAction}
+                                onManageTransfer={onManageTransferAction}
+                                onApproveTransfer={onApproveTransferAction}
+                                onCancelTransfer={onCancelTransferAction}
+                                onPrintTicket={onPrintTicketAction}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      ))}
+
+                    {isError && (
+                      <TableRow>
+                        <TableCell colSpan={9} align="center">
+                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                            Something went wrong.
+                          </Typography>
                         </TableCell>
                       </TableRow>
-                    </React.Fragment>
-                  ))}
+                    )}
 
-                {isError && (
-                  <TableRow>
-                    <TableCell colSpan={9} align="center">
-                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                        Something went wrong.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+                    {isSuccess && !data?.value?.openTicket.length && (
+                      <TableRow>
+                        <TableCell colSpan={9} align="center">
+                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                            No records found.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
 
-                {isSuccess && !data?.value?.openTicket.length && (
-                  <TableRow>
-                    <TableCell colSpan={9} align="center">
-                      <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                        No records found.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <TablePagination
-            sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={data?.value?.totalCount || 0}
-            rowsPerPage={data?.value?.pageSize || 5}
-            page={data?.value?.currentPage - 1 || 0}
-            onPageChange={onPageNumberChange}
-            onRowsPerPageChange={onPageSizeChange}
-          />
+              <TablePagination
+                sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={data?.value?.totalCount || 0}
+                rowsPerPage={data?.value?.pageSize || 5}
+                page={data?.value?.currentPage - 1 || 0}
+                onPageChange={onPageNumberChange}
+                onRowsPerPageChange={onPageSizeChange}
+              />
+            </>
+          )}
         </Stack>
 
         <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />

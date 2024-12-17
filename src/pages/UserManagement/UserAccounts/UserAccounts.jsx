@@ -49,7 +49,7 @@ const UserAccounts = () => {
 
   const [editData, setEditData] = useState(null);
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetUsersQuery({

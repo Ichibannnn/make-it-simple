@@ -352,7 +352,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open}>
-        <Toaster richColors position="top-right" closeButton />
         <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>Create User Account</DialogTitle>
 
         <DialogContent>

@@ -1,4 +1,4 @@
-import { Badge, Divider, OutlinedInput, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Badge, Divider, OutlinedInput, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
 import { DiscountOutlined, PendingOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useState } from "react";
@@ -10,7 +10,6 @@ import ForTransfer from "./ForTransferApproval/ForTransfer";
 import OnHoldApproval from "./OnHoldApproval/OnHoldApproval";
 
 import { useGetOnHoldApprovalQuery, useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
-import { useNotification } from "../../../context/NotificationContext";
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 const Approval = () => {
@@ -20,10 +19,9 @@ const Approval = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: notificationBadge } = useGetNotificationQuery();
-
-  // console.log("Approval Api: ", notificationApi);
 
   const {
     data: ticketApprovalData,
@@ -84,14 +82,14 @@ const Approval = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "14px 44px 44px 44px",
+        padding: isScreenSmall ? "20px" : "14px 44px 44px 44px",
       }}
     >
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack>
             <Stack justifyItems="left">
-              <Typography variant="h4">Approval</Typography>
+              <Typography variant={isScreenSmall ? "h5" : "h4"}>Approval</Typography>
             </Stack>
             <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
           </Stack>
@@ -102,11 +100,28 @@ const Approval = () => {
         sx={{
           backgroundColor: theme.palette.bgForm.black3,
           borderRadius: "20px",
-          marginTop: "20px",
+          marginTop: "10px",
         }}
       >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs value={tabNavigation} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
+        <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
+          <Tabs
+            value={tabNavigation}
+            onChange={onStatusChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              ".MuiTab-root": {
+                minWidth: isScreenSmall ? "80px" : "120px",
+                fontSize: { xs: "10px", sm: "12px", md: "13px" },
+              },
+              ".MuiTabs-scrollButtons": {
+                color: "#fff",
+                "&.Mui-disabled": {
+                  opacity: 0.3,
+                },
+              },
+            }}
+          >
             <Tab
               value="1"
               className="tabs-styling"
@@ -206,26 +221,26 @@ const Approval = () => {
               }}
             />
           </Tabs>
-
-          <Stack sx={{ alignItems: "center", justifyContent: "center" }}>
-            <OutlinedInput
-              placeholder="Search"
-              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              sx={{
-                borderRadius: "15px",
-                fontSize: "small",
-                fontWeight: 400,
-                lineHeight: "1.4375rem",
-              }}
-            />
-          </Stack>
         </Stack>
 
         <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+        <Stack sx={{ width: "100%", padding: 1 }}>
+          <OutlinedInput
+            placeholder="Search"
+            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            sx={{
+              borderRadius: "15px",
+              fontSize: "small",
+              fontWeight: 400,
+              lineHeight: "1.4375rem",
+            }}
+          />
+        </Stack>
+
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
           {tabNavigation === "1" ? (
             <>
               <TicketApproval

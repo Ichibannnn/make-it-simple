@@ -1,5 +1,20 @@
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -38,6 +53,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   const userId = useSelector((state) => state?.user?.id);
   const fileInputRef = useRef();
   const dispatch = useDispatch();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   useSignalRConnection();
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
@@ -224,16 +240,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("Attachments: ", attachments);
-  // console.log("Channel Name: ", watch("ChannelId"));
-  // console.log("UserId: ", userId);
-  // console.log("Users: ", channelData);
-
-  // console.log("Data: ", data);
-
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="md" open={open}>
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
@@ -257,8 +265,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
-
             <Stack direction="row" gap={0.5} alignItems="center" mt={2}>
               {/* TICKET DETAILS */}
               <Stack direction="row" gap={0.5} alignItems="center">
@@ -275,12 +281,10 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-              <Box sx={{ width: "15%", ml: 2 }}>
+            {isScreenSmall ? (
+              <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                 <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
-              </Box>
-              <Box sx={{ width: "10%" }} />
-              <Box width={{ width: "75%", ml: 2 }}>
+
                 <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                   {data?.concern_Description?.split("\r\n").map((line, index) => (
                     <span key={index}>
@@ -289,8 +293,25 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                     </span>
                   ))}
                 </Typography>
-              </Box>
-            </Stack>
+              </Stack>
+            ) : (
+              <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
+                <Box sx={{ width: "15%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                </Box>
+                <Box sx={{ width: "10%" }} />
+                <Box width={{ width: "75%", ml: 2 }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    {data?.concern_Description?.split("\r\n").map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </Typography>
+                </Box>
+              </Stack>
+            )}
 
             <Stack sx={{ marginTop: 2, minHeight: "500px" }}>
               <Typography
