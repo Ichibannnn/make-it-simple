@@ -36,6 +36,7 @@ import {
   PendingActionsOutlined,
   RotateRightOutlined,
   Search,
+  Warning,
 } from "@mui/icons-material";
 
 import { theme } from "../../../theme/theme";
@@ -916,6 +917,15 @@ const ConcernTickets = () => {
                   onPageChange={onPageNumberChange}
                   onRowsPerPageChange={onPageSizeChange}
                 />
+
+                {status === "For Confirmation" && (
+                  <Stack alignItems="center" direction="row" gap={0.5} mt={1}>
+                    <Warning color="warning" sx={{ fontSize: "16px" }} />
+                    <Typography sx={{ fontSize: "14px", color: theme.palette.warning.main, fontStyle: "italic" }}>
+                      Note: Concerns exceeding 24 hours without confirmation will be automatically closed
+                    </Typography>
+                  </Stack>
+                )}
               </>
             )}
 

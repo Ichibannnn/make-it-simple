@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Chip,
   CircularProgress,
   Divider,
@@ -52,6 +54,7 @@ const Category = () => {
 
   const [editData, setEditData] = useState(null);
 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetCategoryQuery({
@@ -174,8 +177,6 @@ const Category = () => {
     }
   }, [searchValue]);
 
-  console.log("Data: ", data);
-
   return (
     <Stack
       sx={{
@@ -184,24 +185,22 @@ const Category = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: isMobile ? "20px" : isTablet ? "30px 40px" : "44px 94px",
+        padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
       }}
     >
       <Toaster richColors position="top-right" />
       <Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Stack>
+        <Stack>
+          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
             <Stack justifyItems="left">
-              <Typography
-                variant="h4"
-                sx={{
-                  fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
-                }}
-              >
-                Category
-              </Typography>
+              <Typography variant={isSmallScreen ? "h5" : "h4"}>Category</Typography>
             </Stack>
-            <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
+
+            <Stack justifyItems="space-between" direction="row" marginTop={1}>
+              <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
+                Add
+              </Button>
+            </Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -277,214 +276,306 @@ const Category = () => {
               // backgroundColor: "#111927",
             }}
           />
-          <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
-            Add
-          </Button>
         </Stack>
 
-        <TableContainer>
-          <Table sx={{ borderBottom: "none", fontSize: { xs: "10px", sm: "12px", md: "14px" } }}>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  LINE NO.
-                </TableCell>
+        {isSmallScreen ? (
+          // Card-Based Layout for Small Screens
+          <Stack spacing={2}>
+            {isSuccess &&
+              !isLoading &&
+              !isFetching &&
+              data?.value?.category?.map((item, index) => (
+                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                  <CardContent>
+                    <Stack spacing={1}>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography variant="body2" color="text.secondary">
+                          LINE NO. {index + 1}
+                        </Typography>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  CHANNEL NAME
-                </TableCell>
+                        <Chip
+                          label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                          size="small"
+                          sx={{
+                            fontSize: "10px",
+                            backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
+                            borderRadius: "none",
+                            color: item.is_Active ? "#10B981" : "#D27D0E",
+                          }}
+                        />
+                      </Stack>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  CATEGORY NAME
-                </TableCell>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL NAME:</Typography>
+                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                          {item.channel_Name ? item.channel_Name : "-"}
+                        </Typography>
+                      </Stack>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  SUB CATEGORY
-                </TableCell>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>CATEGORY NAME:</Typography>
+                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}> {item.category_Description}</Typography>
+                      </Stack>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  STATUS
-                </TableCell>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB CATEGORY:</Typography>
+                        <CategorySubCat subCategories={item.subcategories} />
+                      </Stack>
 
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                  align="center"
-                >
-                  ACTIONS
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isSuccess &&
-                !isLoading &&
-                !isFetching &&
-                data?.value?.category?.map((item) => (
-                  <TableRow key={item.id}>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                        <CategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                      </Stack>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+
+            {isError && (
+              <Stack justifyContent="center" alignItems="center" padding={4}>
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <Typography variant="h6" color="error" align="center">
+                  Something went wrong.
+                </Typography>
+              </Stack>
+            )}
+
+            {(isLoading || isFetching) && (
+              <Stack justifyContent="center" alignItems="center" padding={4}>
+                <CircularProgress />
+                <Typography variant="h5" color="#EDF2F7">
+                  Please wait...
+                </Typography>
+              </Stack>
+            )}
+
+            {isSuccess && !data?.value?.category?.length && (
+              <Stack justifyContent="center" alignItems="center" padding={4}>
+                <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                <Typography variant="h6" align="center">
+                  No records found.
+                </Typography>
+              </Stack>
+            )}
+
+            <TablePagination
+              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data?.value?.totalCount || 0}
+              rowsPerPage={data?.value?.pageSize || 5}
+              page={data?.value?.currentPage - 1 || 0}
+              onPageChange={onPageNumberChange}
+              onRowsPerPageChange={onPageSizeChange}
+            />
+          </Stack>
+        ) : (
+          <>
+            <TableContainer>
+              <Table sx={{ borderBottom: "none", fontSize: { xs: "10px", sm: "12px", md: "14px" } }}>
+                <TableHead>
+                  <TableRow>
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
                       }}
                       align="center"
                     >
-                      {item.id}
+                      LINE NO.
                     </TableCell>
 
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
                       }}
                     >
-                      {item.channel_Name ? item.channel_Name : "-"}
+                      CHANNEL NAME
                     </TableCell>
 
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
                       }}
                     >
-                      {item.category_Description}
+                      CATEGORY NAME
                     </TableCell>
 
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                      align="center"
-                    >
-                      <CategorySubCat subCategories={item.subcategories} />
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
                       }}
                       align="center"
                     >
-                      <Chip
-                        variant="filled"
-                        size="30px"
-                        sx={{
-                          fontSize: "13px",
-                          backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                          color: item.is_Active ? "#10B981" : "#D27D0E",
-                          fontWeight: 800,
-                        }}
-                        label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                      />
+                      SUB CATEGORY
                     </TableCell>
 
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
                       }}
                       align="center"
                     >
-                      <CategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                      STATUS
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        background: "#1C2536",
+                        color: "#D65DB1",
+                        fontWeight: 700,
+                        fontSize: "12px",
+                      }}
+                      align="center"
+                    >
+                      ACTIONS
                     </TableCell>
                   </TableRow>
-                ))}
+                </TableHead>
+                <TableBody>
+                  {isSuccess &&
+                    !isLoading &&
+                    !isFetching &&
+                    data?.value?.category?.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          {item.id}
+                        </TableCell>
 
-              {isError && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                      Something went wrong.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.channel_Name ? item.channel_Name : "-"}
+                        </TableCell>
 
-              {(isLoading || isFetching) && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <CircularProgress />
-                    <Typography variant="h5" color="#EDF2F7">
-                      Please wait...
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.category_Description}
+                        </TableCell>
 
-              {isSuccess && !data?.value?.category.length && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
-                    <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                      No records found.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <CategorySubCat subCategories={item.subcategories} />
+                        </TableCell>
 
-        <TablePagination
-          sx={{ color: "#A0AEC0", fontWeight: 400 }}
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={data?.value?.totalCount || 0}
-          rowsPerPage={data?.value?.pageSize || 5}
-          page={data?.value?.currentPage - 1 || 0}
-          onPageChange={onPageNumberChange}
-          onRowsPerPageChange={onPageSizeChange}
-        />
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            sx={{
+                              fontSize: "13px",
+                              backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
+                              color: item.is_Active ? "#10B981" : "#D27D0E",
+                              fontWeight: 800,
+                            }}
+                            label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                          />
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <CategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+                  {isError && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                          Something went wrong.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {(isLoading || isFetching) && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        <CircularProgress />
+                        <Typography variant="h5" color="#EDF2F7">
+                          Please wait...
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {isSuccess && !data?.value?.category.length && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
+                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                          No records found.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TablePagination
+              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data?.value?.totalCount || 0}
+              rowsPerPage={data?.value?.pageSize || 5}
+              page={data?.value?.currentPage - 1 || 0}
+              onPageChange={onPageNumberChange}
+              onRowsPerPageChange={onPageSizeChange}
+            />
+          </>
+        )}
 
         <CategoryDialog data={editData} open={open} onClose={onDialogClose} />
       </Stack>

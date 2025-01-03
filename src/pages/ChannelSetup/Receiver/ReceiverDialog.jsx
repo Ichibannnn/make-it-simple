@@ -14,6 +14,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { DeleteOutlineOutlined, SaveOutlined, SyncOutlined } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
@@ -38,6 +39,7 @@ const businessUnitSchema = yup.object().shape({
 
 const ReceiverDialog = ({ data, open, onClose }) => {
   const [businessUnits, setBusinessUnits] = useState([]);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [createEditReceiver, { isLoading: isCreateEditReceiverLoading, isFetching: isCreateEditReceiverFetching }] = useCreateEditReceiverMutation();
 
@@ -188,7 +190,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
               <Stack direction="row" gap={0.5}>
                 <Typography
                   sx={{
-                    fontSize: "18px",
+                    fontSize: isSmallScreen ? "15px" : "18px",
                     fontWeight: 700,
                     color: "#48BB78",
                   }}
@@ -219,7 +221,9 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                       value={value}
                       options={receiverData?.value || []}
                       loading={receiverIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Receiver Name" size="small" />}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Receiver Name" size="small" sx={{ "& .MuiInputBase-input": { fontSize: isSmallScreen ? "13px" : "16px" } }} />
+                      )}
                       onOpen={() => {
                         if (!receiverIsSuccess) getReceiver();
                       }}
@@ -243,7 +247,7 @@ const ReceiverDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack sx={{ paddingTop: 2, gap: 2 }}>
-              <Stack component="form" onSubmit={businessUnitFormHandleSubmit(onBusinessFormSubmit)} direction="row" gap={2}>
+              <Stack component="form" onSubmit={businessUnitFormHandleSubmit(onBusinessFormSubmit)} direction={isSmallScreen ? "column" : "row"} gap={2}>
                 <Controller
                   control={businessUnitFormControl}
                   name="businessId"
@@ -268,6 +272,15 @@ const ReceiverDialog = ({ data, open, onClose }) => {
                         noOptionsText={"No business unit available"}
                         sx={{
                           flex: 2,
+                        }}
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: isSmallScreen ? "13px" : "16px",
+                              },
+                            },
+                          },
                         }}
                         fullWidth
                         disablePortal

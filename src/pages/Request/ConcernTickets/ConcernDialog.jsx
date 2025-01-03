@@ -154,7 +154,7 @@ const ConcernDialog = ({ open, onClose }) => {
     }
 
     if (category.length === 0) {
-      payload.append(`AddRequestTicketCategories[0].ticketAttachmentId`, "");
+      payload.append(`AddRequestTicketCategories[0].ticketCategoryId`, "");
       payload.append(`AddRequestTicketCategories[0].categoryId`, "");
     }
 

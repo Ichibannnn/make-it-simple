@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { Close, DeleteOutlineOutlined, DragIndicator } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -27,6 +27,7 @@ const approverSchema = yup.object().shape({
 
 const ApproverDialog = ({ data, open, onClose }) => {
   const [approvers, setApprovers] = useState([]);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [createEditApprover, { isLoading: createEditApproverIsLoading, isFetching: createEditApproverIsFetching }] = useCreateEditApproverMutation();
 
@@ -206,7 +207,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
 
   // console.log("Data: ", data);
 
-  console.log("Sub unit: ", subUnitFormWatch("subUnitId"));
+  // console.log("Sub unit: ", subUnitFormWatch("subUnitId"));
 
   return (
     <>
@@ -217,7 +218,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
               <Stack direction="row" gap={0.5}>
                 <Typography
                   sx={{
-                    fontSize: "18px",
+                    fontSize: isSmallScreen ? "15px" : "18px",
                     fontWeight: 700,
                     color: "#48BB78",
                   }}
@@ -267,6 +268,15 @@ const ApproverDialog = ({ data, open, onClose }) => {
                       sx={{
                         flex: 2,
                       }}
+                      componentsProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiAutocomplete-listbox": {
+                              fontSize: isSmallScreen ? "13px" : "16px",
+                            },
+                          },
+                        },
+                      }}
                       fullWidth
                       disablePortal
                       disableClearable
@@ -277,7 +287,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack sx={{ paddingTop: 2, gap: 2 }}>
-              <Stack component="form" onSubmit={approverFormHandleSubmit(onApproverListFormAdd)} direction="row" gap={2}>
+              <Stack component="form" onSubmit={approverFormHandleSubmit(onApproverListFormAdd)} direction={isSmallScreen ? "column" : "row"} gap={2}>
                 <Controller
                   control={approverFormControl}
                   name="approvers"
@@ -299,6 +309,15 @@ const ApproverDialog = ({ data, open, onClose }) => {
                         noOptionsText={"No approver available"}
                         sx={{
                           flex: 2,
+                        }}
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: isSmallScreen ? "13px" : "16px",
+                              },
+                            },
+                          },
                         }}
                         fullWidth
                         disablePortal
@@ -327,7 +346,7 @@ const ApproverDialog = ({ data, open, onClose }) => {
 
               <DndProvider backend={HTML5Backend}>
                 <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-                  <Column approvers={approvers} onDelete={onApproverListFormDelete} />
+                  <Column approvers={approvers} onDelete={onApproverListFormDelete} isSmallScreen={isSmallScreen} />
                 </DndContext>
               </DndProvider>
             </Stack>
@@ -357,12 +376,12 @@ const ApproverDialog = ({ data, open, onClose }) => {
 
 export default ApproverDialog;
 
-export const Column = ({ approvers, onDelete }) => {
+export const Column = ({ approvers, onDelete, isSmallScreen }) => {
   return (
     <div className="column">
       <Typography
         sx={{
-          fontSize: "17px",
+          fontSize: isSmallScreen ? "14px" : "17px",
           fontWeight: 500,
           // color: "#48BB78",
         }}
@@ -371,14 +390,14 @@ export const Column = ({ approvers, onDelete }) => {
       </Typography>
       <SortableContext items={approvers} strategy={verticalListSortingStrategy}>
         {approvers.map((approver, index) => (
-          <ApproversName id={approver.id} userId={approver.userId} fullName={approver.fullName} key={index} onDelete={() => onDelete(index)} />
+          <ApproversName id={approver.id} userId={approver.userId} fullName={approver.fullName} key={index} onDelete={() => onDelete(index)} isSmallScreen={isSmallScreen} />
         ))}
       </SortableContext>
     </div>
   );
 };
 
-export const ApproversName = ({ id, fullName, onDelete }) => {
+export const ApproversName = ({ id, fullName, onDelete, isSmallScreen }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -400,7 +419,9 @@ export const ApproversName = ({ id, fullName, onDelete }) => {
         </Stack>
 
         <Stack width="100%" direction="row" justifyContent="space-between" alignItems="center">
-          {id} - {fullName}
+          <Typography sx={{ fontSize: isSmallScreen ? "13px" : "15px" }}>
+            {id} - {fullName}
+          </Typography>
           <IconButton onClick={handleDelete}>
             <DeleteOutlineOutlined />
           </IconButton>

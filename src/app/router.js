@@ -40,11 +40,16 @@ import Approval from "../pages/Approver/Approval/Approval";
 import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverConcern";
 
 import ReportsPage from "../pages/Reports/ReportsPage";
+import ChangePassword from "../pages/ChangePassword/ChangePassword";
 
 export const router = createBrowserRouter([
   {
     path: "*",
     element: <PageNotFound />,
+  },
+  {
+    path: "/change-password",
+    element: <ChangePassword />,
   },
   {
     path: "/",

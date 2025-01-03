@@ -1,5 +1,6 @@
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   Chip,
@@ -20,7 +21,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 
-import { AccessTimeOutlined, CalendarMonthOutlined, DoneAllOutlined, PendingActions, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, DoneAllOutlined, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
 
 import React, { useState } from "react";
 import moment from "moment";
@@ -38,6 +39,7 @@ import { useGetNotificationQuery } from "../../../features/api_notification/noti
 import { useGetReceiverConcernsQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import ViewConcernDetails from "./ViewConcernDetails";
+import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
 
 const NewReceiverConcern = () => {
   const [approveStatus, setApproveStatus] = useState("false");
@@ -61,6 +63,7 @@ const NewReceiverConcern = () => {
   });
 
   const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
+  const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -85,6 +88,10 @@ const NewReceiverConcern = () => {
     setConcernDetails(data);
   };
 
+  const onAddTicketAction = () => {
+    addTicketOnToggle();
+  };
+
   // console.log("Notif: ", notificationBadge);
 
   return (
@@ -103,7 +110,11 @@ const NewReceiverConcern = () => {
       <Stack>
         <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
           <Typography variant={isScreenSmall ? "h5" : "h4"}>Concerns</Typography>
-          <Stack justifyItems="space-between" direction="row"></Stack>
+          <Stack justifyItems="space-between" direction="row" marginTop={1}>
+            <Button variant="contained" size="large" color="primary" startIcon={<PostAddOutlined />} onClick={onAddTicketAction}>
+              Create Ticket
+            </Button>
+          </Stack>
         </Stack>
 
         <Stack
@@ -542,6 +553,7 @@ const NewReceiverConcern = () => {
           )}
 
           <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
+          <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
         </Stack>
       </Stack>
     </Stack>

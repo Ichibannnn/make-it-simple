@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -41,6 +41,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   const [warningData, setWarningData] = useState("");
 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open: warningOpen, onToggle: warningOnToggle, onClose: warningOnClose } = useDisclosure();
 
   const schema = useMemo(
@@ -111,7 +112,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           },
         });
       } else if (data && data.is_Store === true) {
-        setValue("empId", data?.empId);
+        setValue("empId", data.empId);
       } else {
         setValue("empId", "");
       }
@@ -154,8 +155,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       });
     }
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
-
-  console.log("Data: ", data);
 
   const onSubmitHandler = (formData) => {
     if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
@@ -294,6 +293,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   };
 
   const storeCheckboxHandler = (event) => {
+    console.log("Event: ", event.target.checked);
     setStoreCheckbox(event.target.checked);
     reset();
   };
@@ -349,10 +349,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   // console.log("Errors: ", errors);
   // console.log("EmpId: ", watch("empId"));
 
+  console.log("Data: ", data);
+
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open}>
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>Create User Account</DialogTitle>
+        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>{!data ? "Create User Account" : "Update User Account"}</DialogTitle>
 
         <DialogContent>
           <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={2} paddingTop={3}>
@@ -385,8 +387,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               </Stack>
             )}
 
-            <Stack direction="row" gap={1}>
-              {!storeCheckbox && !data ? (
+            <Stack direction={isSmallScreen ? "column" : "row"} gap={1}>
+              {storeCheckbox === false ? (
                 <Controller
                   control={control}
                   name="empId"

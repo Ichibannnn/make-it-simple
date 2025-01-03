@@ -1,13 +1,42 @@
-import { Avatar, Badge, Box, Divider, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Avatar,
+  Badge,
+  Box,
+  Dialog,
+  DialogContent,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import React, { useContext } from "react";
 import { theme } from "../theme/theme";
 
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { AccountCircleRounded, Close, NotificationsNoneOutlined, NotificationsOffOutlined, NotificationsRounded, Password, PersonOutlineOutlined } from "@mui/icons-material";
+import {
+  AccountCircleRounded,
+  Close,
+  CloseOutlined,
+  NotificationsNoneOutlined,
+  NotificationsOffOutlined,
+  NotificationsRounded,
+  Password,
+  PersonOutlineOutlined,
+} from "@mui/icons-material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUserDetails } from "../features/user_management_api/user/userSlice";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
@@ -27,6 +56,9 @@ import moment from "moment";
 import { useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { ParameterContext } from "../context/ParameterContext";
+import { Controller, useForm } from "react-hook-form";
+import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
+import { LoadingButton } from "@mui/lab";
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -42,9 +74,6 @@ const Header = () => {
   const dispatch = useDispatch();
 
   useSignalRConnection();
-
-  // console.log("Notification Message: ", notificationMessage);
-  // console.log("Parameter: ", parameter);
 
   const fullName = useSelector((state) => state?.user?.fullname);
   const userName = useSelector((state) => state?.user?.username);
@@ -297,7 +326,7 @@ const Header = () => {
 
         {/* Account */}
         <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
-          <MenuItem onClick={closeHandler}>
+          <MenuItem onClick={toggleChangePasswordHandler}>
             <ListItemIcon>
               <Password fontSize="small" />
             </ListItemIcon>
@@ -311,6 +340,7 @@ const Header = () => {
             <Typography>Logout</Typography>
           </MenuItem>
         </Menu>
+        {openChangePassword && <ChangePassword open={openChangePassword} onClose={changePasswordOnClose} />}
       </Box>
 
       {showAlert && <ReusableAlert severity={alertData.severity} title={alertData.title} description={alertData.description} onClose={handleAlertClose} />}
@@ -320,31 +350,223 @@ const Header = () => {
 
 export default Header;
 
-// const changePasswordSchema = yup.object().shape({
-//   id: yup.string().nullable(),
-//   current_Password: yup.string().required().label("Current Password"),
-//   new_Password: yup.string().required().label("New Password"),
-//   confirm_Password: yup.string().required().label("Confirm Password"),
-// });
+const changePasswordSchema = yup.object().shape({
+  id: yup.string().nullable(),
+  current_Password: yup.string().required().label("Current Password"),
+  new_Password: yup.string().required().label("New Password"),
+  confirm_Password: yup.string().required().label("Confirm Password"),
+});
 
-// const ChangePassword = ({ openChangePassword, changePasswordOnClose }) => {
-//   const {
-//     control,
-//     handleSubmit,
-//     register,
-//     watch,
-//     setValue,
-//     reset,
-//     formState: { errors },
-//   } = useForm({
-//     resolver: yupResolver(changePasswordSchema),
-//     defaultValues: {
-//       id: null,
-//       current_Password: "",
-//       new_Password: "",
-//       confirm_Password: "",
-//     },
-//   });
+const ChangePassword = ({ open, onClose }) => {
+  const userId = useSelector((state) => state?.user?.id);
 
-//   return <div>Change Password</div>;
-// };
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [changePassword, { isLoading: changePasswordIsLoading, isFetching: changePasswordIsFetching }] = useChangeUserPasswordMutation();
+
+  const {
+    control,
+    handleSubmit,
+    register,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(changePasswordSchema),
+    defaultValues: {
+      id: null,
+      current_Password: "",
+      new_Password: "",
+      confirm_Password: "",
+    },
+  });
+
+  const onChangePasswordForm = (data) => {
+    const payload = {
+      id: userId,
+      current_Password: data.current_Password,
+      new_Password: data.new_Password,
+      confirm_Password: data.confirm_Password,
+    };
+
+    changePassword(payload)
+      .unwrap()
+      .then(() => {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+
+        dispatch(notificationApi.util.resetApiState());
+        dispatch(notificationMessageApi.util.resetApiState());
+        dispatch(concernApi.util.resetApiState());
+        dispatch(concernReceiverApi.util.resetApiState());
+        dispatch(concernIssueHandlerApi.util.resetApiState());
+        dispatch(ticketApprovalApi.util.resetApiState());
+        dispatch(closingTicketApi.util.resetApiState());
+
+        dispatch(clearUserDetails());
+        navigate("/");
+        setTimeout(
+          () =>
+            toast.success("Success!", {
+              description: "Password has been changed!",
+              duration: 1500,
+            }),
+          300
+        );
+      })
+      .catch((error) => {
+        toast.error("Error!", {
+          description: error.data.error.message,
+          duration: 1500,
+        });
+      });
+  };
+
+  return (
+    <div>
+      <Dialog fullWidth maxWidth="xs" open={open}>
+        <Toaster richColors position="top-right" closeButton />
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseOutlined />
+        </IconButton>
+        <DialogContent>
+          <Stack
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <Typography fontWeight="bold" variant="h5">
+              Change your password
+            </Typography>
+            <Typography color="gray" fontSize="sm">
+              To change your password, please fill in the fields below.
+            </Typography>
+          </Stack>
+
+          <form onSubmit={handleSubmit(onChangePasswordForm)}>
+            <Stack sx={{ marginTop: 3, padding: "5px", gap: 1.5 }}>
+              <Controller
+                control={control}
+                name="current_Password"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <TextField
+                      inputRef={ref}
+                      size="medium"
+                      value={value}
+                      label="Current Password"
+                      type="password"
+                      onChange={onChange}
+                      fullWidth
+                      autoComplete="off"
+                      // InputProps={{
+                      //   endAdornment: (
+                      //     <InputAdornment position="end">
+                      //       {changePasswordDetails?.value?.username === watch("current_Password") ? <CheckCircle color="success" /> : ""}
+                      //     </InputAdornment>
+                      //   ),
+                      // }}
+                    />
+                  );
+                }}
+              />
+
+              <Controller
+                control={control}
+                name="new_Password"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <TextField
+                      inputRef={ref}
+                      size="medium"
+                      value={value}
+                      label="New Password"
+                      type="password"
+                      onChange={onChange}
+                      fullWidth
+                      autoComplete="off"
+                      // InputProps={{
+                      //   endAdornment: (
+                      //     <InputAdornment position="end">
+                      //       {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                      //         <CheckCircle color="success" />
+                      //       ) : (
+                      //         ""
+                      //       )}
+                      //     </InputAdornment>
+                      //   ),
+                      // }}
+                    />
+                  );
+                }}
+              />
+
+              <Controller
+                control={control}
+                name="confirm_Password"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <TextField
+                      inputRef={ref}
+                      size="medium"
+                      value={value}
+                      label="Confirm Password"
+                      type="password"
+                      onChange={onChange}
+                      fullWidth
+                      autoComplete="off"
+                      // InputProps={{
+                      //   endAdornment: (
+                      //     <InputAdornment position="end">
+                      //       {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                      //         <CheckCircle color="success" />
+                      //       ) : (
+                      //         ""
+                      //       )}
+                      //     </InputAdornment>
+                      //   ),
+                      // }}
+                    />
+                  );
+                }}
+              />
+            </Stack>
+
+            <Stack width="100%" padding={2}>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                disabled={
+                  // watch("new_Password") !== watch("current_Password") ||
+                  !watch("current_Password") || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")
+                }
+                sx={{
+                  ":disabled": {
+                    backgroundColor: theme.palette.secondary.main,
+                    color: "black",
+                  },
+                }}
+                size="small"
+              >
+                Change Password
+              </LoadingButton>
+            </Stack>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};

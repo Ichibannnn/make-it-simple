@@ -90,8 +90,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
-      // CategoryId: null,
-      // SubCategoryId: null,
+
       userId: null,
       targetDate: null,
 
@@ -434,9 +433,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  console.log("Category: ", watch("CategoryId"));
-  console.log("SubCategory: ", watch("SubCategoryId"));
 
   return (
     <>

@@ -1,5 +1,20 @@
-import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Stack, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Stack,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
+import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,7 +23,7 @@ import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 
-import { useArchiveRoleMutation, useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
+import { useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
 import { Toaster, toast } from "sonner";
 
 const schema = yup.object().shape({
@@ -41,6 +56,8 @@ const RoleAddDialog = ({ data, open, onClose }) => {
   const [createRole, { isLoading: createRoleIsLoading, isFetching: createRoleIsFetching }] = useCreateRoleMutation();
   const [updateRoleName, { isLoading: updateRoleNameIsLoading, isFetching: updateRoleNameIsFetching }] = useUpdateRoleNameMutation();
   const [updateRolePermission, { isLoading: updateRolePermissionIsLoading, isFetching: updateRolePermissionIsFetching }] = useUpdateRolePermissionMutation();
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const {
     control,
@@ -241,6 +258,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
         >
           {data ? "Edit Role" : "Add Role"}
         </DialogTitle>
+
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ padding: "5px" }}>
@@ -316,6 +334,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </Stack>
                 </FormGroup>
               </FormControl>
+
               {/* USER MANAGEMENT */}
               {watch("permissions")?.includes("User Management") && (
                 <FormControl
@@ -374,6 +393,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
+
               {/* MASTERLIST */}
               {watch("permissions")?.includes("Masterlist") && (
                 <FormControl
@@ -432,68 +452,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
-              {/* CHANNEL SETUP */}
-              {/* {watch("permissions")?.includes("Channel Setup") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
-                    sx={{
-                      padding: "0 20px",
-                    }}
-                  >
-                    Channel Setup
-                  </FormLabel>
 
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {channelCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([
-                                          ...value.filter(
-                                            (item) => item !== e.target.value
-                                          ),
-                                        ]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )} */}
               {/* REQUESTOR */}
               {watch("permissions")?.includes("Requestor") && (
                 <FormControl
@@ -552,6 +511,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                   </FormGroup>
                 </FormControl>
               )}
+
               {/* RECEIVER */}
               {watch("permissions")?.includes("Receiver") && (
                 <FormControl

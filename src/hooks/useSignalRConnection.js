@@ -1,11 +1,10 @@
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { concernIssueHandlerApi, useGetIssueHandlerConcernsQuery } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { notificationApi, useGetNotificationQuery } from "../features/api_notification/notificationApi";
+import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { notificationApi } from "../features/api_notification/notificationApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
-import { useSelector } from "react-redux";
-import { useNotification } from "../context/NotificationContext";
+
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
@@ -36,9 +35,7 @@ const useSignalRConnection = () => {
       connection
         .start()
         .then(() => {
-          // console.log("Connected");
           connection.on("TransactionData", (data) => {
-            // console.log("TransactionData: ", data);
             setNotification({ data });
           });
         })
