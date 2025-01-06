@@ -32,7 +32,8 @@ import AssignDialogMenuAction from "./AssignDialogMenuAction";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
-  concern_Details: yup.array().nullable(),
+  Concern: yup.string().required().label("Concern Details"),
+  // concern_Details: yup.array().nullable(),
   ticketConcernId: yup.string().nullable(),
   ChannelId: yup.object().required().label("Channel"),
   CategoryId: yup.array().required().label("Category"),
@@ -84,8 +85,9 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     resolver: yupResolver(schema),
     defaultValues: {
       Requestor_By: "",
-      concern_Details: [],
+      // concern_Details: [],
       ticketConcernId: "",
+      Concern: "",
 
       ChannelId: null,
       CategoryId: [],
@@ -262,7 +264,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     // payload.append("SubCategoryId", formData.SubCategoryId?.id);
     payload.append("Requestor_By", formData.Requestor_By);
     payload.append("UserId", formData.userId?.userId);
-    payload.append("Concern", formData.concern_Details);
+    payload.append("Concern", formData.Concern);
     payload.append("Target_Date", moment(formData.targetDate).format("YYYY-MM-DD"));
 
     const category = formData.CategoryId;
@@ -357,7 +359,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
             dispatch(notificationMessageApi.util.resetApiState());
 
             setAttachments([]);
-            // setApproveStatus("false");
             reset();
             setData(null);
             viewConcernDetailsOnClose();
@@ -379,7 +380,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       if (!channelIsSuccess) getChannel();
 
       setValue("Requestor_By", data?.requestorId);
-      setValue("concern_Details", [data?.concern]);
+      // setValue("concern_Details", [data?.concern]);
+      setValue("Concern", data?.concern);
       setValue("ticketConcernId", data?.ticketRequestConcerns?.[0]?.ticketConcernId);
 
       setValue("ChannelId", {
@@ -408,6 +410,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       //   id: data?.categoryId,
       //   category_Description: data?.category_Description,
       // });
+
       // setValue("SubCategoryId", {
       //   id: data?.subCategoryId,
       //   subCategory_Description: data?.subCategory_Description,
@@ -456,6 +459,48 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ width: "100%", gap: 1 }}>
+              <Stack gap={0.5}>
+                <Typography
+                  sx={{
+                    fontSize: "13px",
+                  }}
+                >
+                  Description:
+                </Typography>
+
+                <Controller
+                  control={control}
+                  name="Concern"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <TextField
+                        inputRef={ref}
+                        size="small"
+                        value={value}
+                        placeholder="Description"
+                        onChange={onChange}
+                        sx={{
+                          width: "100%",
+                        }}
+                        InputProps={{
+                          style: {
+                            fontSize: "13px",
+                          },
+                        }}
+                        InputLabelProps={{
+                          style: {
+                            fontSize: "13px",
+                          },
+                        }}
+                        autoComplete="off"
+                        rows={6}
+                        multiline
+                      />
+                    );
+                  }}
+                />
+              </Stack>
+
               <Stack gap={0.5}>
                 <Typography
                   sx={{

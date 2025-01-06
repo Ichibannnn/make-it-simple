@@ -328,66 +328,6 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
-  // useEffect(() => {
-  //   if (userApiIsSuccess && userApiData?.value?.users) {
-  //     const getUserInfo = userApiData?.value?.users?.find((item) => item?.id === userId);
-
-  //     if (getUserInfo) {
-  //       setUserInformation(getUserInfo);
-  //     } else {
-  //       setUserInformation(null);
-  //     }
-  //   }
-  // }, [userApiIsSuccess, userApiData, userId]);
-
-  // useEffect(() => {
-  //   if (!companyIsSuccess) getCompany();
-  //   if (!businessUnitIsSuccess) getBusinessUnit();
-  //   if (!departmentIsSuccess) getDepartment();
-  //   if (!unitIsSuccess) getUnit();
-  //   if (!subUnitIsSuccess) getSubUnit();
-  //   if (!locationIsSuccess) getLocation();
-
-  //   if (open && userInformation) {
-  //     setValue("UserId", {
-  //       id: userInformation?.id,
-  //       fullname: userInformation?.fullname,
-  //     });
-  //   }
-
-  //   setValue("CompanyId", {
-  //     id: userInformation?.companyId,
-  //     company_Code: userInformation?.company_Code,
-  //     company_Name: userInformation?.company_Name,
-  //   });
-  //   setValue("BusinessUnitId", {
-  //     id: userInformation?.businessUnitId,
-  //     business_Code: userInformation?.businessUnit_Code,
-  //     business_Name: userInformation?.businessUnit_Name,
-  //   });
-  //   setValue("DepartmentId", {
-  //     id: userInformation?.departmentId,
-  //     department_Code: userInformation?.department_Code,
-  //     department_Name: userInformation?.department_Name,
-  //   });
-
-  //   setValue("UnitId", {
-  //     id: userInformation?.unitId,
-  //     unit_Code: userInformation?.unit_Code,
-  //     unit_Name: userInformation?.unit_Name,
-  //   });
-  //   setValue("SubUnitId", {
-  //     id: userInformation?.subUnitId,
-  //     subUnit_Code: userInformation?.subUnit_Code,
-  //     subUnit_Name: userInformation?.subUnit_Name,
-  //   });
-  //   setValue("LocationId", {
-  //     // location_No: userInformation?.location_No,
-  //     location_Code: userInformation?.location_Code,
-  //     location_Name: userInformation?.location_Name,
-  //   });
-  // }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
-
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
     const selectedSubCategories = watch("SubCategoryId");
@@ -403,8 +343,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
   }, [subCategoryData]);
 
   // console.log("UserData: ", userData);\
-  console.log("Requestor: ", watch("Requestor_By"));
-  console.log("User: ", watch("UserId"));
+  // console.log("Requestor: ", watch("Requestor_By"));
+  // console.log("User: ", watch("UserId"));
 
   return (
     <>
