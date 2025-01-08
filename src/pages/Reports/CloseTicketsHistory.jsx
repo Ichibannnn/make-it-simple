@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetClosedTicketsQuery } from "../../features/api_reports/reportsApi";
-import { AccessTimeOutlined, CalendarMonthOutlined, FiberManualRecord, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, FiberManualRecord, History, Search } from "@mui/icons-material";
 import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
@@ -8,7 +8,7 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, remarks, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize }) => {
+const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, remarks, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const { data, isLoading, isFetching, isSuccess, isError } = useGetClosedTicketsQuery({
     Search: search,
     Unit: unit,
@@ -28,6 +28,12 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
     setPageSize(e.target.value);
     setPageNumber(1);
   };
+
+  useEffect(() => {
+    if (data?.value?.reports.length) {
+      setSheetData(data?.value?.reports);
+    }
+  }, [data?.value?.reports.length]);
 
   return (
     <Stack sx={{ width: "100%" }}>
@@ -155,6 +161,20 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
                 <Stack direction="row" alignItems="center" gap={0.5}>
                   <AccessTimeOutlined sx={{ fontSize: "16px" }} />
                   TARGET DATE
+                </Stack>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                  AGING DAYS
                 </Stack>
               </TableCell>
 
@@ -381,6 +401,31 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
                         fontWeight: 800,
                       }}
                       label={moment(item.target_Date).format("LL")}
+                    />
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    <Chip
+                      variant="filled"
+                      size="30px"
+                      icon={<History fontSize="small" color="primary" />}
+                      sx={{
+                        fontSize: "12px",
+                        backgroundColor: "#1D1F3B",
+                        color: theme.palette.primary.main,
+                        fontWeight: 800,
+                      }}
+                      label={`${item.aging_Days} Day(s)`}
                     />
                   </TableCell>
 

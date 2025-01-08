@@ -43,7 +43,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    Concern: yup.string().required().label("Concern Details"),
+    Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
@@ -99,6 +99,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(requestorSchema),
+    mode: "onChange",
     defaultValues: {
       RequestTransactionId: "",
       Concern: "",
@@ -341,10 +342,6 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  // console.log("UserData: ", userData);\
-  // console.log("Requestor: ", watch("Requestor_By"));
-  // console.log("User: ", watch("UserId"));
 
   return (
     <>
@@ -1087,6 +1084,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                           value={value}
                           placeholder="Ex. System Name - Description"
                           onChange={onChange}
+                          error={!!errors.Concern}
                           sx={{
                             width: "100%",
                           }}
@@ -1107,6 +1105,11 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                       );
                     }}
                   />
+                  {errors.Concern && (
+                    <Typography color="error" sx={{ fontSize: "12px" }}>
+                      {errors.Concern.message}
+                    </Typography>
+                  )}
                 </Stack>
 
                 <Stack

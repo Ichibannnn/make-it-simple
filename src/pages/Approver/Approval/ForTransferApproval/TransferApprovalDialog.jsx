@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Autocomplete,
   Box,
   Button,
   Chip,
@@ -12,6 +13,7 @@ import {
   Stack,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -39,10 +41,12 @@ import ForTransferDialogMenuActions from "./MenuActions/ForTransferDialogMenuAct
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { ThemeContext } from "@emotion/react";
+import { useLazyGetChannelsQuery } from "../../../../features/api_channel_setup/channel/channelApi";
 
 const schema = yup.object().shape({
   // transferTicketId: yup.string().nullable(),
   targetDate: yup.date().notRequired(),
+  transfer_To: yup.object().required().label("Transffered To"),
 });
 
 const TransferApprovalDialog = ({ data, open, onClose }) => {
@@ -59,6 +63,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
   useSignalRConnection();
 
   const [approveTransfer, { isLoading: approveTransferIsLoading, isFetching: approveTransferIsFetching }] = useApproveTransferMutation();
+  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
@@ -75,6 +80,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       targetDate: null,
+      transfer_To: null,
     },
   });
 
@@ -84,6 +90,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     const approvePayload = {
       transferTicketId: data?.transferTicketId,
       target_Date: data?.approver_Level === 1 ? watch("targetDate") : moment(watch("targetDate")).format("YYYY-MM-DD"),
+      transfer_To: watch("transfer_To")?.userId,
     };
 
     console.log("approvePayload: ", approvePayload);
@@ -143,6 +150,11 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           link: item.attachment,
         }))
       );
+
+      setValue("transfer_To", {
+        userId: data?.transferToId,
+        fullname: data?.transfer_To,
+      });
 
       if (data?.approver_Level >= 2) {
         setValue("targetDate", data?.target_Date);
@@ -209,6 +221,9 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     setIsViewDialogOpen(false);
     setSelectedImage(null);
   };
+
+  console.log("UserId: ", watch("transfer_To")?.userId);
+  console.log("Data: ", data);
 
   return (
     <>
@@ -280,7 +295,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
-                        {" "}
                         {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -565,6 +579,58 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack sx={{ width: "100%", gap: 1, mt: 2 }}>
+                <Stack gap={0.5}>
+                  <Typography
+                    sx={{
+                      fontSize: isScreenSmall ? "13px" : "14px",
+                      color: theme.palette.primary.main,
+                    }}
+                  >
+                    Tranferred to:
+                  </Typography>
+
+                  <Controller
+                    control={control}
+                    name="transfer_To"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <Autocomplete
+                          ref={ref}
+                          size="small"
+                          value={value}
+                          options={issueHandlerData?.value?.channel?.find((item) => item.id === data?.channelId)?.channelUsers || []}
+                          loading={issueHandlerIsLoading}
+                          renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          onOpen={() => {
+                            if (!issueHandlerIsSuccess) getIssueHandler();
+                          }}
+                          onChange={(_, value) => {
+                            onChange(value);
+                          }}
+                          getOptionLabel={(option) => option.fullname}
+                          isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                          getOptionDisabled={(option) => data?.userId === option.userId}
+                          sx={{
+                            flex: 2,
+                          }}
+                          fullWidth
+                          disablePortal
+                          disableClearable
+                          componentsProps={{
+                            popper: {
+                              sx: {
+                                "& .MuiAutocomplete-listbox": {
+                                  fontSize: "12px",
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                </Stack>
+
                 <Stack gap={0.5}>
                   <Typography
                     sx={{

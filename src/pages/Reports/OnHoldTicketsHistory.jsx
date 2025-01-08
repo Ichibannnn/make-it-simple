@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetOnHoldTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
 import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
@@ -8,7 +8,7 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize }) => {
+const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOnHoldTicketsQuery({
     Search: search,
     Unit: unit,
@@ -27,6 +27,12 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
     setPageSize(e.target.value);
     setPageNumber(1);
   };
+
+  useEffect(() => {
+    if (data?.value?.reports.length) {
+      setSheetData(data?.value?.reports);
+    }
+  }, [data?.value?.reports.length]);
 
   return (
     <Stack sx={{ width: "100%" }}>

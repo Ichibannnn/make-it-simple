@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetAllTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
 import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
@@ -8,17 +8,25 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const AllTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize }) => {
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetAllTicketsQuery({
-    Search: search,
-    Unit: unit,
-    UserId: user,
-    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
-    Date_To: moment(dateTo).format("YYYY-MM-DD"),
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
-
+const AllTicketsHistory = ({
+  data,
+  isLoading,
+  isFetching,
+  isSuccess,
+  isError,
+  search,
+  searchValue,
+  setSearchValue,
+  unit,
+  user,
+  dateFrom,
+  dateTo,
+  pageNumber,
+  setPageNumber,
+  pageSize,
+  setPageSize,
+  setSheetData,
+}) => {
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
   };
@@ -125,6 +133,20 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, da
                 <Stack direction="row" alignItems="center" gap={0.5}>
                   <AccessTimeOutlined sx={{ fontSize: "16px" }} />
                   TARGET DATE
+                </Stack>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                  AGING DAYS
                 </Stack>
               </TableCell>
 
@@ -282,6 +304,31 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, da
                     />
                   </TableCell>
 
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    <Chip
+                      variant="filled"
+                      size="30px"
+                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                      sx={{
+                        fontSize: "12px",
+                        backgroundColor: "#1D1F3B",
+                        color: theme.palette.primary.main,
+                        fontWeight: 800,
+                      }}
+                      label={`${item.aging_Days} Day(s)`}
+                    />
+                  </TableCell>
+
                   <TableCell>
                     <Typography
                       sx={{
@@ -408,9 +455,10 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, da
                   </TableCell>
                 </TableRow>
               ))}
+
             {isError && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={10} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -421,7 +469,7 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, da
 
             {isSuccess && !data?.value?.reports.length && (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={10} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

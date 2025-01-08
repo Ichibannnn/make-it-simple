@@ -28,6 +28,7 @@ import {
   DiscountOutlined,
   DoneAllOutlined,
   FiberManualRecord,
+  History,
   HistoryToggleOffOutlined,
   MoveDownOutlined,
   PendingActionsOutlined,
@@ -766,6 +767,22 @@ const IssueHandlerConcerns = () => {
                           )}
 
                           <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>AGING DAYS: </Typography>
+                            <Chip
+                              variant="filled"
+                              size="30px"
+                              icon={<History fontSize="small" color="primary" />}
+                              sx={{
+                                fontSize: "12px",
+                                backgroundColor: "#1D1F3B",
+                                color: theme.palette.primary.main,
+                                fontWeight: 800,
+                              }}
+                              label={"10 Days"}
+                            />
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REMARKS: </Typography>
                             <Box sx={{ maxWidth: "20px" }}>
                               <Tooltip title={item.remarks} placement="bottom-start">
@@ -994,6 +1011,20 @@ const IssueHandlerConcerns = () => {
                           fontSize: "12px",
                         }}
                       >
+                        <Stack direction="row" alignItems="center" gap={0.5}>
+                          <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                          AGING DAYS
+                        </Stack>
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
                         REMARKS
                       </TableCell>
 
@@ -1135,6 +1166,32 @@ const IssueHandlerConcerns = () => {
                                 />
                               </TableCell>
                             )}
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={<History fontSize="small" color="primary" />}
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: "#1D1F3B",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
+                                }}
+                                label={"10 Days"}
+                              />
+                            </TableCell>
 
                             <TableCell
                               sx={{
@@ -1287,7 +1344,7 @@ const IssueHandlerConcerns = () => {
 
                     {isError && (
                       <TableRow>
-                        <TableCell colSpan={9} align="center">
+                        <TableCell colSpan={10} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
@@ -1298,7 +1355,7 @@ const IssueHandlerConcerns = () => {
 
                     {isSuccess && !data?.value?.openTicket.length && (
                       <TableRow>
-                        <TableCell colSpan={9} align="center">
+                        <TableCell colSpan={10} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.

@@ -52,7 +52,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestConcernId: yup.string().nullable(),
-    Concern: yup.string().required().label("Concern Details"),
+    Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
@@ -111,6 +111,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(requestorSchema),
+    mode: "onChange",
     defaultValues: {
       Concern: "",
       RequestConcernId: "",
@@ -1249,6 +1250,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           value={value}
                           placeholder="Ex. System Name - Description"
                           onChange={onChange}
+                          error={!!errors.Concern}
                           sx={{
                             width: "100%",
                           }}
@@ -1270,6 +1272,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       );
                     }}
                   />
+                  {errors.Concern && (
+                    <Typography color="error" sx={{ fontSize: "12px" }}>
+                      {errors.Concern.message}
+                    </Typography>
+                  )}
                 </Stack>
 
                 <Stack

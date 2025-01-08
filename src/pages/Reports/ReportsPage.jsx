@@ -1,5 +1,5 @@
 import { Autocomplete, Divider, Stack, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import useDebounce from "../../hooks/useDebounce";
 import { theme } from "../../theme/theme";
@@ -19,9 +19,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+
 import { useLazyGetUnitQuery } from "../../features/api masterlist/unit/unitApi";
 import { useLazyGetUsersQuery } from "../../features/user_management_api/user/userApi";
 import {
+  useGetAllTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
@@ -49,9 +53,27 @@ const ReportsPage = () => {
   const [pageSize, setPageSize] = useState(5);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [sheetData, setSheetData] = useState([]);
 
   const categoryOptions = ["All Tickets", "Open Tickets", "Closed Tickets", "Transferred Tickets", "On-Hold Tickets"];
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
+
+  // ALL TICKETS API ~~~~
+  const {
+    data: allTicketData,
+    isLoading: allTicketIsLoading,
+    isFetching: allTicketIsFetching,
+    isSuccess: allTicketIsSuccess,
+    isError: allTicketIsError,
+  } = useGetAllTicketsQuery({
+    Search: search,
+    Unit: unit,
+    UserId: user,
+    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+    Date_To: moment(dateTo).format("YYYY-MM-DD"),
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
@@ -167,10 +189,95 @@ const ReportsPage = () => {
       } catch (error) {
         console.log("Error", error);
       }
+    } else if (reportNavigation === "All Tickets") {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Sheet1");
+
+      worksheet.columns = [
+        { header: "Ticket Number", key: "Ticket Number", width: 10 },
+        { header: "Ticket Description", key: "Ticket Description", width: 20 },
+        { header: "Category", key: "Category", width: 20 },
+        { header: "Sub Category", key: "Sub Category", width: 20 },
+        { header: "Channel", key: "Channel", width: 20 },
+        { header: "Target Date", key: "Target Date", width: 20 },
+        { header: "Requestor", key: "Requestor", width: 20 },
+        { header: "Company", key: "Company", width: 20 },
+        { header: "Business Unit", key: "Business Unit", width: 20 },
+        { header: "Department", key: "Department", width: 20 },
+        { header: "Unit", key: "Unit", width: 20 },
+        { header: "Sub Unit", key: "Sub Unit", width: 20 },
+        { header: "Location", key: "Location", width: 20 },
+        { header: "Issue Handler", key: "Issue Handler", width: 20 },
+        { header: "Status", key: "Status", width: 20 },
+      ];
+
+      worksheet.getRow(1).eachCell((cell, colNumber) => {
+        console.log("Column Number: ", colNumber);
+
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "967BB6" },
+        };
+        cell.font = { bold: true };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
+      });
+
+      sheetData.forEach((item) => {
+        worksheet.addRow({
+          "Ticket Number": item["Ticket Number"],
+          "Ticket Description": item["Ticket Description"],
+          Category: item.Category,
+          "Sub Category": item["Sub Category"],
+          Channel: item.Channel,
+          "Target Date": item["Target Date"],
+          Requestor: item.Requestor,
+          Company: item.Company,
+          "Business Unit": item["Business Unit"],
+          Department: item.Department,
+          Unit: item.Unit,
+          "Sub Unit": item["Sub Unit"],
+          Location: item.Location,
+          "Issue Handler": item["Issue Handler"],
+          Status: item.Status,
+        });
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      saveAs(blob, "All_Tickets_History.xlsx");
     }
   };
 
-  console.log("Unit: ", unitData);
+  useEffect(() => {
+    if (allTicketData) {
+      setSheetData(
+        allTicketData?.value?.reports?.map((item) => {
+          return {
+            "Ticket Number": item.ticketConcernId,
+            "Ticket Description": item.concerns,
+            Category: item.ticketCategoryDescriptions,
+            "Sub Category": item.ticketSubCategoryDescriptions,
+            Channel: item.channel_Name,
+            "Target Date": moment(item.target_Date).format("MM/DD/YYYY"),
+            Requestor: item.requestor_Name,
+            Company: `${item.company_Code} - ${item.company_Name}`,
+            "Business Unit": `${item.businessUnit_Code} - ${item.businessUnit_Name}`,
+            Department: `${item.department_Code} - ${item.department_Name}`,
+            Unit: `${item.unit_Code} - ${item.unit_Name}`,
+            "Sub Unit": `${item.subUnit_Code} - ${item.subUnit_Name}`,
+            Location: `${item.location_Code} - ${item.location_Name}`,
+            "Issue Handler": item.personnel,
+            Status: item.ticket_Status,
+          };
+        })
+      );
+    }
+  }, [allTicketData]);
+
+  console.log("Sheet: ", sheetData);
+
+  // console.log("TicketData: ", allTicketData);
 
   return (
     <Stack
@@ -197,6 +304,7 @@ const ReportsPage = () => {
             startIcon={<IosShare />}
             loading={isLoading}
             onClick={handleExport}
+            disabled={sheetData?.length === 0 || reportNavigation === null}
             sx={{
               ":disabled": {
                 backgroundColor: theme.palette.secondary.main,
@@ -420,6 +528,12 @@ const ReportsPage = () => {
                 setPageNumber={setPageNumber}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
+                // API
+                data={allTicketData}
+                isLoading={allTicketIsLoading}
+                isFetching={allTicketIsFetching}
+                isSuccess={allTicketIsSuccess}
+                isError={allTicketIsError}
               />
             ) : reportNavigation === "Open Tickets" ? (
               <OpenTicketsHistory
@@ -435,6 +549,7 @@ const ReportsPage = () => {
                 setPageNumber={setPageNumber}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
+                setSheetData={setSheetData}
               />
             ) : reportNavigation === "Closed Tickets" ? (
               <CloseTicketsHistory
@@ -450,6 +565,7 @@ const ReportsPage = () => {
                 setPageNumber={setPageNumber}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
+                setSheetData={setSheetData}
               />
             ) : reportNavigation === "Transferred Tickets" ? (
               <TransferredTicketsHistory
@@ -465,6 +581,7 @@ const ReportsPage = () => {
                 setPageNumber={setPageNumber}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
+                setSheetData={setSheetData}
               />
             ) : reportNavigation === "On-Hold Tickets" ? (
               <OnHoldTicketsHistory
@@ -480,6 +597,7 @@ const ReportsPage = () => {
                 setPageNumber={setPageNumber}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
+                setSheetData={setSheetData}
               />
             ) : (
               ""

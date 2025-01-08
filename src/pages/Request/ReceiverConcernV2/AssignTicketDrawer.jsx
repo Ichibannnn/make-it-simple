@@ -32,7 +32,7 @@ import AssignDialogMenuAction from "./AssignDialogMenuAction";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
-  Concern: yup.string().required().label("Concern Details"),
+  Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
   // concern_Details: yup.array().nullable(),
   ticketConcernId: yup.string().nullable(),
   ChannelId: yup.object().required().label("Channel"),
@@ -83,6 +83,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    mode: "onChange",
     defaultValues: {
       Requestor_By: "",
       // concern_Details: [],
@@ -479,6 +480,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                         value={value}
                         placeholder="Description"
                         onChange={onChange}
+                        error={!!errors.Concern}
                         sx={{
                           width: "100%",
                         }}
@@ -499,6 +501,11 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                     );
                   }}
                 />
+                {errors.Concern && (
+                  <Typography color="error" sx={{ fontSize: "12px" }}>
+                    {errors.Concern.message}
+                  </Typography>
+                )}
               </Stack>
 
               <Stack gap={0.5}>

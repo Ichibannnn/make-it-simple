@@ -1,5 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  FormHelperText,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -28,6 +43,7 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
+import { WifiTetheringErrorSharp } from "@mui/icons-material";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -43,7 +59,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    Concern: yup.string().required().label("Concern Details"),
+    Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
@@ -99,6 +115,7 @@ const ConcernDialog = ({ open, onClose }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(requestorSchema),
+    mode: "onChange",
     defaultValues: {
       RequestTransactionId: "",
       Concern: "",
@@ -402,6 +419,8 @@ const ConcernDialog = ({ open, onClose }) => {
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
+
+  console.log("Error", errors);
 
   return (
     <>
@@ -1109,6 +1128,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           value={value}
                           placeholder="Ex. System Name - Description"
                           onChange={onChange}
+                          error={!!errors.Concern}
                           sx={{
                             width: "100%",
                           }}
@@ -1129,6 +1149,11 @@ const ConcernDialog = ({ open, onClose }) => {
                       );
                     }}
                   />
+                  {errors.Concern && (
+                    <Typography color="error" sx={{ fontSize: "12px" }}>
+                      {errors.Concern.message}
+                    </Typography>
+                  )}
                 </Stack>
 
                 <Stack
@@ -1354,7 +1379,8 @@ const ConcernDialog = ({ open, onClose }) => {
                 !watch("ChannelId") ||
                 watch("CategoryId").length === 0 ||
                 watch("SubCategoryId").length === 0 ||
-                (watch("Request_Type") === "Back Job" && !watch("BackJobId"))
+                (watch("Request_Type") === "Back Job" && !watch("BackJobId")) ||
+                errors.Concern
               }
             >
               Save

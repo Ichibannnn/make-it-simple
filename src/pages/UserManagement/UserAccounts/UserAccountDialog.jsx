@@ -129,26 +129,31 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         company_Code: data?.company_Code,
         company_Name: data?.company_Name,
       });
+
       setValue("businessUnitId", {
         id: data?.businessUnitId,
         business_Code: data?.businessUnit_Code,
         business_Name: data?.businessUnit_Name,
       });
+
       setValue("departmentId", {
         id: data?.departmentId,
         department_Code: data?.department_Code,
         department_Name: data?.department_Name,
       });
+
       setValue("unitId", {
         id: data?.unitId,
         unit_Code: data?.unit_Code,
         unit_Name: data?.unit_Name,
       });
+
       setValue("subUnitId", {
         id: data?.subUnitId,
         subUnit_Code: data?.subUnit_Code,
         subUnit_Name: data?.subUnit_Name,
       });
+
       setValue("locationId", {
         location_Code: data?.location_Code,
         location_Name: data?.location_Name,
