@@ -778,7 +778,7 @@ const IssueHandlerConcerns = () => {
                                 color: theme.palette.primary.main,
                                 fontWeight: 800,
                               }}
-                              label={"10 Days"}
+                              label={`${item.aging_Days} Day(s)`}
                             />
                           </Stack>
 
@@ -1189,7 +1189,7 @@ const IssueHandlerConcerns = () => {
                                   color: theme.palette.primary.main,
                                   fontWeight: 800,
                                 }}
-                                label={"10 Days"}
+                                label={`${item?.aging_Days} Day(s)`}
                               />
                             </TableCell>
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useGetOnHoldTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
+import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
@@ -9,6 +9,7 @@ import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
 const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOnHoldTicketsQuery({
     Search: search,
     Unit: unit,
@@ -37,9 +38,18 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
   return (
     <Stack sx={{ width: "100%" }}>
       <Stack>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" m={2}>
+        <Stack
+          direction={isScreenSmall ? "column" : "row"}
+          justifyContent="space-between"
+          alignItems={isScreenSmall ? "left" : "center"}
+          gap={isScreenSmall ? 0.5 : 0}
+          mt={1}
+          mb={1}
+          ml={2}
+          mr={2}
+        >
           <Stack>
-            <Typography variant="h5">On-Hold Tickets Report</Typography>
+            <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>On-Hold Tickets Report</Typography>
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
@@ -49,7 +59,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               sx={{
-                width: 400,
+                // width: 400,
                 borderRadius: "15px",
                 fontSize: "small",
                 fontWeight: 400,
@@ -60,7 +70,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
         </Stack>
       </Stack>
 
-      <TableContainer sx={{ minHeight: "589px", maxHeight: "589px" }}>
+      <TableContainer sx={{ minHeight: "500px", maxHeight: "500px" }}>
         <Table stickyHeader sx={{ borderBottom: "none" }}>
           <TableHead>
             <TableRow>

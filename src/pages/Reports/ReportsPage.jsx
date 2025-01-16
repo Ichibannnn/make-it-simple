@@ -1,4 +1,4 @@
-import { Autocomplete, Divider, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Divider, Grid, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import useDebounce from "../../hooks/useDebounce";
@@ -57,6 +57,8 @@ const ReportsPage = () => {
 
   const categoryOptions = ["All Tickets", "Open Tickets", "Closed Tickets", "Transferred Tickets", "On-Hold Tickets"];
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
+
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   // ALL TICKETS API ~~~~
   const {
@@ -275,17 +277,13 @@ const ReportsPage = () => {
     }
   }, [allTicketData]);
 
-  console.log("Sheet: ", sheetData);
-
-  // console.log("TicketData: ", allTicketData);
-
   return (
     <Stack
       sx={{
         width: "100%",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: "14px 44px 44px 44px",
+        padding: "1px 24px 24px 24px",
       }}
     >
       <Toaster richColors position="top-right" />
@@ -294,7 +292,7 @@ const ReportsPage = () => {
         <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
           <Stack direction="row" gap={0.5}>
             <Stack>
-              <Typography variant="h4">Reports</Typography>
+              <Typography variant={isScreenSmall ? "h5" : "h4"}>Reports</Typography>
             </Stack>
           </Stack>
 
@@ -316,8 +314,8 @@ const ReportsPage = () => {
           </LoadingButton>
         </Stack>
 
-        <Stack sx={{ borderRadius: "20px", backgroundColor: theme.palette.bgForm.black3, marginTop: "10px", height: "730px" }}>
-          <Stack direction="row" gap={1} padding={1}>
+        <Stack sx={{ borderRadius: "20px", backgroundColor: theme.palette.bgForm.black3, marginTop: "5px", height: "730px" }}>
+          {/* <Stack direction="row" gap={1} padding={1}>
             <Stack>
               <Typography sx={{ fontSize: "13px" }}>Report Details:</Typography>
               <Autocomplete
@@ -509,7 +507,194 @@ const ReportsPage = () => {
                 />
               </LocalizationProvider>
             </Stack>
-          </Stack>
+          </Stack> */}
+
+          <Grid container spacing={2} padding={2}>
+            {/* Report Details */}
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Typography sx={{ fontSize: "13px" }}>Report Details:</Typography>
+              <Autocomplete
+                size="small"
+                value={reportNavigation ?? ""}
+                onChange={(_, newValue) => setReportNavigation(newValue)}
+                options={categoryOptions}
+                renderInput={(params) => <TextField {...params} placeholder="Report Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                disableClearable
+                sx={{ width: "100%" }}
+                componentsProps={{
+                  popper: {
+                    sx: {
+                      "& .MuiAutocomplete-listbox": {
+                        fontSize: "13px",
+                      },
+                    },
+                  },
+                }}
+              />
+            </Grid>
+
+            {/* Unit */}
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Typography sx={{ fontSize: "13px" }}>Unit:</Typography>
+              <Controller
+                control={control}
+                name="UnitId"
+                render={({ field: { ref, value, onChange } }) => (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value || null}
+                    options={unitData?.value?.unit || []}
+                    loading={unitIsLoading}
+                    renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    onOpen={() => {
+                      if (!unitIsSuccess) getUnit();
+                    }}
+                    onChange={(_, value) => {
+                      onChange(value);
+                      setUnit(value?.id);
+                      setValue("UserId", null);
+                    }}
+                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{ width: "100%" }}
+                    fullWidth
+                    disablePortal
+                    disableClearable
+                    componentsProps={{
+                      popper: {
+                        sx: {
+                          "& .MuiAutocomplete-listbox": {
+                            fontSize: "13px",
+                          },
+                        },
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            {/* Employee */}
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Typography sx={{ fontSize: "13px" }}>Employee:</Typography>
+              <Controller
+                control={control}
+                name="UserId"
+                render={({ field: { ref, value, onChange } }) => (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value || null}
+                    options={userData?.value?.users.filter((item) => item.unitId === watch("UnitId")?.id) || []}
+                    loading={userIsLoading}
+                    renderInput={(params) => <TextField {...params} placeholder="Employee" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    onOpen={() => {
+                      if (!userIsSuccess) getUser();
+                    }}
+                    onChange={(_, value) => {
+                      onChange(value);
+                      setUser(value?.id);
+                    }}
+                    getOptionLabel={(option) => `${option.userName}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{ width: "100%" }}
+                    fullWidth
+                    disablePortal
+                    disableClearable
+                    componentsProps={{
+                      popper: {
+                        sx: {
+                          "& .MuiAutocomplete-listbox": {
+                            fontSize: "13px",
+                          },
+                        },
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            {/* Remarks (conditionally rendered) */}
+            {reportNavigation === "Closed Tickets" && (
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <Typography sx={{ fontSize: "13px" }}>Remarks:</Typography>
+                <Autocomplete
+                  size="small"
+                  value={remarks}
+                  onChange={(_, newValue) => setRemarks(newValue)}
+                  options={remarksOptions}
+                  renderInput={(params) => <TextField {...params} placeholder="Select Remarks" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                  disableClearable
+                  sx={{ width: "100%" }}
+                  componentsProps={{
+                    popper: {
+                      sx: {
+                        "& .MuiAutocomplete-listbox": {
+                          fontSize: "13px",
+                        },
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+            )}
+
+            {/* Date From */}
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Typography sx={{ fontSize: "13px" }}>Date From:</Typography>
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  value={dateFrom}
+                  maxDate={dateTo}
+                  onChange={(newValue) => setDateFrom(newValue)}
+                  sx={{ width: "100%" }}
+                  slotProps={{
+                    textField: {
+                      variant: "outlined",
+                      sx: {
+                        "& .MuiInputBase-input": {
+                          padding: "8.5px 14px",
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          fontSize: "13px",
+                        },
+                        width: "100%",
+                      },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
+
+            {/* Date To */}
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Typography sx={{ fontSize: "13px" }}>Date To:</Typography>
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  value={dateTo}
+                  minDate={dateFrom}
+                  onChange={(newValue) => setDateTo(newValue)}
+                  sx={{ width: "100%" }}
+                  slotProps={{
+                    textField: {
+                      variant: "outlined",
+                      sx: {
+                        "& .MuiInputBase-input": {
+                          padding: "8.5px 14px",
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          fontSize: "13px",
+                        },
+                        width: "100%",
+                      },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
+          </Grid>
 
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 

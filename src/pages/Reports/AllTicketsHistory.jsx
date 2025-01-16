@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useGetAllTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
+import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
@@ -27,6 +27,8 @@ const AllTicketsHistory = ({
   setPageSize,
   setSheetData,
 }) => {
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
   };
@@ -38,20 +40,29 @@ const AllTicketsHistory = ({
 
   return (
     <Stack sx={{ width: "100%" }}>
-      <Stack>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" m={2}>
+      <Stack sx={{ width: "100%" }}>
+        <Stack
+          direction={isScreenSmall ? "column" : "row"}
+          justifyContent="space-between"
+          alignItems={isScreenSmall ? "left" : "center"}
+          gap={isScreenSmall ? 0.5 : 0}
+          mt={1}
+          mb={1}
+          ml={2}
+          mr={2}
+        >
           <Stack>
-            <Typography variant="h5">All Tickets Report</Typography>
+            <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>All Tickets Report</Typography>
           </Stack>
 
-          <Stack justifyItems="space-between" direction="row">
+          <Stack>
             <OutlinedInput
               placeholder="Search"
               startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               sx={{
-                width: 400,
+                // width: 400,
                 borderRadius: "15px",
                 fontSize: "small",
                 fontWeight: 400,
@@ -62,8 +73,8 @@ const AllTicketsHistory = ({
         </Stack>
       </Stack>
 
-      <TableContainer sx={{ minHeight: "589px", maxHeight: "589px" }}>
-        <Table stickyHeader sx={{ borderBottom: "none" }}>
+      <TableContainer sx={{ minHeight: "500px", maxHeight: "500px" }}>
+        <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
           <TableHead>
             <TableRow>
               <TableCell
@@ -131,7 +142,7 @@ const AllTicketsHistory = ({
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   TARGET DATE
                 </Stack>
               </TableCell>
@@ -145,7 +156,7 @@ const AllTicketsHistory = ({
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  <AccessTimeOutlined sx={{ fontSize: "16px" }} />
+                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   AGING DAYS
                 </Stack>
               </TableCell>
@@ -244,7 +255,6 @@ const AllTicketsHistory = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.ticketCategoryDescriptions}
                   </TableCell>
@@ -259,7 +269,6 @@ const AllTicketsHistory = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.ticketSubCategoryDescriptions}
                   </TableCell>
@@ -329,8 +338,19 @@ const AllTicketsHistory = ({
                     />
                   </TableCell>
 
-                  <TableCell>
-                    <Typography
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    {item.requestor_Name}
+                    {/* <Typography
                       sx={{
                         color: "#EDF2F7",
                         fontSize: "14px",
@@ -383,7 +403,7 @@ const AllTicketsHistory = ({
                       }}
                     >
                       {item.location_Name}
-                    </Typography>
+                    </Typography> */}
                   </TableCell>
 
                   <TableCell

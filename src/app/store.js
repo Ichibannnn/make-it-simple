@@ -38,6 +38,7 @@ import notificationMiddleware from "../middleware/notificationMiddleware";
 import { attachmentsApi } from "../features/api_attachments/attachmentsApi";
 
 import { reportsApi } from "../features/api_reports/reportsApi";
+import { overviewApi } from "../features/api_overview/overviewApi";
 
 export const store = configureStore({
   reducer: {
@@ -76,6 +77,7 @@ export const store = configureStore({
     [closingTicketApi.reducerPath]: closingTicketApi.reducer,
 
     [reportsApi.reducerPath]: reportsApi.reducer,
+    [overviewApi.reducerPath]: overviewApi.reducer,
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
@@ -114,6 +116,7 @@ export const store = configureStore({
       closingTicketApi.middleware,
 
       reportsApi.middleware,
+      overviewApi.middleware,
 
       sedarApi.middleware,
       ymirApi.middleware,
