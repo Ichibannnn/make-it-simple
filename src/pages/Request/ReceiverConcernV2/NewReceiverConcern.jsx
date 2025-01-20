@@ -328,7 +328,7 @@ const NewReceiverConcern = () => {
             </Stack>
           ) : (
             <>
-              <TableContainer sx={{ minHeight: "528px", maxHeight: "545px" }}>
+              <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
                 <Table stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>

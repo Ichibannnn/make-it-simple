@@ -136,7 +136,7 @@ const Header = () => {
       dispatch(closingTicketApi.util.resetApiState());
 
       dispatch(clearUserDetails());
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       setAlertData({
         severity: "error",

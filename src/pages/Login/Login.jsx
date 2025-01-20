@@ -180,7 +180,7 @@ const LoginForm = () => {
           description: "Welcome to Make It Simple, Fresh Morning!",
         });
         setShowAlert(true);
-        navigate("/overview", { replace: true });
+        navigate("/", { replace: true });
 
         // setTimeout(() => {
         //   console.log("Checked");

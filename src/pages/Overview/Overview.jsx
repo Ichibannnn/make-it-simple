@@ -10,13 +10,13 @@ const Overview = () => {
 
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
-  if (isLoading || isFetching) {
-    return <Typography>Loading...</Typography>;
-  }
+  // if (isLoading || isFetching) {
+  //   return <Typography>Loading...</Typography>;
+  // }
 
-  if (isError) {
-    return <Typography>Error loading data. Please try again.</Typography>;
-  }
+  // if (isError) {
+  //   return <Typography>Error loading data. Please try again.</Typography>;
+  // }
 
   const chartData = data?.value?.[0]?.overviewAnalyticsDetails
     ?.map((detail) => ({
@@ -72,7 +72,7 @@ const Overview = () => {
 
                 <Box>
                   <Typography sx={{ fontWeight: 400, fontSize: "1rem", lineHeight: 1.5, color: "#9fa6ad" }}>Total Tickets:</Typography>
-                  <Typography variant="h4">{data?.value[0]?.totalTicket}</Typography>
+                  <Typography variant="h4">{data?.value[0]?.totalTicket ? data?.value[0]?.totalTicket : "0"}</Typography>
                 </Box>
               </Stack>
             </CardContent>
@@ -102,7 +102,7 @@ const Overview = () => {
 
                 <Box>
                   <Typography sx={{ fontWeight: 400, fontSize: "1rem", lineHeight: 1.5, color: "#9fa6ad" }}>Delayed Tickets:</Typography>
-                  <Typography variant="h4">{data?.value[0]?.totalDelay}</Typography>
+                  <Typography variant="h4">{data?.value[0]?.totalDelay ? data?.value[0]?.totalDelay : "0"}</Typography>
                 </Box>
               </Stack>
             </CardContent>
@@ -111,14 +111,14 @@ const Overview = () => {
       </Grid>
 
       {/* Bar Chart Section */}
-      <Box mt={4} padding={2} sx={{ backgroundColor: theme.palette.bgForm.black3 }}>
+      <Box mt={4} padding={2} sx={{ backgroundColor: theme.palette.bgForm.black3, minHeight: "560px" }}>
         <Stack direction="row" gap={0.5} alignItems="center" justifyContent="center" sx={{ width: "100%" }} mb={2} mt={2}>
           <Typography gutterBottom sx={{ color: "#8884d8", fontSize: "17px", fontWeight: 600 }}>
             Ticket Distribution (Ranked by Tickets)
           </Typography>
         </Stack>
 
-        <ResponsiveContainer width="100%" height={chartData.length * 40}>
+        <ResponsiveContainer width="100%" height={chartData?.length * 40}>
           <BarChart data={chartData} layout="vertical">
             <CartesianGrid stroke="#ccc" horizontal={false} />
             <XAxis type="number" domain={[0, 5]} />
@@ -151,7 +151,7 @@ const Overview = () => {
 export default Overview;
 
 const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
+  if (active && payload && payload?.length) {
     const details = payload[0].payload;
     return (
       <Box

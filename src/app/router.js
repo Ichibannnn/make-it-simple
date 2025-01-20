@@ -44,17 +44,15 @@ import ChangePassword from "../pages/ChangePassword/ChangePassword";
 
 export const router = createBrowserRouter([
   {
-    path: "*",
-    element: <PageNotFound />,
-  },
-  {
-    path: "/change-password",
-    element: <ChangePassword />,
-  },
-  {
-    path: "/",
+    path: "/login",
     element: <Login />,
   },
+
+  {
+    path: "/",
+    element: <LandingPage />,
+  },
+
   {
     element: <Private Render={LandingPage} />,
     children: [
@@ -180,6 +178,15 @@ export const router = createBrowserRouter([
       {
         path: "/reports",
         element: <ReportsPage />,
+      },
+
+      {
+        path: "*",
+        element: <PageNotFound />,
+      },
+      {
+        path: "/change-password",
+        element: <ChangePassword />,
       },
     ],
   },
