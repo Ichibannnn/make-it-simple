@@ -92,7 +92,7 @@ const NewReceiverConcern = () => {
     addTicketOnToggle();
   };
 
-  // console.log("Notif: ", notificationBadge);
+  console.log("Data: ", data);
 
   return (
     <Stack
@@ -343,6 +343,21 @@ const NewReceiverConcern = () => {
                       >
                         CONCERN NO.
                       </TableCell>
+
+                      {approveStatus === "true" && (
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                          align="center"
+                        >
+                          TICKET NO.
+                        </TableCell>
+                      )}
+
                       <TableCell
                         sx={{
                           background: "#1C2536",
@@ -421,6 +436,24 @@ const NewReceiverConcern = () => {
                           >
                             {item.requestConcernId}
                           </TableCell>
+
+                          {approveStatus === "true" && (
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              align="center"
+                              onClick={() => onViewAction(item)}
+                            >
+                              {item.ticketRequestConcerns[0]?.ticketConcernId}
+                            </TableCell>
+                          )}
 
                           <TableCell
                             sx={{
@@ -516,7 +549,7 @@ const NewReceiverConcern = () => {
 
                     {isError && (
                       <TableRow>
-                        <TableCell colSpan={9} align="center">
+                        <TableCell colSpan={10} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
@@ -527,7 +560,7 @@ const NewReceiverConcern = () => {
 
                     {isSuccess && !data?.value?.requestConcern.length && (
                       <TableRow>
-                        <TableCell colSpan={9} align="center">
+                        <TableCell colSpan={10} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.

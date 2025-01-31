@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Toaster } from "sonner";
 import { theme } from "../../../theme/theme";
 
@@ -19,7 +19,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { AccountCircleRounded, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, LocalPrintshopOutlined, VisibilityOutlined } from "@mui/icons-material";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
@@ -27,6 +27,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import TicketHistory from "./TicketHistory";
 import moment from "moment";
 import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
+import { useReactToPrint } from "react-to-print";
 
 const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -36,6 +37,8 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
   const [viewLoading, setViewLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
+
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
@@ -115,7 +118,11 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
     setSelectedImage(null);
   };
 
-  console.log("Data", data);
+  const componentRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   return (
     <>
@@ -124,17 +131,29 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
-              <AccountCircleRounded sx={{ fontSize: "70px" }} />
+              <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
               <Stack>
-                <Typography sx={{ fontSize: "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>created by: </Typography>
+                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>
+                  created by:{" "}
+                </Typography>
                 <Typography
                   sx={{
-                    fontSize: "15px",
+                    fontSize: isScreenSmall ? "13px" : "15px",
                     color: "#6dc993",
                     fontWeight: 700,
                   }}
                 >
                   {data?.requestor_Name}
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontSize: isScreenSmall ? "11px" : "13px",
+                    color: theme.palette.text.secondary,
+                    fontWeight: 500,
+                  }}
+                >
+                  {`${data?.department_Code} - ${data?.department_Name}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -142,150 +161,97 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
 
-          <Stack sx={{ marginTop: 2 }}>
+          <Stack direction="row" sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Tabs value={navigation} onChange={(_, value) => setNavigation(value)}>
               <Tab
                 value="1"
                 label="Details"
                 sx={{
-                  fontSize: "12px",
+                  fontSize: isScreenSmall ? "10px" : "12px",
                   fontWeight: 600,
                 }}
               />
             </Tabs>
+
+            <Button variant="contained" size="small" onClick={handlePrint} startIcon={<LocalPrintshopOutlined />}>
+              <Typography sx={{ fontSize: "12px" }}>Print</Typography>
+            </Button>
           </Stack>
 
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ width: "100%", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
-                </Box>
-              </Stack>
+              {/* DETAILS */}
 
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Request Type:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.request_Type}</Typography>
-                </Box>
-              </Stack>
-
-              {data?.request_Type === "Back Job" && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Backjob Ticket Number:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
-                  </Box>
-                </Stack>
-              )}
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern Details:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                    {data?.concern_Description?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                    {data?.getOpenTicketCategories?.map((item, i) => (
-                      <Box key={i}>
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          label={item.category_Description ? item.category_Description : "-"}
-                          sx={{
-                            backgroundColor: theme.palette.bgForm.black_1,
-                            color: "#ffffff",
-                            borderRadius: "none",
-                            maxWidth: "300px",
-                          }}
-                        />
-                      </Box>
-                    ))}
+              {isScreenSmall ? (
+                <>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.ticketConcernId}</Typography>
+                    </Box>
                   </Stack>
-                  {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography> */}
-                </Box>
-              </Stack>
 
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                    {data?.getOpenTicketSubCategories?.map((item, i) => (
-                      <Box key={i}>
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                          sx={{
-                            backgroundColor: theme.palette.bgForm.black_1,
-                            color: "#ffffff",
-                            borderRadius: "none",
-                            maxWidth: "300px",
-                          }}
-                        />
-                      </Box>
-                    ))}
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Request Type:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.request_Type}</Typography>
+                    </Box>
                   </Stack>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
-                </Box>
-              </Stack>
 
-              {/* {data?.ticket_Status === "For Closing Ticket" && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Technicians:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                      {data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap((item, i) => (
-                        <Box key={i} sx={{ maxWidth: "200px", maxHeight: "200px" }}>
+                  {data?.request_Type === "Rework" && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Rework Ticket #:</Typography>
+                      </Box>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Concern Details:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Category:</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
+                      {data?.getOpenTicketCategories?.map((item, i) => (
+                        <Box key={i}>
                           <Chip
                             variant="filled"
                             size="small"
-                            label={item.fullname ? item.fullname : "-"}
+                            label={item.category_Description ? item.category_Description : "-"}
                             sx={{
                               backgroundColor: theme.palette.bgForm.black_1,
+                              fontSize: "10px",
                               color: "#ffffff",
                               borderRadius: "none",
                               maxWidth: "300px",
@@ -293,116 +259,360 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                           />
                         </Box>
                       ))}
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Sub Category:</Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
+                      {data?.getOpenTicketSubCategories?.map((item, i) => (
+                        <Box key={i}>
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                            sx={{
+                              backgroundColor: theme.palette.bgForm.black_1,
+                              fontSize: "10px",
+                              color: "#ffffff",
+                              borderRadius: "none",
+                              maxWidth: "300px",
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Assigned to:</Typography>
+                    </Box>
+
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.issue_Handler}</Typography>
+                    </Box>
+                  </Stack>
+
+                  {/* Resolution */}
+                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Resolution:</Typography>
+                      </Box>
+
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                      </Box>
                     </Stack>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
-                  </Box>
-                </Stack>
-              )} */}
+                  )}
 
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Assigned to:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.issue_Handler}</Typography>
-                </Box>
-              </Stack>
+                  {/* For OnHold Remarks */}
+                  {data?.ticket_Status === "For On-Hold" && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Hold Reason:</Typography>
+                      </Box>
 
-              {/* Resoulution */}
-              {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Resolution:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
-                  </Box>
-                </Stack>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getForOnHolds?.[0]?.reason}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* OnHold Remarks */}
+                  {data?.ticket_Status === "On-Hold" && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>On Hold Reason:</Typography>
+                      </Box>
+
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getOnHolds?.[0]?.reason}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* Transfer Remarks */}
+                  {data?.ticket_Status === "For Transfer" && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Transfer Remarks:</Typography>
+                      </Box>
+
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* Transfer Approval Remarks */}
+                  {data?.ticket_Status === "Transfer Approval" && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Transfer Remarks:</Typography>
+                      </Box>
+
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Date Needed:</Typography>
+                    </Box>
+
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Target Date:</Typography>
+                    </Box>
+
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{moment(data?.target_Date).format("LL")}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Notes:</Typography>
+                    </Box>
+
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                    </Box>
+                  </Stack>
+                </>
+              ) : (
+                <>
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Request Type:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.request_Type}</Typography>
+                    </Box>
+                  </Stack>
+
+                  {data?.request_Type === "Back Job" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Backjob Ticket Number:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern Details:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getOpenTicketCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.category_Description ? item.category_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Stack>
+                      {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography> */}
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        {data?.getOpenTicketSubCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Stack>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Assigned to:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.issue_Handler}</Typography>
+                    </Box>
+                  </Stack>
+
+                  {/* Resoulution */}
+                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Resolution:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* For OnHold Remarks */}
+                  {data?.ticket_Status === "For On-Hold" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Hold Reason:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForOnHolds?.[0]?.reason}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* OnHold Remarks */}
+                  {data?.ticket_Status === "On-Hold" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>On Hold Reason:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getOnHolds?.[0]?.reason}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* Transfer Remarks */}
+                  {data?.ticket_Status === "For Transfer" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* Transfer Approval Remarks */}
+                  {data?.ticket_Status === "Transfer Approval" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Date Needed:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                    </Box>
+                  </Stack>
+                </>
               )}
-
-              {/* For OnHold Remarks */}
-              {data?.ticket_Status === "For On-Hold" && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Hold Reason:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForOnHolds?.[0]?.reason}</Typography>
-                  </Box>
-                </Stack>
-              )}
-
-              {/* OnHold Remarks */}
-              {data?.ticket_Status === "On-Hold" && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>On Hold Reason:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getOnHolds?.[0]?.reason}</Typography>
-                  </Box>
-                </Stack>
-              )}
-
-              {/* Transfer Remarks */}
-              {data?.ticket_Status === "For Transfer" && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
-                  </Box>
-                </Stack>
-              )}
-
-              {/* Transfer Approval Remarks */}
-              {data?.ticket_Status === "Transfer Approval" && (
-                <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                  <Box sx={{ width: "15%", ml: 2 }}>
-                    <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
-                  </Box>
-                  <Box sx={{ width: "10%" }} />
-                  <Box width={{ width: "75%", ml: 2 }}>
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
-                  </Box>
-                </Stack>
-              )}
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Date Needed:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
-                </Box>
-              </Stack>
 
               {/* ATTACHMENTS */}
               <Stack
@@ -414,11 +624,11 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                 }}
               >
                 <Stack direction="row" gap={1} alignItems="center">
-                  <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
+                  <GetAppOutlined sx={{ color: theme.palette.text.secondary, fontSize: isScreenSmall ? "16px" : "18px" }} />
 
                   <Typography
                     sx={{
-                      fontSize: "14px",
+                      fontSize: isScreenSmall ? "12px" : "14px",
                       color: theme.palette.text.secondary,
                     }}
                   >
@@ -428,9 +638,9 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
                 {!attachments?.length ? (
                   <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                    <Stack direction="row" gap={0.5} justifyContent="center">
-                      <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
-                      <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                    <Stack direction="row" gap={0.5} justifyContent="center" alignItems="center">
+                      <AttachFileOutlined sx={{ color: theme.palette.text.secondary, fontSize: isScreenSmall ? "16px" : "18px" }} />
+                      <Typography sx={{ color: theme.palette.text.secondary, fontSize: isScreenSmall ? "14px" : "16px" }}>No attached file</Typography>
                     </Stack>
                   </Stack>
                 ) : (
@@ -462,11 +672,11 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                               flexDirection: "column",
                             }}
                           >
-                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+                            <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px" }}>{fileName.name}</Typography>
 
                             <Typography
                               sx={{
-                                fontSize: "14px",
+                                fontSize: isScreenSmall ? "12px" : "14px",
                                 color: theme.palette.text.secondary,
                               }}
                             >
@@ -512,6 +722,241 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     ))}
                   </Stack>
                 )}
+              </Stack>
+
+              {/* PRINT DETAILS*/}
+              <Stack display="none" gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
+                <Stack sx={{ width: "100%", padding: 2, borderRadius: "20px" }} ref={componentRef}>
+                  <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between", mt: 4, mb: 1 }}>
+                    <Box>
+                      <img src="/images/dotek-login.png" alt="misLogo" width="80" height="50" className="logo-sidebar" />
+                    </Box>
+
+                    <Stack gap={-1} sx={{ justifyContent: "center", alignItems: "center", width: "100%" }}>
+                      <Typography mt={2} sx={{ fontWeight: "bold", color: "black" }}>
+                        MAKE IT SIMPLE
+                      </Typography>
+
+                      <Typography sx={{ fontWeight: "bold", fontSize: "12px", color: "black" }}>Ticket Details</Typography>
+                    </Stack>
+
+                    <Stack sx={{ width: "20%" }} />
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Ticket Number:</Typography>
+                    </Box>
+
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Request Type:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.request_Type}</Typography>
+                    </Box>
+                  </Stack>
+
+                  {data?.request_Type === "Rework" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Rework Ticket #:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Requestor:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.requestor_Name}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Department:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Concern Details:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Channel:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Category:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>
+                          {data?.getOpenTicketCategories?.map((item) => item?.category_Description).join(", ")}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Sub Category:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>
+                          {data?.getOpenTicketSubCategories?.map((item) => item?.subCategory_Description).join(", ")}
+                        </Typography>
+                      </Stack>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Assigned to:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.issue_Handler}</Typography>
+                    </Box>
+                  </Stack>
+
+                  {/* Resoulution */}
+                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Resolution:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* For OnHold Remarks */}
+                  {data?.ticket_Status === "For On-Hold" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Hold Reason:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getForOnHolds?.[0]?.reason}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* OnHold Remarks */}
+                  {data?.ticket_Status === "On-Hold" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>On Hold Reason:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getOnHolds?.[0]?.reason}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* Transfer Remarks */}
+                  {data?.ticket_Status === "For Transfer" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  {/* Transfer Approval Remarks */}
+                  {data?.ticket_Status === "Transfer Approval" && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Date Needed:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Target Date:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Notes:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                    </Box>
+                  </Stack>
+                </Stack>
               </Stack>
             </Stack>
 

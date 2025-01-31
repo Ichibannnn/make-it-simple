@@ -1,9 +1,10 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Box, Typography, Grid, Card, CardContent, Stack, useMediaQuery } from "@mui/material";
+import { Box, Typography, Grid, Card, CardContent, Stack, useMediaQuery, CircularProgress } from "@mui/material";
 import { useGetOverviewQuery } from "../../features/api_overview/overviewApi";
 import { theme } from "../../theme/theme";
 import { Assignment, AssignmentLate, FiberManualRecord, LocalOffer } from "@mui/icons-material";
+import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 
 const Overview = () => {
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetOverviewQuery();
@@ -142,6 +143,24 @@ const Overview = () => {
               name="Total Delay (%)"
             />
           </BarChart>
+
+          {(isLoading || isFetching) && (
+            <Stack sx={{ width: "100%", gap: 1, justifyContent: "center", alignItems: "center" }}>
+              <CircularProgress />
+              <Typography variant="h5" color="#EDF2F7">
+                Please wait...
+              </Typography>
+            </Stack>
+          )}
+
+          {isSuccess && !chartData?.length && (
+            <Stack sx={{ width: "100%", gap: 1, justifyContent: "center", alignItems: "center" }}>
+              <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+              <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                No Tickets Available.
+              </Typography>
+            </Stack>
+          )}
         </ResponsiveContainer>
       </Box>
     </Stack>

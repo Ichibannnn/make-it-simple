@@ -281,6 +281,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                   </TableCell>
                 </TableRow>
               ))}
+
             {isError && (
               <TableRow>
                 <TableCell colSpan={6} align="center">

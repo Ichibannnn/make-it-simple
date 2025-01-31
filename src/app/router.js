@@ -50,12 +50,13 @@ export const router = createBrowserRouter([
 
   {
     path: "/",
-    element: <LandingPage />,
-  },
-
-  {
     element: <Private Render={LandingPage} />,
     children: [
+      // {
+      //   path: "/",
+      //   element: <LandingPage />,
+      // },
+
       {
         path: "/overview",
         element: <Overview />,

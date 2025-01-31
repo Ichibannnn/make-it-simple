@@ -13,17 +13,18 @@ const TicketHistory = ({ data }) => {
     skip: !data?.ticketConcernId,
   });
 
-  // const isSmallScreen = useMediaQuery("(max-width: 1024px) and (max-height: 911px)");
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Stack sx={{ width: "100%" }}>
       <Accordion sx={{ background: theme.palette.bgForm.black2, padding: 1 }}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
-          <Stack direction="row" gap={0.5}>
-            <DiscountOutlined />
-            <Typography>Ticket Timeline</Typography>
+          <Stack direction="row" gap={0.5} sx={{ width: "100%", alignItems: "center" }}>
+            <DiscountOutlined sx={{ fontSize: isScreenSmall ? "16px " : "18px" }} />
+            <Typography sx={{ fontSize: isScreenSmall ? "14px " : "16px" }}>Ticket Timeline</Typography>
           </Stack>
         </AccordionSummary>
+
         <AccordionDetails>
           <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black2, borderRadius: "20px" }}>
             <Timeline
@@ -41,7 +42,7 @@ const TicketHistory = ({ data }) => {
                   <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
                     <Stack direction="row">
                       {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
-                      <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                      <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
                     </Stack>
                   </TimelineOppositeContent>
 
@@ -54,7 +55,7 @@ const TicketHistory = ({ data }) => {
                     <Typography
                       component="span"
                       sx={{
-                        fontSize: "17px",
+                        fontSize: isScreenSmall ? "15px" : "17px",
                         fontWeight: 900,
                         color: theme.palette.text.secondary,
                       }}
@@ -62,20 +63,22 @@ const TicketHistory = ({ data }) => {
                       {item.request}
                     </Typography>
 
-                    <Typography color="text.secondary" sx={{ fontSize: "15px" }}>
+                    <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px" }}>
                       {item.status}
                     </Typography>
 
                     <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
-                      <PersonOutlineOutlined sx={{ fontSize: "20px", color: theme.palette.text.main }} />
-                      <Typography sx={{ fontSize: "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
+                      <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
+                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>
+                        {item.transacted_By}
+                      </Typography>
                     </Stack>
 
                     <Stack gap={0} marginTop={2}>
-                      <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "500", color: theme.palette.text.main }}>
+                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.main }}>
                         {item.remarks ? "Reason: " : ""}
                       </Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "500", color: theme.palette.text.secondary }}>
+                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.secondary }}>
                         {item.remarks ? item.remarks : ""}
                       </Typography>
                     </Stack>
@@ -89,7 +92,7 @@ const TicketHistory = ({ data }) => {
                   <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
                     <Stack direction="row">
                       {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
-                      <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                      <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
                     </Stack>
                   </TimelineOppositeContent>
 
@@ -102,7 +105,7 @@ const TicketHistory = ({ data }) => {
                     <Typography
                       component="span"
                       sx={{
-                        fontSize: "17px",
+                        fontSize: isScreenSmall ? "15px" : "17px",
                         fontWeight: 900,
                         color:
                           item.request === "Rejected"
@@ -117,21 +120,23 @@ const TicketHistory = ({ data }) => {
                       {item.request}
                     </Typography>
 
-                    <Typography color="text.secondary" sx={{ fontSize: "15px" }}>
+                    <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px" }}>
                       {item.status}
                     </Typography>
 
                     <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
                       {/* <PersonOutlineOutlined sx={{ fontSize: "20px", color: "#22B4BF" }} /> */}
-                      <PersonOutlineOutlined sx={{ fontSize: "20px", color: theme.palette.text.main }} />
-                      <Typography sx={{ fontSize: "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
+                      <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
+                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>
+                        {item.transacted_By}
+                      </Typography>
                     </Stack>
 
                     <Stack gap={0} marginTop={2}>
-                      <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "500", color: theme.palette.text.main }}>
+                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.main }}>
                         {item.remarks ? "Reason: " : ""}
                       </Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "500", color: theme.palette.error.main }}>
+                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.error.main }}>
                         {item.remarks ? item.remarks : ""}
                       </Typography>
                     </Stack>

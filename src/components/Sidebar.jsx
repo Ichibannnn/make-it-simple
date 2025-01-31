@@ -134,7 +134,7 @@ const SidebarList = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const userPermission = useSelector((state) => state.user.permissions);
+  const userPermission = useSelector((state) => state?.user?.permissions);
 
   const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
   const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
@@ -393,7 +393,7 @@ const SidebarList = () => {
         }}
       >
         {sidebarMenu
-          .filter((item) => userPermission.includes(item.name))
+          .filter((item) => userPermission?.includes(item.name))
           .map((item, i) => (
             <Fragment key={i}>
               {item.sub?.length ? (
@@ -431,7 +431,7 @@ const SidebarList = () => {
                   timeout="auto"
                   unmountOnExit
                   sx={{
-                    maxHeight: item.open ? "300px" : "0",
+                    maxHeight: item.open ? "250px" : "0",
                     overflowY: "auto",
                     transition: "max-height 0.3s ease-in-out",
                   }}

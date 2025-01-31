@@ -246,6 +246,49 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
+  const columns = [
+    { field: "id", headerName: "ID", width: 90 },
+    {
+      field: "firstName",
+      headerName: "First name",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "lastName",
+      headerName: "Last name",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      type: "number",
+      width: 110,
+      editable: true,
+    },
+    {
+      field: "fullName",
+      headerName: "Full name",
+      description: "This column has a value getter and is not sortable.",
+      sortable: false,
+      width: 160,
+    },
+  ];
+
+  const rows = data?.value?.requestConcern?.map((item, index) => {
+    return {
+      lineNo: index + 1,
+      requestConcernId: item.requestConcernId,
+      ticketRequestConcerns: item.ticketRequestConcerns[0]?.ticketConcernId,
+      concern: item.concern,
+      created_At: item.created_At,
+      concern_Status: item.concern_Status,
+    };
+  });
+
+  console.log("Rows: ", rows);
+
   return (
     <Stack
       sx={{
@@ -648,7 +691,7 @@ const ConcernTickets = () => {
             ) : (
               <>
                 {/* Table */}
-                <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
+                {/* <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
@@ -763,9 +806,7 @@ const ConcernTickets = () => {
                               </TableCell>
                             )}
 
-                            {/* <Tooltip title={item.concern} placement="bottom-start"> */}
                             <TableCell
-                              // className="ellipsis-styling"
                               sx={{
                                 color: "#EDF2F7",
                                 fontSize: "12px",
@@ -781,7 +822,6 @@ const ConcernTickets = () => {
                                 </span>
                               ))}
                             </TableCell>
-                            {/* </Tooltip> */}
 
                             <TableCell
                               sx={{
@@ -916,7 +956,7 @@ const ConcernTickets = () => {
                   page={data?.value?.currentPage - 1 || 0}
                   onPageChange={onPageNumberChange}
                   onRowsPerPageChange={onPageSizeChange}
-                />
+                /> */}
 
                 {status === "For Confirmation" && (
                   <Stack alignItems="center" direction="row" gap={0.5} mt={1}>

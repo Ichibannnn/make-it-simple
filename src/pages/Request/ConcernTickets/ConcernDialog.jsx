@@ -63,7 +63,8 @@ const ConcernDialog = ({ open, onClose }) => {
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
-    Request_Type: yup.string().oneOf(["New Request", "Back Job"], "Invalid Request Type").required("Request Type is required"),
+    Request_Type: yup.string().oneOf(["New Request", "Rework"], "Invalid Request Type").required("Request Type is required"),
+    // Severity: yup.string().oneOf(["Low", "High"], "Invalid Severity").required("Request Type is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
@@ -123,6 +124,7 @@ const ConcernDialog = ({ open, onClose }) => {
       RequestAttachmentsFiles: [],
 
       Request_Type: "New Request",
+      Severity: "",
       BackJobId: null,
       Contact_Number: "",
 
@@ -161,8 +163,6 @@ const ConcernDialog = ({ open, onClose }) => {
 
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
     payload.append("ChannelId", formData.ChannelId?.id);
-    // payload.append("CategoryId", formData.CategoryId?.id);
-    // payload.append("SubCategoryId", formData.SubCategoryId?.id);
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
@@ -235,8 +235,8 @@ const ConcernDialog = ({ open, onClose }) => {
         onClose();
       })
       .catch((err) => {
-        toast.error("Error!", {
-          description: err.data.error.message,
+        toast?.error("Error!", {
+          description: err?.data?.error?.message,
           duration: 1500,
         });
       });
@@ -463,21 +463,54 @@ const ConcernDialog = ({ open, onClose }) => {
                           New Request
                         </MenuItem>
 
-                        <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
-                          Back Job
+                        <MenuItem value="Rework" sx={{ fontSize: "13px" }}>
+                          Rework
                         </MenuItem>
-
-                        {/* {backjobTicketData?.value?.length > 0 && (
-                          <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
-                            Back Job
-                          </MenuItem>
-                        )} */}
                       </Select>
                     )}
                   />
                 </Stack>
 
-                {watch("Request_Type") === "Back Job" && (
+                {/* SEVERITY*/}
+                <Stack
+                  width="100%"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 1,
+                  }}
+                >
+                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Severity:</Typography>
+                  <Controller
+                    name="Severity"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        size="small"
+                        placeholder="Select Severity"
+                        inputProps={{ "aria-label": "Without label" }}
+                        sx={{
+                          width: "100%",
+                          fontSize: "13px",
+                          "& .MuiSelect-select": {
+                            color: "#fff",
+                          },
+                        }}
+                      >
+                        <MenuItem value="Low" sx={{ fontSize: "13px" }}>
+                          Low
+                        </MenuItem>
+
+                        <MenuItem value="High" sx={{ fontSize: "13px" }}>
+                          High
+                        </MenuItem>
+                      </Select>
+                    )}
+                  />
+                </Stack>
+
+                {watch("Request_Type") === "Rework" && (
                   <Stack sx={{ width: "100%", mb: 1 }}>
                     <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
                     <Controller
@@ -1379,7 +1412,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 !watch("ChannelId") ||
                 watch("CategoryId").length === 0 ||
                 watch("SubCategoryId").length === 0 ||
-                (watch("Request_Type") === "Back Job" && !watch("BackJobId")) ||
+                (watch("Request_Type") === "Rework" && !watch("BackJobId")) ||
                 errors.Concern
               }
             >

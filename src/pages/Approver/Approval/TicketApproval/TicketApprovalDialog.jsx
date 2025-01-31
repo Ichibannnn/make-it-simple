@@ -468,7 +468,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
                             <Typography
                               sx={{
-                                fontSize: "12px",
+                                fontSize: isScreenSmall ? "10px" : "12px",
                                 color: theme.palette.text.secondary,
                               }}
                             >
@@ -517,7 +517,14 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
         <DialogActions>
           <Stack sx={{ flexDirection: "row", gap: 0.5, padding: 2 }}>
-            <LoadingButton variant="contained" color="success" onClick={onApproveAction} loading={approveTicketIsLoading || approveTicketIsFetching} startIcon={<Check />}>
+            <LoadingButton
+              size={isScreenSmall ? "small" : "medium"}
+              variant="contained"
+              color="success"
+              onClick={onApproveAction}
+              loading={approveTicketIsLoading || approveTicketIsFetching}
+              startIcon={<Check />}
+            >
               Approve
             </LoadingButton>
 

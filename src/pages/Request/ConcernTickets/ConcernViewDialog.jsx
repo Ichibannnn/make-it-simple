@@ -56,6 +56,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
+    // Severity: yup.string().required("Severity is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
@@ -118,6 +119,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       RequestAttachmentsFiles: [],
 
       Request_Type: "",
+      Severity: "",
       BackJobId: null,
       Contact_Number: "",
 
@@ -421,10 +423,19 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
       setValue("Request_Type", editData?.request_Type);
 
-      setValue("BackJobId", {
-        ticketConcernId: editData?.backJobId,
-        concern: editData?.back_Job_Concern,
-      });
+      if (editData?.request_Type === "New Request") {
+        setValue("BackJobId", null);
+      } else {
+        setValue("BackJobId", {
+          ticketConcernId: editData?.backJobId,
+          concern: editData?.back_Job_Concern,
+        });
+      }
+
+      // setValue("BackJobId", {
+      //   ticketConcernId: editData?.backJobId,
+      //   concern: editData?.back_Job_Concern,
+      // });
 
       setValue("UserId", {
         id: editData?.requestorId,
@@ -575,8 +586,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                         <MenuItem value="New Request" sx={{ fontSize: "13px" }}>
                           New Request
                         </MenuItem>
-                        <MenuItem value="Back Job" sx={{ fontSize: "13px" }}>
-                          Back Job
+                        <MenuItem value="Rework" sx={{ fontSize: "13px" }}>
+                          Rework
                         </MenuItem>
                       </Select>
                     )}
@@ -584,7 +595,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   />
                 </Stack>
 
-                {watch("Request_Type") === "Back Job" && (
+                {watch("Request_Type") === "Rework" && (
                   <Stack sx={{ width: "100%", mb: 1 }}>
                     <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
                     <Controller
@@ -1525,7 +1536,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY") ||
                   watch("CategoryId").length === 0 ||
                   watch("SubCategoryId").length === 0 ||
-                  (watch("Request_Type") === "Back Job" && !watch("BackJobId"))
+                  (watch("Request_Type") === "Rework" && !watch("BackJobId"))
                 }
               >
                 Save

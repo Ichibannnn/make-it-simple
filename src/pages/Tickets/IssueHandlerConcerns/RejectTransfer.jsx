@@ -87,8 +87,6 @@ const RejectTransfer = ({ data, open, onClose }) => {
     });
   };
 
-  console.log("data: ", data);
-
   const onCloseAction = () => {
     reset();
     onClose();

@@ -1,14 +1,17 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 const Private = ({ Render }) => {
   const authenticate = useSelector((state) => state.auth);
+
+  console.log("Authenticate: ", authenticate);
 
   // if (authenticate) {
   //   return <Render />;
   // }
 
-  // return <Navigate to="/" replace />;
+  // return <Navigate to="/login" replace />;
+
   return authenticate ? <Render /> : <Navigate to="/login" />;
 };
 

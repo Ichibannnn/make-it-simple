@@ -766,7 +766,7 @@ const IssueHandlerConcerns = () => {
                             </Stack>
                           )}
 
-                          <Stack direction="row" gap={0.5} alignItems="center">
+                          {/* <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>AGING DAYS: </Typography>
                             <Chip
                               variant="filled"
@@ -780,7 +780,7 @@ const IssueHandlerConcerns = () => {
                               }}
                               label={`${item.aging_Days} Day(s)`}
                             />
-                          </Stack>
+                          </Stack> */}
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REMARKS: </Typography>
@@ -1003,7 +1003,7 @@ const IssueHandlerConcerns = () => {
                         </TableCell>
                       )}
 
-                      <TableCell
+                      {/* <TableCell
                         sx={{
                           background: "#1C2536",
                           color: "#D65DB1",
@@ -1015,7 +1015,7 @@ const IssueHandlerConcerns = () => {
                           <AccessTimeOutlined sx={{ fontSize: "16px" }} />
                           AGING DAYS
                         </Stack>
-                      </TableCell>
+                      </TableCell> */}
 
                       <TableCell
                         sx={{
@@ -1167,7 +1167,7 @@ const IssueHandlerConcerns = () => {
                               </TableCell>
                             )}
 
-                            <TableCell
+                            {/* <TableCell
                               sx={{
                                 color: "#EDF2F7",
                                 fontSize: "12px",
@@ -1191,7 +1191,7 @@ const IssueHandlerConcerns = () => {
                                 }}
                                 label={`${item?.aging_Days} Day(s)`}
                               />
-                            </TableCell>
+                            </TableCell> */}
 
                             <TableCell
                               sx={{

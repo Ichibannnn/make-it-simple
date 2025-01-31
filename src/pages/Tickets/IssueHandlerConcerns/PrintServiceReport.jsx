@@ -20,8 +20,6 @@ const PrintServiceReport = ({ data, open, onClose }) => {
     onClose();
   };
 
-  console.log("data: ", data);
-
   return (
     <>
       <Dialog fullWidth maxWidth="lg" open={open}>

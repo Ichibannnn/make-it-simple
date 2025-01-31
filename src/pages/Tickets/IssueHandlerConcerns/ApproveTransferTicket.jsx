@@ -26,8 +26,6 @@ const schema = yup.object().shape({
 });
 
 const ApproveTransferTicket = ({ data, open, onClose }) => {
-  console.log("Data: ", data);
-
   const [approveTransferTicket, { isLoading: approveTransferTicketIsLoading, isFetching: approveTransferTicketIsFetching }] = useApproveTransferTicketMutation();
 
   const dispatch = useDispatch();

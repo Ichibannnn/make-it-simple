@@ -174,7 +174,7 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
                 </Stack>
               </TableCell>
 
-              <TableCell
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -183,10 +183,9 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   AGING DAYS
                 </Stack>
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -414,7 +413,7 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
                     />
                   </TableCell>
 
-                  <TableCell
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -437,7 +436,7 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
                       }}
                       label={`${item.aging_Days} Day(s)`}
                     />
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{

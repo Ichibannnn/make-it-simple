@@ -15,7 +15,7 @@ import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-uni
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
 import Swal from "sweetalert2";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import useDisclosure from "../../../hooks/useDisclosure";

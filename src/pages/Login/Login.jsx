@@ -180,7 +180,7 @@ const LoginForm = () => {
           description: "Welcome to Make It Simple, Fresh Morning!",
         });
         setShowAlert(true);
-        navigate("/", { replace: true });
+        navigate("/");
 
         // setTimeout(() => {
         //   console.log("Checked");
@@ -324,7 +324,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
     changeUserPassword(payload)
       .unwrap()
       .then(() => {
-        navigate("/overview", { replace: true });
+        navigate("/", { replace: true });
         setTimeout(
           () =>
             toast.success("Success!", {
@@ -380,7 +380,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
             }}
           >
             <Typography fontWeight="bold" variant="h5">
-              Change your password
+              Change your passwordsss
             </Typography>
             <Typography color="gray" fontSize="sm">
               To change your password, please fill in the fields below.

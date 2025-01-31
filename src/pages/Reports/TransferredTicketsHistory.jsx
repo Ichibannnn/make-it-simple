@@ -144,7 +144,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                 TRANSFERRED NO.
               </TableCell>
 
-              <TableCell
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -153,10 +153,9 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   AGING DAYS
                 </Stack>
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -286,7 +285,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                     {item.transferTicketId}
                   </TableCell>
 
-                  <TableCell
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -309,7 +308,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                       }}
                       label={`${item.aging_Days} Day(s)`}
                     />
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{

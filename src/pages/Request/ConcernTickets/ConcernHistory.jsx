@@ -36,6 +36,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
   const [viewLoading, setViewLoading] = useState(false);
 
   const fileInputRef = useRef();
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: historyData } = useGetTicketHistoryQuery(data?.ticketRequestConcerns?.[0]?.ticketConcernId, {
     skip: !data?.ticketRequestConcerns?.[0]?.ticketConcernId,
@@ -193,8 +194,8 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                     <TimelineItem key={index}>
                       <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
                         <Stack direction="row">
-                          <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} />
-                          <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                          {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
+                          <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
                         </Stack>
                       </TimelineOppositeContent>
 
@@ -207,7 +208,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                         <Typography
                           component="span"
                           sx={{
-                            fontSize: "19px",
+                            fontSize: isScreenSmall ? "15px" : "17px",
                             fontWeight: 900,
                             color: theme.palette.text.secondary,
                           }}
@@ -215,20 +216,22 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                           {item.request}
                         </Typography>
 
-                        <Typography color="text.secondary" sx={{ fontSize: "15px" }}>
+                        <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px" }}>
                           {item.status}
                         </Typography>
 
                         <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
-                          <PersonOutlineOutlined sx={{ fontSize: "20px", color: theme.palette.text.main }} />
-                          <Typography sx={{ fontSize: "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
+                          <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
+                          <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>
+                            {item.transacted_By}
+                          </Typography>
                         </Stack>
 
                         <Stack gap={0} marginTop={2}>
-                          <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "500", color: theme.palette.text.main }}>
+                          <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.main }}>
                             {item.remarks ? "Reason: " : ""}
                           </Typography>
-                          <Typography color="text.secondary" sx={{ fontSize: "15px", fontWeight: "500", color: theme.palette.text.secondary }}>
+                          <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.secondary }}>
                             {item.remarks ? item.remarks : ""}
                           </Typography>
                         </Stack>
@@ -242,7 +245,7 @@ const ConcernHistory = ({ data, status, open, onClose }) => {
                       <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
                         <Stack direction="row">
                           {/* <AccessTimeOutlined sx={{ fontSize: "20px", color: "text.secondary" }} /> */}
-                          <Typography sx={{ fontSize: "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                          <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
                         </Stack>
                       </TimelineOppositeContent>
 
