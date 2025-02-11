@@ -560,7 +560,6 @@ const ReportsPage = () => {
                     sx={{ width: "100%" }}
                     fullWidth
                     disablePortal
-                    disableClearable
                     componentsProps={{
                       popper: {
                         sx: {
@@ -588,7 +587,7 @@ const ReportsPage = () => {
                     value={value || null}
                     options={userData?.value?.users.filter((item) => item.unitId === watch("UnitId")?.id) || []}
                     loading={userIsLoading}
-                    renderInput={(params) => <TextField {...params} placeholder="Employee" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    renderInput={(params) => <TextField {...params} placeholder="Employee (Please select Unit)" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onOpen={() => {
                       if (!userIsSuccess) getUser();
                     }}
@@ -596,12 +595,12 @@ const ReportsPage = () => {
                       onChange(value);
                       setUser(value?.id);
                     }}
-                    getOptionLabel={(option) => `${option.userName}`}
+                    getOptionLabel={(option) => `${option.fullname}`}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{ width: "100%" }}
                     fullWidth
+                    disabled={!watch("UnitId")}
                     disablePortal
-                    disableClearable
                     componentsProps={{
                       popper: {
                         sx: {

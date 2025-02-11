@@ -29,6 +29,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import AssignDialogMenuAction from "./AssignDialogMenuAction";
+import { useSendSmsNotificationMutation } from "../../../features/sms_notification/smsNotificationApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -68,6 +69,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
   const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
+  const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
   const [getAddReceiverAttachment] = useLazyGetReceiverAttachmentQuery();
@@ -308,7 +310,11 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       ticketConcernId: formData.ticketConcernId,
     };
 
-    console.log("ApprovePayload: ", approvePayload);
+    const smsPayload = {
+      system_name: "Make It Simple",
+      message: `Fresh Morning! Concern #${data?.requestConcernId} has been assigned to your account. Kindly check your ticket list.`,
+      mobile_number: data?.contact_Number,
+    };
 
     Swal.fire({
       title: "Confirmation",
@@ -372,9 +378,22 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
               duration: 1500,
             });
           });
+
+        // SEND SMS STATUS
+        try {
+          smsNotification(smsPayload).unwrap();
+        } catch (error) {
+          console.log(error);
+          toast.error("Error!", {
+            description: "Sms notification error!",
+            duration: 1500,
+          });
+        }
       }
     });
   };
+
+  console.log("Data: ", data);
 
   useEffect(() => {
     if (data) {
@@ -460,13 +479,63 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ width: "100%", gap: 1 }}>
+              <Stack sx={{ width: "100%", gap: 0.5, mb: 1 }}>
+                <Stack direction="row" gap={2}>
+                  <Box sx={{ width: "100px" }}>
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+
+                        fontWeight: "500",
+                      }}
+                    >
+                      Concern No:
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      {data?.requestConcernId}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack direction="row" gap={2}>
+                  <Box sx={{ width: "100px" }}>
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+
+                        fontWeight: "500",
+                      }}
+                    >
+                      Date Needed:
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      {moment(data?.date_Needed).format("LL")}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Stack>
+
               <Stack gap={0.5}>
                 <Typography
                   sx={{
                     fontSize: "13px",
                   }}
                 >
-                  Description:
+                  Ticket Description:
                 </Typography>
 
                 <Controller

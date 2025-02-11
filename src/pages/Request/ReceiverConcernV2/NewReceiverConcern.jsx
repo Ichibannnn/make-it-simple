@@ -102,7 +102,7 @@ const NewReceiverConcern = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: isScreenSmall ? "20px" : "24px 94px 34px 94px",
+        padding: isScreenSmall ? "20px" : "7px 94px 34px 94px",
       }}
     >
       <Toaster richColors position="top-right" closeButton />
@@ -328,7 +328,7 @@ const NewReceiverConcern = () => {
             </Stack>
           ) : (
             <>
-              <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
+              <TableContainer sx={{ minHeight: "480px", maxHeight: "500px" }}>
                 <Table stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
@@ -337,7 +337,7 @@ const NewReceiverConcern = () => {
                           background: "#1C2536",
                           color: "#D65DB1",
                           fontWeight: 700,
-                          fontSize: "12px",
+                          fontSize: "11px",
                         }}
                         align="center"
                       >
@@ -350,7 +350,7 @@ const NewReceiverConcern = () => {
                             background: "#1C2536",
                             color: "#D65DB1",
                             fontWeight: 700,
-                            fontSize: "12px",
+                            fontSize: "11px",
                           }}
                           align="center"
                         >
@@ -363,7 +363,7 @@ const NewReceiverConcern = () => {
                           background: "#1C2536",
                           color: "#D65DB1",
                           fontWeight: 700,
-                          fontSize: "12px",
+                          fontSize: "11px",
                         }}
                       >
                         REQUESTOR
@@ -374,7 +374,7 @@ const NewReceiverConcern = () => {
                           background: "#1C2536",
                           color: "#D65DB1",
                           fontWeight: 700,
-                          fontSize: "12px",
+                          fontSize: "11px",
                         }}
                       >
                         CONCERN
@@ -385,7 +385,7 @@ const NewReceiverConcern = () => {
                           background: "#1C2536",
                           color: "#D65DB1",
                           fontWeight: 700,
-                          fontSize: "12px",
+                          fontSize: "11px",
                         }}
                       >
                         CHANNEL
@@ -396,7 +396,7 @@ const NewReceiverConcern = () => {
                           background: "#1C2536",
                           color: "#D65DB1",
                           fontWeight: 700,
-                          fontSize: "12px",
+                          fontSize: "11px",
                         }}
                       >
                         <Stack direction="row" alignItems="center" gap={0.5}>

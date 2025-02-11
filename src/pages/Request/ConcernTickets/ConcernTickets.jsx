@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Badge,
+  Box,
   Button,
   Card,
   CardContent,
@@ -65,6 +66,7 @@ import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorCon
 import { useNavigate } from "react-router-dom";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { LoadingButton } from "@mui/lab";
+import { DataGrid } from "@mui/x-data-grid";
 
 const ConcernTickets = () => {
   const [status, setStatus] = useState("");
@@ -247,32 +249,39 @@ const ConcernTickets = () => {
   }, [searchValue]);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
+    { field: "lineNo", headerName: "Line No.", width: 90 },
     {
-      field: "firstName",
-      headerName: "First name",
+      field: "requestConcernId",
+      headerName: "Concern No.",
       width: 150,
       editable: true,
     },
     {
-      field: "lastName",
-      headerName: "Last name",
+      field: "ticketRequestConcerns",
+      headerName: "Request Details",
       width: 150,
       editable: true,
     },
     {
-      field: "age",
-      headerName: "Age",
-      type: "number",
+      field: "concern",
+      headerName: "Request Details",
+      // type: "number",
       width: 110,
       editable: true,
     },
     {
-      field: "fullName",
-      headerName: "Full name",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
+      field: "created_At",
+      headerName: "Date Created",
+      // description: "This column has a value getter and is not sortable.",
+      // sortable: false,
       width: 160,
+    },
+    {
+      field: "concern_Status",
+      headerName: "Status",
+      // type: "number",
+      width: 110,
+      editable: true,
     },
   ];
 
@@ -690,8 +699,26 @@ const ConcernTickets = () => {
               </Stack>
             ) : (
               <>
+                {/* <Box sx={{ height: 400, width: "100%" }}>
+                  <DataGrid
+                    // getRowId={}
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[5, 15, 25]}
+                    // checkboxSelection
+                    disableRowSelectionOnClick
+                  />
+                </Box> */}
+
                 {/* Table */}
-                {/* <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
+                <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
@@ -712,7 +739,8 @@ const ConcernTickets = () => {
                           </Stack>
                         </TableCell>
 
-                        {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                        {/* REMOVED CONDITION IF ALL REQUESTS */}
+                        {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
                           <TableCell
                             sx={{
                               background: "#1C2536",
@@ -724,7 +752,19 @@ const ConcernTickets = () => {
                           >
                             TICKET NO.
                           </TableCell>
-                        )}
+                        )} */}
+
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                          align="center"
+                        >
+                          TICKET NO.
+                        </TableCell>
 
                         <TableCell
                           sx={{
@@ -792,7 +832,8 @@ const ConcernTickets = () => {
                               {item.requestConcernId}
                             </TableCell>
 
-                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                            {/* Remove condition if all requests */}
+                            {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
                               <TableCell
                                 sx={{
                                   color: "#EDF2F7",
@@ -804,7 +845,19 @@ const ConcernTickets = () => {
                               >
                                 {item.ticketRequestConcerns?.[0]?.ticketConcernId}
                               </TableCell>
-                            )}
+                            )} */}
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                              }}
+                              align="center"
+                              onClick={() => onViewHistoryAction(item)}
+                            >
+                              {item.ticketRequestConcerns?.[0]?.ticketConcernId ? item.ticketRequestConcerns?.[0]?.ticketConcernId : "-"}
+                            </TableCell>
 
                             <TableCell
                               sx={{
@@ -956,7 +1009,7 @@ const ConcernTickets = () => {
                   page={data?.value?.currentPage - 1 || 0}
                   onPageChange={onPageNumberChange}
                   onRowsPerPageChange={onPageSizeChange}
-                /> */}
+                />
 
                 {status === "For Confirmation" && (
                   <Stack alignItems="center" direction="row" gap={0.5} mt={1}>

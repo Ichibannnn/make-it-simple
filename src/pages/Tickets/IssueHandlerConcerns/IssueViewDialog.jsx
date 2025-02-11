@@ -215,17 +215,10 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Concern Details:</Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Department:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
                     </Box>
                   </Stack>
 
@@ -296,19 +289,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.issue_Handler}</Typography>
                     </Box>
                   </Stack>
-
-                  {/* Resolution */}
-                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
-                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                      <Box sx={{ ml: 2 }}>
-                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Resolution:</Typography>
-                      </Box>
-
-                      <Box sx={{ ml: 2 }}>
-                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
-                      </Box>
-                    </Stack>
-                  )}
 
                   {/* For OnHold Remarks */}
                   {data?.ticket_Status === "For On-Hold" && (
@@ -382,7 +362,23 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     </Box>
                   </Stack>
 
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
+                    </Box>
+                    <Box sx={{ ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Notes:</Typography>
                     </Box>
@@ -391,6 +387,19 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
                     </Box>
                   </Stack>
+
+                  {/* Resolution */}
+                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
+                    <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Resolution:</Typography>
+                      </Box>
+
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
                 </>
               ) : (
                 <>
@@ -417,7 +426,7 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                   {data?.request_Type === "Back Job" && (
                     <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                       <Box sx={{ width: "15%", ml: 2 }}>
-                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Backjob Ticket Number:</Typography>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Rework Ticket Number:</Typography>
                       </Box>
                       <Box sx={{ width: "10%" }} />
                       <Box sx={{ width: "75%", ml: 2 }}>
@@ -428,18 +437,11 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern Details:</Typography>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Department:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
                     </Box>
                   </Stack>
 
@@ -517,19 +519,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     </Box>
                   </Stack>
 
-                  {/* Resoulution */}
-                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
-                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                      <Box sx={{ width: "15%", ml: 2 }}>
-                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Resolution:</Typography>
-                      </Box>
-                      <Box sx={{ width: "10%" }} />
-                      <Box sx={{ width: "75%", ml: 2 }}>
-                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
-                      </Box>
-                    </Stack>
-                  )}
-
                   {/* For OnHold Remarks */}
                   {data?.ticket_Status === "For On-Hold" && (
                     <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
@@ -602,7 +591,24 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     </Box>
                   </Stack>
 
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
                       <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
                     </Box>
@@ -611,6 +617,19 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
                     </Box>
                   </Stack>
+
+                  {/* Resolution */}
+                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Resolution:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
                 </>
               )}
 
@@ -737,7 +756,7 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                         MAKE IT SIMPLE
                       </Typography>
 
-                      <Typography sx={{ fontWeight: "bold", fontSize: "12px", color: "black" }}>Ticket Details</Typography>
+                      <Typography sx={{ fontWeight: "bold", fontSize: "12px", color: "black" }}>Ticket Description</Typography>
                     </Stack>
 
                     <Stack sx={{ width: "20%" }} />
@@ -798,23 +817,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Concern Details:</Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box sx={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
                       <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Channel:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
@@ -861,19 +863,6 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.issue_Handler}</Typography>
                     </Box>
                   </Stack>
-
-                  {/* Resoulution */}
-                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
-                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
-                      <Box sx={{ width: "15%", ml: 2 }}>
-                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Resolution:</Typography>
-                      </Box>
-                      <Box sx={{ width: "10%" }} />
-                      <Box sx={{ width: "75%", ml: 2 }}>
-                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
-                      </Box>
-                    </Stack>
-                  )}
 
                   {/* For OnHold Remarks */}
                   {data?.ticket_Status === "For On-Hold" && (
@@ -949,6 +938,23 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Ticket Description:</Typography>
+                    </Box>
+                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "75%", ml: 2 }}>
+                      <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                    <Box sx={{ width: "15%", ml: 2 }}>
                       <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Notes:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
@@ -956,6 +962,19 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
                     </Box>
                   </Stack>
+
+                  {/* Resolution */}
+                  {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
+                    <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
+                      <Box sx={{ width: "15%", ml: 2 }}>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Resolution:</Typography>
+                      </Box>
+                      <Box sx={{ width: "10%" }} />
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                      </Box>
+                    </Stack>
+                  )}
                 </Stack>
               </Stack>
             </Stack>

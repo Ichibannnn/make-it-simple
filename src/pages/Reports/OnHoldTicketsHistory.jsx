@@ -116,6 +116,17 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                   fontSize: "12px",
                 }}
               >
+                REMARKS
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 HOLD BY
               </TableCell>
 
@@ -210,6 +221,20 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                     }}
                   >
                     {item.reason}
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    ---
                   </TableCell>
 
                   <TableCell

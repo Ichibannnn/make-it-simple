@@ -39,6 +39,7 @@ import { attachmentsApi } from "../features/api_attachments/attachmentsApi";
 
 import { reportsApi } from "../features/api_reports/reportsApi";
 import { overviewApi } from "../features/api_overview/overviewApi";
+import { smsNotificationApi } from "../features/sms_notification/smsNotificationApi";
 
 export const store = configureStore({
   reducer: {
@@ -81,6 +82,7 @@ export const store = configureStore({
 
     [sedarApi.reducerPath]: sedarApi.reducer,
     [ymirApi.reducerPath]: ymirApi.reducer,
+    [smsNotificationApi.reducerPath]: smsNotificationApi.reducer,
   },
 
   middleware: (getDefaultMiddleWare) =>
@@ -120,6 +122,7 @@ export const store = configureStore({
 
       sedarApi.middleware,
       ymirApi.middleware,
+      smsNotificationApi.middleware,
 
       // notificationMiddleware,
     ]),

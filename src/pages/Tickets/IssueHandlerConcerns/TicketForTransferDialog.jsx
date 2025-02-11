@@ -283,7 +283,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
             {isScreenSmall ? (
               <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
 
                 <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                   {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -296,10 +296,10 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
             ) : (
               <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                <Box sx={{ width: "20%", ml: 2 }}>
+                  <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
                 </Box>
-                <Box sx={{ width: "10%" }} />
+                <Box sx={{ width: "5%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
                   <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                     {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -375,53 +375,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                     );
                   }}
                 />
-
-                {/* <Controller
-                  control={control}
-                  name="ChannelId"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={channelData?.value?.channel || []}
-                        loading={channelIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
-                        onOpen={() => {
-                          if (!channelIsSuccess)
-                            getChannel({
-                              Status: true,
-                            });
-                        }}
-                        onChange={(_, value) => {
-                          onChange(value);
-
-                          setValue("Transfer_To", null);
-
-                          getIssueHandler({
-                            Status: true,
-                          });
-                        }}
-                        getOptionLabel={(option) => option.channel_Name}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        fullWidth
-                        disablePortal
-                        disabled
-                        disableClearable
-                        componentsProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiAutocomplete-listbox": {
-                                fontSize: "13px",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    );
-                  }}
-                /> */}
               </Stack>
 
               <Stack gap={0.5} mt={2}>
@@ -453,7 +406,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                         }}
                         getOptionLabel={(option) => option.fullname}
                         isOptionEqualToValue={(option, value) => option?.id === value?.id}
-                        // getOptionDisabled={(option) => userId === option.userId}
                         fullWidth
                         disablePortal
                         disableClearable
@@ -470,44 +422,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                     );
                   }}
                 />
-
-                {/* <Controller
-                  control={control}
-                  name="Transfer_To"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={issueHandlerData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
-                        loading={issueHandlerIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
-                        onOpen={() => {
-                          if (!issueHandlerIsSuccess) getIssueHandler();
-                        }}
-                        onChange={(_, value) => {
-                          onChange(value);
-                        }}
-                        getOptionLabel={(option) => option.fullname}
-                        isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
-                        getOptionDisabled={(option) => userId === option.userId}
-                        fullWidth
-                        disablePortal
-                        disableClearable
-                        componentsProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiAutocomplete-listbox": {
-                                fontSize: "14px",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    );
-                  }}
-                /> */}
               </Stack>
 
               <Stack sx={{ gap: 0.5, mt: 2 }}>
@@ -621,31 +535,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
                         <Box>
                           <TransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                          {/* {isImageFile(fileName.name) && (
-                            <Tooltip title="Remove">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => handleViewImage(fileName.file)} // View image in dialog
-                                style={{ background: "none" }}
-                              >
-                                <VisibilityOutlined />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-
-                          <Tooltip title="Remove">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleDeleteFile(fileName)}
-                              style={{
-                                background: "none",
-                              }}
-                            >
-                              <RemoveCircleOutline />
-                            </IconButton>
-                          </Tooltip> */}
                         </Box>
                       </Box>
                     ))}

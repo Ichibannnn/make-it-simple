@@ -20,15 +20,8 @@ const StyledBox = styled(Box)(() => ({
 
 export const PageNotFound = () => {
   return (
-    <StyledBox
-      justifyContent="center"
-      alignItems="center"
-      sx={{ background: "#111927" }}
-    >
-      <Lottie
-        animationData={pageNotFound}
-        style={{ padding: 0, margin: 0, height: 900 }}
-      />
+    <StyledBox justifyContent="center" alignItems="center" sx={{ background: "#111927" }}>
+      <Lottie animationData={pageNotFound} style={{ padding: 0, margin: 0, height: 900 }} />
     </StyledBox>
   );
 };

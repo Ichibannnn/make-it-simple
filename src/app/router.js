@@ -41,22 +41,22 @@ import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverCo
 
 import ReportsPage from "../pages/Reports/ReportsPage";
 import ChangePassword from "../pages/ChangePassword/ChangePassword";
+import AuthRedirect from "./AuthRedirect";
 
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <AuthRedirect>
+        <Login />
+      </AuthRedirect>
+    ),
   },
 
   {
     path: "/",
     element: <Private Render={LandingPage} />,
     children: [
-      // {
-      //   path: "/",
-      //   element: <LandingPage />,
-      // },
-
       {
         path: "/overview",
         element: <Overview />,

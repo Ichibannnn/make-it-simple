@@ -275,6 +275,7 @@ const UserAccounts = () => {
                 fontWeight: 600,
               }}
             />
+
             <Tab
               value="true"
               label="Active"
@@ -283,6 +284,7 @@ const UserAccounts = () => {
                 fontWeight: 600,
               }}
             />
+
             <Tab
               value="false"
               label="Archived"

@@ -378,7 +378,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
                 {isScreenSmall ? (
                   <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                    <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
 
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -391,10 +391,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                   </Stack>
                 ) : (
                   <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Description:</Typography>
+                    <Box sx={{ width: "20%", ml: 2 }}>
+                      <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
                     </Box>
-                    <Box sx={{ width: "10%" }} />
+                    <Box sx={{ width: "5%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                         {data?.concern_Description?.split("\r\n").map((line, index) => (

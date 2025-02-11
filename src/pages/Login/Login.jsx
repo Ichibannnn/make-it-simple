@@ -31,6 +31,7 @@ import { ticketApprovalApi } from "../../features/api_ticketing/approver/ticketA
 import { closingTicketApi } from "../../features/api_ticketing/receiver/closingTicketApi";
 import { concernReceiverApi } from "../../features/api_request/concerns_receiver/concernReceiverApi";
 import useSignalRConnection from "../../hooks/useSignalRConnection";
+import { useSelector } from "react-redux";
 
 const Login = () => {
   // const hideLoginForm = useMediaQuery("(max-width: 958px)");
@@ -116,6 +117,8 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [changePasswordDetails, setChangePasswordDetails] = useState([]);
 
+  const auth = useSelector((state) => state?.auth);
+
   const [logIn, { isLoading }] = useSignInMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -152,9 +155,6 @@ const LoginForm = () => {
     try {
       const res = await logIn(data).unwrap();
       const { token, ...user } = res.value;
-      // console.log("Response: ", res);
-      // console.log("Token: ", token);
-      // console.log("User: ", user);
 
       if (res?.value?.isPasswordChanged === null) {
         setChangePasswordDetails(res);
@@ -204,72 +204,86 @@ const LoginForm = () => {
     setShowPassword(!showPassword);
   };
 
+  console.log("auth: ", auth);
+
+  useEffect(() => {
+    if (auth) {
+      navigate("/");
+    }
+  }, [auth]);
+
+  if (auth) {
+    return null; // Prevent login UI from rendering
+  }
+
   return (
-    <Container maxWidth="xs">
-      <form onSubmit={handleSubmit(loginHandler)}>
-        <Grid container spacing={2} mt={3}>
-          <Grid item xs={12}>
-            <TextField
-              {...register("usernameOrEmail")}
-              variant="outlined"
-              label="Enter your username"
-              helperText={errors?.usernameOrEmail?.message}
-              error={!!errors.usernameOrEmail}
-              sx={{ borderColor: "primary" }}
-              fullWidth
-              autoComplete="off"
-            />
+    <>
+      <Container maxWidth="xs">
+        <form onSubmit={handleSubmit(loginHandler)}>
+          <Grid container spacing={2} mt={3}>
+            <Grid item xs={12}>
+              <TextField
+                {...register("usernameOrEmail")}
+                variant="outlined"
+                label="Enter your username"
+                helperText={errors?.usernameOrEmail?.message}
+                error={!!errors.usernameOrEmail}
+                sx={{ borderColor: "primary" }}
+                fullWidth
+                autoComplete="off"
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                {...register("password")}
+                label="Enter your password"
+                helperText={errors?.password?.message}
+                error={!!errors.password}
+                type={showPassword ? "text" : "password"}
+                fullWidth
+                autoComplete="off"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton sx={{ color: "gray" }} onClick={showPasswordHandler} edge="end" aria-label="toggle password visibility">
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  inputProps: { style: { color: "#fff", bgcolor: "gray" } },
+                }}
+              />
+            </Grid>
           </Grid>
 
-          <Grid item xs={12}>
-            <TextField
-              {...register("password")}
-              label="Enter your password"
-              helperText={errors?.password?.message}
-              error={!!errors.password}
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              autoComplete="off"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton sx={{ color: "gray" }} onClick={showPasswordHandler} edge="end" aria-label="toggle password visibility">
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                inputProps: { style: { color: "#fff", bgcolor: "gray" } },
-              }}
-            />
-          </Grid>
-        </Grid>
+          <LoadingButton
+            variant="contained"
+            sx={{
+              marginTop: 3,
+              ":disabled": { backgroundColor: theme.palette.secondary.main },
+            }}
+            type="submit"
+            fullWidth
+            loading={isLoading}
+          >
+            Login
+          </LoadingButton>
+        </form>
 
-        <LoadingButton
-          variant="contained"
-          sx={{
-            marginTop: 3,
-            ":disabled": { backgroundColor: theme.palette.secondary.main },
-          }}
-          type="submit"
-          fullWidth
-          loading={isLoading}
-        >
-          Login
-        </LoadingButton>
-      </form>
+        {showAlert && (
+          <ReusableAlert
+            severity={alertData.severity}
+            title={alertData.title}
+            description={alertData.description}
+            autoHideDuration={alertData.autoHideDuration}
+            onClose={handleAlertClose}
+          />
+        )}
 
-      {showAlert && (
-        <ReusableAlert
-          severity={alertData.severity}
-          title={alertData.title}
-          description={alertData.description}
-          autoHideDuration={alertData.autoHideDuration}
-          onClose={handleAlertClose}
-        />
-      )}
-
-      <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} />
-    </Container>
+        <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} />
+      </Container>
+    </>
   );
 };
 
@@ -380,7 +394,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
             }}
           >
             <Typography fontWeight="bold" variant="h5">
-              Change your passwordsss
+              Change your passwords
             </Typography>
             <Typography color="gray" fontSize="sm">
               To change your password, please fill in the fields below.

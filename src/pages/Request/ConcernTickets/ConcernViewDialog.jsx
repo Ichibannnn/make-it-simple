@@ -422,6 +422,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       setValue("Concern", editData?.concern);
 
       setValue("Request_Type", editData?.request_Type);
+      // setValue("Severity", editData?.severity);
 
       if (editData?.request_Type === "New Request") {
         setValue("BackJobId", null);
@@ -534,9 +535,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  console.log("EditData: ", editData);
-  console.log("RequestType: ", watch("Request_Type"));
-
   return (
     <>
       <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
@@ -635,6 +633,46 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     />
                   </Stack>
                 )}
+
+                {/* SEVERITY*/}
+                <Stack
+                  width="100%"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 1,
+                  }}
+                >
+                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Severity:</Typography>
+                  <Controller
+                    name="Severity"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        displayEmpty
+                        size="small"
+                        placeholder="Select Severity"
+                        inputProps={{ "aria-label": "Without label" }}
+                        sx={{
+                          width: "100%",
+                          fontSize: "13px",
+                          "& .MuiSelect-select": {
+                            color: "#fff",
+                          },
+                        }}
+                      >
+                        <MenuItem value="Low" sx={{ fontSize: "13px" }}>
+                          Low
+                        </MenuItem>
+
+                        <MenuItem value="High" sx={{ fontSize: "13px" }}>
+                          High
+                        </MenuItem>
+                      </Select>
+                    )}
+                  />
+                </Stack>
 
                 {/* REQUESTOR DETAILS */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mb: 1 }}>Requestor Details</Typography>
@@ -1248,7 +1286,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography sx={{ fontSize: "13px" }}>Description:</Typography>
+                  <Typography sx={{ fontSize: "13px" }}>Concern Details:</Typography>
 
                   <Controller
                     control={control}
@@ -1259,7 +1297,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           inputRef={ref}
                           size="medium"
                           value={value}
-                          placeholder="Ex. System Name - Description"
+                          placeholder="Enter Concern Details"
                           onChange={onChange}
                           error={!!errors.Concern}
                           sx={{

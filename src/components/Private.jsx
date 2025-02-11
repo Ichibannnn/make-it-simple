@@ -1,18 +1,12 @@
 import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import PermittedRoutes from "../app/PermittedRoutes";
 
 const Private = ({ Render }) => {
-  const authenticate = useSelector((state) => state.auth);
+  const fullname = useSelector((state) => state?.user?.fullname);
+  const permissions = useSelector((state) => state?.user?.permissions);
 
-  console.log("Authenticate: ", authenticate);
-
-  // if (authenticate) {
-  //   return <Render />;
-  // }
-
-  // return <Navigate to="/login" replace />;
-
-  return authenticate ? <Render /> : <Navigate to="/login" />;
+  return !fullname || permissions?.length === 0 ? <Navigate to="/login" /> : <PermittedRoutes Render={Render} />;
 };
 
 export default Private;

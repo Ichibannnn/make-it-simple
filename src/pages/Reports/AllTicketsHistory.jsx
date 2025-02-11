@@ -218,7 +218,6 @@ const AllTicketsHistory = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.ticketConcernId}
                   </TableCell>
@@ -281,7 +280,6 @@ const AllTicketsHistory = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.channel_Name}
                   </TableCell>
