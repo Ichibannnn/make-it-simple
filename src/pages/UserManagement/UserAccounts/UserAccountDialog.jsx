@@ -422,7 +422,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                           onChange(value);
                         }}
-                        getOptionLabel={(option) => option.general_info.full_id_number}
+                        getOptionLabel={(option) => option?.general_info?.full_id_number}
                         isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
                         disabled={data ? true : false}
                         sx={{

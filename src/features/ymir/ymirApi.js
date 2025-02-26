@@ -5,14 +5,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const ymirApi = createApi({
   reducerPath: "ymirApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://10.10.10.17:8000/api",
+    baseUrl: "https://rdfymir.com/backend/public/api",
+    // baseUrl: "http://10.10.10.17:8000/api",
     // baseUrl: "http://10.10.13.6:8080/api",
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
-      headers.set(
-        "Authorization",
-        `Bearer ${process.env.REACT_APP_YMIR_TOKEN}`
-      );
+      headers.set("Token", `Bearer ${process.env.REACT_APP_YMIR_TOKEN}`);
+      // headers.set("Authorization", `Bearer ${process.env.REACT_APP_YMIR_TOKEN}`);
 
       return headers;
     },
@@ -68,11 +67,5 @@ export const ymirApi = createApi({
   }),
 });
 
-export const {
-  useLazyGetCompaniesQuery,
-  useLazyGetBusinessUnitsQuery,
-  useLazyGetDepartmentsQuery,
-  useLazyGetUnitsQuery,
-  useLazyGetSubUnitsQuery,
-  useLazyGetLocationsQuery,
-} = ymirApi;
+export const { useLazyGetCompaniesQuery, useLazyGetBusinessUnitsQuery, useLazyGetDepartmentsQuery, useLazyGetUnitsQuery, useLazyGetSubUnitsQuery, useLazyGetLocationsQuery } =
+  ymirApi;

@@ -111,6 +111,7 @@ const Location = () => {
                 });
               })
               .catch((error) => {
+                console.log("Error Location: ", error);
                 if (error.status === 400) {
                   onToggle();
                 }

@@ -6,6 +6,7 @@ import {
   DialogContent,
   Divider,
   IconButton,
+  InputAdornment,
   List,
   ListItem,
   ListItemIcon,
@@ -24,6 +25,7 @@ import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import {
   AccountCircleRounded,
+  CheckCircle,
   Close,
   CloseOutlined,
   NotificationsNoneOutlined,
@@ -59,6 +61,7 @@ import { ParameterContext } from "../context/ParameterContext";
 import { Controller, useForm } from "react-hook-form";
 import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
 import { LoadingButton } from "@mui/lab";
+import { signOut } from "../features/auth/authSlice";
 
 const Header = () => {
   // const hideMenu = useMediaQuery("(max-width: 1069px)");
@@ -135,6 +138,7 @@ const Header = () => {
       dispatch(ticketApprovalApi.util.resetApiState());
       dispatch(closingTicketApi.util.resetApiState());
 
+      dispatch(signOut());
       dispatch(clearUserDetails());
       navigate("/login");
     } catch (error) {
@@ -172,7 +176,7 @@ const Header = () => {
           dispatch(closingTicketApi.util.resetApiState());
 
           dispatch(clearUserDetails());
-          navigate("/");
+          navigate("/login");
         } else {
           // console.log("Parameter: ", data?.modules_Parameter);
           setParameter(data?.modules_Parameter);
@@ -205,8 +209,6 @@ const Header = () => {
       setShowBadge(false);
     }
   }, [notificationMessage]);
-
-  // console.log("Length: ", notificationMessage);
 
   return (
     <Stack
@@ -298,8 +300,6 @@ const Header = () => {
 
                         <Stack>
                           <Stack direction="row" gap={0}>
-                            {/* <PersonOutlineOutlined fontSize="small" /> */}
-
                             <Typography variant="caption" color="textSecondary">
                               {`From: ${data.added_By}`}
                             </Typography>
@@ -311,6 +311,7 @@ const Header = () => {
                         </Stack>
                       </div>
                     </Stack>
+
                     <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
                   </ListItem>
                 ))}
@@ -340,6 +341,7 @@ const Header = () => {
             <Typography>Logout</Typography>
           </MenuItem>
         </Menu>
+
         {openChangePassword && <ChangePassword open={openChangePassword} onClose={changePasswordOnClose} />}
       </Box>
 
@@ -363,15 +365,12 @@ const ChangePassword = ({ open, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [changePassword, { isLoading: changePasswordIsLoading, isFetching: changePasswordIsFetching }] = useChangeUserPasswordMutation();
+  const [changePassword] = useChangeUserPasswordMutation();
 
   const {
     control,
     handleSubmit,
-    register,
     watch,
-    setValue,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(changePasswordSchema),
@@ -405,8 +404,9 @@ const ChangePassword = ({ open, onClose }) => {
         dispatch(ticketApprovalApi.util.resetApiState());
         dispatch(closingTicketApi.util.resetApiState());
 
+        dispatch(signOut());
         dispatch(clearUserDetails());
-        navigate("/");
+        navigate("/login");
         setTimeout(
           () =>
             toast.success("Success!", {
@@ -428,6 +428,7 @@ const ChangePassword = ({ open, onClose }) => {
     <div>
       <Dialog fullWidth maxWidth="xs" open={open}>
         <Toaster richColors position="top-right" closeButton />
+
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -440,6 +441,7 @@ const ChangePassword = ({ open, onClose }) => {
         >
           <CloseOutlined />
         </IconButton>
+
         <DialogContent>
           <Stack
             sx={{
@@ -451,6 +453,7 @@ const ChangePassword = ({ open, onClose }) => {
             <Typography fontWeight="bold" variant="h5">
               Change your password
             </Typography>
+
             <Typography color="gray" fontSize="sm">
               To change your password, please fill in the fields below.
             </Typography>
@@ -462,25 +465,7 @@ const ChangePassword = ({ open, onClose }) => {
                 control={control}
                 name="current_Password"
                 render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="medium"
-                      value={value}
-                      label="Current Password"
-                      type="password"
-                      onChange={onChange}
-                      fullWidth
-                      autoComplete="off"
-                      // InputProps={{
-                      //   endAdornment: (
-                      //     <InputAdornment position="end">
-                      //       {changePasswordDetails?.value?.username === watch("current_Password") ? <CheckCircle color="success" /> : ""}
-                      //     </InputAdornment>
-                      //   ),
-                      // }}
-                    />
-                  );
+                  return <TextField inputRef={ref} size="medium" value={value} label="Current Password" type="password" onChange={onChange} fullWidth autoComplete="off" />;
                 }}
               />
 
@@ -498,17 +483,17 @@ const ChangePassword = ({ open, onClose }) => {
                       onChange={onChange}
                       fullWidth
                       autoComplete="off"
-                      // InputProps={{
-                      //   endAdornment: (
-                      //     <InputAdornment position="end">
-                      //       {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
-                      //         <CheckCircle color="success" />
-                      //       ) : (
-                      //         ""
-                      //       )}
-                      //     </InputAdornment>
-                      //   ),
-                      // }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                              <CheckCircle color="success" />
+                            ) : (
+                              ""
+                            )}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   );
                 }}
@@ -528,17 +513,17 @@ const ChangePassword = ({ open, onClose }) => {
                       onChange={onChange}
                       fullWidth
                       autoComplete="off"
-                      // InputProps={{
-                      //   endAdornment: (
-                      //     <InputAdornment position="end">
-                      //       {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
-                      //         <CheckCircle color="success" />
-                      //       ) : (
-                      //         ""
-                      //       )}
-                      //     </InputAdornment>
-                      //   ),
-                      // }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                              <CheckCircle color="success" />
+                            ) : (
+                              ""
+                            )}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   );
                 }}

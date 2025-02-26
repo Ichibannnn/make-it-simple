@@ -53,6 +53,8 @@ const ConcernDialog = ({ open, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
+  const [dateFrom, setDateFrom] = useState(new moment());
+
   const dateNeededValidation = new moment();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const userId = useSelector((state) => state?.user?.id);
@@ -136,7 +138,7 @@ const ConcernDialog = ({ open, onClose }) => {
       SubUnitId: null,
       LocationId: null,
 
-      DateNeeded: null,
+      DateNeeded: moment(),
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
@@ -950,31 +952,33 @@ const ConcernDialog = ({ open, onClose }) => {
                         <Controller
                           control={control}
                           name="DateNeeded"
-                          render={({ field }) => (
-                            <DatePicker
-                              value={field.value ? moment(field.value) : null}
-                              onChange={(newValue) => {
-                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
-                                field.onChange(formattedValue);
-                              }}
-                              slotProps={{
-                                textField: {
-                                  variant: "outlined",
-                                  sx: {
-                                    "& .MuiInputBase-input": {
-                                      padding: "8.5px 14px",
-                                    },
-                                    "& .MuiOutlinedInput-root": {
-                                      fontSize: "13px",
+                          render={({ field }) => {
+                            return (
+                              <DatePicker
+                                value={field.value ? moment(field.value) : null}
+                                onChange={(newValue) => {
+                                  const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                  field.onChange(formattedValue);
+                                }}
+                                slotProps={{
+                                  textField: {
+                                    variant: "outlined",
+                                    sx: {
+                                      "& .MuiInputBase-input": {
+                                        padding: "8.5px 14px",
+                                      },
+                                      "& .MuiOutlinedInput-root": {
+                                        fontSize: "13px",
+                                      },
                                     },
                                   },
-                                },
-                              }}
-                              minDate={dateNeededValidation}
-                              error={!!errors.DateNeeded}
-                              helperText={errors.DateNeeded}
-                            />
-                          )}
+                                }}
+                                minDate={dateNeededValidation}
+                                error={!!errors.DateNeeded}
+                                helperText={errors.DateNeeded}
+                              />
+                            );
+                          }}
                         />
                         {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.targetDate.DateNeeded}</Typography>}
                       </LocalizationProvider>
@@ -1243,7 +1247,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography sx={{ fontSize: "13px" }}>Attachment:</Typography>
+                  <Typography sx={{ fontSize: "13px" }}>Attachment (Optional):</Typography>
 
                   <Stack
                     sx={{

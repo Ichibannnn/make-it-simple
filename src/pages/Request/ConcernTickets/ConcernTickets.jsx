@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Badge,
-  Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -58,12 +56,10 @@ import ConcernReturn from "./ConcernReturn";
 import ConcernHistory from "./ConcernHistory";
 
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { useNotification } from "../../../context/NotificationContext";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
 import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
-import { useNavigate } from "react-router-dom";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { LoadingButton } from "@mui/lab";
 import { DataGrid } from "@mui/x-data-grid";
@@ -248,6 +244,7 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
+  // For Datagrid
   const columns = [
     { field: "lineNo", headerName: "Line No.", width: 90 },
     {
@@ -295,8 +292,6 @@ const ConcernTickets = () => {
       concern_Status: item.concern_Status,
     };
   });
-
-  console.log("Rows: ", rows);
 
   return (
     <Stack

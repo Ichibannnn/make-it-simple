@@ -209,12 +209,10 @@ const LoginForm = () => {
   useEffect(() => {
     if (auth) {
       navigate("/");
+    } else {
+      navigate("/login");
     }
   }, [auth]);
-
-  if (auth) {
-    return null; // Prevent login UI from rendering
-  }
 
   return (
     <>

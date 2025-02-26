@@ -58,7 +58,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
-  // const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
+  // const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [transferTicket, { isLoading: transferTicketIsLoading, isFetching: transferTicketIsFetching }] = useTransferIssueHandlerTicketsMutation();
 
   const {
@@ -88,7 +88,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
     payload.append("TicketConcernId", data?.ticketConcernId);
     payload.append("TransferRemarks", formData?.TransferRemarks);
 
-    payload.append("Transfer_To", formData?.Transfer_To?.id);
+    // payload.append("Transfer_To", formData?.Transfer_To?.id);
+    payload.append("Transfer_To", formData?.Transfer_To?.userId);
 
     // Attachments
     const files = formData.AddTransferAttachments;
@@ -231,14 +232,20 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
+      if (!channelIsSuccess) getChannel();
+
       setValue("ChannelId", {
         id: data?.channelId,
         channel_Name: data?.channel_Name,
       });
 
-      getIssueHandler(data?.ticketConcernId);
+      // getIssueHandler(data?.ticketConcernId);
+      getIssueHandler();
     }
   }, [data]);
+
+  // console.log("UserID: ", userId);
+  // console.log("Channel: ", channelData);
 
   return (
     <>
@@ -360,7 +367,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         fullWidth
                         disablePortal
-                        disabled
+                        // disabled
                         disableClearable
                         componentsProps={{
                           popper: {
@@ -386,7 +393,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                   Transfer to:
                 </Typography>
 
-                <Controller
+                {/* <Controller
                   control={control}
                   name="Transfer_To"
                   render={({ field: { ref, value, onChange } }) => {
@@ -418,6 +425,47 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                             },
                           },
                         }}
+                      />
+                    );
+                  }}
+                /> */}
+
+                <Controller
+                  control={control}
+                  name="Transfer_To"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
+                        loading={issueHandlerIsLoading}
+                        renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                        onOpen={() => {
+                          if (!issueHandlerIsSuccess) getIssueHandler();
+                        }}
+                        onChange={(_, value) => {
+                          onChange(value);
+                        }}
+                        getOptionLabel={(option) => option.fullname}
+                        isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                        getOptionDisabled={(option) => userId === option?.userId}
+                        sx={{
+                          flex: 2,
+                        }}
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "13px",
+                              },
+                            },
+                          },
+                        }}
+                        fullWidth
+                        disablePortal
+                        // disableClearable
                       />
                     );
                   }}

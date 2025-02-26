@@ -115,7 +115,7 @@ export const sidebarNavigationData = [
     sub: [
       {
         id: 1,
-        name: "Apprvoval",
+        name: "Approval",
         path: "/approver/approval",
       },
     ],

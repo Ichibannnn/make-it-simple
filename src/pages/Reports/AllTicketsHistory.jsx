@@ -218,6 +218,7 @@ const AllTicketsHistory = ({
                         color: "#EDF2F7",
                       },
                     }}
+                    align="center"
                   >
                     {item.ticketConcernId}
                   </TableCell>

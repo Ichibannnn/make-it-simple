@@ -849,7 +849,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                   render={({ field: { ref, value, onChange } }) => {
                     return (
                       <Autocomplete
-                        // multiple
                         ref={ref}
                         size="small"
                         value={value}

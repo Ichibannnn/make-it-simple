@@ -120,6 +120,7 @@ const theme = createTheme({
           "& .MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled": {
             color: "#EDF2F7",
           },
+          "& input::-ms-reveal, & input::-ms-clear": { display: "none" },
         },
       },
     },

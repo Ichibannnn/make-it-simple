@@ -14,11 +14,11 @@ const PermittedRoutes = ({ Render }) => {
     return permissions?.includes(item.name);
   });
 
-  console.log("permissions: ", permissions);
-  console.log("allowedNavigationData: ", allowedNavigationData);
+  // console.log("permissions: ", permissions);
+  // console.log("allowedNavigationData: ", allowedNavigationData);
 
   const currentNavItem = allowedNavigationData.find((item) => pathname?.includes(item.path));
-  console.log("currentNavItem: ", currentNavItem);
+  // console.log("currentNavItem: ", currentNavItem);
 
   const currentSubNav = currentNavItem?.sub?.filter((subItem) => permissions?.includes(subItem.name));
 

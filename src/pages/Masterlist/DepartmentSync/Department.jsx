@@ -107,6 +107,7 @@ const Department = () => {
                 });
               })
               .catch((error) => {
+                // console.log("Error: ", error);
                 if (error.status === 400) {
                   onToggle();
                 }

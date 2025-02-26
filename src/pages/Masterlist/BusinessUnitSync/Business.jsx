@@ -95,6 +95,8 @@ const Business = () => {
               company_Name: item.company.name,
             }));
 
+            console.log("Payload: ", payload);
+
             syncCompanies({
               businessUnit: payload,
             })
