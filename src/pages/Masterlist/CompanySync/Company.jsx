@@ -49,7 +49,7 @@ const Company = () => {
     PageSize: pageSize,
   });
 
-  const [getCompanies, { isLoading: isCompanyLoading, isFetching: isCompanyFetching }] = useLazyGetCompaniesQuery();
+  const [getCompanies, { data: companyData, isLoading: isCompanyLoading, isFetching: isCompanyFetching, isSuccess: companyIsSuccess }] = useLazyGetCompaniesQuery();
   const [syncCompanies, { isLoading: isCompanySyncLoading, isFetching: isCompanySyncFetching }] = useSyncCompanyMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -93,15 +93,25 @@ const Company = () => {
           .then((response) => {
             console.log("Response: ", response);
 
-            const payload = response.map((item) => ({
-              company_No: item.id,
-              company_Code: item.code,
-              company_Name: item.name,
-            }));
+            // const payload = response.map((item) => ({
+            //   company_No: item.id,
+            //   company_Code: item.code,
+            //   company_Name: item.name,
+            // }));
 
-            syncCompanies({
-              companies: payload,
-            })
+            // const payload = response.map((item) => ({
+            //   company_No: item.id,
+            //   company_Code: item.code,
+            //   company_Name: item.name,
+            // }));
+
+            syncCompanies(
+              // {
+              //   companies: payload,
+              // }
+
+              response
+            )
               .unwrap()
               .then(() => {
                 toast.success("Success", {

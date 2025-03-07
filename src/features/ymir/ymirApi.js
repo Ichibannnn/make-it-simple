@@ -27,7 +27,7 @@ export const ymirApi = createApi({
         url: "/companies?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
-      transformResponse: (response) => response.result,
+      transformResponse: (response) => response,
     }),
     getBusinessUnits: builder.query({
       query: () => ({
