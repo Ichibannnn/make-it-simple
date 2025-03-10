@@ -86,19 +86,8 @@ const Unit = () => {
       if (result.isConfirmed) {
         getUnits()
           .unwrap()
-          .then((response) => {
-            console.log("Response: ", response);
-
-            const payload = response.map((item) => ({
-              unit_No: item.id,
-              unit_Code: item.code,
-              unit_Name: item.name,
-              department_Name: item.department.name,
-            }));
-
-            syncUnits({
-              syncUnitsResults: payload,
-            })
+          .then(async (response) => {
+            await syncUnits(response)
               .unwrap()
               .then(() => {
                 toast.success("Success!", {
@@ -386,9 +375,9 @@ const Unit = () => {
                   {(isLoading || isFetching) && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                          No records found.
+                        <CircularProgress />
+                        <Typography variant="h5" color="#EDF2F7">
+                          Please wait...
                         </Typography>
                       </TableCell>
                     </TableRow>

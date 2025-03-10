@@ -186,19 +186,8 @@ const SubUnit = () => {
       if (result.isConfirmed) {
         getSubUnits()
           .unwrap()
-          .then((response) => {
-            console.log("Response: ", response);
-
-            const payload = response.map((item) => ({
-              subUnit_No: item.id,
-              subUnit_Code: item.code,
-              subUnit_Name: item.name,
-              unit_Name: item.department_unit.name,
-            }));
-
-            syncSubUnits({
-              syncSubUnitsResults: payload,
-            })
+          .then(async (response) => {
+            await syncSubUnits(response)
               .unwrap()
               .then(() => {
                 toast.success("Success!", {

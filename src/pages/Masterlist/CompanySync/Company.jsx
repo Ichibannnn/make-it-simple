@@ -52,6 +52,12 @@ const Company = () => {
   const [getCompanies, { data: companyData, isLoading: isCompanyLoading, isFetching: isCompanyFetching, isSuccess: companyIsSuccess }] = useLazyGetCompaniesQuery();
   const [syncCompanies, { isLoading: isCompanySyncLoading, isFetching: isCompanySyncFetching }] = useSyncCompanyMutation();
 
+  useEffect(() => {
+    getCompanies();
+  }, []);
+
+  console.log("Company: ", companyData);
+
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
   };
@@ -90,28 +96,8 @@ const Company = () => {
       if (result.isConfirmed) {
         getCompanies()
           .unwrap()
-          .then((response) => {
-            console.log("Response: ", response);
-
-            // const payload = response.map((item) => ({
-            //   company_No: item.id,
-            //   company_Code: item.code,
-            //   company_Name: item.name,
-            // }));
-
-            // const payload = response.map((item) => ({
-            //   company_No: item.id,
-            //   company_Code: item.code,
-            //   company_Name: item.name,
-            // }));
-
-            syncCompanies(
-              // {
-              //   companies: payload,
-              // }
-
-              response
-            )
+          .then(async (response) => {
+            await syncCompanies(response)
               .unwrap()
               .then(() => {
                 toast.success("Success", {

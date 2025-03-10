@@ -34,35 +34,35 @@ export const ymirApi = createApi({
         url: "/business-units?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
-      transformResponse: (response) => response.result,
+      transformResponse: (response) => response,
     }),
     getDepartments: builder.query({
       query: () => ({
         url: "/departments?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
-      transformResponse: (response) => response.result,
+      transformResponse: (response) => response,
     }),
     getUnits: builder.query({
       query: () => ({
         url: "/units_department?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
-      transformResponse: (response) => response.result,
+      transformResponse: (response) => response,
     }),
     getSubUnits: builder.query({
       query: () => ({
         url: "/sub_units?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
-      transformResponse: (response) => response.result,
+      transformResponse: (response) => response,
     }),
     getLocations: builder.query({
       query: () => ({
         url: "/locations?pagination=none&per_page=100&page=1&status=active",
         method: "GET",
       }),
-      transformResponse: (response) => response.result,
+      transformResponse: (response) => response,
     }),
   }),
 });

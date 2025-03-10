@@ -89,21 +89,8 @@ const Location = () => {
       if (result.isConfirmed) {
         getLocations()
           .unwrap()
-          .then((response) => {
-            const payload = response.map((item) => ({
-              location_No: item.id,
-              location_Code: item.code,
-              location_Name: item.name,
-              upsertSubunitLists: item.sub_units.map((item) => ({
-                subUnit_Name: item.name,
-              })),
-            }));
-
-            console.log("Payload: ", payload);
-
-            syncLocations({
-              locations: payload,
-            })
+          .then(async (response) => {
+            await syncLocations(response)
               .unwrap()
               .then(() => {
                 toast.success("Success!", {

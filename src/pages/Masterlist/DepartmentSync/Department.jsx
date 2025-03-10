@@ -87,19 +87,8 @@ const Department = () => {
       if (result.isConfirmed) {
         getDepartments()
           .unwrap()
-          .then((response) => {
-            const payload = response.map((item) => ({
-              department_No: item.id,
-              department_Code: item.code,
-              department_Name: item.name,
-              businessUnit_Name: item.business_unit.name,
-            }));
-
-            console.log("Payload: ", payload);
-
-            syncDepartments({
-              departments: payload,
-            })
+          .then(async (response) => {
+            await syncDepartments(response)
               .unwrap()
               .then(() => {
                 toast.success("Success!", {

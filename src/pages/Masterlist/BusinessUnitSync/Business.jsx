@@ -87,19 +87,8 @@ const Business = () => {
       if (result.isConfirmed) {
         getBusinessUnits()
           .unwrap()
-          .then((response) => {
-            const payload = response.map((item) => ({
-              business_No: item.id,
-              business_Code: item.code,
-              business_Name: item.name,
-              company_Name: item.company.name,
-            }));
-
-            console.log("Payload: ", payload);
-
-            syncCompanies({
-              businessUnit: payload,
-            })
+          .then(async (response) => {
+            await syncCompanies(response)
               .unwrap()
               .then(() => {
                 toast.success("Success!", {
