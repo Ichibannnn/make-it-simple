@@ -43,6 +43,7 @@ import ViewConcernDetails from "./ViewConcernDetails";
 import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
 import { LoadingButton } from "@mui/lab";
 import MultipleAssignDialog from "./MultipleAssignTicket/MultipleAssignDialog";
+import AssignTicketDrawer from "./AssignTicketDrawer";
 
 const NewReceiverConcern = () => {
   const [approveStatus, setApproveStatus] = useState("false");
@@ -87,10 +88,9 @@ const NewReceiverConcern = () => {
   };
 
   const onViewAction = (data) => {
-    // console.log("Data: ", data);
-
-    viewConcernDetailsOnToggle();
+    setSelectedTickets([data]);
     setConcernDetails(data);
+    viewConcernDetailsOnToggle();
   };
 
   const onAddTicketAction = () => {
@@ -695,9 +695,17 @@ const NewReceiverConcern = () => {
             </>
           )}
 
-          <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
+          <ViewConcernDetails
+            data={concernDetails}
+            setData={setConcernDetails}
+            selectedTickets={selectedTickets}
+            open={viewConcernDetailsOpen}
+            onClose={viewConcernDetailsOnClose}
+          />
           <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
-          <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} />
+
+          {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}
+          <AssignTicketDrawer selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} />
         </Stack>
       </Stack>
     </Stack>

@@ -19,7 +19,7 @@ const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
-const ViewConcernDetails = ({ data, setData, open, onClose }) => {
+const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -1030,7 +1030,14 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} viewConcernDetailsOnClose={onClose} />
+      <AssignTicketDrawer
+        data={data}
+        setData={setData}
+        open={assignTicketOpen}
+        onClose={assignTicketOnClose}
+        viewConcernDetailsOnClose={onClose}
+        selectedTickets={selectedTickets}
+      />
     </>
   );
 };

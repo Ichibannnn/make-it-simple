@@ -308,7 +308,6 @@ body {
 }
 
 .swiper-slide {
-  text-align: center;
   font-size: 18px;
   background: transparent;
 
@@ -324,6 +323,50 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+.swiper-button-prev,
+.swiper-button-next {
+  align-items: center;
+  justify-content: center;
+  color: #6e53a5;
+}
+
+/* .swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  font-size: 18px;
+  background: transparent;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.swiper-pagination {
+  position: relative;
+  text-align: center;
+  transition: 300ms opacity;
+  transform: translate3d(0, 0, 0);
+  z-index: 10;
+}
+
+.swiper-pagination-bullet-active {
+  background: #6e53a5;
+}
+
+.swiper-pagination-bullet {
+  display: inline;
+} */
 
 /* table,
 td,
