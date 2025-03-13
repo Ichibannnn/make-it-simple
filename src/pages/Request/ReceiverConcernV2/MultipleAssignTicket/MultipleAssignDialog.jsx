@@ -11,6 +11,13 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
 
 const MultipleAssignDialog = ({ selectedTickets, open, onClose }) => {
   const dispatch = useDispatch();
@@ -28,7 +35,7 @@ const MultipleAssignDialog = ({ selectedTickets, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog fullWidth maxWidth="xl" open={open}>
         <DialogTitle
           sx={{
             display: "flex",
@@ -45,22 +52,27 @@ const MultipleAssignDialog = ({ selectedTickets, open, onClose }) => {
         </DialogTitle>
 
         <DialogContent>
-          <Stack sx={{ width: "100%", gap: 1, mt: 4 }}>
-            {selectedTickets?.map((item) => (
-              <Accordion sx={{ background: theme.palette.bgForm.black2, padding: 1 }}>
-                <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
-                  <Stack direction="row" gap={0.5} sx={{ width: "100%", alignItems: "center" }}>
-                    <DiscountOutlined sx={{ fontSize: isScreenSmall ? "16px " : "18px" }} />
-                    <Typography sx={{ fontSize: isScreenSmall ? "14px " : "16px" }}>{`Concern No. ${item.requestConcernId}`}</Typography>
-                  </Stack>
-                </AccordionSummary>
+          {/* <Stack sx={{ width: "100%", gap: 1, mt: 4 }}> */}
 
-                <AccordionDetails>
-                  <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black2, borderRadius: "20px" }}>{item.fullName}</Stack>
-                </AccordionDetails>
-              </Accordion>
+          <Swiper
+            // install Swiper modules
+            pagination={true}
+            modules={[Pagination]}
+            className="mySwiper"
+          >
+            {selectedTickets?.map((item) => (
+              <SwiperSlide key={item.requestConcernId}>
+                <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black2, borderRadius: "20px", padding: 2 }}>
+                  <Stack direction="row" gap={0.5} sx={{ alignItems: "center" }}>
+                    <DiscountOutlined sx={{ fontSize: isScreenSmall ? "16px" : "18px" }} />
+                    <Typography sx={{ fontSize: isScreenSmall ? "14px" : "16px" }}>{`Concern No. ${item.requestConcernId}`}</Typography>
+                  </Stack>
+                  <Typography mt={2}>{item.fullName}</Typography>
+                </Stack>
+              </SwiperSlide>
             ))}
-          </Stack>
+          </Swiper>
+          {/* </Stack> */}
         </DialogContent>
 
         <DialogActions>

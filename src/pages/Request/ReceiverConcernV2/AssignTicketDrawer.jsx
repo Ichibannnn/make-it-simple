@@ -287,81 +287,81 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       mobile_number: data?.contact_Number,
     };
 
-    Swal.fire({
-      title: "Confirmation",
-      text: "Approve this concern?",
-      icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        createEditReceiverConcern(payload)
-          .unwrap()
-          .then(() => {
-            // Approve API
-            approveReceiverConcern(approvePayload)
-              .unwrap()
-              .then(() => {
-                setData(null);
-                onClose();
-              })
-              .catch((err) => {
-                console.log("Error", err);
-                toast.error("Error!", {
-                  description: err.data.error.message,
-                  duration: 1500,
-                });
-              });
+    // Swal.fire({
+    //   title: "Confirmation",
+    //   text: "Approve this concern?",
+    //   icon: "info",
+    //   color: "white",
+    //   showCancelButton: true,
+    //   background: "#111927",
+    //   confirmButtonColor: "#9e77ed",
+    //   confirmButtonText: "Yes",
+    //   cancelButtonText: "No",
+    //   cancelButtonColor: "#1C2536",
+    //   heightAuto: false,
+    //   width: "30em",
+    //   customClass: {
+    //     container: "custom-container",
+    //     title: "custom-title",
+    //     htmlContainer: "custom-text",
+    //     icon: "custom-icon",
+    //     confirmButton: "custom-confirm-btn",
+    //     cancelButton: "custom-cancel-btn",
+    //   },
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     createEditReceiverConcern(payload)
+    //       .unwrap()
+    //       .then(() => {
+    //         // Approve API
+    //         approveReceiverConcern(approvePayload)
+    //           .unwrap()
+    //           .then(() => {
+    //             setData(null);
+    //             onClose();
+    //           })
+    //           .catch((err) => {
+    //             console.log("Error", err);
+    //             toast.error("Error!", {
+    //               description: err.data.error.message,
+    //               duration: 1500,
+    //             });
+    //           });
 
-            toast.success("Success!", {
-              description: "Approve concern successfully!",
-              duration: 1500,
-            });
+    //         toast.success("Success!", {
+    //           description: "Approve concern successfully!",
+    //           duration: 1500,
+    //         });
 
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+    //         dispatch(notificationApi.util.resetApiState());
+    //         dispatch(notificationMessageApi.util.resetApiState());
 
-            setAttachments([]);
-            reset();
-            setData(null);
-            viewConcernDetailsOnClose();
-            onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
+    //         setAttachments([]);
+    //         reset();
+    //         setData(null);
+    //         viewConcernDetailsOnClose();
+    //         onClose();
+    //       })
+    //       .catch((err) => {
+    //         console.log("Error", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
 
-        // SEND SMS STATUS
-        try {
-          smsNotification(smsPayload).unwrap();
-        } catch (error) {
-          console.log(error);
-          toast.error("Error!", {
-            description: "Sms notification error!",
-            duration: 1500,
-          });
-        }
-      }
-    });
+    //     // SEND SMS STATUS
+    //     try {
+    //       smsNotification(smsPayload).unwrap();
+    //     } catch (error) {
+    //       console.log(error);
+    //       toast.error("Error!", {
+    //         description: "Sms notification error!",
+    //         duration: 1500,
+    //       });
+    //     }
+    //   }
+    // });
   };
 
   useEffect(() => {

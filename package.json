@@ -48,6 +48,7 @@
     "sonner": "^1.4.2",
     "sortablejs": "^1.15.2",
     "sweetalert2": "^11.10.5",
+    "swiper": "^11.2.5",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
   },
