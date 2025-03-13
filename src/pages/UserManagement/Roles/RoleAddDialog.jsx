@@ -31,7 +31,7 @@ const schema = yup.object().shape({
   permissions: yup.array().required(),
 });
 
-const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Channel Setup", "Ticketing", "Reports", "Filing", "Generate"];
+const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Reports", "Filing", "Generate"];
 const userManagementCheckbox = ["User Account", "User Role"];
 const masterlistCheckbox = [
   "Company",
@@ -211,12 +211,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
         watch("permissions").filter((item) => !masterlistCheckbox.includes(item))
       );
     }
-    // if (!e.target.checked && e.target.value === "Channel Setup") {
-    //   setValue(
-    //     "permissions",
-    //     watch("permissions").filter((item) => !channelCheckbox.includes(item))
-    //   );
-    // }
     if (!e.target.checked && e.target.value === "Requestor") {
       setValue(
         "permissions",
@@ -708,11 +702,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 !watch("permissions").length ||
                 (watch("permissions").includes("User Management") ? !watch("permissions").some((item) => userManagementCheckbox.includes(item)) : false) ||
                 (watch("permissions").includes("Masterlist") ? !watch("permissions").some((item) => masterlistCheckbox.includes(item)) : false) ||
-                // (watch("permissions").includes("Channel Setup")
-                //   ? !watch("permissions").some((item) =>
-                //       channelCheckbox.includes(item)
-                //     )
-                //   : false) ||
                 (watch("permissions").includes("Requestor") ? !watch("permissions").some((item) => requestCheckbox.includes(item)) : false) ||
                 (watch("permissions").includes("Receiver") ? !watch("permissions").some((item) => receiverCheckbox.includes(item)) : false) ||
                 (watch("permissions").includes("Approver") ? !watch("permissions").some((item) => approverCheckbox.includes(item)) : false) ||

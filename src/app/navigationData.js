@@ -74,7 +74,7 @@ export const sidebarNavigationData = [
       },
       {
         id: 10,
-        name: "Channel",
+        name: "Channel Setup",
         path: "/masterlist/channel-setup",
       },
       {

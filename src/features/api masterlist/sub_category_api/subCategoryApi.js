@@ -32,6 +32,9 @@ export const subCategoryApi = createApi({
     getSubCategoryArray: builder.query({
       query: ({ CategoryId }) => {
         const categoryArray = CategoryId.map((id) => `CategoryId=${id}`).join(`&`);
+
+        console.log("categoryArray: ", categoryArray);
+
         return {
           url: `request-concern/multiple-sub-category?${categoryArray}`,
           method: "GET",

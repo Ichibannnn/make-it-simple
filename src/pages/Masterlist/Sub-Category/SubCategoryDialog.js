@@ -10,6 +10,7 @@ import { Toaster, toast } from "sonner";
 
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useCreateEditSubCategoryMutation } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { Save } from "@mui/icons-material";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -18,7 +19,7 @@ const schema = yup.object().shape({
 });
 
 export const SubCategoryDialog = ({ data, open, onClose }) => {
-  const [createEditSubCategory] = useCreateEditSubCategoryMutation();
+  const [createEditSubCategory, { isLoading: createEditSubCategoryIsLoading, isFetching: createEditSubCategoryIsFetching }] = useCreateEditSubCategoryMutation();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
 
   const {
@@ -199,6 +200,9 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
               <LoadingButton
                 type="submit"
                 variant="contained"
+                loading={createEditSubCategoryIsLoading || createEditSubCategoryIsFetching}
+                loadingPosition="start"
+                startIcon={<Save />}
                 disabled={!watch("categoryId") || !watch("subCategory_Description")}
                 sx={{
                   ":disabled": {

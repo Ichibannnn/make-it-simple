@@ -216,7 +216,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
           BackJobId: null,
           Contact_Number: "",
 
-          DateNeeded: null,
+          DateNeeded: moment().format("YYYY-MM-DD"),
           ChannelId: null,
           CategoryId: [],
           SubCategoryId: [],

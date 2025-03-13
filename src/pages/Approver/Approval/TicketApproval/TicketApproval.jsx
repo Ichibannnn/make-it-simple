@@ -117,7 +117,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      const allTicketIds = dummyData?.value?.closingTicket.map((item) => item.ticketConcernId) || [];
+      const allTicketIds = data?.value?.closingTicket.map((item) => item.ticketConcernId) || [];
       setSelectedTickets(allTicketIds);
     } else {
       setSelectedTickets([]);
@@ -222,8 +222,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         <>
           <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
             <Checkbox
-              indeterminate={selectedTickets.length > 0 && selectedTickets.length < (dummyData?.value?.closingTicket?.length || 0)}
-              checked={(dummyData?.value?.closingTicket?.length || 0) > 0 && selectedTickets.length === (dummyData?.value?.closingTicket?.length || 0)}
+              indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.closingTicket?.length || 0)}
+              checked={(data?.value?.closingTicket?.length || 0) > 0 && selectedTickets.length === (data?.value?.closingTicket?.length || 0)}
               onChange={handleSelectAll}
               inputProps={{ "aria-label": "select all tickets" }}
             />
@@ -234,7 +234,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              dummyData?.value?.closingTicket?.map((item, index) => {
+              data?.value?.closingTicket?.map((item, index) => {
                 const isSelected = selectedTickets.includes(item.ticketConcernId);
 
                 return (
@@ -366,8 +366,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     align="center"
                   >
                     <Checkbox
-                      indeterminate={selectedTickets.length > 0 && selectedTickets.length < (dummyData?.value?.closingTicket?.length || 0)}
-                      checked={(dummyData?.value?.closingTicket?.length || 0) > 0 && selectedTickets.length === (dummyData?.value?.closingTicket?.length || 0)}
+                      indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.closingTicket?.length || 0)}
+                      checked={(data?.value?.closingTicket?.length || 0) > 0 && selectedTickets.length === (data?.value?.closingTicket?.length || 0)}
                       onChange={handleSelectAll}
                       inputProps={{ "aria-label": "select all tickets" }}
                     />{" "}
@@ -424,7 +424,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </TableHead>
 
               <TableBody>
-                {dummyData?.value?.closingTicket?.map((item) => {
+                {data?.value?.closingTicket?.map((item) => {
                   const isSelected = selectedTickets.includes(item.ticketConcernId);
 
                   return (
@@ -537,7 +537,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                   );
                 })}
 
-                {/* {isError && (
+                {isError && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
@@ -546,9 +546,9 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                       </Typography>
                     </TableCell>
                   </TableRow>
-                )} */}
+                )}
 
-                {/* {(isLoading || isFetching) && (
+                {/* {/* {(isLoading || isFetching) && (
         <TableRow>
           <TableCell colSpan={7} align="center">
             <CircularProgress />
@@ -559,7 +559,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         </TableRow>
       )} */}
 
-                {/* {isSuccess && !data?.value?.closingTicket?.length && (
+                {isSuccess && !data?.value?.closingTicket?.length && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
@@ -568,7 +568,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                       </Typography>
                     </TableCell>
                   </TableRow>
-                )} */}
+                )}
               </TableBody>
             </Table>
           </TableContainer>

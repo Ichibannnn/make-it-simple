@@ -1,6 +1,6 @@
 import { Autocomplete, Dialog, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { CloseOutlined } from "@mui/icons-material";
+import { CloseOutlined, Save, SyncOutlined } from "@mui/icons-material";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,7 +23,7 @@ const schema = yup.object().shape({
 });
 
 const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
-  const [createEditSubUnit] = useCreateEditSubUnitMutation();
+  const [createEditSubUnit, { isLoading: isSubUnitLoading, isFetching: isSubUnitFetching }] = useCreateEditSubUnitMutation();
 
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
 
@@ -49,13 +49,13 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   });
 
   const onSubmitSubUnitForm = (formData) => {
+    console.log("Formdata:", formData);
     if (!data) {
       const addPayload = {
-        unitId: formData.unitId.id,
+        unitCode: formData.unitId.unit_Code,
         subUnit_Code: formData.subUnit_Code,
         subUnit_Name: formData.subUnit_Name,
         location_Code: formData?.locations?.location_Code,
-        location_Name: formData?.locations?.location_Name,
       };
 
       console.log("addPayload: ", addPayload);
@@ -256,6 +256,9 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                   <LoadingButton
                     type="submit"
                     variant="contained"
+                    startIcon={<Save />}
+                    loadingPosition="start"
+                    loading={isSubUnitLoading || isSubUnitFetching}
                     disabled={!watch("unitId") || !watch("subUnit_Code") || !watch("subUnit_Name") || (!data ? !watch("locations") : false)}
                     sx={{
                       ":disabled": {

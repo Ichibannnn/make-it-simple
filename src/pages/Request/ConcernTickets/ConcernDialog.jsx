@@ -53,8 +53,6 @@ const ConcernDialog = ({ open, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
-  const [dateFrom, setDateFrom] = useState(new moment());
-
   const dateNeededValidation = new moment();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const userId = useSelector((state) => state?.user?.id);
@@ -138,7 +136,7 @@ const ConcernDialog = ({ open, onClose }) => {
       SubUnitId: null,
       LocationId: null,
 
-      DateNeeded: moment(),
+      DateNeeded: moment().format("YYYY-MM-DD"),
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
@@ -225,7 +223,7 @@ const ConcernDialog = ({ open, onClose }) => {
           },
           Contact_Number: "",
 
-          DateNeeded: null,
+          DateNeeded: moment().format("YYYY-MM-DD"),
           ChannelId: null,
           CategoryId: [],
           SubCategoryId: [],
@@ -422,8 +420,6 @@ const ConcernDialog = ({ open, onClose }) => {
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  console.log("Error", errors);
 
   return (
     <>
@@ -955,7 +951,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           render={({ field }) => {
                             return (
                               <DatePicker
-                                value={field.value ? moment(field.value) : null}
+                                value={field.value ? moment(field.value) : moment()}
                                 onChange={(newValue) => {
                                   const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
                                   field.onChange(formattedValue);
@@ -1063,13 +1059,15 @@ const ConcernDialog = ({ open, onClose }) => {
 
                                 const categoryIdParams = value?.map((category) => category?.id);
 
-                                if (watch("CategoryId").length === 0) {
-                                  setValue("SubCategoryId", []);
-                                }
+                                // console.log("categoryIdParams: ", categoryIdParams);
 
                                 getSubCategory({
                                   CategoryId: categoryIdParams,
                                 });
+
+                                if (watch("CategoryId").length === 0) {
+                                  setValue("SubCategoryId", []);
+                                }
                               }}
                               getOptionLabel={(option) => option.category_Description || ""}
                               isOptionEqualToValue={(option, value) => option.id === value.id}

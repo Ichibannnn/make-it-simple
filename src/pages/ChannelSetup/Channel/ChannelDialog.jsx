@@ -33,11 +33,8 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const [disabled, setDisabled] = useState(false);
 
   const [createChannelValidation, { error: errorValidation, isError: errorValidationIsError }] = useCreateChannelValidationMutation();
-
   const [createChannel, { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching }] = useCreateChannelMutation();
-
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
-
   const [getMembers, { data: memberData, isLoading: memberIsLoading, isSuccess: memberIsSuccess }] = useLazyGetChannelMembersQuery();
 
   const {
@@ -161,10 +158,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
   }, [data]);
 
   console.log("Members data: ", memberData);
-
-  // console.log("department: ", channelFormWatch("deparmentId"));
-
-  // console.log("data: ", data);
 
   return (
     <>

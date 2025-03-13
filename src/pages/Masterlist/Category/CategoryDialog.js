@@ -10,6 +10,7 @@ import { LoadingButton } from "@mui/lab";
 import { Toaster, toast } from "sonner";
 import { useCreateEditCategoryMutation } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
+import { Save } from "@mui/icons-material";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -18,7 +19,7 @@ const schema = yup.object().shape({
 });
 
 export const CategoryDialog = ({ data, open, onClose }) => {
-  const [createEditCategory] = useCreateEditCategoryMutation();
+  const [createEditCategory, { isLoading: createEditCategoryIsLoading, isFetching: createEditCategoryIsFetching }] = useCreateEditCategoryMutation();
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
 
   const {
@@ -173,6 +174,9 @@ export const CategoryDialog = ({ data, open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
+              loading={createEditCategoryIsLoading || createEditCategoryIsFetching}
+              loadingPosition="start"
+              startIcon={<Save />}
               disabled={!watch("category_Description") || !watch("channelId")}
               sx={{
                 ":disabled": {

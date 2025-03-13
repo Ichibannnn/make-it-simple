@@ -11,7 +11,7 @@ import moment from "moment";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
@@ -27,20 +27,17 @@ import {
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import AssignDialogMenuAction from "./AssignDialogMenuAction";
 import { useSendSmsNotificationMutation } from "../../../features/sms_notification/smsNotificationApi";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
   Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
-  // concern_Details: yup.array().nullable(),
   ticketConcernId: yup.string().nullable(),
   ChannelId: yup.object().required().label("Channel"),
   CategoryId: yup.array().required().label("Category"),
   SubCategoryId: yup.array().required().label("Sub category"),
-  // CategoryId: yup.object().required().label("Category"),
-  // SubCategoryId: yup.object().required().label("Sub category"),
   userId: yup.object().required().label("Issue handler"),
   targetDate: yup.date().required("Target date is required"),
   RequestConcernId: yup.string().nullable(),
@@ -51,8 +48,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
-  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [formClosed, setFormClosed] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -88,7 +85,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     mode: "onChange",
     defaultValues: {
       Requestor_By: "",
-      // concern_Details: [],
       ticketConcernId: "",
       Concern: "",
 
@@ -121,11 +117,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     fileInputRef.current.click();
   };
 
-  const handleUpdateFile = (id) => {
-    setTicketAttachmentId(id);
-    fileInputRef.current.click();
-  };
-
   const handleDeleteFile = async (fileNameToDelete) => {
     console.log("File name: ", fileNameToDelete);
 
@@ -148,24 +139,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
 
   const handleDragOver = (event) => {
     event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const fileList = event.dataTransfer.files;
-    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
-    const fileNames = Array.from(fileList)
-      .filter((file) => {
-        const extension = file.name.split(".").pop().toLowerCase();
-        return allowedExtensions.includes(`.${extension}`);
-      })
-      .map((file) => ({
-        name: file.name,
-        size: (file.size / (1024 * 1024)).toFixed(2),
-      }));
-
-    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
-    setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
   const getAddAttachmentData = async (id) => {
@@ -263,8 +236,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
 
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("ChannelId", formData.ChannelId.id);
-    // payload.append("CategoryId", formData.CategoryId?.id);
-    // payload.append("SubCategoryId", formData.SubCategoryId?.id);
     payload.append("Requestor_By", formData.Requestor_By);
     payload.append("UserId", formData.userId?.userId);
     payload.append("Concern", formData.Concern);
@@ -393,14 +364,11 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     });
   };
 
-  console.log("Data: ", data);
-
   useEffect(() => {
     if (data) {
       if (!channelIsSuccess) getChannel();
 
       setValue("Requestor_By", data?.requestorId);
-      // setValue("concern_Details", [data?.concern]);
       setValue("Concern", data?.concern);
       setValue("ticketConcernId", data?.ticketRequestConcerns?.[0]?.ticketConcernId);
 
@@ -426,16 +394,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
 
-      // setValue("CategoryId", {
-      //   id: data?.categoryId,
-      //   category_Description: data?.category_Description,
-      // });
-
-      // setValue("SubCategoryId", {
-      //   id: data?.subCategoryId,
-      //   subCategory_Description: data?.subCategory_Description,
-      // });
-
       getAddAttachmentData(data.requestConcernId);
       getSubCategory({
         CategoryId: categoryIdParams,
@@ -459,7 +417,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{

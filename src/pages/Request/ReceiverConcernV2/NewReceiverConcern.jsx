@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   Divider,
@@ -21,7 +22,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 
-import { AccessTimeOutlined, CalendarMonthOutlined, DoneAllOutlined, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, Check, CheckBox, DoneAllOutlined, LocalOffer, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
 
 import React, { useState } from "react";
 import moment from "moment";
@@ -40,16 +41,19 @@ import { useGetReceiverConcernsQuery } from "../../../features/api_request/conce
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import ViewConcernDetails from "./ViewConcernDetails";
 import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
+import { LoadingButton } from "@mui/lab";
+import MultipleAssignDialog from "./MultipleAssignTicket/MultipleAssignDialog";
 
 const NewReceiverConcern = () => {
   const [approveStatus, setApproveStatus] = useState("false");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-
   const [concernDetails, setConcernDetails] = useState(null);
+  const [selectedTickets, setSelectedTickets] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
+
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   useSignalRConnection();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -64,6 +68,7 @@ const NewReceiverConcern = () => {
 
   const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
   const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
+  const { open: assignMultipleOpen, onToggle: assignMultipleOnToggle, onClose: assignMultipleOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -92,7 +97,22 @@ const NewReceiverConcern = () => {
     addTicketOnToggle();
   };
 
-  console.log("Data: ", data);
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      const allTicketIds = data?.value?.requestConcern?.map((item) => item) || [];
+      setSelectedTickets(allTicketIds);
+    } else {
+      setSelectedTickets([]);
+    }
+  };
+
+  const handleSelectTicket = (item) => {
+    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+  };
+
+  const approveModalHandler = () => {
+    assignMultipleOnToggle();
+  };
 
   return (
     <Stack
@@ -206,9 +226,9 @@ const NewReceiverConcern = () => {
             }}
           />
 
-          <Stack sx={{ width: "100%", padding: 1 }}>
+          <Stack sx={{ width: "100%", padding: 1, gap: 1 }}>
             <OutlinedInput
-              placeholder="eg. Requestor or Concern #"
+              placeholder="eg. Requestor Name"
               startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -219,119 +239,192 @@ const NewReceiverConcern = () => {
                 lineHeight: "1.4375rem",
               }}
             />
+
+            {selectedTickets.length > 0 && (
+              <Stack
+                direction={isScreenSmall ? "column" : "row"}
+                alignItems={isScreenSmall ? "left" : "center"}
+                justifyContent="space-between"
+                gap={0.5}
+                sx={{ padding: "10px 20px", backgroundColor: theme.palette.bgForm.black2, borderRadius: "20px", marginBottom: 1 }}
+              >
+                <Stack direction="row" gap={0.5}>
+                  <LocalOffer />
+                  <Typography>
+                    {selectedTickets.length} {""}
+                    {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" gap={0.5}>
+                  <LoadingButton variant="contained" color="success" startIcon={<Check />} onClick={() => approveModalHandler()}>
+                    Assign
+                  </LoadingButton>
+                </Stack>
+              </Stack>
+            )}
           </Stack>
 
           {isScreenSmall ? (
             // Card
-            <Stack spacing={2}>
-              {isSuccess &&
-                !isLoading &&
-                !isFetching &&
-                data?.value?.requestConcern?.map((item, index) => (
-                  <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
-                    <CardContent
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "#1A222F",
-                          color: "#9e77ed", // Change the text color when hovering
-                        },
-                      }}
-                    >
-                      <Stack spacing={1}>
-                        <Stack spacing={1} onClick={() => onViewAction(item)}>
-                          <Stack mb={2}>
-                            <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>{item.fullName}</Typography>
-                            <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.department_Name}</Typography>
+            <>
+              <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
+                <Checkbox
+                  indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.requestConcern?.length || 0)}
+                  checked={(data?.value?.requestConcern?.length || 0) > 0 && selectedTickets.length === (data?.value?.requestConcern?.length || 0)}
+                  onChange={handleSelectAll}
+                  inputProps={{ "aria-label": "select all tickets" }}
+                />
+                <Typography>Select All</Typography>
+              </Stack>
+
+              <Stack spacing={2}>
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.requestConcern?.map((item, index) => {
+                    const isSelected = selectedTickets.includes(item.requestConcernId);
+
+                    return (
+                      <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                        <CardContent
+                          sx={{
+                            cursor: "pointer",
+                            padding: "1px",
+                            "&:hover": {
+                              backgroundColor: "#1A222F",
+                              color: "#9e77ed", // Change the text color when hovering
+                            },
+                          }}
+                        >
+                          <Stack
+                            spacing={1}
+                            direction="row"
+                            sx={{
+                              alignItems: "center",
+                            }}
+                          >
+                            <Stack>
+                              <Checkbox
+                                checked={selectedTickets.includes(item.requestConcernId)}
+                                onChange={() => handleSelectTicket(item.requestConcernId)}
+                                inputProps={{ "aria-label": `select ticket ${item.requestConcernId}` }}
+                              />
+                            </Stack>
+
+                            <Stack spacing={1} onClick={() => onViewAction(item)}>
+                              <Stack mb={2}>
+                                <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>{item.fullName}</Typography>
+                                <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.department_Name}</Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NUMBER:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
+                              </Stack>
+
+                              <Stack direction="row">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN: </Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item.concern.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.channel_Name}</Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: "#1D1F3B",
+                                    color: theme.palette.primary.main,
+                                    fontWeight: 800,
+                                  }}
+                                  label={moment(item.created_At).format("LL")}
+                                />
+                              </Stack>
+                            </Stack>
                           </Stack>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
 
-                          <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NUMBER:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
-                          </Stack>
+                {isError && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                    <Typography variant="h6" color="error" align="center">
+                      Something went wrong.
+                    </Typography>
+                  </Stack>
+                )}
 
-                          <Stack direction="row">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN: </Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                              {item.concern.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-                            </Typography>
-                          </Stack>
+                {(isLoading || isFetching) && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <CircularProgress />
+                    <Typography variant="h5" color="#EDF2F7">
+                      Please wait...
+                    </Typography>
+                  </Stack>
+                )}
 
-                          <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.channel_Name}</Typography>
-                          </Stack>
+                {isSuccess && !data?.value?.requestConcern.length && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                    <Typography variant="h6" align="center">
+                      No records found.
+                    </Typography>
+                  </Stack>
+                )}
 
-                          <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
-                            <Chip
-                              variant="filled"
-                              size="30px"
-                              icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                              sx={{
-                                fontSize: "12px",
-                                backgroundColor: "#1D1F3B",
-                                color: theme.palette.primary.main,
-                                fontWeight: 800,
-                              }}
-                              label={moment(item.created_At).format("LL")}
-                            />
-                          </Stack>
-                        </Stack>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                ))}
-
-              {isError && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
-                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                  <Typography variant="h6" color="error" align="center">
-                    Something went wrong.
-                  </Typography>
-                </Stack>
-              )}
-
-              {(isLoading || isFetching) && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
-                  <CircularProgress />
-                  <Typography variant="h5" color="#EDF2F7">
-                    Please wait...
-                  </Typography>
-                </Stack>
-              )}
-
-              {isSuccess && !data?.value?.requestConcern.length && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
-                  <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                  <Typography variant="h6" align="center">
-                    No records found.
-                  </Typography>
-                </Stack>
-              )}
-
-              <TablePagination
-                sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={data?.value?.totalCount || 0}
-                rowsPerPage={data?.value?.pageSize || 5}
-                page={data?.value?.currentPage - 1 || 0}
-                onPageChange={onPageNumberChange}
-                onRowsPerPageChange={onPageSizeChange}
-              />
-            </Stack>
+                <TablePagination
+                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={data?.value?.totalCount || 0}
+                  rowsPerPage={data?.value?.pageSize || 5}
+                  page={data?.value?.currentPage - 1 || 0}
+                  onPageChange={onPageNumberChange}
+                  onRowsPerPageChange={onPageSizeChange}
+                />
+              </Stack>
+            </>
           ) : (
             <>
-              <TableContainer sx={{ minHeight: "480px", maxHeight: "500px" }}>
+              <TableContainer sx={{ minHeight: "480px", maxHeight: "653px" }}>
                 <Table stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
+                      <TableCell
+                        padding="checkbox"
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                        align="center"
+                      >
+                        <Checkbox
+                          indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.requestConcern?.length || 0)}
+                          checked={(data?.value?.requestConcern?.length || 0) > 0 && selectedTickets.length === (data?.value?.requestConcern?.length || 0)}
+                          onChange={handleSelectAll}
+                          inputProps={{ "aria-label": "select all tickets" }}
+                        />{" "}
+                      </TableCell>
+
                       <TableCell
                         sx={{
                           background: "#1C2536",
@@ -411,33 +504,32 @@ const NewReceiverConcern = () => {
                     {isSuccess &&
                       !isLoading &&
                       !isFetching &&
-                      data?.value?.requestConcern?.map((item) => (
-                        <TableRow
-                          key={item.requestConcernId}
-                          sx={{
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
-                          }}
-                        >
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              "&:hover": {
-                                background: "",
-                                color: "#EDF2F7",
-                              },
-                            }}
-                            align="center"
-                            onClick={() => onViewAction(item)}
-                          >
-                            {item.requestConcernId}
-                          </TableCell>
+                      data?.value?.requestConcern?.map((item) => {
+                        const isSelected = selectedTickets.includes(item.requestConcernId);
 
-                          {approveStatus === "true" && (
+                        return (
+                          <TableRow
+                            key={item.requestConcernId}
+                            sx={{
+                              backgroundColor: isSelected ? "#1E2034" : "transparent",
+                            }}
+                          >
+                            <TableCell
+                              padding="checkbox"
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                              }}
+                              align="center"
+                            >
+                              <Checkbox
+                                checked={selectedTickets.includes(item)}
+                                onChange={() => handleSelectTicket(item)}
+                                inputProps={{ "aria-label": `select ticket ${item.requestConcernId}` }}
+                              />
+                            </TableCell>
+
                             <TableCell
                               sx={{
                                 color: "#EDF2F7",
@@ -451,101 +543,119 @@ const NewReceiverConcern = () => {
                               align="center"
                               onClick={() => onViewAction(item)}
                             >
-                              {item.ticketRequestConcerns[0]?.ticketConcernId}
+                              {item.requestConcernId}
                             </TableCell>
-                          )}
 
-                          <TableCell
-                            sx={{
-                              maxWidth: "150px",
-                            }}
-                            onClick={() => onViewAction(item)}
-                          >
-                            <Typography
+                            {approveStatus === "true" && (
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  "&:hover": {
+                                    background: "",
+                                    color: "#EDF2F7",
+                                  },
+                                }}
+                                align="center"
+                                onClick={() => onViewAction(item)}
+                              >
+                                {item.ticketRequestConcerns[0]?.ticketConcernId}
+                              </TableCell>
+                            )}
+
+                            <TableCell
+                              sx={{
+                                maxWidth: "150px",
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              <Typography
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.fullName}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.department_Name}
+                              </Typography>
+                            </TableCell>
+
+                            <TableCell
+                              className="ellipsis-styling"
                               sx={{
                                 color: "#EDF2F7",
-                                fontSize: "14px",
-                                fontWeight: 500,
-                              }}
-                            >
-                              {item.fullName}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                color: theme.palette.text.secondary,
                                 fontSize: "12px",
                                 fontWeight: 500,
+                                minWidth: "300px",
+                                maxWidth: "300px",
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
                               }}
+                              onClick={() => onViewAction(item)}
                             >
-                              {item.department_Name}
-                            </Typography>
-                          </TableCell>
+                              {item.concern?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                            </TableCell>
 
-                          <TableCell
-                            className="ellipsis-styling"
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              minWidth: "300px",
-                              maxWidth: "300px",
-                              "&:hover": {
-                                background: "",
-                                color: "#EDF2F7",
-                              },
-                            }}
-                            onClick={() => onViewAction(item)}
-                          >
-                            {item.concern?.split("\r\n").map((line, index) => (
-                              <span key={index}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
-                          </TableCell>
-
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              "&:hover": {
-                                background: "",
-                                color: "#EDF2F7",
-                              },
-                            }}
-                            onClick={() => onViewAction(item)}
-                          >
-                            {item.channel_Name}
-                          </TableCell>
-
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              "&:hover": {
-                                background: "",
-                                color: "#EDF2F7",
-                              },
-                            }}
-                            onClick={() => onViewAction(item)}
-                          >
-                            <Chip
-                              variant="filled"
-                              size="30px"
-                              icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                            <TableCell
                               sx={{
+                                color: "#EDF2F7",
                                 fontSize: "12px",
-                                backgroundColor: "#1D1F3B",
-                                color: theme.palette.primary.main,
-                                fontWeight: 800,
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
                               }}
-                              label={moment(item.created_At).format("LL")}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                              onClick={() => onViewAction(item)}
+                            >
+                              {item.channel_Name}
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              <Chip
+                                variant="filled"
+                                size="30px"
+                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: "#1D1F3B",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
+                                }}
+                                label={moment(item.created_At).format("LL")}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
 
                     {isError && (
                       <TableRow>
@@ -587,6 +697,7 @@ const NewReceiverConcern = () => {
 
           <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
           <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
+          <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} />
         </Stack>
       </Stack>
     </Stack>
