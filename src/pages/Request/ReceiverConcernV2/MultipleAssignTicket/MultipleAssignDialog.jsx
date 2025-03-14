@@ -29,6 +29,13 @@ const MultipleAssignDialog = ({ selectedTickets, open, onClose }) => {
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
+  const pagination = {
+    clickable: true,
+    renderBullet: function (index, className) {
+      return '<span class="' + className + '">' + (index + 1) + "</span>";
+    },
+  };
+
   const onCloseAction = () => {
     onClose();
   };
@@ -56,7 +63,7 @@ const MultipleAssignDialog = ({ selectedTickets, open, onClose }) => {
 
           <Swiper
             // install Swiper modules
-            pagination={true}
+            pagination={pagination}
             modules={[Pagination]}
             className="mySwiper"
           >

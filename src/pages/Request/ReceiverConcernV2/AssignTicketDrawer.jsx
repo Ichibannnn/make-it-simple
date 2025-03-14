@@ -590,7 +590,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 }}
                                 onChange={(_, value) => {
                                   onChange(value);
-
                                   setValue("CategoryId", []);
                                   setValue("SubCategoryId", []);
                                   setValue("userId", null);
@@ -641,13 +640,10 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 }}
                                 onChange={(_, value) => {
                                   onChange(value);
-
                                   const categoryIdParams = value?.map((category) => category?.id);
-
                                   if (watch("CategoryId").length === 0) {
                                     setValue("SubCategoryId", []);
                                   }
-
                                   getSubCategory({
                                     CategoryId: categoryIdParams,
                                   });
@@ -674,54 +670,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                             );
                           }}
                         />
-                        {/* <Controller
-                  control={control}
-                  name="CategoryId"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
-                        loading={categoryIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                        onOpen={() => {
-                          if (!categoryIsSuccess)
-                            getCategory({
-                              Status: true,
-                            });
-                        }}
-                        onChange={(_, value) => {
-                          onChange(value);
-
-                          setValue("SubCategoryId", null);
-
-                          getSubCategory({
-                            Status: true,
-                          });
-                        }}
-                        getOptionLabel={(option) => option.category_Description || ""}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        sx={{
-                          flex: 2,
-                        }}
-                        fullWidth
-                        disablePortal
-                        disableClearable
-                        componentsProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiAutocomplete-listbox": {
-                                fontSize: "13px",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    );
-                  }}
-                /> */}
                       </Stack>
 
                       <Stack gap={0.5}>
@@ -736,7 +684,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
                                 options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
@@ -744,8 +691,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                   if (!subCategoryIsSuccess) getSubCategory();
                                 }}
                                 onChange={(_, value) => {
-                                  // console.log("Value ", value);
-
                                   onChange(value);
                                 }}
                                 getOptionLabel={(option) => option?.sub_Category_Description || ""}
@@ -772,52 +717,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                             );
                           }}
                         />
-                        {/* <Controller
-                  control={control}
-                  name="SubCategoryId"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={subCategoryData?.value?.subCategory.filter((item) => item.categoryId === watch("CategoryId")?.id) || []}
-                        loading={subCategoryIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                        onOpen={() => {
-                          if (!subCategoryIsSuccess)
-                            getSubCategory({
-                              Status: true,
-                            });
-                        }}
-                        onChange={(_, value) => {
-                          // console.log("Value ", value);
-
-                          onChange(value || []);
-                        }}
-                        getOptionLabel={(option) => `${option.subCategory_Description}`}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        noOptionsText={"No sub category available"}
-                        sx={{
-                          flex: 2,
-                        }}
-                        fullWidth
-                        disablePortal
-                        disableClearable
-                        // disabled
-                        componentsProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiAutocomplete-listbox": {
-                                fontSize: "13px",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    );
-                  }}
-                /> */}
                       </Stack>
 
                       <Stack gap={0.5}>
@@ -848,7 +747,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 }}
                                 getOptionLabel={(option) => option.fullname}
                                 isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
-                                // getOptionDisabled={(option) => watch("userId")?.some((item) => item?.userId === option?.userId)}
                                 sx={{
                                   flex: 2,
                                 }}
@@ -863,7 +761,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 }}
                                 fullWidth
                                 disablePortal
-                                // disableClearable
                               />
                             );
                           }}
@@ -906,7 +803,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 minDate={new moment()}
                                 error={!!errors.targetDate}
                                 helperText={errors.targetDate ? errors.targetDate.message : null}
-                                // disabled={!watch("startDate")}
                               />
                             )}
                           />
@@ -1010,60 +906,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                       onDownload={handleDownloadAttachment}
                                       isImageFile={isImageFile}
                                     />
-
-                                    {/* {!!fileName.ticketAttachmentId ? (
-                              <>
-                                {isImageFile(fileName.name) && (
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                  // <ViewAttachment fileName={fileName} loading={loading} handleViewImage={handleViewImage} />
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {isImageFile(fileName.name) && (
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImageWithoutId(fileName.file)} style={{ background: "none" }}>
-                                    <VisibilityOutlined />
-                                  </IconButton>
-                                )}
-                              </>
-                            )}
-
-                            {!fileName.ticketAttachmentId && (
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-
-
-                            {!!fileName.ticketAttachmentId && (
-                              <Tooltip title="Download">
-                                {loading ? (
-                                  <CircularProgress size={14} />
-                                ) : (
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    onClick={() => handleDownloadAttachment(fileName)}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <FileDownloadOutlined />
-                                  </IconButton>
-                                )}
-                              </Tooltip>
-                            )} */}
                                   </Box>
                                 </Box>
                               </Box>
@@ -1084,9 +926,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                               if (ticketAttachmentId) {
                                 const files = Array.from(event.target.files);
                                 files[0].ticketAttachmentId = ticketAttachmentId;
-
                                 onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
-
                                 setAttachments((prevFiles) => [
                                   ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
                                   {
@@ -1095,7 +935,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                     size: (files[0].size / (1024 * 1024)).toFixed(2),
                                   },
                                 ]);
-
                                 fileInputRef.current.value = "";
                                 setTicketAttachmentId(null);
                               } else {
