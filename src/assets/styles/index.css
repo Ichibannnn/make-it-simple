@@ -329,6 +329,11 @@ body {
   align-items: center;
   justify-content: center;
   color: #6e53a5;
+  size: 100px;
+}
+
+:root {
+  --swiper-navigation-size: 37px;
 }
 
 /* .swiper {

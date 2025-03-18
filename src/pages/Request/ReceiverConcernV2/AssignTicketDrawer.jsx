@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { Add, AttachFileOutlined, CheckOutlined, FileDownloadOutlined, GetAppOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -379,6 +379,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
       if (!channelIsSuccess) getChannel();
 
       setValue("Requestor_By", data?.requestorId);
+      // setValue("concern_Details", [data?.concern]);
       setValue("Concern", data?.concern);
       setValue("ticketConcernId", data?.ticketRequestConcerns?.[0]?.ticketConcernId);
 
@@ -404,6 +405,16 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
 
+      // setValue("CategoryId", {
+      //   id: data?.categoryId,
+      //   category_Description: data?.category_Description,
+      // });
+
+      // setValue("SubCategoryId", {
+      //   id: data?.subCategoryId,
+      //   subCategory_Description: data?.subCategory_Description,
+      // });
+
       getAddAttachmentData(data.requestConcernId);
       getSubCategory({
         CategoryId: categoryIdParams,
@@ -425,13 +436,6 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
     }
   }, [subCategoryData]);
 
-  const pagination = {
-    clickable: true,
-    renderBullet: function (index, className) {
-      return '<span class="' + className + '">' + (index + 1) + "</span>";
-    },
-  };
-
   return (
     <>
       <Dialog fullWidth maxWidth="sm" open={open}>
@@ -447,7 +451,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
             color: "#fff",
           }}
         >
-          Create Ticket
+          Assign Ticket
         </DialogTitle>
 
         <Swiper
@@ -460,7 +464,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
         >
           {selectedTickets?.map((item) => (
             <SwiperSlide key={item.requestConcernId}>
-              <Stack sx={{ width: "80%", height: "auto", background: theme.palette.bgForm.black2, borderRadius: "20px", padding: 2 }}>
+              <Stack sx={{ width: "85%", height: "auto", mb: 4, background: theme.palette.bgForm.black2, borderRadius: "20px", padding: 2 }}>
                 <form onSubmit={handleSubmit(onSubmitAction)}>
                   <DialogContent>
                     <Stack sx={{ width: "100%", height: "700px", gap: 1 }}>
@@ -609,7 +613,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                   },
                                 }}
                                 fullWidth
-                                disablePortal
+                                // disablePortal
                                 disableClearable
                               />
                             );
@@ -655,7 +659,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                   flex: 2,
                                 }}
                                 fullWidth
-                                disablePortal
+                                // disablePortal
                                 disableClearable
                                 componentsProps={{
                                   popper: {
@@ -701,7 +705,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                   flex: 2,
                                 }}
                                 fullWidth
-                                disablePortal
+                                // disablePortal
                                 disableClearable
                                 disabled={!watch("ChannelId")}
                                 componentsProps={{
@@ -760,7 +764,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                   },
                                 }}
                                 fullWidth
-                                disablePortal
+                                // disablePortal
                               />
                             );
                           }}
