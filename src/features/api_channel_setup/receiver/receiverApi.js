@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Receiver"];
 
-export const receiverApi = createApi({
-  reducerPath: "receiverApi",
-  tagTypes: ["Receiver"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const receiverApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getReceiver: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const receiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Receiver"],
+      providesTags: tags,
     }),
 
     getReceiverList: builder.query({
@@ -35,7 +19,7 @@ export const receiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Receiver"],
+      providesTags: tags,
     }),
 
     getReceiverBusinessList: builder.query({
@@ -44,7 +28,7 @@ export const receiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Receiver"],
+      providesTags: tags,
     }),
 
     createEditReceiver: builder.mutation({
@@ -53,7 +37,7 @@ export const receiverApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveReceiver: builder.mutation({
@@ -61,7 +45,7 @@ export const receiverApi = createApi({
         url: `receiver/status/${UserId}`,
         method: "PUT",
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Receiver"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

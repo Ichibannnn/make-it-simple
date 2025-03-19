@@ -1,25 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Concern Receiver"];
 
-export const concernReceiverApi = createApi({
-  reducerPath: "concernReceiverApi",
-  tagTypes: ["Concern Receiver"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const concernReceiverApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     // RECEIVER ---------------
     getReceiverConcerns: builder.query({
@@ -28,7 +11,7 @@ export const concernReceiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern Receiver"],
+      providesTags: tags,
     }),
 
     createEditReceiverConcern: builder.mutation({
@@ -40,7 +23,7 @@ export const concernReceiverApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     approveReceiverConcern: builder.mutation({
@@ -49,7 +32,7 @@ export const concernReceiverApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Receiver"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     getReceiverAttachment: builder.query({
@@ -58,7 +41,7 @@ export const concernReceiverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern Receiver"],
+      providesTags: tags,
     }),
   }),
 });

@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Roles"];
 
-export const roleApi = createApi({
-  reducerPath: "roleApi",
-  tagTypes: ["Roles"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const roleApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getRoles: builder.query({
       query: (params) => ({
@@ -26,15 +10,16 @@ export const roleApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Roles"],
+      providesTags: tags,
     }),
+
     createRole: builder.mutation({
       query: (body) => ({
         url: "UserRole/AddNewUserRole",
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     updateRoleName: builder.mutation({
@@ -43,7 +28,7 @@ export const roleApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     updateRolePermission: builder.mutation({
@@ -52,7 +37,7 @@ export const roleApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveRole: builder.mutation({
@@ -61,7 +46,7 @@ export const roleApi = createApi({
         method: "PATCH",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Roles"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

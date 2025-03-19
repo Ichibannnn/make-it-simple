@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Concern"];
 
-export const concernApi = createApi({
-  reducerPath: "concernApi",
-  tagTypes: ["Concern"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const concernApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     // REQUESTOR ---------------
     getRequestorConcerns: builder.query({
@@ -27,7 +11,7 @@ export const concernApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern"],
+      providesTags: tags,
     }),
 
     getBackjobTickets: builder.query({
@@ -36,7 +20,7 @@ export const concernApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern"],
+      providesTags: tags,
     }),
 
     getTechnicians: builder.query({
@@ -45,7 +29,7 @@ export const concernApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern"],
+      providesTags: tags,
     }),
 
     createEditRequestorConcern: builder.mutation({
@@ -57,7 +41,7 @@ export const concernApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     getRequestorAttachment: builder.query({
@@ -66,7 +50,7 @@ export const concernApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern"],
+      providesTags: tags,
     }),
 
     deleteRequestorAttachment: builder.mutation({
@@ -75,7 +59,7 @@ export const concernApi = createApi({
         method: "PUT",
         body: body,
       }),
-      providesTags: ["Concern"],
+      providesTags: tags,
     }),
 
     confirmConcern: builder.mutation({
@@ -84,7 +68,7 @@ export const concernApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     cancelConcern: builder.mutation({
@@ -93,7 +77,7 @@ export const concernApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     returnConcern: builder.mutation({
@@ -105,7 +89,7 @@ export const concernApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

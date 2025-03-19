@@ -36,6 +36,8 @@ import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { useSelector } from "react-redux";
+import { setAttachments } from "../../../features/sidebar/sidebarSlice";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -51,7 +53,8 @@ const schema = yup.object().shape({
 });
 
 const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, viewConcernDetailsOnClose }) => {
-  const [attachments, setAttachments] = useState([]);
+  // const [attachments, setAttachments] = useState([]);
+  const attachments = useSelector((state) => state.sidebar.attachments);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -66,9 +69,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
   const today = moment();
   useSignalRConnection();
 
-  console.log("Selected Tix: ", selectedTickets);
-
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
@@ -76,7 +77,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
   const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
-  const [smsNotification] = useSendSmsNotificationMutation();
+  // const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
   const [getAddReceiverAttachment] = useLazyGetReceiverAttachmentQuery();
@@ -120,7 +121,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
     }));
 
     const uniqueNewFiles = fileNames?.filter((newFile) => !attachments?.some((existingFile) => existingFile?.name === newFile?.name));
-    setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
+    dispatch(setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles])));
   };
 
   const handleUploadButtonClick = () => {
@@ -138,7 +139,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
         await deleteRequestorAttachment(deletePayload).unwrap();
       }
 
-      setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+      dispatch(setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete)));
 
       setValue(
         "RequestAttachmentsFiles",
@@ -155,13 +156,15 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
     try {
       const res = await getAddReceiverAttachment({ Id: id }).unwrap();
 
-      setAttachments(
-        res?.value?.[0]?.attachments?.map((item) => ({
-          ticketAttachmentId: item.ticketAttachmentId,
-          name: item.fileName,
-          size: (item.fileSize / (1024 * 1024)).toFixed(2),
-          link: item.attachment,
-        }))
+      dispatch(
+        setAttachments(
+          res?.value?.[0]?.attachments?.map((item) => ({
+            ticketAttachmentId: item.ticketAttachmentId,
+            name: item.fileName,
+            size: (item.fileSize / (1024 * 1024)).toFixed(2),
+            link: item.attachment,
+          }))
+        )
       );
     } catch (error) {}
   };
@@ -291,88 +294,90 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
       ticketConcernId: formData.ticketConcernId,
     };
 
-    const smsPayload = {
-      system_name: "Make It Simple",
-      message: `Fresh Morning! Concern #${data?.requestConcernId} has been assigned to your account. Kindly check your ticket list.`,
-      mobile_number: data?.contact_Number,
-    };
+    // const smsPayload = {
+    //   system_name: "Make It Simple",
+    //   message: `Fresh Morning! Concern #${data?.requestConcernId} has been assigned to your account. Kindly check your ticket list.`,
+    //   mobile_number: data?.contact_Number,
+    // };
 
-    // Swal.fire({
-    //   title: "Confirmation",
-    //   text: "Approve this concern?",
-    //   icon: "info",
-    //   color: "white",
-    //   showCancelButton: true,
-    //   background: "#111927",
-    //   confirmButtonColor: "#9e77ed",
-    //   confirmButtonText: "Yes",
-    //   cancelButtonText: "No",
-    //   cancelButtonColor: "#1C2536",
-    //   heightAuto: false,
-    //   width: "30em",
-    //   customClass: {
-    //     container: "custom-container",
-    //     title: "custom-title",
-    //     htmlContainer: "custom-text",
-    //     icon: "custom-icon",
-    //     confirmButton: "custom-confirm-btn",
-    //     cancelButton: "custom-cancel-btn",
-    //   },
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     createEditReceiverConcern(payload)
-    //       .unwrap()
-    //       .then(() => {
-    //         // Approve API
-    //         approveReceiverConcern(approvePayload)
-    //           .unwrap()
-    //           .then(() => {
-    //             setData(null);
-    //             onClose();
-    //           })
-    //           .catch((err) => {
-    //             console.log("Error", err);
-    //             toast.error("Error!", {
-    //               description: err.data.error.message,
-    //               duration: 1500,
-    //             });
-    //           });
+    Swal.fire({
+      title: "Confirmation",
+      text: "Approve this concern?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        createEditReceiverConcern(payload)
+          .unwrap()
+          .then(() => {
+            // Approve API
+            approveReceiverConcern(approvePayload)
+              .unwrap()
+              .then(() => {
+                setData(null);
+                onClose();
+              })
+              .catch((err) => {
+                console.log("Error", err);
+                toast.error("Error!", {
+                  description: err.data.error.message,
+                  duration: 1500,
+                });
+              });
 
-    //         toast.success("Success!", {
-    //           description: "Approve concern successfully!",
-    //           duration: 1500,
-    //         });
+            toast.success("Success!", {
+              description: "Approve concern successfully!",
+              duration: 1500,
+            });
 
-    //         dispatch(notificationApi.util.resetApiState());
-    //         dispatch(notificationMessageApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
 
-    //         setAttachments([]);
-    //         reset();
-    //         setData(null);
-    //         viewConcernDetailsOnClose();
-    //         onClose();
-    //       })
-    //       .catch((err) => {
-    //         console.log("Error", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
+            setAttachments([]);
+            reset();
+            setData(null);
+            viewConcernDetailsOnClose();
+            onClose();
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
 
-    //     // SEND SMS STATUS
-    //     try {
-    //       smsNotification(smsPayload).unwrap();
-    //     } catch (error) {
-    //       console.log(error);
-    //       toast.error("Error!", {
-    //         description: "Sms notification error!",
-    //         duration: 1500,
-    //       });
-    //     }
-    //   }
-    // });
+        // SEND SMS STATUS
+        // try {
+        //   smsNotification(smsPayload).unwrap();
+        // } catch (error) {
+        //   console.log(error);
+        //   toast.error("Error!", {
+        //     description: "Sms notification error!",
+        //     duration: 1500,
+        //   });
+        // }
+      }
+    });
   };
+
+  console.log("Selected Tix: ", selectedTickets);
 
   useEffect(() => {
     if (data) {
@@ -462,7 +467,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
           modules={[Pagination, Navigation]}
           className="mySwiper"
         >
-          {selectedTickets?.map((item) => (
+          {selectedTickets?.map((item, index) => (
             <SwiperSlide key={item.requestConcernId}>
               <Stack sx={{ width: "85%", height: "auto", mb: 4, background: theme.palette.bgForm.black2, borderRadius: "20px", padding: 2 }}>
                 <form onSubmit={handleSubmit(onSubmitAction)}>
@@ -931,14 +936,16 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
                                 const files = Array.from(event.target.files);
                                 files[0].ticketAttachmentId = ticketAttachmentId;
                                 onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
-                                setAttachments((prevFiles) => [
-                                  ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                                  {
-                                    ticketAttachmentId: ticketAttachmentId,
-                                    name: files[0].name,
-                                    size: (files[0].size / (1024 * 1024)).toFixed(2),
-                                  },
-                                ]);
+                                dispatch(
+                                  setAttachments((prevFiles) => [
+                                    ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
+                                    {
+                                      ticketAttachmentId: ticketAttachmentId,
+                                      name: files[0].name,
+                                      size: (files[0].size / (1024 * 1024)).toFixed(2),
+                                    },
+                                  ])
+                                );
                                 fileInputRef.current.value = "";
                                 setTicketAttachmentId(null);
                               } else {

@@ -380,7 +380,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                   onChange={storeCheckboxHandler}
                   size="small"
                   disabled={data ? true : false}
-                  // inputProps={{ "aria-label": `select ticket ${item.closingTicketId}` }}
                   sx={{
                     padding: 0,
                   }}

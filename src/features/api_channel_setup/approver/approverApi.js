@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Approver"];
 
-export const approverApi = createApi({
-  reducerPath: "approverApi",
-  tagTypes: ["Approver"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const approverApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getApprover: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const approverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Approver"],
+      providesTags: tags,
     }),
 
     getSubUnitList: builder.query({
@@ -35,7 +19,7 @@ export const approverApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Approver"],
+      providesTags: tags,
     }),
 
     getApproverList: builder.query({
@@ -43,7 +27,7 @@ export const approverApi = createApi({
         url: `approver/approver-user?${SubUnitId}`,
         method: "GET",
       }),
-      providesTags: ["Approver"],
+      providesTags: tags,
     }),
 
     createEditApprover: builder.mutation({
@@ -52,7 +36,7 @@ export const approverApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Approver"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveApprover: builder.mutation({
@@ -61,7 +45,7 @@ export const approverApi = createApi({
         method: "PATCH",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Approver"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

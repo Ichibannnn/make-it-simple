@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Location"];
 
-export const locationApi = createApi({
-  reducerPath: "locationApi",
-  tagTypes: ["Location"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const locationApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getLocation: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const locationApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Location"],
+      providesTags: tags,
     }),
     getLocationWithPagination: builder.query({
       query: (params) => ({
@@ -34,7 +18,7 @@ export const locationApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Location"],
+      providesTags: tags,
     }),
     syncLocation: builder.mutation({
       query: (body) => ({
@@ -42,7 +26,7 @@ export const locationApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Location"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

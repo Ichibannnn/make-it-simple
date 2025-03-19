@@ -1,27 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Ticket Approval"];
 
-export const ticketApprovalApi = createApi({
-  reducerPath: "ticketApprovalApi",
-  tagTypes: ["Ticket Approval"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const ticketApprovalApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     // Approver Ticket Approval ---------------
     getTicketApproval: builder.query({
@@ -30,7 +11,7 @@ export const ticketApprovalApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Ticket Approval"],
+      providesTags: tags,
     }),
 
     approveTicket: builder.mutation({
@@ -39,7 +20,7 @@ export const ticketApprovalApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     disapproveTicket: builder.mutation({
@@ -48,7 +29,7 @@ export const ticketApprovalApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     // Approvel Transfer Approval
@@ -58,7 +39,7 @@ export const ticketApprovalApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Ticket Approval"],
+      providesTags: tags,
     }),
 
     approveTransfer: builder.mutation({
@@ -67,7 +48,7 @@ export const ticketApprovalApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     rejectTransfer: builder.mutation({
@@ -76,7 +57,7 @@ export const ticketApprovalApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     // Approvel OnHold Approval
@@ -86,7 +67,7 @@ export const ticketApprovalApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Ticket Approval"],
+      providesTags: tags,
     }),
 
     approveOnHold: builder.mutation({
@@ -95,7 +76,7 @@ export const ticketApprovalApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     rejectOnHold: builder.mutation({
@@ -104,7 +85,7 @@ export const ticketApprovalApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Ticket Approval"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

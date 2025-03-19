@@ -1,25 +1,8 @@
-import queryString from "query-string";
+import { api } from "../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Reports"];
 
-export const reportsApi = createApi({
-  reducerPath: "reportsApi",
-  tagTypes: ["Reports"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getAllTickets: builder.query({
       query: (params) => ({
@@ -27,7 +10,7 @@ export const reportsApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getOpenTickets: builder.query({
@@ -36,7 +19,7 @@ export const reportsApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getClosedTickets: builder.query({
@@ -45,7 +28,7 @@ export const reportsApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getTransferredTickets: builder.query({
@@ -54,7 +37,7 @@ export const reportsApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getOnHoldTickets: builder.query({
@@ -63,7 +46,7 @@ export const reportsApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getDownloadOpenTickets: builder.query({
@@ -73,7 +56,7 @@ export const reportsApi = createApi({
         params: params,
         responseHandler: (response) => response.blob(),
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getDownloadClosedTickets: builder.query({
@@ -83,7 +66,7 @@ export const reportsApi = createApi({
         params: params,
         responseHandler: (response) => response.blob(),
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getDownloadTransferredTickets: builder.query({
@@ -93,7 +76,7 @@ export const reportsApi = createApi({
         params: params,
         responseHandler: (response) => response.blob(),
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
 
     getDownloadOnHoldTickets: builder.query({
@@ -103,7 +86,7 @@ export const reportsApi = createApi({
         params: params,
         responseHandler: (response) => response.blob(),
       }),
-      providesTags: ["Reports"],
+      providesTags: tags,
     }),
   }),
 });

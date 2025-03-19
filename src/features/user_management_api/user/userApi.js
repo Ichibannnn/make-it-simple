@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Users"];
 
-export const userApi = createApi({
-  reducerPath: "userApi",
-  tagTypes: ["Users"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const userApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const userApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Users"],
+      providesTags: tags,
     }),
 
     createUser: builder.mutation({
@@ -35,7 +19,7 @@ export const userApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     updateUser: builder.mutation({
@@ -44,7 +28,7 @@ export const userApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     resetUserPassword: builder.mutation({
@@ -53,7 +37,7 @@ export const userApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveUser: builder.mutation({
@@ -62,7 +46,7 @@ export const userApi = createApi({
         method: "PATCH",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     changeUserPassword: builder.mutation({
@@ -71,7 +55,7 @@ export const userApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Users"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

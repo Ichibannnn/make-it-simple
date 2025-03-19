@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Company"];
 
-export const companyApi = createApi({
-  reducerPath: "companyApi",
-  tagTypes: ["Company"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const companyApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getCompany: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const companyApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Company"],
+      providesTags: tags,
     }),
     syncCompany: builder.mutation({
       query: (body) => ({
@@ -34,7 +18,7 @@ export const companyApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Company"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

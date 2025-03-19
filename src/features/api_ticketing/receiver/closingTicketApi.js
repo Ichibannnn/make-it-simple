@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Closing Ticket"];
 
-export const closingTicketApi = createApi({
-  reducerPath: "closingTicketApi",
-  tagTypes: ["Closing Ticket"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const closingTicketApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     // Receiver ---------------
     getClosingTickets: builder.query({
@@ -27,7 +11,7 @@ export const closingTicketApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Closing Ticket"],
+      providesTags: tags,
     }),
 
     closeTicket: builder.mutation({
@@ -36,7 +20,7 @@ export const closingTicketApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Closing Ticket"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     rejectTicket: builder.mutation({
@@ -45,7 +29,7 @@ export const closingTicketApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Closing Ticket"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

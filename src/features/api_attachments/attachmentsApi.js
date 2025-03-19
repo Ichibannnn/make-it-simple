@@ -1,27 +1,8 @@
-import queryString from "query-string";
+import { api } from "../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Attachments"];
 
-export const attachmentsApi = createApi({
-  reducerPath: "attachmentsApi",
-  tagTypes: ["Attachments"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const attachmentsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getViewAttachment: builder.query({
       query: (id) => ({
@@ -29,7 +10,7 @@ export const attachmentsApi = createApi({
         method: "GET",
         responseHandler: (response) => response.blob(),
       }),
-      providesTags: ["Attachments"],
+      providesTags: tags,
       //   keepUnusedDataFor: 0,
     }),
 
@@ -39,7 +20,7 @@ export const attachmentsApi = createApi({
         method: "GET",
         responseHandler: (response) => response.blob(),
       }),
-      providesTags: ["Attachments"],
+      providesTags: tags,
     }),
   }),
 });

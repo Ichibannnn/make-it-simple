@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Unit"];
 
-export const unitApi = createApi({
-  reducerPath: "unitApi",
-  tagTypes: ["Unit"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const unitApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getUnit: builder.query({
       query: (params) => ({
@@ -26,15 +10,16 @@ export const unitApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Unit"],
+      providesTags: tags,
     }),
+
     syncUnit: builder.mutation({
       query: (body) => ({
         url: "unit",
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Unit"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Sub Category"];
 
-export const subCategoryApi = createApi({
-  reducerPath: "subCategoryApi",
-  tagTypes: ["Sub Category"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const subCategoryApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getSubCategory: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const subCategoryApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Sub Category"],
+      providesTags: tags,
     }),
 
     getSubCategoryArray: builder.query({
@@ -40,7 +24,7 @@ export const subCategoryApi = createApi({
           method: "GET",
         };
       },
-      providesTags: ["Sub Category"],
+      providesTags: tags,
     }),
 
     createEditSubCategory: builder.mutation({
@@ -49,7 +33,7 @@ export const subCategoryApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Sub Category"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveSubCategory: builder.mutation({
@@ -57,7 +41,7 @@ export const subCategoryApi = createApi({
         url: `sub-category/status/${id}`,
         method: "PATCH",
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Sub Category"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

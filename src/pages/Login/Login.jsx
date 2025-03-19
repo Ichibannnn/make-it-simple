@@ -30,7 +30,6 @@ import { concernIssueHandlerApi } from "../../features/api_ticketing/issue_handl
 import { ticketApprovalApi } from "../../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../../features/api_ticketing/receiver/closingTicketApi";
 import { concernReceiverApi } from "../../features/api_request/concerns_receiver/concernReceiverApi";
-import useSignalRConnection from "../../hooks/useSignalRConnection";
 import { useSelector } from "react-redux";
 
 const Login = () => {
@@ -156,6 +155,8 @@ const LoginForm = () => {
       const res = await logIn(data).unwrap();
       const { token, ...user } = res.value;
 
+      console.log("res: ", res);
+
       if (res?.value?.isPasswordChanged === null) {
         setChangePasswordDetails(res);
         onToggle();
@@ -203,8 +204,6 @@ const LoginForm = () => {
   const showPasswordHandler = () => {
     setShowPassword(!showPassword);
   };
-
-  console.log("auth: ", auth);
 
   useEffect(() => {
     if (auth) {

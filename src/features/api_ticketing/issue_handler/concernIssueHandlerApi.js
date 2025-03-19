@@ -1,25 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Concern Issue Handler"];
 
-export const concernIssueHandlerApi = createApi({
-  reducerPath: "concernIssueHandlerApi",
-  tagTypes: ["Concern Issue Handler"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const concernIssueHandlerApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     // ISSUE HANDLER ---------------
     getIssueHandlerConcerns: builder.query({
@@ -28,7 +11,7 @@ export const concernIssueHandlerApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Concern Issue Handler"],
+      providesTags: tags,
     }),
 
     getTicketHistory: builder.query({
@@ -36,7 +19,7 @@ export const concernIssueHandlerApi = createApi({
         url: `open-Ticket/history/${id}`,
         method: "GET",
       }),
-      providesTags: ["Concern Issue Handler"],
+      providesTags: tags,
     }),
 
     getForTransferUsers: builder.query({
@@ -44,7 +27,7 @@ export const concernIssueHandlerApi = createApi({
         url: `transfer-ticket/transfer-user?TicketConcernId=${id}`,
         method: "GET",
       }),
-      providesTags: ["Concern Issue Handler"],
+      providesTags: tags,
     }),
 
     holdIssueHandlerTickets: builder.mutation({
@@ -56,7 +39,7 @@ export const concernIssueHandlerApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     resumeIssueHandlerTickets: builder.mutation({
@@ -65,7 +48,7 @@ export const concernIssueHandlerApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     closeIssueHandlerTickets: builder.mutation({
@@ -77,7 +60,7 @@ export const concernIssueHandlerApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     cancelClosingIssueHandlerTickets: builder.mutation({
@@ -86,7 +69,7 @@ export const concernIssueHandlerApi = createApi({
         method: "DELETE",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     transferIssueHandlerTickets: builder.mutation({
@@ -98,7 +81,7 @@ export const concernIssueHandlerApi = createApi({
         },
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     approveTransferTicket: builder.mutation({
@@ -107,7 +90,7 @@ export const concernIssueHandlerApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     cancelTransferTicket: builder.mutation({
@@ -116,7 +99,7 @@ export const concernIssueHandlerApi = createApi({
         method: "DELETE",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     rejectTransferTicket: builder.mutation({
@@ -125,7 +108,7 @@ export const concernIssueHandlerApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Concern Issue Handler"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

@@ -1,10 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { api } from "../index";
 
-export const loginApi = createApi({
-  reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-  }),
+const tags = ["loginApi"];
+
+export const loginApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
+  reducerPath: tags,
   endpoints: (builder) => ({
     signIn: builder.mutation({
       query: (params) => ({

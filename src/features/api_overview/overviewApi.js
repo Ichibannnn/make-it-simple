@@ -1,25 +1,8 @@
-import queryString from "query-string";
+import { api } from "../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Overview"];
 
-export const overviewApi = createApi({
-  reducerPath: "overviewApi",
-  tagTypes: ["Overview"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const overviewApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getOverview: builder.query({
       query: (params) => ({
@@ -27,7 +10,7 @@ export const overviewApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Overview"],
+      providesTags: tags,
     }),
   }),
 });

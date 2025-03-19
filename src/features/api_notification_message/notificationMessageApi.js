@@ -1,27 +1,8 @@
-import queryString from "query-string";
+import { api } from "../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Notification Message"];
 
-export const notificationMessageApi = createApi({
-  reducerPath: "notificationMessageApi",
-  tagTypes: ["Notification Message"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
-
+export const notificationMessageApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getNotificationMessage: builder.query({
       query: (params) => ({
@@ -29,7 +10,7 @@ export const notificationMessageApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Notification Message"],
+      providesTags: tags,
     }),
 
     getNotificationNav: builder.mutation({
@@ -38,7 +19,7 @@ export const notificationMessageApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Notification Message"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

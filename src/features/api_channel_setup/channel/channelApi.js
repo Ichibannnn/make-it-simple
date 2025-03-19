@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Channel"];
 
-export const channelApi = createApi({
-  reducerPath: "channelApi",
-  tagTypes: ["Receiver"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const channelApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getChannels: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const channelApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Channel"],
+      providesTags: tags,
     }),
 
     createChannel: builder.mutation({
@@ -35,7 +19,7 @@ export const channelApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     createChannelValidation: builder.mutation({
@@ -44,7 +28,7 @@ export const channelApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     updateChannel: builder.mutation({
@@ -53,7 +37,7 @@ export const channelApi = createApi({
         method: "PUT",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveChannel: builder.mutation({
@@ -61,7 +45,7 @@ export const channelApi = createApi({
         url: `channel/status/${id}`,
         method: "PATCH",
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     getChannelMembers: builder.query({
@@ -72,7 +56,7 @@ export const channelApi = createApi({
           method: "GET",
         };
       },
-      providesTags: ["Channel"],
+      providesTags: tags,
     }),
 
     createChannelMember: builder.mutation({
@@ -81,7 +65,7 @@ export const channelApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Channel"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });

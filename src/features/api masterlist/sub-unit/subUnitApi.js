@@ -1,24 +1,8 @@
-import queryString from "query-string";
+import { api } from "../../index";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const tags = ["Sub Unit"];
 
-export const subUnitApi = createApi({
-  reducerPath: "subUnitApi",
-  tagTypes: ["Sub Unit"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL,
-    prepareHeaders: (headers) => {
-      headers.set("Accept", "application/json");
-      headers.set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-
-      return headers;
-    },
-    paramsSerializer: (params) => {
-      return queryString.stringify(params, {
-        skipNull: true,
-      });
-    },
-  }),
+export const subUnitApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getSubUnit: builder.query({
       query: (params) => ({
@@ -26,7 +10,7 @@ export const subUnitApi = createApi({
         method: "GET",
         params: params,
       }),
-      providesTags: ["Sub Unit"],
+      providesTags: tags,
     }),
 
     syncSubUnit: builder.mutation({
@@ -35,7 +19,7 @@ export const subUnitApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Sub Unit"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     createEditSubUnit: builder.mutation({
@@ -44,7 +28,7 @@ export const subUnitApi = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Sub Unit"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
     archiveSubUnit: builder.mutation({
@@ -52,7 +36,7 @@ export const subUnitApi = createApi({
         url: `sub-unit/status/${id}`,
         method: "PATCH",
       }),
-      invalidatesTags: (_, error) => (error ? [] : ["Sub Unit"]),
+      invalidatesTags: (_, error) => (error ? [] : tags),
     }),
   }),
 });
