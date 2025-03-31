@@ -1,10 +1,8 @@
 import {
-  Box,
   Card,
   CardContent,
   Checkbox,
   Chip,
-  CircularProgress,
   Stack,
   Table,
   TableBody,
@@ -13,7 +11,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -218,7 +215,6 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
       {isScreenSmall ? (
         // Card
-
         <>
           <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
             <Checkbox
@@ -234,18 +230,18 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.closingTicket?.map((item, index) => {
+              data?.value?.closingTicket?.map((item) => {
                 const isSelected = selectedTickets.includes(item.ticketConcernId);
 
                 return (
-                  <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                  <Card key={item.ticketConcernId} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                     <CardContent
                       sx={{
                         cursor: "pointer",
                         padding: "1px",
                         "&:hover": {
                           backgroundColor: "#1A222F",
-                          color: "#9e77ed", // Change the text color when hovering
+                          color: "#9e77ed",
                         },
                       }}
                     >
@@ -424,14 +420,14 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </TableHead>
 
               <TableBody>
-                {data?.value?.closingTicket?.map((item) => {
+                {data?.value?.closingTicket?.map((item, index) => {
                   const isSelected = selectedTickets.includes(item.ticketConcernId);
 
                   return (
                     <TableRow
-                      key={item.ticketConcernId}
+                      key={index}
                       sx={{
-                        backgroundColor: isSelected ? "#1E2034" : "transparent",
+                        backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
                       }}
                     >
                       <TableCell

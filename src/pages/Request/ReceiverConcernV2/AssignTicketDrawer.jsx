@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, AttachFileOutlined, CheckOutlined, FileDownloadOutlined, GetAppOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Add, AttachFileOutlined, CheckOutlined, DataArrayRounded, FileDownloadOutlined, GetAppOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 import React, { useEffect, useRef, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -76,7 +76,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
-  const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
+  // const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
   // const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
@@ -288,11 +288,13 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
       payload.append(`ConcernAttachments[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Create: ", [...payload.entries()]);
 
     const approvePayload = {
       ticketConcernId: formData.ticketConcernId,
     };
+
+    console.log("Approve: ", approvePayload);
 
     // const smsPayload = {
     //   system_name: "Make It Simple",
@@ -327,19 +329,19 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
           .unwrap()
           .then(() => {
             // Approve API
-            approveReceiverConcern(approvePayload)
-              .unwrap()
-              .then(() => {
-                setData(null);
-                onClose();
-              })
-              .catch((err) => {
-                console.log("Error", err);
-                toast.error("Error!", {
-                  description: err.data.error.message,
-                  duration: 1500,
-                });
-              });
+            // approveReceiverConcern(approvePayload)
+            //   .unwrap()
+            //   .then(() => {
+            //     setData(null);
+            //     onClose();
+            //   })
+            //   .catch((err) => {
+            //     console.log("Error", err);
+            //     toast.error("Error!", {
+            //       description: err.data.error.message,
+            //       duration: 1500,
+            //     });
+            //   });
 
             toast.success("Success!", {
               description: "Approve concern successfully!",
@@ -443,7 +445,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
 
   return (
     <>
-      <Dialog fullWidth maxWidth="sm" open={open}>
+      <Dialog fullWidth maxWidth="sm" open={open} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogTitle
           sx={{
             display: "flex",

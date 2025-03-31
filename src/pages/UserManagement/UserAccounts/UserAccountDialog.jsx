@@ -354,7 +354,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   // console.log("Errors: ", errors);
   // console.log("EmpId: ", watch("empId"));
 
-  console.log("Data: ", data);
+  // console.log("Data: ", data);
+
+  console.log("SubUnit: ", watch("subUnitId"));
 
   return (
     <>
@@ -629,7 +631,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               control={control}
               name="departmentId"
               render={({ field: { ref, value, onChange } }) => {
-                // console.log(watch("businessUnitId")?.id);
                 return (
                   <Autocomplete
                     ref={ref}

@@ -390,7 +390,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -401,7 +401,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
 
             {isSuccess && !data?.value?.reports.length && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

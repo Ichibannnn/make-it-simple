@@ -309,7 +309,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={7} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -320,7 +320,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
 
             {isSuccess && !data?.value?.reports.length && (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={7} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.
