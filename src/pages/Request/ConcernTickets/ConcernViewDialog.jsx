@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useRef, useState } from "react";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { AttachFileOutlined, CheckOutlined } from "@mui/icons-material";
@@ -12,6 +13,19 @@ import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+=======
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { AttachFileOutlined, CheckOutlined } from "@mui/icons-material";
+
+import React, { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import * as yup from "yup";
+import { theme } from "../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
+import { toast } from "sonner";
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
 
 import {
   useCreateEditRequestorConcernMutation,
@@ -20,9 +34,15 @@ import {
   useLazyGetRequestorAttachmentQuery,
 } from "../../../features/api_request/concerns/concernApi";
 
+<<<<<<< HEAD
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+=======
+import { notificationApi } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useDispatch } from "react-redux";
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
@@ -34,7 +54,13 @@ import { useLazyGetLocationWithPaginationQuery } from "../../../features/api mas
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+<<<<<<< HEAD
 
+=======
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
@@ -57,7 +83,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
+<<<<<<< HEAD
     Severity: yup.string().required("Severity is required"),
+=======
+    // Severity: yup.string().required("Severity is required"),
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
@@ -149,7 +179,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     payload.append("RequestConcernId", formData.RequestConcernId);
 
     payload.append("Request_Type", formData.Request_Type);
+<<<<<<< HEAD
     payload.append("Severity", formData.Severity);
+=======
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
     payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id);
     payload.append("Contact_Number", formData.Contact_Number);
@@ -215,7 +248,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         setAttachments([]);
         reset({
           Request_Type: "New Request",
+<<<<<<< HEAD
           Request_Type: "Normal",
+=======
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
           BackJobId: null,
           Contact_Number: "",
 
@@ -256,6 +292,14 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     fileInputRef.current.click();
   };
 
+<<<<<<< HEAD
+=======
+  const handleUpdateFile = (id) => {
+    setTicketAttachmentId(id);
+    fileInputRef.current.click();
+  };
+
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
   const handleDeleteFile = async (fileNameToDelete) => {
     try {
       if (fileNameToDelete.ticketAttachmentId) {
@@ -279,10 +323,37 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     event.preventDefault();
   };
 
+<<<<<<< HEAD
   const onCloseAction = () => {
     reset({
       Request_Type: "",
       Severity: "",
+=======
+  // Drag and Drop handler event
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const fileList = event.dataTransfer.files;
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf", ".xlxs"];
+    const fileNames = Array.from(fileList)
+      .filter((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        return allowedExtensions.includes(`.${extension}`);
+      })
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
+    setAttachments([...attachments, ...uniqueNewFiles]);
+
+    // console.log("Attachments: ", attachments)
+  };
+
+  const onCloseAction = () => {
+    reset({
+      Request_Type: "",
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
       BackJobId: null,
       Contact_Number: "",
 
@@ -381,6 +452,15 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
 
+<<<<<<< HEAD
+=======
+  // useEffect(() => {
+  //   if (watch("Request_Type") === "New Request") {
+  //     setValue("BackJobId", null);
+  //   }
+  // }, [watch("Request_Type")]);
+
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
   useEffect(() => {
     if (editData) {
       if (!companyIsSuccess) getCompany();
@@ -391,7 +471,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       if (!locationIsSuccess) getLocation();
 
       setValue("RequestConcernId", editData?.requestConcernId);
+<<<<<<< HEAD
       // setValue("Severity", editData?.severity);
+=======
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
       setValue("Concern", editData?.concern);
 
       setValue("Request_Type", editData?.request_Type);
@@ -635,12 +718,21 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                           },
                         }}
                       >
+<<<<<<< HEAD
                         <MenuItem value="Normal" sx={{ fontSize: "13px" }}>
                           Normal
                         </MenuItem>
 
                         <MenuItem value="Urgent" sx={{ fontSize: "13px" }}>
                           Urgent
+=======
+                        <MenuItem value="Low" sx={{ fontSize: "13px" }}>
+                          Low
+                        </MenuItem>
+
+                        <MenuItem value="High" sx={{ fontSize: "13px" }}>
+                          High
+>>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
                         </MenuItem>
                       </Select>
                     )}
