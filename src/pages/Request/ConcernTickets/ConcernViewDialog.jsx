@@ -179,10 +179,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     payload.append("RequestConcernId", formData.RequestConcernId);
 
     payload.append("Request_Type", formData.Request_Type);
-<<<<<<< HEAD
     payload.append("Severity", formData.Severity);
-=======
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
     payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id);
     payload.append("Contact_Number", formData.Contact_Number);
@@ -234,7 +231,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     createEditRequestorConcern(payload)
       .unwrap()
