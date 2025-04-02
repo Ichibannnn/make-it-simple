@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-<<<<<<< HEAD
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 
 import * as yup from "yup";
@@ -18,38 +17,6 @@ import { useSelector } from "react-redux";
 import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-=======
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  FormHelperText,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-
-import { theme } from "../../../theme/theme";
-import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
-
-import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
-import { useDispatch } from "react-redux";
-import { notificationApi } from "../../../features/api_notification/notificationApi";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import { useSelector } from "react-redux";
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
 import { useLazyGetBusinessUnitQuery } from "../../../features/api masterlist/business-unit/businessUnitApi";
 import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
@@ -57,20 +24,10 @@ import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitA
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
-<<<<<<< HEAD
-=======
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment";
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
-<<<<<<< HEAD
-=======
-import { WifiTetheringErrorSharp } from "@mui/icons-material";
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -91,11 +48,7 @@ const ConcernDialog = ({ open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().oneOf(["New Request", "Rework"], "Invalid Request Type").required("Request Type is required"),
-<<<<<<< HEAD
     Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
-=======
-    // Severity: yup.string().oneOf(["Low", "High"], "Invalid Severity").required("Request Type is required"),
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 12 digits long",
@@ -155,11 +108,7 @@ const ConcernDialog = ({ open, onClose }) => {
       RequestAttachmentsFiles: [],
 
       Request_Type: "New Request",
-<<<<<<< HEAD
       Severity: "Normal",
-=======
-      Severity: "Low",
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
       BackJobId: null,
       Contact_Number: "",
 
@@ -186,10 +135,7 @@ const ConcernDialog = ({ open, onClose }) => {
     const payload = new FormData();
 
     payload.append("Request_Type", formData.Request_Type);
-<<<<<<< HEAD
     payload.append("Severity", formData.Severity);
-=======
->>>>>>> 5f70596f4c965096e038c2ac59bca4baa7a2b751
     payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id);
     payload.append("Contact_Number", formData.Contact_Number);
