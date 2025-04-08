@@ -1084,7 +1084,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     </Stack>
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -1096,7 +1096,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               value={value}
                               options={channelData?.value?.channel || []}
                               loading={channelIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
                                 if (!channelIsSuccess)
                                   getChannel({
@@ -1151,7 +1151,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               value={value}
                               options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
                               loading={categoryIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
                                 if (!categoryIsSuccess)
                                   getCategory({
@@ -1212,7 +1212,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
                                 if (!subCategoryIsSuccess) getSubCategory();
                               }}

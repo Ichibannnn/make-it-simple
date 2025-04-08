@@ -22,7 +22,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, CheckBox, DoneAllOutlined, LocalOffer, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, Check, CheckBox, DoneAllOutlined, FlashOn, LocalOffer, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
 
 import React, { useState } from "react";
 import moment from "moment";
@@ -314,7 +314,11 @@ const NewReceiverConcern = () => {
 
                             <Stack spacing={1} onClick={() => onViewAction(item)}>
                               <Stack mb={2}>
-                                <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>{item.fullName}</Typography>
+                                <Stack direction="row" gap={0.5} alignItems="center">
+                                  <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>{item.fullName}</Typography>
+                                  <FlashOn color="warning" />
+                                </Stack>
+
                                 <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.department_Name}</Typography>
                               </Stack>
 
@@ -543,7 +547,10 @@ const NewReceiverConcern = () => {
                               align="center"
                               onClick={() => onViewAction(item)}
                             >
-                              {item.requestConcernId}
+                              <Stack sx={{ flexDirection: "row", alignItems: "center", gap: 0.5 }}>
+                                <FlashOn color="warning" />
+                                <Typography sx={{ fontSize: "15px" }}>{item.requestConcernId}</Typography>
+                              </Stack>
                             </TableCell>
 
                             {approveStatus === "true" && (

@@ -736,7 +736,7 @@ const IssueHandlerConcerns = () => {
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE: </Typography>
                             <Chip
                               variant="filled"
-                              size="30px"
+                              size="small"
                               icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                               sx={{
                                 fontSize: "12px",
@@ -753,7 +753,7 @@ const IssueHandlerConcerns = () => {
                               <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CLOSED DATE: </Typography>
                               <Chip
                                 variant="filled"
-                                size="30px"
+                                size="small"
                                 icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
                                 label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
                                 sx={{
@@ -853,7 +853,7 @@ const IssueHandlerConcerns = () => {
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CLOSING STATUS:</Typography>
                             <Chip
                               variant="filled"
-                              size="30px"
+                              size="small"
                               icon={
                                 item?.closed_Status === "On-Time" ? (
                                   <FiberManualRecord fontSize="small" color="success" />
@@ -1131,7 +1131,7 @@ const IssueHandlerConcerns = () => {
                             >
                               <Chip
                                 variant="filled"
-                                size="30px"
+                                size="small"
                                 icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
                                 sx={{
                                   fontSize: "12px",
@@ -1152,18 +1152,24 @@ const IssueHandlerConcerns = () => {
                                 }}
                                 onClick={() => onViewAction(item)}
                               >
-                                <Chip
-                                  variant="filled"
-                                  size="30px"
-                                  icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
-                                  label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
-                                    color: theme.palette.primary.main,
-                                    fontWeight: 800,
-                                  }}
-                                />
+                                {item?.closed_At !== null ? (
+                                  <>
+                                    <Chip
+                                      variant="filled"
+                                      size="small"
+                                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                      label={moment(item?.closed_At).format("LL")}
+                                      sx={{
+                                        fontSize: "12px",
+                                        backgroundColor: "#1D1F3B",
+                                        color: theme.palette.primary.main,
+                                        fontWeight: 800,
+                                      }}
+                                    />
+                                  </>
+                                ) : (
+                                  ""
+                                )}
                               </TableCell>
                             )}
 
@@ -1279,13 +1285,12 @@ const IssueHandlerConcerns = () => {
                               <TableCell
                                 sx={{
                                   color: "#EDF2F7",
-                                  fontSize: "14px",
                                   fontWeight: 500,
                                 }}
                               >
                                 <Chip
                                   variant="filled"
-                                  size="30px"
+                                  size="small"
                                   icon={
                                     item?.closed_Status === "On-Time" ? (
                                       <FiberManualRecord fontSize="small" color="success" />

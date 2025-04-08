@@ -24,7 +24,7 @@ import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
-  resolution: yup.string().required().label("Resolution is required"),
+  resolution: yup.string().min(20, "Resolution must be more than 20 character long").required("This field is required").label("Resolution"),
   AddClosingAttachments: yup.array().nullable(),
 
   ChannelId: yup.object().required().label("Channel"),
@@ -575,6 +575,12 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           );
                         }}
                       />
+
+                      {errors.resolution && (
+                        <Typography color="error" sx={{ fontSize: "12px" }}>
+                          {errors.resolution.message}
+                        </Typography>
+                      )}
                     </Stack>
 
                     {/* TECHNICIANS */}

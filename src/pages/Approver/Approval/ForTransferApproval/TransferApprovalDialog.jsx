@@ -307,7 +307,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Service Provider:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
@@ -410,7 +410,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Service Provider:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
