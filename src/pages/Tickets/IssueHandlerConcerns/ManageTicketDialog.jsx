@@ -233,7 +233,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
         const subCategory = formData.SubCategoryId;
         for (let i = 0; i < subCategory.length; i++) {
-          payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i].ticketCategoryId || "");
+          payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
           payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
         }
 

@@ -56,7 +56,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
-    Severity: yup.string().required("Severity is required"),
+    Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
@@ -119,7 +119,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       RequestAttachmentsFiles: [],
 
       Request_Type: "",
-      Severity: "",
+      Severity: "Normal",
       BackJobId: null,
       Contact_Number: "",
 

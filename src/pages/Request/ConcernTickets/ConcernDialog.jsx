@@ -200,7 +200,7 @@ const ConcernDialog = ({ open, onClose }) => {
         dispatch(notificationMessageApi.util.resetApiState());
         reset({
           Request_Type: "New Request",
-          Severity: "Low",
+          Severity: "Normal",
           BackJobId: null,
           UserId: {
             id: userInformation?.id || "",

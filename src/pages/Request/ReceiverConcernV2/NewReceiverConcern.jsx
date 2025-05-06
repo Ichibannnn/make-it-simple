@@ -21,8 +21,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, CheckBox, DoneAllOutlined, FlashOn, LocalOffer, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, Check, DoneAllOutlined, FlashOn, LocalOffer, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
 
 import React, { useState } from "react";
 import moment from "moment";
@@ -35,13 +34,13 @@ import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import { Toaster } from "sonner";
-
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import { useGetReceiverConcernsQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
+import { LoadingButton } from "@mui/lab";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
+
 import ViewConcernDetails from "./ViewConcernDetails";
 import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
-import { LoadingButton } from "@mui/lab";
 import MultipleAssignDialog from "./MultipleAssignTicket/MultipleAssignDialog";
 import AssignTicketDrawer from "./AssignTicketDrawer";
 
@@ -316,7 +315,8 @@ const NewReceiverConcern = () => {
                               <Stack mb={2}>
                                 <Stack direction="row" gap={0.5} alignItems="center">
                                   <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>{item.fullName}</Typography>
-                                  <FlashOn color="warning" />
+
+                                  {item.severity === "Urgent" && <FlashOn color="warning" />}
                                 </Stack>
 
                                 <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.department_Name}</Typography>
@@ -547,8 +547,8 @@ const NewReceiverConcern = () => {
                               align="center"
                               onClick={() => onViewAction(item)}
                             >
-                              <Stack sx={{ flexDirection: "row", alignItems: "center", gap: 0.5 }}>
-                                <FlashOn color="warning" />
+                              <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+                                {item.severity === "Urgent" && <FlashOn color="warning" />}
                                 <Typography sx={{ fontSize: "15px" }}>{item.requestConcernId}</Typography>
                               </Stack>
                             </TableCell>
@@ -712,7 +712,7 @@ const NewReceiverConcern = () => {
           <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
 
           {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}
-          <AssignTicketDrawer selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} />
+          <AssignTicketDrawer selectedTickets={selectedTickets} setSelectedTickets={setSelectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} />
         </Stack>
       </Stack>
     </Stack>

@@ -37,7 +37,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { useSelector } from "react-redux";
-import { setAttachments } from "../../../features/sidebar/sidebarSlice";
+import { setAttachments } from "../../../features/attachments/attachmentSlice";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -52,9 +52,9 @@ const schema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
-const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, viewConcernDetailsOnClose }) => {
+const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData, open, onClose, viewConcernDetailsOnClose }) => {
   // const [attachments, setAttachments] = useState([]);
-  const attachments = useSelector((state) => state.sidebar.attachments);
+  const attachments = useSelector((state) => state.attachment.attachments);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -327,7 +327,9 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
       if (result.isConfirmed) {
         createEditReceiverConcern(payload)
           .unwrap()
-          .then(() => {
+          .then((response) => {
+            console.log("Response: ", response);
+
             // Approve API
             // approveReceiverConcern(approvePayload)
             //   .unwrap()
@@ -351,6 +353,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
 
+            setSelectedTickets([]);
             setAttachments([]);
             reset();
             setData(null);
@@ -379,7 +382,7 @@ const AssignTicketDrawer = ({ selectedTickets, data, setData, open, onClose, vie
     });
   };
 
-  console.log("Selected Tix: ", selectedTickets);
+  // console.log("Selected Tix: ", selectedTickets);
 
   useEffect(() => {
     if (data) {

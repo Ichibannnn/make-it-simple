@@ -53,6 +53,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       excludeEmptyString: true,
     }),
     Requestor_By: yup.object().required().label("Requestor is required"),
+    Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
     UserId: yup.object().required().label("Issue Handler is required"),
     Target_Date: yup.date().required("Target date is required"),
     CompanyId: yup.object().required().label("Company is required"),
@@ -107,6 +108,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       ConcernAttachments: [],
 
       Request_Type: "New Request",
+      Severity: "Normal",
       Contact_Number: "",
 
       Requestor_By: null,
@@ -134,6 +136,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     const payload = new FormData();
 
     payload.append("Request_Type", formData.Request_Type);
+    payload.append("Severity", formData.Severity);
     payload.append("Requestor_By", formData.Requestor_By?.id);
     payload.append("UserId", formData.UserId?.userId);
     payload.append("Contact_Number", formData.Contact_Number);
@@ -190,10 +193,13 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
     createTicketConcern(payload)
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log("Response: ", res);
+
         toast.success("Success!", {
-          description: "Concern added successfully!",
-          duration: 1500,
+          description: `Thank you for submitting your concern. 
+          A service ticket #${res?.value} has been created.`,
+          duration: 3500,
         });
         dispatch(notificationApi.util.resetApiState());
         dispatch(notificationMessageApi.util.resetApiState());
@@ -345,7 +351,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
+      {/* <Toaster richColors position="bottom-right" closeButton /> */}
       <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }} dividers>
@@ -816,7 +822,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                     </Stack>
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -828,7 +834,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                               value={value}
                               options={channelData?.value?.channel || []}
                               loading={channelIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
                                 if (!channelIsSuccess)
                                   getChannel({

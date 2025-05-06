@@ -597,52 +597,54 @@ const ConcernTickets = () => {
                               />
                             </Stack>
 
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
-                              <Chip
-                                variant="filled"
-                                size="30px"
-                                icon={
-                                  item.concern_Status === "For Approval" ? (
-                                    <FiberManualRecord fontSize="small" color="info" />
-                                  ) : item.concern_Status === "Ongoing" ? (
-                                    <FiberManualRecord fontSize="small" color="warning" />
-                                  ) : item.concern_Status === "For Confirmation" ? (
-                                    <FiberManualRecord
-                                      fontSize="small"
-                                      sx={{
-                                        "&.MuiSvgIcon-root": {
-                                          color: "#009688",
-                                        },
-                                      }}
-                                    />
-                                  ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                    <FiberManualRecord fontSize="small" color="warning" />
-                                  ) : (
-                                    <FiberManualRecord fontSize="small" color="success" />
-                                  )
-                                }
-                                sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: theme.palette.bgForm.black1,
-                                  color: theme.palette.text.main,
-                                  fontWeight: 800,
-                                }}
-                                label={
-                                  item.concern_Status === "For Approval"
-                                    ? "Verification"
-                                    : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                    ? "Ongoing/On Hold"
-                                    : item.concern_Status === "Ongoing"
-                                    ? "Ongoing"
-                                    : item.concern_Status === "For Confirmation"
-                                    ? "For Confirmation"
-                                    : item.concern_Status === "Done"
-                                    ? "Done"
-                                    : ""
-                                }
-                              />
-                            </Stack>
+                            {item?.concern_Status === "" && (
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={
+                                    item.concern_Status === "For Approval" ? (
+                                      <FiberManualRecord fontSize="small" color="info" />
+                                    ) : item.concern_Status === "Ongoing" ? (
+                                      <FiberManualRecord fontSize="small" color="warning" />
+                                    ) : item.concern_Status === "For Confirmation" ? (
+                                      <FiberManualRecord
+                                        fontSize="small"
+                                        sx={{
+                                          "&.MuiSvgIcon-root": {
+                                            color: "#009688",
+                                          },
+                                        }}
+                                      />
+                                    ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                      <FiberManualRecord fontSize="small" color="warning" />
+                                    ) : (
+                                      <FiberManualRecord fontSize="small" color="success" />
+                                    )
+                                  }
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: theme.palette.bgForm.black1,
+                                    color: theme.palette.text.main,
+                                    fontWeight: 800,
+                                  }}
+                                  label={
+                                    item.concern_Status === "For Approval"
+                                      ? "Verification"
+                                      : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                      ? "Ongoing/On Hold"
+                                      : item.concern_Status === "Ongoing"
+                                      ? "Ongoing"
+                                      : item.concern_Status === "For Confirmation"
+                                      ? "For Confirmation"
+                                      : item.concern_Status === "Done"
+                                      ? "Done"
+                                      : ""
+                                  }
+                                />
+                              </Stack>
+                            )}
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -784,16 +786,18 @@ const ConcernTickets = () => {
                           DATE CREATED
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          STATUS
-                        </TableCell>
+                        {status === "" && (
+                          <TableCell
+                            sx={{
+                              background: "#1C2536",
+                              color: "#D65DB1",
+                              fontWeight: 700,
+                              fontSize: "12px",
+                            }}
+                          >
+                            STATUS
+                          </TableCell>
+                        )}
 
                         <TableCell
                           sx={{
@@ -893,58 +897,60 @@ const ConcernTickets = () => {
                               />
                             </TableCell>
 
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "14px",
-                                fontWeight: 500,
-                              }}
-                              onClick={() => onViewHistoryAction(item)}
-                            >
-                              <Chip
-                                variant="filled"
-                                size="30px"
-                                icon={
-                                  item.concern_Status === "For Approval" ? (
-                                    <FiberManualRecord fontSize="small" color="info" />
-                                  ) : item.concern_Status === "Ongoing" ? (
-                                    <FiberManualRecord fontSize="small" color="warning" />
-                                  ) : item.concern_Status === "For Confirmation" ? (
-                                    <FiberManualRecord
-                                      fontSize="small"
-                                      sx={{
-                                        "&.MuiSvgIcon-root": {
-                                          color: "#009688",
-                                        },
-                                      }}
-                                    />
-                                  ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                    <FiberManualRecord fontSize="small" color="warning" />
-                                  ) : (
-                                    <FiberManualRecord fontSize="small" color="success" />
-                                  )
-                                }
+                            {status === "" && (
+                              <TableCell
                                 sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: theme.palette.bgForm.black1,
-                                  color: theme.palette.text.main,
-                                  fontWeight: 800,
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
                                 }}
-                                label={
-                                  item.concern_Status === "For Approval"
-                                    ? "Verification"
-                                    : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                    ? "Ongoing/On Hold"
-                                    : item.concern_Status === "Ongoing"
-                                    ? "Ongoing"
-                                    : item.concern_Status === "For Confirmation"
-                                    ? "For Confirmation"
-                                    : item.concern_Status === "Done"
-                                    ? "Done"
-                                    : ""
-                                }
-                              />
-                            </TableCell>
+                                onClick={() => onViewHistoryAction(item)}
+                              >
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={
+                                    item.concern_Status === "For Approval" ? (
+                                      <FiberManualRecord fontSize="small" color="info" />
+                                    ) : item.concern_Status === "Ongoing" ? (
+                                      <FiberManualRecord fontSize="small" color="warning" />
+                                    ) : item.concern_Status === "For Confirmation" ? (
+                                      <FiberManualRecord
+                                        fontSize="small"
+                                        sx={{
+                                          "&.MuiSvgIcon-root": {
+                                            color: "#009688",
+                                          },
+                                        }}
+                                      />
+                                    ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                      <FiberManualRecord fontSize="small" color="warning" />
+                                    ) : (
+                                      <FiberManualRecord fontSize="small" color="success" />
+                                    )
+                                  }
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: theme.palette.bgForm.black1,
+                                    color: theme.palette.text.main,
+                                    fontWeight: 800,
+                                  }}
+                                  label={
+                                    item.concern_Status === "For Approval"
+                                      ? "Verification"
+                                      : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                      ? "Ongoing/On Hold"
+                                      : item.concern_Status === "Ongoing"
+                                      ? "Ongoing"
+                                      : item.concern_Status === "For Confirmation"
+                                      ? "For Confirmation"
+                                      : item.concern_Status === "Done"
+                                      ? "Done"
+                                      : ""
+                                  }
+                                />
+                              </TableCell>
+                            )}
 
                             <TableCell
                               sx={{

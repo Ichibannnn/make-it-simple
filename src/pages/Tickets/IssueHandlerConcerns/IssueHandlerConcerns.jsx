@@ -803,50 +803,52 @@ const IssueHandlerConcerns = () => {
                           </Stack>
                         </Stack>
 
-                        <Stack direction="row" gap={0.5} alignItems="center">
-                          <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS: </Typography>
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={
-                              item.ticket_Status === "Open Ticket"
-                                ? "Open"
-                                : item.ticket_Status === "For Transfer"
-                                ? "For Transfer"
-                                : item.ticket_Status === "For On-Hold"
-                                ? "Hold Approval"
-                                : item.ticket_Status === "On-Hold"
-                                ? "On-Hold"
-                                : item.ticket_Status === "For Closing Ticket"
-                                ? "For Closing"
-                                : item.ticket_Status === "For Confirmation"
-                                ? "For Confirmation"
-                                : item.ticket_Status === "Closed"
-                                ? "Closed"
-                                : ""
-                            }
-                            sx={{
-                              backgroundColor:
+                        {ticketStatus === "" && (
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS: </Typography>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={
                                 item.ticket_Status === "Open Ticket"
-                                  ? "#ec9d29"
+                                  ? "Open"
                                   : item.ticket_Status === "For Transfer"
-                                  ? "#ff7043"
+                                  ? "For Transfer"
                                   : item.ticket_Status === "For On-Hold"
-                                  ? "#ffb74d"
+                                  ? "Hold Approval"
                                   : item.ticket_Status === "On-Hold"
-                                  ? "#ff6d00"
+                                  ? "On-Hold"
                                   : item.ticket_Status === "For Closing Ticket"
-                                  ? "#3A96FA"
+                                  ? "For Closing"
                                   : item.ticket_Status === "For Confirmation"
-                                  ? "#009688"
+                                  ? "For Confirmation"
                                   : item.ticket_Status === "Closed"
-                                  ? "#00913c"
-                                  : "transparent",
-                              color: "#ffffffde",
-                              borderRadius: "20px",
-                            }}
-                          />
-                        </Stack>
+                                  ? "Closed"
+                                  : ""
+                              }
+                              sx={{
+                                backgroundColor:
+                                  item.ticket_Status === "Open Ticket"
+                                    ? "#ec9d29"
+                                    : item.ticket_Status === "For Transfer"
+                                    ? "#ff7043"
+                                    : item.ticket_Status === "For On-Hold"
+                                    ? "#ffb74d"
+                                    : item.ticket_Status === "On-Hold"
+                                    ? "#ff6d00"
+                                    : item.ticket_Status === "For Closing Ticket"
+                                    ? "#3A96FA"
+                                    : item.ticket_Status === "For Confirmation"
+                                    ? "#009688"
+                                    : item.ticket_Status === "Closed"
+                                    ? "#00913c"
+                                    : "transparent",
+                                color: "#ffffffde",
+                                borderRadius: "20px",
+                              }}
+                            />
+                          </Stack>
+                        )}
 
                         {(ticketStatus === "Closed" || ticketStatus === "") && (
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -1028,16 +1030,18 @@ const IssueHandlerConcerns = () => {
                         REMARKS
                       </TableCell>
 
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        STATUS
-                      </TableCell>
+                      {ticketStatus === "" && (
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                        >
+                          STATUS
+                        </TableCell>
+                      )}
 
                       {(ticketStatus === "Closed" || ticketStatus === "") && (
                         <TableCell
@@ -1226,60 +1230,62 @@ const IssueHandlerConcerns = () => {
                               </Box>
                             </TableCell>
 
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                "&:hover": {
-                                  background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
-                                  color: "#EDF2F7",
-                                },
-                              }}
-                              onClick={() => onViewAction(item)}
-                            >
-                              <Chip
-                                variant="filled"
-                                size="small"
-                                label={
-                                  item.ticket_Status === "Open Ticket"
-                                    ? "Open"
-                                    : item.ticket_Status === "For Transfer"
-                                    ? "For Transfer"
-                                    : item.ticket_Status === "For On-Hold"
-                                    ? "Hold Approval"
-                                    : item.ticket_Status === "On-Hold"
-                                    ? "On-Hold"
-                                    : item.ticket_Status === "For Closing Ticket"
-                                    ? "For Closing"
-                                    : item.ticket_Status === "For Confirmation"
-                                    ? "For Confirmation"
-                                    : item.ticket_Status === "Closed"
-                                    ? "Closed"
-                                    : ""
-                                }
+                            {ticketStatus === "" && (
+                              <TableCell
                                 sx={{
-                                  backgroundColor:
-                                    item.ticket_Status === "Open Ticket"
-                                      ? "#ec9d29"
-                                      : item.ticket_Status === "For Transfer"
-                                      ? "#ff7043"
-                                      : item.ticket_Status === "For On-Hold"
-                                      ? "#ffb74d"
-                                      : item.ticket_Status === "On-Hold"
-                                      ? "#ff6d00"
-                                      : item.ticket_Status === "For Closing Ticket"
-                                      ? "#3A96FA"
-                                      : item.ticket_Status === "For Confirmation"
-                                      ? "#009688"
-                                      : item.ticket_Status === "Closed"
-                                      ? "#00913c"
-                                      : "transparent",
-                                  color: "#ffffffde",
-                                  borderRadius: "20px",
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  "&:hover": {
+                                    background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
+                                    color: "#EDF2F7",
+                                  },
                                 }}
-                              />
-                            </TableCell>
+                                onClick={() => onViewAction(item)}
+                              >
+                                <Chip
+                                  variant="filled"
+                                  size="small"
+                                  label={
+                                    item.ticket_Status === "Open Ticket"
+                                      ? "Open"
+                                      : item.ticket_Status === "For Transfer"
+                                      ? "For Transfer"
+                                      : item.ticket_Status === "For On-Hold"
+                                      ? "Hold Approval"
+                                      : item.ticket_Status === "On-Hold"
+                                      ? "On-Hold"
+                                      : item.ticket_Status === "For Closing Ticket"
+                                      ? "For Closing"
+                                      : item.ticket_Status === "For Confirmation"
+                                      ? "For Confirmation"
+                                      : item.ticket_Status === "Closed"
+                                      ? "Closed"
+                                      : ""
+                                  }
+                                  sx={{
+                                    backgroundColor:
+                                      item.ticket_Status === "Open Ticket"
+                                        ? "#ec9d29"
+                                        : item.ticket_Status === "For Transfer"
+                                        ? "#ff7043"
+                                        : item.ticket_Status === "For On-Hold"
+                                        ? "#ffb74d"
+                                        : item.ticket_Status === "On-Hold"
+                                        ? "#ff6d00"
+                                        : item.ticket_Status === "For Closing Ticket"
+                                        ? "#3A96FA"
+                                        : item.ticket_Status === "For Confirmation"
+                                        ? "#009688"
+                                        : item.ticket_Status === "Closed"
+                                        ? "#00913c"
+                                        : "transparent",
+                                    color: "#ffffffde",
+                                    borderRadius: "20px",
+                                  }}
+                                />
+                              </TableCell>
+                            )}
 
                             {(ticketStatus === "Closed" || ticketStatus === "") && (
                               <TableCell

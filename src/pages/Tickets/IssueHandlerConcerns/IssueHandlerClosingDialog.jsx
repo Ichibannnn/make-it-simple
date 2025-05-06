@@ -91,7 +91,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
-      payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, "");
+      payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
       payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
     }
 
@@ -101,8 +101,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     }
 
     const subCategory = formData.SubCategoryId;
+
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, "");
+      payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
       payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
 
