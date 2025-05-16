@@ -66,12 +66,12 @@ import { useSelector } from "react-redux";
 import { setSearchValue, setStatus, setAscending, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
 
 const ConcernTickets = () => {
-  const searchValue = useSelector((state) => state.root.searchValue);
   const status = useSelector((state) => state.root.status);
   const ascending = useSelector((state) => state.root.ascending);
   const pageNumber = useSelector((state) => state.root.pageNumber);
   const pageSize = useSelector((state) => state.root.pageSize);
 
+  const searchValue = useSelector((state) => state.root.searchValue);
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);

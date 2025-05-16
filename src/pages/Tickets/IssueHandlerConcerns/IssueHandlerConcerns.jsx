@@ -360,6 +360,8 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
+  console.log("Ascending: ", ascending);
+
   return (
     <Stack
       sx={{
