@@ -709,6 +709,7 @@ const NewReceiverConcern = () => {
             open={viewConcernDetailsOpen}
             onClose={viewConcernDetailsOnClose}
           />
+
           <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
 
           {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}

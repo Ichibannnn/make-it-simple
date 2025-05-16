@@ -72,7 +72,7 @@ const Approval = () => {
     }
   }, [searchValue]);
 
-  console.log("Notification: ", notificationBadge);
+  // console.log("Notification: ", notificationBadge);
 
   return (
     <Stack

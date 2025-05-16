@@ -192,49 +192,49 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
 
     console.log("Disapprove: ", disapprovePayload);
 
-    // Swal.fire({
-    //   title: "Confirmation",
-    //   text: `Disapproved selected ticket number(s)?`,
-    //   icon: "info",
-    //   color: "white",
-    //   showCancelButton: true,
-    //   background: "#111927",
-    //   confirmButtonColor: "#9e77ed",
-    //   confirmButtonText: "Yes",
-    //   cancelButtonText: "No",
-    //   cancelButtonColor: "#1C2536",
-    //   heightAuto: false,
-    //   width: "30em",
-    //   customClass: {
-    //     container: "custom-container",
-    //     title: "custom-title",
-    //     htmlContainer: "custom-text",
-    //     icon: "custom-icon",
-    //     confirmButton: "custom-confirm-btn",
-    //     cancelButton: "custom-cancel-btn",
-    //   },
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     disapproveTicket(disapprovePayload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "Disapproved request successfully! ",
-    //           duration: 1500,
-    //         });
-    //         dispatch(notificationApi.util.resetApiState());
-    //         reset();
-    //         setSelectedTickets([]);
-    //         onClose();
-    //       })
-    //       .catch((error) => {
-    //         toast.error("Error!", {
-    //           description: error.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-    // });
+    Swal.fire({
+      title: "Confirmation",
+      text: `Disapproved selected ticket number(s)?`,
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        disapproveTicket(disapprovePayload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Disapproved request successfully! ",
+              duration: 1500,
+            });
+            dispatch(notificationApi.util.resetApiState());
+            reset();
+            setSelectedTickets([]);
+            onClose();
+          })
+          .catch((error) => {
+            toast.error("Error!", {
+              description: error.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
 
   const onCloseAction = () => {

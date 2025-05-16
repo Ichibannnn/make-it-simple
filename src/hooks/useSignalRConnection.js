@@ -38,6 +38,9 @@ const useSignalRConnection = () => {
           connection.on("TransactionData", (data) => {
             setNotification({ data });
           });
+          connection.on("LoggedIn", (data) => {
+            console.log("WebSocket connection established");
+          });
         })
 
         .catch((e) => console.log("Connection failed: ", e));
@@ -48,6 +51,8 @@ const useSignalRConnection = () => {
     if (notification?.data?.value) {
       // const ring = new Audio(ring2);
       // ring.play().catch((error) => console.error("Audio playback failed: ", error));
+
+      console.log("notification: ", notification.data.value);
 
       dispatch(notificationApi.util.invalidateTags(["Notification"]));
       dispatch(notificationMessageApi.util.invalidateTags(["Notification Message"]));

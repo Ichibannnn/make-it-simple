@@ -4,7 +4,8 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import authReducer from "../features/auth/authSlice";
 import userReducer from "../features/user_management_api/user/userSlice";
 import sidebarReducer from "../features/sidebar/sidebarSlice";
-import attachmentReducer from "../features/attachments/attachmentSlice";
+import attachmentReducer from "../features/global/attachmentSlice";
+import rootReducer from "../features/global/rootSlice";
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
@@ -18,6 +19,7 @@ export const store = configureStore({
     user: userReducer,
     sidebar: sidebarReducer,
     attachment: attachmentReducer,
+    root: rootReducer,
 
     [api.reducerPath]: api.reducer,
 

@@ -29,8 +29,8 @@ import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import { LoadingButton } from "@mui/lab";
 import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { toast, Toaster } from "sonner";
-import Swal from "sweetalert2";
 import { DisapproveSelectedDialog } from "./DisapprovedDialog";
+import Swal from "sweetalert2";
 
 const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewApprovalData, setViewApprovalData] = useState(null);
@@ -62,56 +62,6 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
     setViewApprovalData(data);
   };
 
-  const dummyData = {
-    value: {
-      closingTicket: [
-        {
-          ticketConcernId: 1,
-          fullname: "Issue Handler 1",
-          department_Name: "Department 1",
-          channel_Name: "Channel 1",
-          concern_Details: "Wdawsdasdasdasdasd",
-          target_Date: "2025-03-05T10:35:22.6169923",
-        },
-        {
-          ticketConcernId: 2,
-          fullname: "Issue Handler 2",
-          department_Name: "Department 2",
-          channel_Name: "Channel 2",
-          concern_Details: "Wdawsdasdasdasdasd",
-          target_Date: "2025-03-05T10:35:22.6169923",
-        },
-        {
-          ticketConcernId: 3,
-          fullname: "Issue Handler 3",
-          department_Name: "Department 3",
-          channel_Name: "Channel 3",
-          concern_Details: "Wdawsdasdasdasdasd",
-          target_Date: "2025-03-05T10:35:22.6169923",
-        },
-        {
-          ticketConcernId: 4,
-          fullname: "Issue Handler 4",
-          department_Name: "Department 4",
-          channel_Name: "Channel 4",
-          concern_Details: "Wdawsdasdasdasdasd",
-          target_Date: "2025-03-05T10:35:22.6169923",
-        },
-        {
-          ticketConcernId: 5,
-          fullname: "Issue Handler 5",
-          department_Name: "Department 5",
-          channel_Name: "Channel 5",
-          concern_Details: "Wdawsdasdasdasdasd",
-          target_Date: "2025-03-05T10:35:22.6169923",
-        },
-      ],
-    },
-  };
-
-  console.log("Dummy Data: ", dummyData);
-  console.log("Approval Data: ", data);
-
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       const allTicketIds = data?.value?.closingTicket.map((item) => item.ticketConcernId) || [];
@@ -134,47 +84,47 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
     console.log("payload:", payload);
 
-    // Swal.fire({
-    //   title: "Confirmation",
-    //   text: "Close selected tickets?",
-    //   icon: "info",
-    //   color: "white",
-    //   showCancelButton: true,
-    //   background: "#111927",
-    //   confirmButtonColor: "#9e77ed",
-    //   confirmButtonText: "Yes",
-    //   cancelButtonText: "No",
-    //   cancelButtonColor: "#1C2536",
-    //   heightAuto: false,
-    //   width: "30em",
-    //   customClass: {
-    //     container: "custom-container",
-    //     title: "custom-title",
-    //     htmlContainer: "custom-text",
-    //     icon: "custom-icon",
-    //     confirmButton: "custom-confirm-btn",
-    //     cancelButton: "custom-cancel-btn",
-    //   },
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     approveTicket(payload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "Ticket approved successfully!",
-    //           duration: 1500,
-    //         });
-    //         setSelectedTickets([]);
-    //       })
-    //       .catch((err) => {
-    //         console.log("Error", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-    // });
+    Swal.fire({
+      title: "Confirmation",
+      text: "Close selected tickets?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        approveTicket(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Ticket approved successfully!",
+              duration: 1500,
+            });
+            setSelectedTickets([]);
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
 
   const handleDisapproveSelected = () => {

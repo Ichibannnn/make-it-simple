@@ -85,6 +85,12 @@ body {
   z-index: 99999999 !important;
 }
 
+.swal2-popup .custom-icon {
+  font-size: 1rem !important; /* Adjust this as needed */
+  width: 4rem !important;
+  height: 4rem !important;
+}
+
 /* .my-swal {
   z-index: 99999999 !important;
 }

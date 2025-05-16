@@ -28,6 +28,8 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useCreateEditReceiverConcernMutation } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
+import Swal from "sweetalert2";
+import { useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 
 const ReceiverAddTicketDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -48,6 +50,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
+    Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
+    BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
       excludeEmptyString: true,
@@ -78,6 +82,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -109,6 +114,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
       Request_Type: "New Request",
       Severity: "Normal",
+      BackJobId: null,
       Contact_Number: "",
 
       Requestor_By: null,
@@ -121,7 +127,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       SubUnitId: null,
       LocationId: null,
 
-      DateNeeded: null,
+      DateNeeded: moment().format("YYYY-MM-DD"),
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
@@ -197,10 +203,66 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
         console.log("Response: ", res);
 
         toast.success("Success!", {
-          description: `Thank you for submitting your concern. 
-          A service ticket #${res?.value} has been created.`,
-          duration: 3500,
+          description: `Ticket created successfully.`,
+          duration: 2000,
         });
+
+        Swal.fire({
+          title: "Success!",
+          html: `Thank you for submitting your concern.<br><br>
+         A service ticket <strong>#${res?.value}</strong> has been created.`,
+          icon: "success",
+          color: "white",
+          showCancelButton: true,
+          background: "#111927",
+          confirmButtonColor: "#9e77ed",
+          confirmButtonText: `Copy`,
+          cancelButtonText: "Close",
+          cancelButtonColor: "#1C2536",
+          heightAuto: false,
+          width: "30em",
+          customClass: {
+            container: "custom-container",
+            title: "custom-title",
+            htmlContainer: "custom-text",
+            // icon: "custom-icon",
+            confirmButton: "custom-confirm-btn",
+            cancelButton: "custom-cancel-btn",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            console.log("result: ", result);
+
+            const ticketMessage = `Thank you for submitting your concern. A service ticket #${res?.value} has been created.`;
+
+            navigator.clipboard.writeText(ticketMessage).then(() => {
+              Swal.fire({
+                title: "Copied!",
+                icon: "success",
+                color: "white",
+                background: "#111927",
+                text: `Copied to clipboard.`,
+                timer: 2000,
+                showConfirmButton: false,
+                heightAuto: false,
+                width: "30em",
+                customClass: {
+                  container: "custom-container",
+                  title: "custom-title",
+                  htmlContainer: "custom-text",
+                  // icon: "custom-icon",
+                  confirmButton: "custom-confirm-btn",
+                  cancelButton: "custom-cancel-btn",
+                },
+              });
+            });
+          } else {
+            const ticketMessage = `Thank you for submitting your concern. A service ticket #${res?.value} has been created.`;
+
+            navigator.clipboard.writeText(ticketMessage);
+          }
+        });
+
         dispatch(notificationApi.util.resetApiState());
         dispatch(notificationMessageApi.util.resetApiState());
         reset({
@@ -392,6 +454,87 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                       </Select>
                     )}
                   />
+
+                  {watch("Request_Type") === "Rework" && (
+                    <Stack sx={{ width: "100%", mb: 1 }}>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
+                      <Controller
+                        control={control}
+                        name="BackJobId"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={backjobTicketData?.value || []}
+                              loading={backjobTicketIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Ticket Number" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!backjobTicketIsSuccess) getBackjobTicket();
+                              }}
+                              onChange={(_, value) => onChange(value)}
+                              getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
+                              noOptionsText={"No tickets available for backjob request"}
+                              isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                    </Stack>
+                  )}
+
+                  {/* SEVERITY*/}
+                  <Stack
+                    width="100%"
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      mb: 1,
+                    }}
+                  >
+                    <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Severity:</Typography>
+                    <Controller
+                      name="Severity"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          {...field}
+                          displayEmpty
+                          size="small"
+                          placeholder="Select Severity"
+                          inputProps={{ "aria-label": "Without label" }}
+                          sx={{
+                            width: "100%",
+                            fontSize: "13px",
+                            "& .MuiSelect-select": {
+                              color: "#fff",
+                            },
+                          }}
+                        >
+                          <MenuItem value="Normal" sx={{ fontSize: "13px" }}>
+                            Normal
+                          </MenuItem>
+
+                          <MenuItem value="Urgent" sx={{ fontSize: "13px" }}>
+                            Urgent
+                          </MenuItem>
+                        </Select>
+                      )}
+                    />
+                  </Stack>
                 </Stack>
 
                 {/* REQUESTOR DETAILS */}

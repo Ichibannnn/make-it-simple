@@ -62,25 +62,25 @@ import { notificationApi, useGetNotificationQuery } from "../../../features/api_
 import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { LoadingButton } from "@mui/lab";
-import { DataGrid } from "@mui/x-data-grid";
+import { useSelector } from "react-redux";
+import { setSearchValue, setStatus, setAscending, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
 
 const ConcernTickets = () => {
-  const [status, setStatus] = useState("");
-  const [ascending, setAscending] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const searchValue = useSelector((state) => state.root.searchValue);
+  const status = useSelector((state) => state.root.status);
+  const ascending = useSelector((state) => state.root.ascending);
+  const pageNumber = useSelector((state) => state.root.pageNumber);
+  const pageSize = useSelector((state) => state.root.pageSize);
 
-  const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
   const [viewHistoryData, setViewHistoryData] = useState(null);
   const [returnData, setReturnData] = useState(null);
 
+  useSignalRConnection();
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  // const navigate = useNavigate();
-  useSignalRConnection();
 
   const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
   const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();
@@ -560,11 +560,11 @@ const ConcernTickets = () => {
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
                             </Stack>
 
-                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && (
                               <Stack direction="row" gap={0.5} alignItems="center">
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
                                 <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                  {item?.concern_Status !== "For Approval" ? item.ticketRequestConcerns?.[0]?.ticketConcernId : "-"}
                                 </Typography>
                               </Stack>
                             )}
@@ -696,24 +696,6 @@ const ConcernTickets = () => {
               </Stack>
             ) : (
               <>
-                {/* <Box sx={{ height: 400, width: "100%" }}>
-                  <DataGrid
-                    // getRowId={}
-                    rows={rows}
-                    columns={columns}
-                    initialState={{
-                      pagination: {
-                        paginationModel: {
-                          pageSize: 5,
-                        },
-                      },
-                    }}
-                    pageSizeOptions={[5, 15, 25]}
-                    // checkboxSelection
-                    disableRowSelectionOnClick
-                  />
-                </Box> */}
-
                 {/* Table */}
                 <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
@@ -736,8 +718,7 @@ const ConcernTickets = () => {
                           </Stack>
                         </TableCell>
 
-                        {/* REMOVED CONDITION IF ALL REQUESTS */}
-                        {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                        {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && (
                           <TableCell
                             sx={{
                               background: "#1C2536",
@@ -749,9 +730,9 @@ const ConcernTickets = () => {
                           >
                             TICKET NO.
                           </TableCell>
-                        )} */}
+                        )}
 
-                        <TableCell
+                        {/* <TableCell
                           sx={{
                             background: "#1C2536",
                             color: "#D65DB1",
@@ -761,7 +742,7 @@ const ConcernTickets = () => {
                           align="center"
                         >
                           TICKET NO.
-                        </TableCell>
+                        </TableCell> */}
 
                         <TableCell
                           sx={{
@@ -831,8 +812,7 @@ const ConcernTickets = () => {
                               {item.requestConcernId}
                             </TableCell>
 
-                            {/* Remove condition if all requests */}
-                            {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done") && (
+                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && (
                               <TableCell
                                 sx={{
                                   color: "#EDF2F7",
@@ -842,21 +822,9 @@ const ConcernTickets = () => {
                                 align="center"
                                 onClick={() => onViewHistoryAction(item)}
                               >
-                                {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                {item?.concern_Status !== "For Approval" ? item.ticketRequestConcerns?.[0]?.ticketConcernId : "-"}
                               </TableCell>
-                            )} */}
-
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                              }}
-                              align="center"
-                              onClick={() => onViewHistoryAction(item)}
-                            >
-                              {item.ticketRequestConcerns?.[0]?.ticketConcernId ? item.ticketRequestConcerns?.[0]?.ticketConcernId : "-"}
-                            </TableCell>
+                            )}
 
                             <TableCell
                               sx={{

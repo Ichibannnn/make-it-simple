@@ -1,28 +1,13 @@
 import { LoadingButton } from "@mui/lab";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Add, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
@@ -57,7 +42,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   useSignalRConnection();
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
+  const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
   // const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [transferTicket, { isLoading: transferTicketIsLoading, isFetching: transferTicketIsFetching }] = useTransferIssueHandlerTicketsMutation();
 
@@ -81,7 +66,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
   const onSubmitAction = (formData) => {
     console.log("FormData: ", formData);
-    // console.log("Data: ", data);
 
     const payload = new FormData();
 
@@ -153,7 +137,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -239,13 +222,10 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
         channel_Name: data?.channel_Name,
       });
 
-      // getIssueHandler(data?.ticketConcernId);
-      getIssueHandler();
+      getIssueHandler(data?.ticketConcernId);
+      // getIssueHandler();
     }
   }, [data]);
-
-  // console.log("UserID: ", userId);
-  // console.log("Channel: ", channelData);
 
   return (
     <>
@@ -526,7 +506,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                       width: "100%",
                       display: "flex",
                       flexDirection: "column",
-                      // justifyContent: "space-between",
                       padding: 1,
                     }}
                   >

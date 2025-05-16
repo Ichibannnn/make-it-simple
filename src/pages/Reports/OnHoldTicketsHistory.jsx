@@ -116,17 +116,6 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                   fontSize: "12px",
                 }}
               >
-                REMARKS
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
                 HOLD BY
               </TableCell>
 
@@ -138,10 +127,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                   fontSize: "12px",
                 }}
               >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                  HOLD DATE
-                </Stack>
+                HOLD DATE
               </TableCell>
 
               <TableCell
@@ -152,10 +138,29 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                   fontSize: "12px",
                 }}
               >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                  RESUME DATE
-                </Stack>
+                APPROVED BY
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                APPROVED DATE
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                RESUME DATE
               </TableCell>
             </TableRow>
           </TableHead>
@@ -211,7 +216,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
 
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: theme.palette.warning.main,
                       fontSize: "12px",
                       fontWeight: 500,
                       "&:hover": {
@@ -221,20 +226,6 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                     }}
                   >
                     {item.reason}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    ---
                   </TableCell>
 
                   <TableCell
@@ -287,6 +278,49 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                       },
                     }}
                   >
+                    {item.approvedBy !== null ? item.approvedBy : `---`}
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    {item.approvedDate !== null ? (
+                      <Chip
+                        variant="filled"
+                        size="30px"
+                        icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                        sx={{
+                          fontSize: "12px",
+                          backgroundColor: "#1D1F3B",
+                          color: theme.palette.primary.main,
+                          fontWeight: 800,
+                        }}
+                        label={moment(item.approvedDate).format("lll")}
+                      />
+                    ) : (
+                      <Stack sx={{ width: "100%" }}>---</Stack>
+                    )}
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
                     {item?.resume_At ? (
                       <Chip
                         variant="filled"
@@ -301,7 +335,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
                         label={moment(item.resume_At).format("LL")}
                       />
                     ) : (
-                      <Stack sx={{ width: "100%", justifyContent: "center", alignItems: "center" }}>---</Stack>
+                      <Stack sx={{ width: "100%" }}>---</Stack>
                     )}
                   </TableCell>
                 </TableRow>
@@ -309,9 +343,9 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={9} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                  <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                  <Typography variant="h5" color="#EDF2F9" marginLeft={2}>
                     Something went wrong.
                   </Typography>
                 </TableCell>
@@ -320,7 +354,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
 
             {isSuccess && !data?.value?.reports.length && (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={9} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

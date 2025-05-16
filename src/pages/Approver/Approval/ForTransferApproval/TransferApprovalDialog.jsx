@@ -222,9 +222,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     setSelectedImage(null);
   };
 
-  // console.log("UserId: ", watch("transfer_To")?.userId);
-  // console.log("Data: ", data);
-
   return (
     <>
       <Toaster richColors position="top-right" closeButton />

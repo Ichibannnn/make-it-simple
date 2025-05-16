@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useGetOpenTicketsQuery } from "../../features/api_reports/reportsApi";
-import { AccessTimeOutlined, CalendarMonthOutlined, History, Search } from "@mui/icons-material";
+import { CalendarMonthOutlined, Search } from "@mui/icons-material";
 import { Chip, OutlinedInput, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
@@ -139,24 +139,8 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
                     fontSize: "12px",
                   }}
                 >
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
-                    TARGET DATE
-                  </Stack>
+                  TARGET DATE
                 </TableCell>
-
-                {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  AGING DAYS
-                </Stack>
-              </TableCell> */}
 
                 <TableCell
                   sx={{
@@ -216,7 +200,7 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
                         color: "#EDF2F7",
                         fontSize: "12px",
                         fontWeight: 500,
-                        maxWidth: "400px",
+                        maxWidth: "600px",
                         "&:hover": {
                           background: "",
                           color: "#EDF2F7",
@@ -233,8 +217,7 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
 
                     <TableCell
                       sx={{
-                        // color: "#EDF2F7",
-                        color: theme.palette.warning.main,
+                        color: "#EDF2F7",
                         fontSize: "12px",
                         fontWeight: 500,
                         "&:hover": {
@@ -242,27 +225,8 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
                           color: "#EDF2F7",
                         },
                       }}
-                      align="center"
                     >
-                      {/* {item.category_Description} */}
-                      For Checking
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        // color: "#EDF2F7",
-                        color: theme.palette.warning.main,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
-                      }}
-                      align="center"
-                    >
-                      {/* {item.subCategory_Description} */}
-                      For Checking
+                      {item.category_Description}
                     </TableCell>
 
                     <TableCell
@@ -275,7 +239,20 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
                           color: "#EDF2F7",
                         },
                       }}
-                      align="center"
+                    >
+                      {item.subCategory_Description}
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        "&:hover": {
+                          background: "",
+                          color: "#EDF2F7",
+                        },
+                      }}
                     >
                       {item.channel_Name}
                     </TableCell>
@@ -305,31 +282,6 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
                       />
                     </TableCell>
 
-                    {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<History fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={`${item.aging_Days} Day(s)`}
-                    />
-                  </TableCell> */}
-
                     <TableCell
                       sx={{
                         color: "#EDF2F7",
@@ -342,60 +294,6 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
                       }}
                     >
                       {item.requestor_Name}
-                      {/* <Typography
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.requestor_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.companyName}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.department_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.unit_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.subUnit_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.location_Name}
-                    </Typography> */}
                     </TableCell>
 
                     <TableCell

@@ -6,6 +6,7 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  IconButton,
   OutlinedInput,
   Stack,
   Tab,
@@ -24,11 +25,12 @@ import {
 } from "@mui/material";
 import {
   AccessTimeOutlined,
+  ArrowDownward,
+  ArrowUpward,
   CalendarMonthOutlined,
   DiscountOutlined,
   DoneAllOutlined,
   FiberManualRecord,
-  History,
   HistoryToggleOffOutlined,
   MoveDownOutlined,
   PendingActionsOutlined,
@@ -63,31 +65,28 @@ import ManageTransferDialog from "./ManageTransferDialog";
 import Swal from "sweetalert2";
 import { toast, Toaster } from "sonner";
 
-import { useSignalR } from "../../../context/SignalRContext";
-import { useNotification } from "../../../context/NotificationContext";
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
-import { ParameterContext } from "../../../context/ParameterContext";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ApproveTransferTicket from "./ApproveTransferTicket";
 import RejectTransfer from "./RejectTransfer";
+import { useSelector } from "react-redux";
+import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
 
 const IssueHandlerConcerns = () => {
   const theming = useTheme();
-  const isMobile = useMediaQuery(theming.breakpoints.down("sm")); // For screens <= 600px
-  const isTablet = useMediaQuery(theming.breakpoints.between("sm", "md"));
-
-  const [ticketStatus, setTicketStatus] = useState("Open Ticket");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-
-  const [searchValue, setSearchValue] = useState("");
+  const isMobile = useMediaQuery(theming.breakpoints.down("sm"));
+  const ascending = useSelector((state) => state.root.ascending);
+  const pageNumber = useSelector((state) => state.root.pageNumber);
+  const pageSize = useSelector((state) => state.root.pageSize);
+  const searchValue = useSelector((state) => state.root.searchValue);
   const search = useDebounce(searchValue, 500);
 
+  const [ticketStatus, setTicketStatus] = useState("Open Ticket");
   const [filterStatus, setFilterStatus] = useState(null);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
@@ -97,8 +96,6 @@ const IssueHandlerConcerns = () => {
   const [closeTicketData, setCloseTicketData] = useState(null);
   const [transferTicketData, setTransferTicketData] = useState(null);
   const [printData, setPrintData] = useState(null);
-
-  const { parameter } = useContext(ParameterContext);
 
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
   const [resumeIssueHandlerTickets] = useResumeIssueHandlerTicketsMutation();
@@ -127,23 +124,24 @@ const IssueHandlerConcerns = () => {
     History_Status: filterStatus || "",
     Date_From: dateFrom || "",
     Date_To: dateTo || "",
+    Ascending: ascending,
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
 
   const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
+    dispatch(setPageNumber(page + 1));
   };
 
   const onPageSizeChange = (e) => {
-    setPageSize(e.target.value);
-    setPageNumber(1);
+    dispatch(setPageSize(e.target.value));
+    dispatch(setPageNumber(1));
   };
 
   const onStatusChange = (_, newValue) => {
     setTicketStatus(newValue);
-    setPageNumber(1);
-    setPageSize(5);
+    dispatch(setPageNumber(1));
+    dispatch(setPageSize(5));
     refetch();
   };
 
@@ -361,16 +359,6 @@ const IssueHandlerConcerns = () => {
       setDateTo(null);
     }
   }, [ticketStatus]);
-
-  useEffect(() => {
-    if (parameter) {
-      setTicketStatus("");
-
-      setTimeout(() => {
-        setTicketStatus(parameter);
-      }, 200);
-    }
-  }, [parameter]);
 
   return (
     <Stack
@@ -686,7 +674,7 @@ const IssueHandlerConcerns = () => {
               placeholder="Search"
               startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => dispatch(setSearchValue(e.target.value))}
               sx={{
                 borderRadius: "15px",
                 fontSize: "small",
@@ -962,6 +950,9 @@ const IssueHandlerConcerns = () => {
                         align="center"
                       >
                         TICKET NO.
+                        <IconButton size="small" onClick={() => dispatch(setAscending(!ascending))}>
+                          {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                        </IconButton>
                       </TableCell>
 
                       <TableCell

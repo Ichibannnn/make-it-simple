@@ -1,4 +1,4 @@
-import { Collapse, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Radio, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
 import React, { Fragment, useEffect, useState } from "react";
 import { theme } from "../theme/theme";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,13 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSidebar } from "../features/sidebar/sidebarSlice";
 import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
-import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowDownOutlined } from "@mui/icons-material";
+import { getMenuIcon } from "./GetIcon";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
-  // const hideSidebar = useMediaQuery("(max-width: 1069px)");
-  // const hideSidebar = useMediaQuery("(max-width: 1647px)");
   const hideSidebar = useMediaQuery("(max-width: 1639px)");
   const [drawerOpen, setDrawerOpen] = useState(isVisible);
 

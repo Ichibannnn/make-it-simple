@@ -116,9 +116,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                   fontSize: "12px",
                 }}
               >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  TARGET DATE
-                </Stack>
+                TARGET DATE
               </TableCell>
 
               <TableCell
@@ -129,9 +127,18 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                   fontSize: "12px",
                 }}
               >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  APPROVED DATE
-                </Stack>
+                APPROVED BY
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                APPROVED DATE
               </TableCell>
 
               <TableCell
@@ -154,30 +161,6 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                 }}
               >
                 TRANSFERRED NO.
-              </TableCell>
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  AGING DAYS
-                </Stack>
-              </TableCell> */}
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                REASON
               </TableCell>
 
               <TableCell
@@ -276,8 +259,23 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                         color: theme.palette.primary.main,
                         fontWeight: 800,
                       }}
-                      label={moment(item.current_Target_Date).format("LL")}
+                      label={moment(item.target_Date).format("LL")}
                     />
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      maxWidth: "400px",
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    {item.approvedBy !== null ? item.approvedBy : "---"}
                   </TableCell>
 
                   <TableCell
@@ -301,7 +299,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                         color: theme.palette.primary.main,
                         fontWeight: 800,
                       }}
-                      label={`${moment(item.current_Target_Date).format("lll")}`}
+                      label={`${moment(item.transfer_At).format("lll")}`}
                     />
                   </TableCell>
 
@@ -369,20 +367,6 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
                       },
                     }}
                   >
-                    ---
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
                     {item.remarks}
                   </TableCell>
                 </TableRow>
@@ -390,7 +374,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={10} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -401,7 +385,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
 
             {isSuccess && !data?.value?.reports.length && (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={10} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

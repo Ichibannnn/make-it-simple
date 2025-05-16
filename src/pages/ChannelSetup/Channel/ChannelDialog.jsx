@@ -310,6 +310,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           if (!memberIsSuccess) getMembers();
                         }}
                         onChange={(_, value) => {
+                          console.log("value: ", value);
                           onChange(value);
                         }}
                         getOptionLabel={(option) => option.fullName}

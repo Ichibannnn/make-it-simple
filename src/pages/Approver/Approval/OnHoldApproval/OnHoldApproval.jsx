@@ -345,17 +345,6 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                   </TableRow>
                 )}
 
-                {/* {(isLoading || isFetching) && (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  <CircularProgress />
-                  <Typography variant="h5" color="#EDF2F7">
-                    Please wait...
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )} */}
-
                 {isSuccess && !data?.value?.onHoldTicket?.length && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">

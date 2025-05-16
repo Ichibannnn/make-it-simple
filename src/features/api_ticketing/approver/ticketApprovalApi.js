@@ -32,7 +32,7 @@ export const ticketApprovalApi = api.enhanceEndpoints({ addTagTypes: tags }).inj
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
-    // Approvel Transfer Approval
+    // Approver Transfer Approval
     getTransferApproval: builder.query({
       query: (params) => ({
         url: "transfer-ticket/page?UserType=Approver&IsTransfer=false&IsReject=false",
@@ -60,7 +60,7 @@ export const ticketApprovalApi = api.enhanceEndpoints({ addTagTypes: tags }).inj
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
-    // Approvel OnHold Approval
+    // Approver OnHold Approval
     getOnHoldApproval: builder.query({
       query: (params) => ({
         url: "on-hold/page?UserType=Approver&IsHold=false&IsReject=false",

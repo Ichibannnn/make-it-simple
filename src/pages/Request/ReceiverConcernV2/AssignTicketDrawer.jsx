@@ -1,5 +1,5 @@
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, AttachFileOutlined, CheckOutlined, DataArrayRounded, FileDownloadOutlined, GetAppOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { Add, AttachFileOutlined, CheckOutlined, GetAppOutlined } from "@mui/icons-material";
 import React, { useEffect, useRef, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -29,7 +29,6 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import AssignDialogMenuAction from "./AssignDialogMenuAction";
-import { useSendSmsNotificationMutation } from "../../../features/sms_notification/smsNotificationApi";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
@@ -37,7 +36,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { useSelector } from "react-redux";
-import { setAttachments } from "../../../features/attachments/attachmentSlice";
+import { setAttachments } from "../../../features/global/attachmentSlice";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -53,7 +52,6 @@ const schema = yup.object().shape({
 });
 
 const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData, open, onClose, viewConcernDetailsOnClose }) => {
-  // const [attachments, setAttachments] = useState([]);
   const attachments = useSelector((state) => state.attachment.attachments);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -66,17 +64,14 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
-  const today = moment();
   useSignalRConnection();
-
-  // console.log("Data: ", data);
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useCreateEditReceiverConcernMutation();
-  // const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
+  const [approveReceiverConcern, { isLoading: approveReceiverConcernIsLoading, isFetching: approveReceiverConcernIsFetching }] = useApproveReceiverConcernMutation();
   // const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
@@ -294,8 +289,6 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
       ticketConcernId: formData.ticketConcernId,
     };
 
-    console.log("Approve: ", approvePayload);
-
     // const smsPayload = {
     //   system_name: "Make It Simple",
     //   message: `Fresh Morning! Concern #${data?.requestConcernId} has been assigned to your account. Kindly check your ticket list.`,
@@ -328,22 +321,74 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
         createEditReceiverConcern(payload)
           .unwrap()
           .then((response) => {
-            console.log("Response: ", response);
-
             // Approve API
-            // approveReceiverConcern(approvePayload)
-            //   .unwrap()
-            //   .then(() => {
-            //     setData(null);
-            //     onClose();
-            //   })
-            //   .catch((err) => {
-            //     console.log("Error", err);
-            //     toast.error("Error!", {
-            //       description: err.data.error.message,
-            //       duration: 1500,
-            //     });
-            //   });
+            approveReceiverConcern(approvePayload)
+              .unwrap()
+              .then(() => {
+                setData(null);
+                onClose();
+              })
+              .catch((err) => {
+                console.log("Error", err);
+                toast.error("Error!", {
+                  description: err.data.error.message,
+                  duration: 1500,
+                });
+              });
+
+            Swal.fire({
+              title: "Success!",
+              html: `Thank you for submitting your concern.<br><br>
+                       A service ticket <strong>#${response?.value}</strong> has been created.`,
+              icon: "success",
+              color: "white",
+              showCancelButton: true,
+              background: "#111927",
+              confirmButtonColor: "#9e77ed",
+              confirmButtonText: `Copy`,
+              cancelButtonText: "Close",
+              cancelButtonColor: "#1C2536",
+              heightAuto: false,
+              width: "30em",
+              customClass: {
+                container: "custom-container",
+                title: "custom-title",
+                htmlContainer: "custom-text",
+                // icon: "custom-icon",
+                confirmButton: "custom-confirm-btn",
+                cancelButton: "custom-cancel-btn",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                const ticketMessage = `Thank you for submitting your concern. A service ticket #${response?.value} has been created.`;
+
+                navigator.clipboard.writeText(ticketMessage).then(() => {
+                  Swal.fire({
+                    title: "Copied!",
+                    icon: "success",
+                    color: "white",
+                    background: "#111927",
+                    text: `Copied to clipboard.`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    heightAuto: false,
+                    width: "30em",
+                    customClass: {
+                      container: "custom-container",
+                      title: "custom-title",
+                      htmlContainer: "custom-text",
+                      // icon: "custom-icon",
+                      confirmButton: "custom-confirm-btn",
+                      cancelButton: "custom-cancel-btn",
+                    },
+                  });
+                });
+              } else {
+                const ticketMessage = `Thank you for submitting your concern. A service ticket #${response?.value} has been created.`;
+
+                navigator.clipboard.writeText(ticketMessage);
+              }
+            });
 
             toast.success("Success!", {
               description: "Approve concern successfully!",
@@ -353,8 +398,8 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
 
-            setSelectedTickets([]);
             setAttachments([]);
+            setSelectedTickets([]);
             reset();
             setData(null);
             viewConcernDetailsOnClose();
@@ -382,7 +427,7 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
     });
   };
 
-  // console.log("Selected Tix: ", selectedTickets);
+  // console.log("Selected Tickets: ", selectedTickets);
 
   useEffect(() => {
     if (data) {
@@ -445,6 +490,8 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
+
+  console.log("selectedTickets: ", selectedTickets);
 
   return (
     <>

@@ -228,7 +228,7 @@ const AllTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      maxWidth: "400px",
+                      maxWidth: "600px",
                       "&:hover": {
                         background: "",
                         color: "#EDF2F7",
