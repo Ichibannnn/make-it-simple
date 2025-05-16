@@ -100,18 +100,18 @@ const ConcernTickets = () => {
   const [cancelConcern] = useCancelConcernMutation();
 
   const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
+    dispatch(setPageNumber(page + 1));
   };
 
   const onPageSizeChange = (e) => {
-    setPageSize(e.target.value);
-    setPageNumber(1);
+    dispatch(setPageSize(e.target.value));
+    dispatch(setPageNumber(1));
   };
 
   const onStatusChange = (_, newValue) => {
     setStatus(newValue);
-    setPageNumber(1);
-    setPageSize(5);
+    dispatch(setPageNumber(1));
+    dispatch(setPageSize(5));
     refetch();
   };
 
@@ -240,7 +240,7 @@ const ConcernTickets = () => {
 
   useEffect(() => {
     if (searchValue) {
-      setPageNumber(1);
+      dispatch(setPageNumber(1));
     }
   }, [searchValue]);
 
