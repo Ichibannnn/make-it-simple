@@ -6,6 +6,8 @@ import userReducer from "../features/user_management_api/user/userSlice";
 import sidebarReducer from "../features/sidebar/sidebarSlice";
 import attachmentReducer from "../features/global/attachmentSlice";
 import rootReducer from "../features/global/rootSlice";
+import webTicketsReducer from "../features/global/webTicketSlice";
+import ticketingReducer from "../";
 
 import { sedarApi } from "../features/sedar/sedarApi";
 import { ymirApi } from "../features/ymir/ymirApi";
@@ -20,6 +22,7 @@ export const store = configureStore({
     sidebar: sidebarReducer,
     attachment: attachmentReducer,
     root: rootReducer,
+    webTickets: webTicketsReducer,
 
     [api.reducerPath]: api.reducer,
 

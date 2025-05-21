@@ -395,11 +395,11 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
               duration: 1500,
             });
 
+            // setSelectedTickets([]);
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
 
             setAttachments([]);
-            setSelectedTickets([]);
             reset();
             setData(null);
             viewConcernDetailsOnClose();
@@ -426,8 +426,6 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
       }
     });
   };
-
-  // console.log("Selected Tickets: ", selectedTickets);
 
   useEffect(() => {
     if (data) {
@@ -490,8 +488,6 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  console.log("selectedTickets: ", selectedTickets);
 
   return (
     <>

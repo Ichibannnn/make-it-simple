@@ -10,7 +10,7 @@ const initialState = {
 };
 
 const ticketingSlice = createSlice({
-  name: "ticketingSlice",
+  name: "ticketing",
   initialState,
   reducers: {
     setSearchValue: (state, action) => {

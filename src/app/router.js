@@ -27,6 +27,7 @@ import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
 import ChannelPage from "../pages/ChannelSetup/ChannelPage";
 import Receiver from "../pages/ChannelSetup/Receiver/Receiver";
 import Channel from "../pages/ChannelSetup/Channel/Channel";
+import ServiceProvider from "../pages/Masterlist/ServiceProvider/ServiceProvider";
 import Approver from "../pages/ChannelSetup/Approver/Approver";
 
 import ReceiverPage from "../pages/Request/ReceiverPage";
@@ -120,6 +121,10 @@ export const router = createBrowserRouter([
           {
             path: "/masterlist/channel-setup",
             element: <Channel />,
+          },
+          {
+            path: "/masterlist/service-provider",
+            element: <ServiceProvider />,
           },
           {
             path: "/masterlist/approver-setup",

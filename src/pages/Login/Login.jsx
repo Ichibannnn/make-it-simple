@@ -155,8 +155,6 @@ const LoginForm = () => {
       const res = await logIn(data).unwrap();
       const { token, ...user } = res.value;
 
-      console.log("res: ", res);
-
       if (res?.value?.isPasswordChanged === null) {
         setChangePasswordDetails(res);
         onToggle();

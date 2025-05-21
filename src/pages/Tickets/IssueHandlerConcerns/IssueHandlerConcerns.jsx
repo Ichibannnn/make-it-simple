@@ -38,7 +38,7 @@ import {
   Search,
 } from "@mui/icons-material";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 
@@ -67,6 +67,7 @@ import { toast, Toaster } from "sonner";
 
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
@@ -74,7 +75,6 @@ import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ApproveTransferTicket from "./ApproveTransferTicket";
 import RejectTransfer from "./RejectTransfer";
-import { useSelector } from "react-redux";
 import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
 
 const IssueHandlerConcerns = () => {
@@ -85,6 +85,10 @@ const IssueHandlerConcerns = () => {
   const pageSize = useSelector((state) => state.root.pageSize);
   const searchValue = useSelector((state) => state.root.searchValue);
   const search = useDebounce(searchValue, 500);
+
+  const openTickets = useSelector((state) => state.webTickets.openTickets);
+
+  console.log("Open Tickets: ", openTickets);
 
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
   const [filterStatus, setFilterStatus] = useState(null);
@@ -1386,9 +1390,7 @@ const IssueHandlerConcerns = () => {
         </Stack>
 
         <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />
-
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
-
         <ManageTicketDialog
           data={closeTicketData}
           open={manageTicketOpen}
@@ -1396,7 +1398,6 @@ const IssueHandlerConcerns = () => {
             manageTicketOnClose(setCloseTicketData(null));
           }}
         />
-
         <TicketForTransferDialog
           data={transferTicketData}
           open={transferTicketOpen}
@@ -1404,7 +1405,6 @@ const IssueHandlerConcerns = () => {
             transferTicketOnClose(setTransferTicketData(null));
           }}
         />
-
         <ManageTransferDialog
           data={transferTicketData}
           open={manageTransferOpen}
@@ -1412,7 +1412,6 @@ const IssueHandlerConcerns = () => {
             manageTransferOnClose(setTransferTicketData(null));
           }}
         />
-
         <ApproveTransferTicket
           data={transferTicketData}
           open={approveTransferOpen}
@@ -1420,9 +1419,7 @@ const IssueHandlerConcerns = () => {
             approveTransferOnClose(setTransferTicketData(null));
           }}
         />
-
         <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />
-
         <IssueHandlerHoldDialog
           data={holdTicketData}
           open={holdTicketOpen}
@@ -1430,7 +1427,6 @@ const IssueHandlerConcerns = () => {
             holdTicketOnClose(setHoldTicketData(null));
           }}
         />
-
         <ManageOnHoldTicketDialog
           data={holdTicketData}
           open={manageHoldTicketOpen}
@@ -1438,7 +1434,6 @@ const IssueHandlerConcerns = () => {
             manageHoldTicketOnClose(setHoldTicketData(null));
           }}
         />
-
         <PrintServiceReport
           data={printData}
           open={printTicketOpen}

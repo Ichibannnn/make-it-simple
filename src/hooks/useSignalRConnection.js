@@ -11,6 +11,7 @@ import { concernReceiverApi } from "../features/api_request/concerns_receiver/co
 import { notificationMessageApi } from "../features/api_notification_message/notificationMessageApi";
 
 import ring2 from "../../src/assets/ringtone/ring2.wav";
+import { setOpenTickets } from "../features/global/webTicketSlice";
 
 const useSignalRConnection = () => {
   const [connection, setConnection] = useState(null);
@@ -19,15 +20,21 @@ const useSignalRConnection = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(`https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${sessionStorage.getItem("token")}`, {
-        skipNegotiation: true,
-        transport: HttpTransportType.WebSockets,
-      })
-      .withAutomaticReconnect()
-      .build();
+    if (sessionStorage.getItem("token")) {
+      const newConnection = new HubConnectionBuilder()
+        .withUrl(
+          // `https://10.10.10.14:5001/notification-hub?access_token=${sessionStorage.getItem("token")}`,
+          `https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${sessionStorage.getItem("token")}`,
+          {
+            skipNegotiation: true,
+            transport: HttpTransportType.WebSockets,
+          }
+        )
+        .withAutomaticReconnect()
+        .build();
 
-    setConnection(newConnection);
+      setConnection(newConnection);
+    }
   }, []);
 
   useEffect(() => {
@@ -38,8 +45,8 @@ const useSignalRConnection = () => {
           connection.on("TransactionData", (data) => {
             setNotification({ data });
           });
-          connection.on("LoggedIn", (data) => {
-            console.log("WebSocket connection established");
+          connection.on("OpenTickets", (data) => {
+            dispatch(setOpenTickets(data));
           });
         })
 

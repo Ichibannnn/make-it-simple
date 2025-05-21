@@ -138,8 +138,8 @@ const SidebarList = () => {
   const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
   const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
   const { open: receiverOpen, onToggle: receiverOnToggle, onClose: receiverOnClose } = useDisclosure(!!pathname.match(/receiver/gi));
-  const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
   const { open: ticketingOpen, onToggle: ticketingOnToggle, onClose: ticketingOnClose } = useDisclosure(!!pathname.match(/ticketing/gi));
+  const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
 
   const sidebarMenu = [
     {
@@ -257,6 +257,12 @@ const SidebarList = () => {
         },
         {
           id: 11,
+          name: "Service Provider",
+          path: "/masterlist/service-provider",
+          icon: "HubOutlined",
+        },
+        {
+          id: 12,
           name: "Approver Setup",
           path: "/masterlist/approver-setup",
           icon: "GroupsOutlined",

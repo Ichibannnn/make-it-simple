@@ -44,6 +44,7 @@ const masterlistCheckbox = [
   "Sub Category",
   "Receiver Setup",
   "Channel Setup",
+  "Service Provider",
   "Approver Setup",
 ];
 // const channelCheckbox = ["Receiver", "Channel", "Approver"];
@@ -250,7 +251,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             marginBlockEnd: "5.28px",
           }}
         >
-          {data ? "Edit Role" : "Add Role"}
+          {data ? "Edit Role" : "Add Rolessada"}
         </DialogTitle>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>

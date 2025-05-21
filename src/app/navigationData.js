@@ -79,6 +79,11 @@ export const sidebarNavigationData = [
       },
       {
         id: 11,
+        name: "Service Provider",
+        path: "/masterlist/service-provider",
+      },
+      {
+        id: 12,
         name: "Approver",
         path: "/masterlist/approver-setup",
       },
