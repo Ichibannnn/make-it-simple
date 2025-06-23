@@ -72,8 +72,8 @@ const RejectTransfer = ({ data, open, onClose }) => {
               description: "Reject Transferred Ticket successfully! ",
               duration: 1500,
             });
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
             reset();
             onClose();
           })

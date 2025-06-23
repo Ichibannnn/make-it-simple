@@ -222,7 +222,7 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
               description: "Disapproved request successfully! ",
               duration: 1500,
             });
-            dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
             reset();
             setSelectedTickets([]);
             onClose();

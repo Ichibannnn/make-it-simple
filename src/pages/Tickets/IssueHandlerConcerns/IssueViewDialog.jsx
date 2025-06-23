@@ -126,7 +126,7 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={viewOpen}>
+      <Dialog fullWidth maxWidth="md" open={viewOpen} onClose={onCloseHandler} disableEscapeKeyDown={false} sx={{ backdropFilter: "blur(5px)", borderRadius: "10px" }}>
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">

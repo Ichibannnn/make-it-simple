@@ -88,8 +88,6 @@ const IssueHandlerConcerns = () => {
 
   const openTickets = useSelector((state) => state.webTickets.openTickets);
 
-  console.log("Open Tickets: ", openTickets);
-
   const [ticketStatus, setTicketStatus] = useState("Open Ticket");
   const [filterStatus, setFilterStatus] = useState(null);
   const [dateFrom, setDateFrom] = useState(null);
@@ -118,7 +116,7 @@ const IssueHandlerConcerns = () => {
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
 

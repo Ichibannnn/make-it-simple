@@ -64,7 +64,7 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
@@ -396,8 +396,8 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
             });
 
             // setSelectedTickets([]);
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
 
             setAttachments([]);
             reset();
@@ -1029,6 +1029,7 @@ const AssignTicketDrawer = ({ selectedTickets, setSelectedTickets, data, setData
                     >
                       Assign
                     </LoadingButton>
+
                     <LoadingButton variant="outlined" onClick={onCloseAction}>
                       Close
                     </LoadingButton>

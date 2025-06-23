@@ -30,7 +30,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
@@ -74,8 +74,8 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
         approveTicket(approvePayload)
           .unwrap()
           .then(() => {
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
             toast.success("Success!", {
               description: "Approve request successfully!",
               duration: 1500,

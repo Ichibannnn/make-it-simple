@@ -35,7 +35,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [holdIssueHandlerTickets, { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching }] = useHoldIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
@@ -108,8 +108,8 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
               duration: 1500,
             });
 
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
 
             setAddAttachments([]);
             reset();

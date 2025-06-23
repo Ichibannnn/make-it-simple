@@ -27,7 +27,7 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
 
-  useSignalRConnection();
+  // useSignalRConnection();
   const dispatch = useDispatch();
   const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useCloseTicketMutation();
 

@@ -19,61 +19,61 @@ const useSignalRConnection = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (sessionStorage.getItem("token")) {
-      const newConnection = new HubConnectionBuilder()
-        .withUrl(
-          // `https://10.10.10.14:5001/notification-hub?access_token=${sessionStorage.getItem("token")}`,
-          `https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${sessionStorage.getItem("token")}`,
-          {
-            skipNegotiation: true,
-            transport: HttpTransportType.WebSockets,
-          }
-        )
-        .withAutomaticReconnect()
-        .build();
+  // useEffect(() => {
+  //   if (sessionStorage.getItem("token")) {
+  //     const newConnection = new HubConnectionBuilder()
+  //       .withUrl(
+  //         // `https://10.10.10.14:5001/notification-hub?access_token=${sessionStorage.getItem("token")}`,
+  //         `https://pretest-api.mis.rdfmis.com/notification-hub?access_token=${sessionStorage.getItem("token")}`,
+  //         {
+  //           skipNegotiation: true,
+  //           transport: HttpTransportType.WebSockets,
+  //         }
+  //       )
+  //       .withAutomaticReconnect()
+  //       .build();
 
-      setConnection(newConnection);
-    }
-  }, []);
+  //     setConnection(newConnection);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          connection.on("TransactionData", (data) => {
-            setNotification({ data });
-          });
-          connection.on("OpenTickets", (data) => {
-            dispatch(setOpenTickets(data));
-          });
-        })
+  // useEffect(() => {
+  //   if (connection) {
+  //     connection
+  //       .start()
+  //       .then(() => {
+  //         connection.on("TransactionData", (data) => {
+  //           setNotification({ data });
+  //         });
+  //         connection.on("OpenTickets", (data) => {
+  //           dispatch(setOpenTickets(data));
+  //         });
+  //       })
 
-        .catch((e) => console.log("Connection failed: ", e));
-    }
-  }, [connection]);
+  //       .catch((e) => console.log("Connection failed: ", e));
+  //   }
+  // }, [connection]);
 
-  useEffect(() => {
-    if (notification?.data?.value) {
-      // const ring = new Audio(ring2);
-      // ring.play().catch((error) => console.error("Audio playback failed: ", error));
+  // useEffect(() => {
+  //   if (notification?.data?.value) {
+  //     // const ring = new Audio(ring2);
+  //     // ring.play().catch((error) => console.error("Audio playback failed: ", error));
 
-      console.log("notification: ", notification.data.value);
+  //     console.log("notification: ", notification.data.value);
 
-      dispatch(notificationApi.util.invalidateTags(["Notification"]));
-      dispatch(notificationMessageApi.util.invalidateTags(["Notification Message"]));
+  //     dispatch(notificationApi.util.invalidateTags(["Notification"]));
+  //     dispatch(notificationMessageApi.util.invalidateTags(["Notification Message"]));
 
-      dispatch(concernApi.util.invalidateTags(["Concern"]));
-      dispatch(concernReceiverApi.util.invalidateTags(["Concern Receiver"]));
-      dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
+  //     dispatch(concernApi.util.invalidateTags(["Concern"]));
+  //     dispatch(concernReceiverApi.util.invalidateTags(["Concern Receiver"]));
+  //     dispatch(concernIssueHandlerApi.util.invalidateTags(["Concern Issue Handler"]));
 
-      dispatch(ticketApprovalApi.util.invalidateTags(["Ticket Approval"]));
-      dispatch(closingTicketApi.util.invalidateTags(["Closing Ticket"]));
-    }
-  }, [notification, dispatch]);
+  //     dispatch(ticketApprovalApi.util.invalidateTags(["Ticket Approval"]));
+  //     dispatch(closingTicketApi.util.invalidateTags(["Closing Ticket"]));
+  //   }
+  // }, [notification, dispatch]);
 
-  return notification;
+  // return notification;
 };
 
 export default useSignalRConnection;

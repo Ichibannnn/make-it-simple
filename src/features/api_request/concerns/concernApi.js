@@ -44,6 +44,18 @@ export const concernApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
+    editRequestorConcern: builder.mutation({
+      query: (body) => ({
+        url: "request-concern/update-request-concern",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : tags),
+    }),
+
     getRequestorAttachment: builder.query({
       query: (params) => ({
         url: `request-concern/request-attachment`,
@@ -99,6 +111,7 @@ export const {
   useLazyGetBackjobTicketsQuery,
   useLazyGetTechniciansQuery,
   useCreateEditRequestorConcernMutation,
+  useEditRequestorConcernMutation,
   useLazyGetRequestorAttachmentQuery,
   useGetRequestorAttachmentQuery,
   useDeleteRequestorAttachmentMutation,

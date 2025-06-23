@@ -16,6 +16,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import {
   useCreateEditRequestorConcernMutation,
   useDeleteRequestorAttachmentMutation,
+  useEditRequestorConcernMutation,
   useLazyGetBackjobTicketsQuery,
   useLazyGetRequestorAttachmentQuery,
 } from "../../../features/api_request/concerns/concernApi";
@@ -35,6 +36,7 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
+import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -70,10 +72,13 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     SubUnitId: yup.object().required().label("Sub Unit is required"),
     LocationId: yup.object().required().label("Location is required"),
 
+    ServiceProvider: yup.object().required().label("Service Provider"),
+    ChannelId: yup.object().notRequired(),
+    CategoryId: yup.array(),
+    SubCategoryId: yup.array(),
     DateNeeded: yup.date().required("Date needed is required"),
-    ChannelId: yup.object().required().label("Channel"),
-    CategoryId: yup.array().required().label("Category"),
-    SubCategoryId: yup.array().required().label("Sub category"),
+    TargetDate: yup.date().notRequired(),
+    IssueHandler: yup.object().notRequired(),
 
     Notes: yup.string().notRequired(),
   });
@@ -81,8 +86,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const fileInputRef = useRef();
   const dispatch = useDispatch();
 
-  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
-    useCreateEditRequestorConcernMutation();
+  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] = useEditRequestorConcernMutation();
 
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
   const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
@@ -93,7 +97,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
 
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
+  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
@@ -131,10 +136,13 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       SubUnitId: null,
       LocationId: null,
 
-      DateNeeded: null,
+      ServiceProvider: null,
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
+      DateNeeded: null,
+      TargetDate: null,
+      IssueHandler: null,
 
       Notes: "",
     },
@@ -159,48 +167,48 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     payload.append("SubUnitId", formData.SubUnitId?.id);
     payload.append("Location_Code", formData.LocationId?.location_Code);
 
+    payload.append("ServiceProviderId", formData.ServiceProvider?.id);
+    payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
-    payload.append("ChannelId", formData.ChannelId?.id);
-    // payload.append("CategoryId", formData.CategoryId?.id);
-    // payload.append("SubCategoryId", formData.SubCategoryId?.id);
+    payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
+    payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler?.userId : "");
+    payload.append("Concern", formData.Concern);
+    payload.append("Notes", formData.Notes);
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
-      payload.append(`AddRequestTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
-      payload.append(`AddRequestTicketCategories[${i}].categoryId`, category[i]?.id);
+      payload.append(`AddRequestTicketCategory[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+      payload.append(`AddRequestTicketCategory[${i}].categoryId`, category[i]?.id);
     }
 
     if (category.length === 0) {
-      payload.append(`AddRequestTicketCategories[0].ticketCategoryId`, "");
-      payload.append(`AddRequestTicketCategories[0].categoryId`, "");
+      payload.append(`AddRequestTicketCategory[0].ticketCategoryId`, "");
+      payload.append(`AddRequestTicketCategory[0].categoryId`, "");
     }
 
     const subCategory = formData.SubCategoryId;
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(`AddRequestTicketSubCategories[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
-      payload.append(`AddRequestTicketSubCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+      payload.append(`AddRequestTicketSubCategory[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+      payload.append(`AddRequestTicketSubCategory[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
 
     if (subCategory.length === 0) {
-      payload.append(`AddRequestTicketSubCategories[0].ticketSubCategoryId`, "");
-      payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
+      payload.append(`AddRequestTicketSubCategory[0].ticketSubCategoryId`, "");
+      payload.append(`AddRequestTicketSubCategory[0].subCategoryId`, "");
     }
-
-    payload.append("Concern", formData.Concern);
-    payload.append("Notes", formData.Notes);
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
-      payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-      payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
+      payload.append(`RequestAttachmentsFile[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+      payload.append(`RequestAttachmentsFile[${i}].attachment`, files[i]);
     }
 
     if (files.length === 0) {
-      payload.append(`RequestAttachmentsFiles[0].ticketAttachmentId`, "");
-      payload.append(`RequestAttachmentsFiles[0].attachment`, "");
+      payload.append(`RequestAttachmentsFile[0].ticketAttachmentId`, "");
+      payload.append(`RequestAttachmentsFile[0].attachment`, "");
     }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     createEditRequestorConcern(payload)
       .unwrap()
@@ -214,7 +222,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         setAttachments([]);
         reset({
           Request_Type: "New Request",
-          Request_Type: "Normal",
+          Severity: "Normal",
           BackJobId: null,
           Contact_Number: "",
 
@@ -280,8 +288,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const onCloseAction = () => {
     reset({
-      Request_Type: "",
-      Severity: "",
+      Request_Type: "New Request",
+      Severity: "Normal",
       BackJobId: null,
       Contact_Number: "",
 
@@ -388,13 +396,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       if (!unitIsSuccess) getUnit();
       if (!subUnitIsSuccess) getSubUnit();
       if (!locationIsSuccess) getLocation();
+      if (!serviceProviderIsSuccess) getServiceProvider({ Status: true });
 
       setValue("RequestConcernId", editData?.requestConcernId);
-      // setValue("Severity", editData?.severity);
-      setValue("Concern", editData?.concern);
-
       setValue("Request_Type", editData?.request_Type);
-      // setValue("Severity", editData?.severity);
+      setValue("Severity", editData?.severity);
+      setValue("Concern", editData?.concern);
 
       if (editData?.request_Type === "New Request") {
         setValue("BackJobId", null);
@@ -404,11 +411,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
           concern: editData?.back_Job_Concern,
         });
       }
-
-      // setValue("BackJobId", {
-      //   ticketConcernId: editData?.backJobId,
-      //   concern: editData?.back_Job_Concern,
-      // });
 
       setValue("UserId", {
         id: editData?.requestorId,
@@ -456,12 +458,46 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         location_Name: editData?.location_Name,
       });
 
+      if (editData?.channelId !== null) {
+        setValue("ServiceProvider", {
+          id: editData?.serviceProviderId,
+          serviceProviderName: editData?.serviceProviderName,
+        });
+      } else {
+        getServiceProvider({
+          Status: true,
+        });
+        setValue("ServiceProvider", {
+          id: editData?.serviceProviderId,
+          serviceProviderName: editData?.serviceProviderName,
+        });
+      }
+
+      if (editData?.channelId !== null) {
+        setValue("ChannelId", {
+          channelId: editData?.channelId,
+          channelName: editData?.channel_Name,
+        });
+      } else {
+        setValue("ChannelId", null);
+      }
+
       setValue("DateNeeded", moment(editData?.date_Needed));
 
-      setValue("ChannelId", {
-        id: editData?.channelId,
-        channel_Name: editData?.channel_Name,
-      });
+      if (editData?.targetDate !== null) {
+        setValue("TargetDate", moment(editData?.targetDate));
+      } else {
+        setValue("TargetDate", null);
+      }
+
+      if (editData?.assignTo !== null) {
+        setValue("IssueHandler", {
+          userId: editData?.assignTo,
+          fullname: editData?.assignToName,
+        });
+      } else {
+        setValue("IssueHandler", null);
+      }
 
       const category = editData?.getRequestTicketCategories?.map((item) => ({
         ticketCategoryId: item.ticketCategoryId,
@@ -507,9 +543,26 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [subCategoryData]);
 
+  // console.log("EditData: ", editData);
+  // console.log("WatchService: ", watch("ServiceProvider"));
+  // console.log("ServiceDate: ", serviceProviderData);
+
+  // console.log("WatchChannel: ", watch("ChannelId"));
+  // console.log("Channel: ", );
+
+  console.log("Error: ", errors);
+
   return (
     <>
-      <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        open={open}
+        onClose={onCloseAction}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0 }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }}>
             <Stack direction="column" sx={{ padding: "1px", minHeight: "700px" }}>
@@ -590,6 +643,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             fullWidth
                             disablePortal
                             disableClearable
+                            disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                             componentsProps={{
                               popper: {
                                 sx: {
@@ -633,6 +687,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             color: "#fff",
                           },
                         }}
+                        disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                       >
                         <MenuItem value="Normal" sx={{ fontSize: "13px" }}>
                           Normal
@@ -1047,44 +1102,60 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <Controller
-                          control={control}
-                          name="DateNeeded"
-                          render={({ field }) => (
-                            <DatePicker
-                              value={field.value ? moment(field.value) : null}
-                              onChange={(newValue) => {
-                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
-                                field.onChange(formattedValue);
+                      {/* Service Provider */}
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
+                      <Controller
+                        control={control}
+                        name="ServiceProvider"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={serviceProviderData?.value?.serviceProvider || []}
+                              loading={serviceProviderIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!serviceProviderIsSuccess)
+                                  getServiceProvider({
+                                    Status: true,
+                                  });
                               }}
-                              slotProps={{
-                                textField: {
-                                  variant: "outlined",
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("ChannelId", null);
+                                setValue("CategoryId", []);
+                                setValue("SubCategoryId", []);
+                              }}
+                              getOptionLabel={(option) => option.serviceProviderName}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                              componentsProps={{
+                                popper: {
                                   sx: {
-                                    "& .MuiInputBase-input": {
-                                      padding: "8.5px 14px",
-                                    },
-                                    "& .MuiOutlinedInput-root": {
-                                      fontSize: "13px",
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "12px",
                                     },
                                   },
                                 },
                               }}
-                              minDate={dateNeededValidation}
-                              error={!!errors.DateNeeded}
-                              helperText={errors.DateNeeded}
-                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                             />
-                          )}
-                        />
-                        {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.targetDate.DateNeeded}</Typography>}
-                      </LocalizationProvider>
+                          );
+                        }}
+                      />
                     </Stack>
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
+                      {/* Channel */}
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -1094,23 +1165,20 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={channelData?.value?.channel || []}
-                              loading={channelIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!channelIsSuccess)
-                                  getChannel({
-                                    Status: true,
-                                  });
-                              }}
+                              options={
+                                editData
+                                  ? serviceProviderData?.value?.serviceProvider?.find((item) => item.id === watch("ServiceProvider")?.id)?.serviceChannel || []
+                                  : watch("ServiceProvider")?.serviceChannel || []
+                              }
+                              renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => {
                                 onChange(value);
 
                                 setValue("CategoryId", []);
                                 setValue("SubCategoryId", []);
                               }}
-                              getOptionLabel={(option) => option.channel_Name}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              getOptionLabel={(option) => option.channelName}
+                              isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                               sx={{
                                 flex: 2,
                               }}
@@ -1149,7 +1217,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                              options={
+                                editData
+                                  ? categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []
+                                  : categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []
+                              }
                               loading={categoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
@@ -1247,6 +1319,138 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       />
                     </Stack>
                   </Stack>
+                </Stack>
+
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    {/* Date Needed */}
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="DateNeeded"
+                          render={({ field }) => {
+                            return (
+                              <DatePicker
+                                value={field.value ? moment(field.value) : moment()}
+                                onChange={(newValue) => {
+                                  const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                  field.onChange(formattedValue);
+                                }}
+                                slotProps={{
+                                  textField: {
+                                    variant: "outlined",
+                                    sx: {
+                                      "& .MuiInputBase-input": {
+                                        padding: "8.5px 14px",
+                                      },
+                                      "& .MuiOutlinedInput-root": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                                minDate={dateNeededValidation}
+                                error={!!errors.DateNeeded}
+                                helperText={errors.DateNeeded}
+                                disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                              />
+                            );
+                          }}
+                        />
+                        {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.DateNeeded.message}</Typography>}
+                      </LocalizationProvider>
+                    </Stack>
+
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      {/* Target Date */}
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Target Date: </Typography>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="TargetDate"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => {
+                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                field.onChange(formattedValue);
+                              }}
+                              slotProps={{
+                                textField: {
+                                  variant: "outlined",
+                                  sx: {
+                                    "& .MuiInputBase-input": {
+                                      padding: "8.5px 14px",
+                                    },
+                                    "& .MuiOutlinedInput-root": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                              minDate={new moment()}
+                              error={!!errors.TargetDate}
+                              helperText={errors.TargetDate ? errors.TargetDate.message : null}
+                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                            />
+                          )}
+                        />
+                        {errors.TargetDate && <Typography>{errors.TargetDate.message}</Typography>}
+                      </LocalizationProvider>
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack sx={{ width: "100%", mt: 1 }}>
+                  {/* Assign to */}
+                  <Typography
+                    sx={{
+                      fontSize: "13px",
+                    }}
+                  >
+                    Assign To:
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="IssueHandler"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <Autocomplete
+                          ref={ref}
+                          size="small"
+                          value={value ?? null}
+                          options={issueHandlerData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.channelId)?.channelUsers || []}
+                          loading={issueHandlerIsLoading}
+                          renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          onOpen={() => {
+                            if (!issueHandlerIsSuccess) getIssueHandler();
+                          }}
+                          onChange={(_, value) => {
+                            onChange(value);
+                          }}
+                          getOptionLabel={(option) => option.fullname ?? null}
+                          isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                          sx={{
+                            flex: 2,
+                          }}
+                          componentsProps={{
+                            popper: {
+                              sx: {
+                                "& .MuiAutocomplete-listbox": {
+                                  fontSize: "13px",
+                                },
+                              },
+                            },
+                          }}
+                          fullWidth
+                          // disablePortal
+                          disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                        />
+                      );
+                    }}
+                  />
                 </Stack>
 
                 {/* DESCRIPTION AND ATTACHMENT */}
@@ -1542,10 +1746,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 type="submit"
                 loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
                 disabled={
+                  !watch("ServiceProvider") ||
+                  !watch("DateNeeded") ||
                   !watch("Concern") ||
                   moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY") ||
-                  watch("CategoryId").length === 0 ||
-                  watch("SubCategoryId").length === 0 ||
+                  // watch("CategoryId").length === 0 ||
+                  // watch("SubCategoryId").length === 0 ||
                   (watch("Request_Type") === "Rework" && !watch("BackJobId"))
                 }
               >

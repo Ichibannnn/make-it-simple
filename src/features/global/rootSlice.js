@@ -17,7 +17,7 @@ const rootSlice = createSlice({
       state.searchValue = action.payload;
     },
     setStatus: (state, action) => {
-      state.isLoading = action.payload;
+      state.status = action.payload;
     },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;

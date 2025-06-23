@@ -34,9 +34,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
   const [viewTransferData, setViewTransferData] = useState(null);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
-
-  // console.log("Notification: ", notificationApi);
+  // useSignalRConnection();
 
   const { open, onToggle, onClose } = useDisclosure();
 

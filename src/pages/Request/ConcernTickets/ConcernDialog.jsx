@@ -1,9 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 
 import * as yup from "yup";
-import moment from "moment";
-import { Controller, useForm } from "react-hook-form";
+import moment, { min } from "moment";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { theme } from "../../../theme/theme";
@@ -28,6 +44,8 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
+import { Add, AddOutlined, Delete, DeleteOutline, RemoveCircleOutline } from "@mui/icons-material";
+import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -43,7 +61,8 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
+    // Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
+    Concern: yup.array().of(yup.string().min(2, "Concern must be more than character long").required("This field is required")).min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
@@ -62,10 +81,13 @@ const ConcernDialog = ({ open, onClose }) => {
     SubUnitId: yup.object().required().label("Sub Unit is required"),
     LocationId: yup.object().required().label("Location is required"),
 
+    ServiceProvider: yup.object().required().label("Service Provider"),
+    ChannelId: yup.object().notRequired(),
+    CategoryId: yup.array(),
+    SubCategoryId: yup.array(),
     DateNeeded: yup.date().required("Date needed is required"),
-    ChannelId: yup.object().required().label("Channel"),
-    CategoryId: yup.array().required().label("Category"),
-    SubCategoryId: yup.array().required().label("Sub Category"),
+    TargetDate: yup.date().notRequired(),
+    IssueHandler: yup.object().notRequired(),
 
     Notes: yup.string().notRequired(),
   });
@@ -86,7 +108,8 @@ const ConcernDialog = ({ open, onClose }) => {
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
 
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
+  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
@@ -103,7 +126,8 @@ const ConcernDialog = ({ open, onClose }) => {
     mode: "onChange",
     defaultValues: {
       RequestTransactionId: "",
-      Concern: "",
+      // Concern: "",
+      Concern: [""],
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
 
@@ -120,14 +144,29 @@ const ConcernDialog = ({ open, onClose }) => {
       SubUnitId: null,
       LocationId: null,
 
-      DateNeeded: moment().format("YYYY-MM-DD"),
+      ServiceProvider: null,
       ChannelId: null,
-      CategoryId: [],
       SubCategoryId: [],
+      CategoryId: [],
+      DateNeeded: moment().format("YYYY-MM-DD"),
+      TargetDate: null,
+      IssueHandler: null,
 
       Notes: "",
     },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "Concern",
+  });
+
+  // Show Concern #1 initially
+  useEffect(() => {
+    if (fields.length === 0) {
+      append("");
+    }
+  }, [fields, append]);
 
   const onConcernFormSubmit = (formData) => {
     console.log("FormData:", formData);
@@ -137,7 +176,7 @@ const ConcernDialog = ({ open, onClose }) => {
     payload.append("Request_Type", formData.Request_Type);
     payload.append("Severity", formData.Severity);
     payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
-    payload.append("UserId", formData.UserId?.id);
+    payload.append("UserId", formData.UserId?.id); // ~~~~ Requestor
     payload.append("Contact_Number", formData.Contact_Number);
     payload.append("CompanyId", formData.CompanyId?.id);
     payload.append("BusinessUnitId", formData.BusinessUnitId?.id);
@@ -146,8 +185,16 @@ const ConcernDialog = ({ open, onClose }) => {
     payload.append("SubUnitId", formData.SubUnitId?.id);
     payload.append("Location_Code", formData.LocationId?.location_Code);
 
+    payload.append("ServiceProviderId", formData.ServiceProvider?.id);
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
-    payload.append("ChannelId", formData.ChannelId?.id);
+
+    payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
+    payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
+    payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler?.userId : "");
+
+    // payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : null);
+    // payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : null);
+    // payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler?.userId : null);
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
@@ -171,7 +218,16 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
     }
 
-    payload.append("Concern", formData.Concern);
+    const concern = formData.Concern;
+    for (let i = 0; i < concern.length; i++) {
+      payload.append(`ListOfConcerns[${i}].concern`, concern[i]);
+    }
+
+    if (concern.length === 0) {
+      payload.append(`ListOfConcerns[0].concern`, "");
+    }
+
+    // payload.append("Concern", formData.Concern);
     payload.append("Notes", formData.Notes);
 
     const files = formData.RequestAttachmentsFiles;
@@ -208,12 +264,15 @@ const ConcernDialog = ({ open, onClose }) => {
           },
           Contact_Number: "",
 
+          ServiceProvider: null,
           DateNeeded: moment().format("YYYY-MM-DD"),
           ChannelId: null,
           CategoryId: [],
           SubCategoryId: [],
+          TargetDate: null,
+          IssueHandler: null,
 
-          Concern: "",
+          Concern: [""],
           Notes: "",
         });
         setAttachments([]);
@@ -221,6 +280,7 @@ const ConcernDialog = ({ open, onClose }) => {
         onClose();
       })
       .catch((err) => {
+        console.log("Error: ", err);
         toast?.error("Error!", {
           description: err?.data?.error?.message,
           duration: 1500,
@@ -368,9 +428,25 @@ const ConcernDialog = ({ open, onClose }) => {
     }
   }, [subCategoryData]);
 
+  // console.log("Concern: ", watch("Concern"));
+  // console.log("serviceProvider", watch("ServiceProvider"));
+  // console.log("object: ", watch("ServiceProvider")?.serviceChannel);
+  // console.log("Channel: ", watch("ChannelId")?.channelId);
+  // console.log("IssueHandler", issueHandlerData);
+
+  // console.log("Errors: ", errors);
+
   return (
     <>
-      <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        onClose={onCloseAction}
+        open={open}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }} dividers>
             <Stack direction="column" sx={{ padding: "1px", minHeight: "700px" }}>
@@ -498,7 +574,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* REQUESTOR DETAILS */}
-                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mb: 1 }}>Requestor Details</Typography>
+                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Requestor Details</Typography>
                 <Stack direction="row" sx={{ width: "100%" }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
@@ -889,45 +965,59 @@ const ConcernDialog = ({ open, onClose }) => {
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <Controller
-                          control={control}
-                          name="DateNeeded"
-                          render={({ field }) => {
-                            return (
-                              <DatePicker
-                                value={field.value ? moment(field.value) : moment()}
-                                onChange={(newValue) => {
-                                  const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
-                                  field.onChange(formattedValue);
-                                }}
-                                slotProps={{
-                                  textField: {
-                                    variant: "outlined",
-                                    sx: {
-                                      "& .MuiInputBase-input": {
-                                        padding: "8.5px 14px",
-                                      },
-                                      "& .MuiOutlinedInput-root": {
-                                        fontSize: "13px",
-                                      },
+                      {/* Service Provider */}
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
+                      <Controller
+                        control={control}
+                        name="ServiceProvider"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <Autocomplete
+                              ref={ref}
+                              size="small"
+                              value={value}
+                              options={serviceProviderData?.value?.serviceProvider || []}
+                              loading={serviceProviderIsLoading}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                              onOpen={() => {
+                                if (!serviceProviderIsSuccess)
+                                  getServiceProvider({
+                                    Status: true,
+                                  });
+                              }}
+                              onChange={(_, value) => {
+                                onChange(value);
+
+                                setValue("ChannelId", null);
+                                setValue("CategoryId", []);
+                                setValue("SubCategoryId", []);
+                              }}
+                              getOptionLabel={(option) => option.serviceProviderName}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              sx={{
+                                flex: 2,
+                              }}
+                              fullWidth
+                              disablePortal
+                              disableClearable
+                              componentsProps={{
+                                popper: {
+                                  sx: {
+                                    "& .MuiAutocomplete-listbox": {
+                                      fontSize: "12px",
                                     },
                                   },
-                                }}
-                                minDate={dateNeededValidation}
-                                error={!!errors.DateNeeded}
-                                helperText={errors.DateNeeded}
-                              />
-                            );
-                          }}
-                        />
-                        {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.targetDate.DateNeeded}</Typography>}
-                      </LocalizationProvider>
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
                     </Stack>
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
+                      {/* Channel */}
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -937,23 +1027,16 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={channelData?.value?.channel || []}
-                              loading={channelIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!channelIsSuccess)
-                                  getChannel({
-                                    Status: true,
-                                  });
-                              }}
+                              options={watch("ServiceProvider")?.serviceChannel || []}
+                              renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => {
                                 onChange(value);
 
                                 setValue("CategoryId", []);
                                 setValue("SubCategoryId", []);
                               }}
-                              getOptionLabel={(option) => option.channel_Name}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              getOptionLabel={(option) => option.channelName}
+                              isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                               sx={{
                                 flex: 2,
                               }}
@@ -979,6 +1062,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
                       <Controller
@@ -991,7 +1075,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
+                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []}
                               loading={categoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
@@ -1041,6 +1125,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     </Stack>
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      {/* Sub Category */}
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
                       <Controller
                         control={control}
@@ -1089,10 +1174,139 @@ const ConcernDialog = ({ open, onClose }) => {
                   </Stack>
                 </Stack>
 
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    {/* Date Needed */}
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="DateNeeded"
+                          render={({ field }) => {
+                            return (
+                              <DatePicker
+                                value={field.value ? moment(field.value) : moment()}
+                                onChange={(newValue) => {
+                                  const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                  field.onChange(formattedValue);
+                                }}
+                                slotProps={{
+                                  textField: {
+                                    variant: "outlined",
+                                    sx: {
+                                      "& .MuiInputBase-input": {
+                                        padding: "8.5px 14px",
+                                      },
+                                      "& .MuiOutlinedInput-root": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                                minDate={dateNeededValidation}
+                                error={!!errors.DateNeeded}
+                                helperText={errors.DateNeeded}
+                              />
+                            );
+                          }}
+                        />
+                        {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.DateNeeded.message}</Typography>}
+                      </LocalizationProvider>
+                    </Stack>
+
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      {/* Target Date */}
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Target Date: </Typography>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Controller
+                          control={control}
+                          name="TargetDate"
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? moment(field.value) : null}
+                              onChange={(newValue) => {
+                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                field.onChange(formattedValue);
+                              }}
+                              slotProps={{
+                                textField: {
+                                  variant: "outlined",
+                                  sx: {
+                                    "& .MuiInputBase-input": {
+                                      padding: "8.5px 14px",
+                                    },
+                                    "& .MuiOutlinedInput-root": {
+                                      fontSize: "13px",
+                                    },
+                                  },
+                                },
+                              }}
+                              minDate={new moment()}
+                              error={!!errors.TargetDate}
+                              helperText={errors.TargetDate ? errors.TargetDate.message : null}
+                            />
+                          )}
+                        />
+                        {errors.TargetDate && <Typography>{errors.TargetDate.message}</Typography>}
+                      </LocalizationProvider>
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack sx={{ width: "100%", mt: 1 }}>
+                  {/* Assign to */}
+                  <Typography
+                    sx={{
+                      fontSize: "13px",
+                    }}
+                  >
+                    Assign To:
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="IssueHandler"
+                    render={({ field: { ref, value, onChange } }) => {
+                      return (
+                        <Autocomplete
+                          ref={ref}
+                          size="small"
+                          value={value ?? null}
+                          options={issueHandlerData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.channelId)?.channelUsers || []}
+                          loading={issueHandlerIsLoading}
+                          renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          onOpen={() => {
+                            if (!issueHandlerIsSuccess) getIssueHandler();
+                          }}
+                          onChange={(_, value) => {
+                            onChange(value);
+                          }}
+                          getOptionLabel={(option) => option.fullname ?? null}
+                          isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                          sx={{
+                            flex: 2,
+                          }}
+                          componentsProps={{
+                            popper: {
+                              sx: {
+                                "& .MuiAutocomplete-listbox": {
+                                  fontSize: "13px",
+                                },
+                              },
+                            },
+                          }}
+                          fullWidth
+                          // disablePortal
+                        />
+                      );
+                    }}
+                  />
+                </Stack>
+
                 {/* DESCRIPTION AND ATTACHMENT */}
                 <Stack
-                  width="100%"
                   sx={{
+                    width: "100%",
                     paddingTop: 2,
                     justifyContent: "space-between",
                     alignItems: "flex-start",
@@ -1100,7 +1314,69 @@ const ConcernDialog = ({ open, onClose }) => {
                 >
                   <Typography sx={{ fontSize: "13px" }}>Concern Details:</Typography>
 
-                  <Controller
+                  {fields.map((field, index) => (
+                    <Stack key={field.id} direction="row" alignItems="flex-start" sx={{ width: "100%", mt: 1 }}>
+                      <Controller
+                        control={control}
+                        name={`Concern.${index}`}
+                        render={({ field: { ref, value, onChange } }) => (
+                          <TextField
+                            inputRef={ref}
+                            value={value}
+                            placeholder={`Concern #${index + 1}`}
+                            onChange={onChange}
+                            error={!!errors.Concern?.[index]}
+                            // helperText={errors.Concern?.[index]?.message}
+                            multiline
+                            rows={3}
+                            InputProps={{
+                              endAdornment:
+                                fields.length > 1 ? (
+                                  <InputAdornment position="end">
+                                    <IconButton edge="end" onClick={() => remove(index)} size="small">
+                                      <RemoveCircleOutline fontSize="small" />
+                                    </IconButton>
+                                  </InputAdornment>
+                                ) : null,
+                              style: {
+                                fontSize: "13px",
+                              },
+                            }}
+                            sx={{ width: "100%" }}
+                          />
+                        )}
+                      />
+
+                      {/* <DeleteOutline color="error" onClick={() => remove(index)} sx={{ height: "40pcx", mt: 1 }} disabled={fields.length === 1} /> */}
+                      {/* <Button variant="outlined" color="error" onClick={() => remove(index)} sx={{ height: "40px", mt: 1 }} disabled={fields.length === 1}>
+                        Remove
+                      </Button> */}
+                    </Stack>
+                  ))}
+
+                  {typeof errors.Concern === "string" && (
+                    <Typography color="error" sx={{ fontSize: "12px" }}>
+                      {errors.Concern}
+                    </Typography>
+                  )}
+
+                  {Array.isArray(errors.Concern) &&
+                    errors.Concern.map(
+                      (err, idx) =>
+                        err && (
+                          <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
+                            Concern #{idx + 1}: {err.message}
+                          </Typography>
+                        )
+                    )}
+
+                  <Stack sx={{ width: "100%", mt: 1 }}>
+                    <Button size="small" variant="outlined" onClick={() => append("")} startIcon={<AddOutlined />}>
+                      <Typography sx={{ fontSize: "12px" }}>Add Concern</Typography>
+                    </Button>
+                  </Stack>
+
+                  {/* <Controller
                     control={control}
                     name="Concern"
                     render={({ field: { ref, value, onChange } }) => {
@@ -1132,11 +1408,12 @@ const ConcernDialog = ({ open, onClose }) => {
                       );
                     }}
                   />
+
                   {errors.Concern && (
                     <Typography color="error" sx={{ fontSize: "12px" }}>
                       {errors.Concern.message}
                     </Typography>
-                  )}
+                  )} */}
                 </Stack>
 
                 <Stack
@@ -1145,6 +1422,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     paddingTop: 2,
                     justifyContent: "space-between",
                     alignItems: "flex-start",
+                    mt: 2,
                   }}
                 >
                   <Typography sx={{ fontSize: "13px" }}>Notes (Optional):</Typography>
@@ -1350,7 +1628,8 @@ const ConcernDialog = ({ open, onClose }) => {
               type="submit"
               loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
               disabled={
-                !watch("Concern") ||
+                !watch("ServiceProvider") ||
+                watch("Concern")?.length === 0 ||
                 !watch("Request_Type") ||
                 !watch("Severity") ||
                 !watch("CompanyId") ||
@@ -1360,12 +1639,13 @@ const ConcernDialog = ({ open, onClose }) => {
                 !watch("SubUnitId") ||
                 !watch("LocationId") ||
                 !watch("DateNeeded") ||
-                !watch("ChannelId") ||
-                watch("CategoryId").length === 0 ||
-                watch("SubCategoryId").length === 0 ||
+                // !watch("ChannelId") ||
+                // watch("CategoryId").length === 0 ||
+                // watch("SubCategoryId").length === 0 ||
                 (watch("Request_Type") === "Rework" && !watch("BackJobId")) ||
                 errors.Concern
               }
+              // disabled={!isDirty || !isValid}
             >
               Save
             </LoadingButton>

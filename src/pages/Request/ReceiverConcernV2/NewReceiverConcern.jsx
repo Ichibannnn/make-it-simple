@@ -55,7 +55,7 @@ const NewReceiverConcern = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  useSignalRConnection();
+  // useSignalRConnection();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: notificationBadge } = useGetNotificationQuery();

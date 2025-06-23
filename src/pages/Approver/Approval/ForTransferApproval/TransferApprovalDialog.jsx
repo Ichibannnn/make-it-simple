@@ -60,7 +60,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [approveTransfer, { isLoading: approveTransferIsLoading, isFetching: approveTransferIsFetching }] = useApproveTransferMutation();
   const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
@@ -125,8 +125,8 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
               description: "Approve request successfully!",
               duration: 1500,
             });
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
             onClose();
           })
           .catch((err) => {

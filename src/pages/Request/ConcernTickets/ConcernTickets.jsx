@@ -78,7 +78,7 @@ const ConcernTickets = () => {
   const [viewHistoryData, setViewHistoryData] = useState(null);
   const [returnData, setReturnData] = useState(null);
 
-  useSignalRConnection();
+  // useSignalRConnection();
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -109,7 +109,7 @@ const ConcernTickets = () => {
   };
 
   const onStatusChange = (_, newValue) => {
-    setStatus(newValue);
+    dispatch(setStatus(newValue));
     dispatch(setPageNumber(1));
     dispatch(setPageSize(5));
     refetch();

@@ -23,7 +23,7 @@ const MultipleAssignDialog = ({ selectedTickets, open, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   const today = moment();
-  useSignalRConnection();
+  // useSignalRConnection();
 
   console.log("ArrayData: ", selectedTickets);
 

@@ -263,8 +263,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
           }
         });
 
-        dispatch(notificationApi.util.resetApiState());
-        dispatch(notificationMessageApi.util.resetApiState());
+        // dispatch(notificationApi.util.resetApiState());
+        // dispatch(notificationMessageApi.util.resetApiState());
         reset({
           Request_Type: "New Request",
           Requestor_By: null,
@@ -410,6 +410,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
+
+  console.log("watchChannel: ", watch("ChannelId"));
 
   return (
     <>
@@ -1065,7 +1067,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
+                              options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.serviceChannel)?.channelUsers || []}
                               loading={issueHandlerIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {

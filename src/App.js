@@ -11,11 +11,11 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      <SignalRProvider>
-        <ParameterProvider>
-          <RouterProvider router={router} />
-        </ParameterProvider>
-      </SignalRProvider>
+      {/* <SignalRProvider> */}
+      <ParameterProvider>
+        <RouterProvider router={router} />
+      </ParameterProvider>
+      {/* </SignalRProvider> */}
     </ThemeProvider>
   );
 };

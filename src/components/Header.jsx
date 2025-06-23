@@ -76,7 +76,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const fullName = useSelector((state) => state?.user?.fullname);
   const userName = useSelector((state) => state?.user?.username);
@@ -130,8 +130,8 @@ const Header = () => {
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
 
-      dispatch(notificationApi.util.resetApiState());
-      dispatch(notificationMessageApi.util.resetApiState());
+      // dispatch(notificationApi.util.resetApiState());
+      // dispatch(notificationMessageApi.util.resetApiState());
       dispatch(concernApi.util.resetApiState());
       dispatch(concernReceiverApi.util.resetApiState());
       dispatch(concernIssueHandlerApi.util.resetApiState());
@@ -167,13 +167,13 @@ const Header = () => {
           sessionStorage.removeItem("token");
           sessionStorage.removeItem("user");
 
-          dispatch(notificationApi.util.resetApiState());
-          dispatch(notificationMessageApi.util.resetApiState());
-          dispatch(concernApi.util.resetApiState());
-          dispatch(concernReceiverApi.util.resetApiState());
-          dispatch(concernIssueHandlerApi.util.resetApiState());
-          dispatch(ticketApprovalApi.util.resetApiState());
-          dispatch(closingTicketApi.util.resetApiState());
+          // dispatch(notificationApi.util.resetApiState());
+          // dispatch(notificationMessageApi.util.resetApiState());
+          // dispatch(concernApi.util.resetApiState());
+          // dispatch(concernReceiverApi.util.resetApiState());
+          // dispatch(concernIssueHandlerApi.util.resetApiState());
+          // dispatch(ticketApprovalApi.util.resetApiState());
+          // dispatch(closingTicketApi.util.resetApiState());
 
           dispatch(clearUserDetails());
           navigate("/login");

@@ -38,7 +38,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
@@ -92,8 +92,8 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
           duration: 1500,
         });
 
-        dispatch(notificationApi.util.resetApiState());
-        dispatch(notificationMessageApi.util.resetApiState());
+        // dispatch(notificationApi.util.resetApiState());
+        // dispatch(notificationMessageApi.util.resetApiState());
 
         setAddAttachments([]);
         reset();

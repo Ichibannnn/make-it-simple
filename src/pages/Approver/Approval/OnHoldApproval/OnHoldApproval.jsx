@@ -30,7 +30,7 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   const [viewOnHoldData, setViewOnHoldData] = useState(null);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   // console.log("Notification: ", notificationApi);
 

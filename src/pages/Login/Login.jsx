@@ -166,12 +166,12 @@ const LoginForm = () => {
         dispatch(signIn());
         dispatch(setUserDetails(user));
 
-        dispatch(notificationApi.util.resetApiState());
-        dispatch(concernApi.util.resetApiState());
-        dispatch(concernReceiverApi.util.resetApiState());
-        dispatch(concernIssueHandlerApi.util.resetApiState());
-        dispatch(ticketApprovalApi.util.resetApiState());
-        dispatch(closingTicketApi.util.resetApiState());
+        // dispatch(notificationApi.util.resetApiState());
+        // dispatch(concernApi.util.resetApiState());
+        // dispatch(concernReceiverApi.util.resetApiState());
+        // dispatch(concernIssueHandlerApi.util.resetApiState());
+        // dispatch(ticketApprovalApi.util.resetApiState());
+        // dispatch(closingTicketApi.util.resetApiState());
 
         setAlertData({
           severity: "success",

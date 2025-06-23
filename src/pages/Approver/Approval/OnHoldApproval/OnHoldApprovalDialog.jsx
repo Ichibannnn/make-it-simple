@@ -27,7 +27,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [approveOnHold, { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching }] = useApproveOnHoldMutation();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
@@ -70,8 +70,8 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
               description: "Approved on hold ticket successfully!",
               duration: 1500,
             });
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
             onClose();
           })
           .catch((err) => {

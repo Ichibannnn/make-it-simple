@@ -29,7 +29,7 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
   const [approveTransferTicket, { isLoading: approveTransferTicketIsLoading, isFetching: approveTransferTicketIsFetching }] = useApproveTransferTicketMutation();
 
   const dispatch = useDispatch();
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const {
     control,
@@ -85,8 +85,8 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
               duration: 1500,
             });
 
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
 
             reset();
             onClose();

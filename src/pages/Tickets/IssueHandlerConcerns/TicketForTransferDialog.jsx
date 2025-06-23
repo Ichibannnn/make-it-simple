@@ -39,7 +39,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
   const fileInputRef = useRef();
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
@@ -119,8 +119,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               description: "Transfer ticket successfully!",
               duration: 1500,
             });
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+            // dispatch(notificationApi.util.resetApiState());
+            // dispatch(notificationMessageApi.util.resetApiState());
             setAttachments([]);
             reset();
             onClose();

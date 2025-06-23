@@ -37,7 +37,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   const [selectedTickets, setSelectedTickets] = useState([]);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const { open, onToggle, onClose } = useDisclosure();
   const { open: disapproveSelectedOpen, onToggle: disapproveSelectedOnToggle, onClose: disapproveSelectedOnClose } = useDisclosure();

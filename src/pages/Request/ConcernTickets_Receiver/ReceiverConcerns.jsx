@@ -124,7 +124,7 @@ const ReceiverConcerns = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
   const today = moment();
-  useSignalRConnection();
+  // useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
