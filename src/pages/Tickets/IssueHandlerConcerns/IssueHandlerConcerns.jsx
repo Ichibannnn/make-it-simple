@@ -31,6 +31,7 @@ import {
   DiscountOutlined,
   DoneAllOutlined,
   FiberManualRecord,
+  History,
   HistoryToggleOffOutlined,
   MoveDownOutlined,
   PendingActionsOutlined,
@@ -88,7 +89,7 @@ const IssueHandlerConcerns = () => {
 
   const openTickets = useSelector((state) => state.webTickets.openTickets);
 
-  const [ticketStatus, setTicketStatus] = useState("Open Ticket");
+  const [ticketStatus, setTicketStatus] = useState("For Approval");
   const [filterStatus, setFilterStatus] = useState(null);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
@@ -412,7 +413,7 @@ const IssueHandlerConcerns = () => {
               }}
             >
               <Tab
-                value="For Approval TargetDate"
+                value="For Approval"
                 className="tabs-styling"
                 label="Ticket Requests"
                 icon={
@@ -754,17 +755,17 @@ const IssueHandlerConcerns = () => {
                             </Typography>
                           </Stack>
 
-                          {(ticketStatus === "Closed" || ticketStatus === "") && (
+                          {ticketStatus !== "For Approval" && (
                             <Stack direction="row" gap={0.5} alignItems="center">
                               <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKETED DATE: </Typography>
                               <Chip
                                 variant="filled"
                                 size="small"
-                                icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
-                                label={item?.closed_At !== null ? moment(item?.created_At).format("LL") : "-"}
+                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                label={moment(item?.created_At).format("LL")}
                                 sx={{
                                   fontSize: "12px",
-                                  backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                  backgroundColor: "#1D1F3B",
                                   color: theme.palette.primary.main,
                                   fontWeight: 800,
                                 }}
@@ -806,21 +807,12 @@ const IssueHandlerConcerns = () => {
                             </Stack>
                           )}
 
-                          {/* <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>AGING DAYS: </Typography>
-                            <Chip
-                              variant="filled"
-                              size="30px"
-                              icon={<History fontSize="small" color="primary" />}
-                              sx={{
-                                fontSize: "12px",
-                                backgroundColor: "#1D1F3B",
-                                color: theme.palette.primary.main,
-                                fontWeight: 800,
-                              }}
-                              label={`${item.aging_Days} Day(s)`}
-                            />
-                          </Stack> */}
+                          {ticketStatus === "Closed" && (
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>AGING DAYS: </Typography>
+                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.aging_Days} Day(s)</Typography>
+                            </Stack>
+                          )}
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REMARKS: </Typography>
@@ -850,7 +842,9 @@ const IssueHandlerConcerns = () => {
                               variant="filled"
                               size="small"
                               label={
-                                item.ticket_Status === "Open Ticket"
+                                item.ticket_Status === "Pending Request"
+                                  ? "Pending Request"
+                                  : item.ticket_Status === "Open Ticket"
                                   ? "Open"
                                   : item.ticket_Status === "For Transfer"
                                   ? "For Transfer"
@@ -868,7 +862,9 @@ const IssueHandlerConcerns = () => {
                               }
                               sx={{
                                 backgroundColor:
-                                  item.ticket_Status === "Open Ticket"
+                                  item.ticket_Status === "Pending Request"
+                                    ? "#F58900"
+                                    : item.ticket_Status === "Open Ticket"
                                     ? "#ec9d29"
                                     : item.ticket_Status === "For Transfer"
                                     ? "#ff7043"
@@ -924,25 +920,27 @@ const IssueHandlerConcerns = () => {
                           </Stack>
                         )}
 
-                        <Stack direction="row" gap={0.5} alignItems="center">
-                          <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                        {ticketStatus !== "For Approval" && (
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
 
-                          <IssueHandlerConcernsActions
-                            data={item}
-                            onHoldTicket={onHoldTicketAction}
-                            onResumeTicket={onResumeTicketAction}
-                            onHoldManageTicket={onHoldManageTicketAction}
-                            onCloseTicket={onCloseTicketAction}
-                            onCancelCloseTicket={onCancelCloseAction}
-                            onManageTicket={onManageTicketAction}
-                            onTransferTicket={onTransferTicketAction}
-                            onRejectTransferTicket={onRejectTransferTicketAction}
-                            onManageTransfer={onManageTransferAction}
-                            onApproveTransfer={onApproveTransferAction}
-                            onCancelTransfer={onCancelTransferAction}
-                            onPrintTicket={onPrintTicketAction}
-                          />
-                        </Stack>
+                            <IssueHandlerConcernsActions
+                              data={item}
+                              onHoldTicket={onHoldTicketAction}
+                              onResumeTicket={onResumeTicketAction}
+                              onHoldManageTicket={onHoldManageTicketAction}
+                              onCloseTicket={onCloseTicketAction}
+                              onCancelCloseTicket={onCancelCloseAction}
+                              onManageTicket={onManageTicketAction}
+                              onTransferTicket={onTransferTicketAction}
+                              onRejectTransferTicket={onRejectTransferTicketAction}
+                              onManageTransfer={onManageTransferAction}
+                              onApproveTransfer={onApproveTransferAction}
+                              onCancelTransfer={onCancelTransferAction}
+                              onPrintTicket={onPrintTicketAction}
+                            />
+                          </Stack>
+                        )}
                       </Stack>
                     </CardContent>
                   </Card>
@@ -1029,7 +1027,7 @@ const IssueHandlerConcerns = () => {
                         TICKET DESCRIPTION
                       </TableCell>
 
-                      {(ticketStatus === "Closed" || ticketStatus === "") && (
+                      {ticketStatus !== "For Approval" && (
                         <TableCell
                           sx={{
                             background: "#1C2536",
@@ -1066,19 +1064,19 @@ const IssueHandlerConcerns = () => {
                         </TableCell>
                       )}
 
-                      {/* <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        <Stack direction="row" alignItems="center" gap={0.5}>
-                          <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                          AGING DAYS
-                        </Stack>
-                      </TableCell> */}
+                      {ticketStatus === "Closed" ||
+                        (ticketStatus === "" && (
+                          <TableCell
+                            sx={{
+                              background: "#1C2536",
+                              color: "#D65DB1",
+                              fontWeight: 700,
+                              fontSize: "12px",
+                            }}
+                          >
+                            AGING DAYS
+                          </TableCell>
+                        ))}
 
                       <TableCell
                         sx={{
@@ -1117,16 +1115,18 @@ const IssueHandlerConcerns = () => {
                         </TableCell>
                       )}
 
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        ACTION
-                      </TableCell>
+                      {ticketStatus !== "For Approval" && (
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                        >
+                          ACTION
+                        </TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
 
@@ -1203,7 +1203,7 @@ const IssueHandlerConcerns = () => {
                               ))}
                             </TableCell>
 
-                            {(ticketStatus === "Closed" || ticketStatus === "") && (
+                            {ticketStatus !== "For Approval" && (
                               <TableCell
                                 sx={{
                                   color: "#EDF2F7",
@@ -1212,24 +1212,20 @@ const IssueHandlerConcerns = () => {
                                 }}
                                 onClick={() => onViewAction(item)}
                               >
-                                {item?.closed_At !== null ? (
-                                  <>
-                                    <Chip
-                                      variant="filled"
-                                      size="small"
-                                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                      label={moment(item?.created_At).format("LL")}
-                                      sx={{
-                                        fontSize: "12px",
-                                        backgroundColor: "#1D1F3B",
-                                        color: theme.palette.primary.main,
-                                        fontWeight: 800,
-                                      }}
-                                    />
-                                  </>
-                                ) : (
-                                  ""
-                                )}
+                                <>
+                                  <Chip
+                                    variant="filled"
+                                    size="small"
+                                    icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                    label={moment(item?.created_At).format("LL")}
+                                    sx={{
+                                      fontSize: "12px",
+                                      backgroundColor: "#1D1F3B",
+                                      color: theme.palette.primary.main,
+                                      fontWeight: 800,
+                                    }}
+                                  />
+                                </>
                               </TableCell>
                             )}
 
@@ -1289,31 +1285,24 @@ const IssueHandlerConcerns = () => {
                               </TableCell>
                             )}
 
-                            {/* <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                "&:hover": {
-                                  background: "",
-                                  color: "#EDF2F7",
-                                },
-                              }}
-                              onClick={() => onViewAction(item)}
-                            >
-                              <Chip
-                                variant="filled"
-                                size="30px"
-                                icon={<History fontSize="small" color="primary" />}
-                                sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: "#1D1F3B",
-                                  color: theme.palette.primary.main,
-                                  fontWeight: 800,
-                                }}
-                                label={`${item?.aging_Days} Day(s)`}
-                              />
-                            </TableCell> */}
+                            {ticketStatus === "Closed" ||
+                              (ticketStatus === "" && (
+                                <TableCell
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    "&:hover": {
+                                      background: "",
+                                      color: "#EDF2F7",
+                                    },
+                                  }}
+                                  align="center"
+                                  onClick={() => onViewAction(item)}
+                                >
+                                  {item.aging_Days !== null ? `${item.aging_Days} Day(s)` : ""}
+                                </TableCell>
+                              ))}
 
                             <TableCell
                               sx={{
@@ -1359,7 +1348,9 @@ const IssueHandlerConcerns = () => {
                                   variant="filled"
                                   size="small"
                                   label={
-                                    item.ticket_Status === "Open Ticket"
+                                    item.ticket_Status === "Pending Request"
+                                      ? "Pending Request"
+                                      : item.ticket_Status === "Open Ticket"
                                       ? "Open"
                                       : item.ticket_Status === "For Transfer"
                                       ? "For Transfer"
@@ -1377,7 +1368,9 @@ const IssueHandlerConcerns = () => {
                                   }
                                   sx={{
                                     backgroundColor:
-                                      item.ticket_Status === "Open Ticket"
+                                      item.ticket_Status === "Pending Request"
+                                        ? "#F58900"
+                                        : item.ticket_Status === "Open Ticket"
                                         ? "#ec9d29"
                                         : item.ticket_Status === "For Transfer"
                                         ? "#ff7043"
@@ -1437,37 +1430,39 @@ const IssueHandlerConcerns = () => {
                               </TableCell>
                             )}
 
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                maxWidth: "700px",
-                              }}
-                            >
-                              <IssueHandlerConcernsActions
-                                data={item}
-                                onHoldTicket={onHoldTicketAction}
-                                onResumeTicket={onResumeTicketAction}
-                                onHoldManageTicket={onHoldManageTicketAction}
-                                onCloseTicket={onCloseTicketAction}
-                                onCancelCloseTicket={onCancelCloseAction}
-                                onManageTicket={onManageTicketAction}
-                                onTransferTicket={onTransferTicketAction}
-                                onRejectTransferTicket={onRejectTransferTicketAction}
-                                onManageTransfer={onManageTransferAction}
-                                onApproveTransfer={onApproveTransferAction}
-                                onCancelTransfer={onCancelTransferAction}
-                                onPrintTicket={onPrintTicketAction}
-                              />
-                            </TableCell>
+                            {ticketStatus !== "For Approval" && (
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  maxWidth: "700px",
+                                }}
+                              >
+                                <IssueHandlerConcernsActions
+                                  data={item}
+                                  onHoldTicket={onHoldTicketAction}
+                                  onResumeTicket={onResumeTicketAction}
+                                  onHoldManageTicket={onHoldManageTicketAction}
+                                  onCloseTicket={onCloseTicketAction}
+                                  onCancelCloseTicket={onCancelCloseAction}
+                                  onManageTicket={onManageTicketAction}
+                                  onTransferTicket={onTransferTicketAction}
+                                  onRejectTransferTicket={onRejectTransferTicketAction}
+                                  onManageTransfer={onManageTransferAction}
+                                  onApproveTransfer={onApproveTransferAction}
+                                  onCancelTransfer={onCancelTransferAction}
+                                  onPrintTicket={onPrintTicketAction}
+                                />
+                              </TableCell>
+                            )}
                           </TableRow>
                         </React.Fragment>
                       ))}
 
                     {isError && (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={11} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
@@ -1478,7 +1473,7 @@ const IssueHandlerConcerns = () => {
 
                     {isSuccess && !data?.value?.openTicket.length && (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={11} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.

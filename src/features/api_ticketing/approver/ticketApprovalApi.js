@@ -4,6 +4,34 @@ const tags = ["Ticket Approval"];
 
 export const ticketApprovalApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
+    // Approver Target Date Approval ---------------
+    getTargetApproval: builder.query({
+      query: (params) => ({
+        url: "open-ticket/date?UserType=Approver&IsDateApproved=false&IsReject=false",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
+    approveTarget: builder.mutation({
+      query: (body) => ({
+        url: "open-ticket/approval",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : tags),
+    }),
+
+    disapproveTarget: builder.mutation({
+      query: (body) => ({
+        url: "open-ticket/reject",
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : tags),
+    }),
+
     // Approver Ticket Approval ---------------
     getTicketApproval: builder.query({
       query: (params) => ({
@@ -91,6 +119,9 @@ export const ticketApprovalApi = api.enhanceEndpoints({ addTagTypes: tags }).inj
 });
 
 export const {
+  useGetTargetApprovalQuery,
+  useApproveTargetMutation,
+  useDisapproveTargetMutation,
   useGetTicketApprovalQuery,
   useApproveTicketMutation,
   useDisapproveTicketMutation,

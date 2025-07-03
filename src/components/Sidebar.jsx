@@ -8,11 +8,16 @@ import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getMenuIcon } from "./GetIcon";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
   const hideSidebar = useMediaQuery("(max-width: 1639px)");
   const [drawerOpen, setDrawerOpen] = useState(isVisible);
+
+  const { data: notificationBadge } = useGetNotificationQuery();
+
+  console.log("Notification Badge: ", notificationBadge);
 
   const dispatch = useDispatch();
 

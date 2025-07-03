@@ -331,7 +331,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                     fontSize: "14px",
                   }}
                 >
-                  Service Provider:
+                  Channel:
                 </Typography>
 
                 <Controller
@@ -345,7 +345,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={channelData?.value?.channel || []}
                         loading={channelIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
+                        renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
                         onOpen={() => {
                           if (!channelIsSuccess)
                             getChannel({

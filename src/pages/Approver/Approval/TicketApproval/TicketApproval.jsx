@@ -64,7 +64,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      const allTicketIds = data?.value?.closingTicket.map((item) => item.ticketConcernId) || [];
+      const allTicketIds = data?.value?.closingTicket.map((item) => item.closingTicketId) || [];
       setSelectedTickets(allTicketIds);
     } else {
       setSelectedTickets([]);
@@ -204,9 +204,9 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                       >
                         <Stack>
                           <Checkbox
-                            checked={selectedTickets.includes(item.ticketConcernId)}
-                            onChange={() => handleSelectTicket(item.ticketConcernId)}
-                            inputProps={{ "aria-label": `select ticket ${item.ticketConcernId}` }}
+                            checked={selectedTickets.includes(item.closingTicketId)}
+                            onChange={() => handleSelectTicket(item.closingTicketId)}
+                            inputProps={{ "aria-label": `select ticket ${item.closingTicketId}` }}
                           />
                         </Stack>
 
@@ -390,9 +390,9 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                         align="center"
                       >
                         <Checkbox
-                          checked={selectedTickets.includes(item.ticketConcernId)}
-                          onChange={() => handleSelectTicket(item.ticketConcernId)}
-                          inputProps={{ "aria-label": `select ticket ${item.ticketConcernId}` }}
+                          checked={selectedTickets.includes(item.closingTicketId)}
+                          onChange={() => handleSelectTicket(item.closingTicketId)}
+                          inputProps={{ "aria-label": `select ticket ${item.closingTicketId}` }}
                         />
                       </TableCell>
 

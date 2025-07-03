@@ -9,8 +9,16 @@ import TicketApproval from "./TicketApproval/TicketApproval";
 import ForTransfer from "./ForTransferApproval/ForTransfer";
 import OnHoldApproval from "./OnHoldApproval/OnHoldApproval";
 
-import { useGetOnHoldApprovalQuery, useGetTicketApprovalQuery, useGetTransferApprovalQuery } from "../../../features/api_ticketing/approver/ticketApprovalApi";
+import {
+  useGetOnHoldApprovalQuery,
+  useGetTargetApprovalQuery,
+  useGetTicketApprovalQuery,
+  useGetTransferApprovalQuery,
+} from "../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import TargetApproval from "./TargetApproval/TargetApproval";
+import ApproverOpenTicket from "./ApproverOpenTicket/ApproverOpenTicket";
+import ApproverCloseTicket from "./ApproverClosedTicket/ApproverCloseTicket";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -22,6 +30,18 @@ const Approval = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: notificationBadge } = useGetNotificationQuery();
+
+  const {
+    data: targetApprovalData,
+    isLoading: targetApprovalIsLoading,
+    isFetching: targetApprovalIsFetching,
+    isSuccess: targetApprovalIsSuccess,
+    isError: targetApprovalIsError,
+  } = useGetTargetApprovalQuery({
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const {
     data: ticketApprovalData,
@@ -125,7 +145,40 @@ const Approval = () => {
             <Tab
               value="1"
               className="tabs-styling"
-              label="Tickets"
+              label="Ticket Requests"
+              icon={
+                <Badge
+                  // badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
+                  max={100000}
+                  color="warning"
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    ".MuiBadge-badge": {
+                      fontSize: "0.55rem",
+                      fontWeight: 400,
+                    },
+                  }}
+                >
+                  <DiscountOutlined />
+                </Badge>
+              }
+              iconPosition="start"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+                ".MuiBadge-badge": {
+                  color: "#ffff",
+                },
+              }}
+            />
+
+            <Tab
+              value="2"
+              className="tabs-styling"
+              label="For Closing"
               icon={
                 <Badge
                   badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
@@ -156,7 +209,7 @@ const Approval = () => {
             />
 
             <Tab
-              value="2"
+              value="3"
               className="tabs-styling"
               label="For Transfer"
               icon={
@@ -189,7 +242,7 @@ const Approval = () => {
             />
 
             <Tab
-              value="3"
+              value="4"
               className="tabs-styling"
               label="On Hold"
               icon={
@@ -209,6 +262,72 @@ const Approval = () => {
                   }}
                 >
                   <PendingOutlined />
+                </Badge>
+              }
+              iconPosition="start"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+                ".MuiBadge-badge": {
+                  color: "#ffff",
+                },
+              }}
+            />
+
+            <Tab
+              value="5"
+              className="tabs-styling"
+              label="Open Tickets"
+              icon={
+                <Badge
+                  // badgeContent={notificationBadge?.value?.forApprovalOnHoldNotif}
+                  max={100000}
+                  color="warning"
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    ".MuiBadge-badge": {
+                      fontSize: "0.55rem",
+                      fontWeight: 400,
+                    },
+                  }}
+                >
+                  <DiscountOutlined />
+                </Badge>
+              }
+              iconPosition="start"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+                ".MuiBadge-badge": {
+                  color: "#ffff",
+                },
+              }}
+            />
+
+            <Tab
+              value="6"
+              className="tabs-styling"
+              label="Closed Tickets"
+              icon={
+                <Badge
+                  // badgeContent={notificationBadge?.value?.forApprovalOnHoldNotif}
+                  max={100000}
+                  color="warning"
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    ".MuiBadge-badge": {
+                      fontSize: "0.55rem",
+                      fontWeight: 400,
+                    },
+                  }}
+                >
+                  <DiscountOutlined />
                 </Badge>
               }
               iconPosition="start"
@@ -243,6 +362,18 @@ const Approval = () => {
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           {tabNavigation === "1" ? (
             <>
+              <TargetApproval
+                data={targetApprovalData}
+                isLoading={targetApprovalIsLoading}
+                isFetching={targetApprovalIsFetching}
+                isSuccess={targetApprovalIsSuccess}
+                isError={targetApprovalIsError}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
+              />
+            </>
+          ) : tabNavigation === "2" ? (
+            <>
               <TicketApproval
                 data={ticketApprovalData}
                 isLoading={ticketApprovalIsLoading}
@@ -253,7 +384,7 @@ const Approval = () => {
                 setPageSize={setPageSize}
               />
             </>
-          ) : tabNavigation === "2" ? (
+          ) : tabNavigation === "3" ? (
             <>
               <ForTransfer
                 data={transferData}
@@ -265,9 +396,33 @@ const Approval = () => {
                 setPageSize={setPageSize}
               />
             </>
-          ) : (
+          ) : tabNavigation === "4" ? (
             <>
               <OnHoldApproval
+                data={onHoldData}
+                isLoading={onHoldIsLoading}
+                isFetching={onHoldIsFetching}
+                isSuccess={onHoldIsSuccess}
+                isError={onHoldIsError}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
+              />
+            </>
+          ) : tabNavigation === "5" ? (
+            <>
+              <ApproverOpenTicket
+                data={onHoldData}
+                isLoading={onHoldIsLoading}
+                isFetching={onHoldIsFetching}
+                isSuccess={onHoldIsSuccess}
+                isError={onHoldIsError}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
+              />
+            </>
+          ) : (
+            <>
+              <ApproverCloseTicket
                 data={onHoldData}
                 isLoading={onHoldIsLoading}
                 isFetching={onHoldIsFetching}

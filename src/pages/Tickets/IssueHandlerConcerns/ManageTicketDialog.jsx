@@ -493,7 +493,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         color: "#22B4BF",
                       }}
                     >
-                      (Approvesasasd)
+                      (Approved)
                     </Typography>
                   ) : (
                     ""

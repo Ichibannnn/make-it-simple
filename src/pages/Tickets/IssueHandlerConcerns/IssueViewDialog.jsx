@@ -249,24 +249,31 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     <Box sx={{ ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Category:</Typography>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
-                      {data?.getOpenTicketCategories?.map((item, i) => (
-                        <Box key={i}>
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={item.category_Description ? item.category_Description : "-"}
-                            sx={{
-                              backgroundColor: theme.palette.bgForm.black_1,
-                              fontSize: "10px",
-                              color: "#ffffff",
-                              borderRadius: "none",
-                              maxWidth: "300px",
-                            }}
-                          />
-                        </Box>
-                      ))}
-                    </Box>
+
+                    {data?.getOpenTicketCategories?.length > 0 ? (
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
+                        {data?.getOpenTicketCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.category_Description ? item.category_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                fontSize: "10px",
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>-</Typography>
+                      </Box>
+                    )}
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
@@ -274,24 +281,30 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Sub Category:</Typography>
                     </Box>
 
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
-                      {data?.getOpenTicketSubCategories?.map((item, i) => (
-                        <Box key={i}>
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                            sx={{
-                              backgroundColor: theme.palette.bgForm.black_1,
-                              fontSize: "10px",
-                              color: "#ffffff",
-                              borderRadius: "none",
-                              maxWidth: "300px",
-                            }}
-                          />
-                        </Box>
-                      ))}
-                    </Box>
+                    {data?.getOpenTicketSubCategories?.length > 0 ? (
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
+                        {data?.getOpenTicketSubCategories?.map((item, i) => (
+                          <Box key={i}>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                              sx={{
+                                backgroundColor: theme.palette.bgForm.black_1,
+                                fontSize: "10px",
+                                color: "#ffffff",
+                                borderRadius: "none",
+                                maxWidth: "300px",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Box sx={{ ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>-</Typography>
+                      </Box>
+                    )}
                   </Stack>
 
                   <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
@@ -474,26 +487,32 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
-                    <Box sx={{ width: "75%", ml: 2 }}>
-                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                        {data?.getOpenTicketCategories?.map((item, i) => (
-                          <Box key={i}>
-                            <Chip
-                              variant="filled"
-                              size="small"
-                              label={item.category_Description ? item.category_Description : "-"}
-                              sx={{
-                                backgroundColor: theme.palette.bgForm.black_1,
-                                color: "#ffffff",
-                                borderRadius: "none",
-                                maxWidth: "300px",
-                              }}
-                            />
-                          </Box>
-                        ))}
-                      </Stack>
-                      {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography> */}
-                    </Box>
+
+                    {data?.getOpenTicketCategories?.length > 0 ? (
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                          {data?.getOpenTicketCategories?.map((item, i) => (
+                            <Box key={i}>
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                label={item.category_Description ? item.category_Description : "-"}
+                                sx={{
+                                  backgroundColor: theme.palette.bgForm.black_1,
+                                  color: "#ffffff",
+                                  borderRadius: "none",
+                                  maxWidth: "300px",
+                                }}
+                              />
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                    ) : (
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>-</Typography>
+                      </Box>
+                    )}
                   </Stack>
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
@@ -501,26 +520,33 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                       <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
-                    <Box sx={{ width: "75%", ml: 2 }}>
-                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                        {data?.getOpenTicketSubCategories?.map((item, i) => (
-                          <Box key={i}>
-                            <Chip
-                              variant="filled"
-                              size="small"
-                              label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                              sx={{
-                                backgroundColor: theme.palette.bgForm.black_1,
-                                color: "#ffffff",
-                                borderRadius: "none",
-                                maxWidth: "300px",
-                              }}
-                            />
-                          </Box>
-                        ))}
-                      </Stack>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
-                    </Box>
+
+                    {data?.getOpenTicketSubCategories?.length > 0 ? (
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                          {data?.getOpenTicketSubCategories?.map((item, i) => (
+                            <Box key={i}>
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                                sx={{
+                                  backgroundColor: theme.palette.bgForm.black_1,
+                                  color: "#ffffff",
+                                  borderRadius: "none",
+                                  maxWidth: "300px",
+                                }}
+                              />
+                            </Box>
+                          ))}
+                        </Stack>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography>
+                      </Box>
+                    ) : (
+                      <Box sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>-</Typography>
+                      </Box>
+                    )}
                   </Stack>
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
