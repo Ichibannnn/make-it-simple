@@ -70,8 +70,8 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
               description: "Approved on hold ticket successfully!",
               duration: 1500,
             });
-            // dispatch(notificationApi.util.resetApiState());
-            // dispatch(notificationMessageApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             onClose();
           })
           .catch((err) => {
@@ -159,7 +159,21 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Toaster richColors position="top-right" closeButton />
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">

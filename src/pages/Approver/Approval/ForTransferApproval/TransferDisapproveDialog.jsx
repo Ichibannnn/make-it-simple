@@ -74,8 +74,8 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
               description: "Disapproved request successfully! ",
               duration: 1500,
             });
-            // dispatch(notificationApi.util.resetApiState());
-            // dispatch(notificationMessageApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             reset();
             onClose();
             approvalOnClose();
@@ -99,7 +99,21 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
   return (
     <>
       {/* <Toaster richColors position="top-right" closeButton /> */}
-      <Dialog fullWidth maxWidth="sm" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAction();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogTitle
           sx={{
             display: "flex",

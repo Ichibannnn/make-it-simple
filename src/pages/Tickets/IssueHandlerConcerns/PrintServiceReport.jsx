@@ -22,7 +22,21 @@ const PrintServiceReport = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="lg" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           <Stack sx={{ padding: 4, backgroundColor: "#fff", width: "100%" }}>
             {/* Print Display */}

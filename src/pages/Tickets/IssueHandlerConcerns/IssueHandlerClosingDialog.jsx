@@ -135,15 +135,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
       payload.append(`AddClosingAttachments[0].attachment`, "");
     }
 
-    const fourPM = moment("16:00", "HH:mm");
-
+    // 4pm Cut-off Warning
     const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
-
-    const isFourPMGreater = fourPM.isAfter(moment().set({ hour: 16, minute: 0 }));
-    // console.log(isFourPMGreater);
-
-    console.log("Payload Entries: ", [...payload.entries()]);
-
     Swal.fire({
       title: "Confirmation",
       text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
@@ -179,8 +172,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
               description: "Ticket submitted successfully!",
               duration: 1500,
             });
-            // dispatch(notificationApi.util.resetApiState());
-            // dispatch(notificationMessageApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             setAddAttachments([]);
             reset();
             onClose();
@@ -290,7 +283,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      // console.log("Data: ", data);
+      console.log("Data: ", data);
 
       setValue("ticketConcernId", data?.ticketConcernId);
 
@@ -311,11 +304,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         sub_Category_Description: item.subCategory_Description,
       }));
 
+      setValue("CategoryId", null);
+      setValue("SubCategoryId", null);
+
       const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
 
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
-
       getSubCategory({
         CategoryId: categoryIdParams,
       });
@@ -338,7 +333,21 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -800,7 +809,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
             </LoadingButton>
           </Stack>
         </DialogActions>
-
         {/* Dialog to view image */}
         <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
           <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>

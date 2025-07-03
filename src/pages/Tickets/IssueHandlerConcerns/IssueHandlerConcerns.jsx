@@ -143,7 +143,7 @@ const IssueHandlerConcerns = () => {
   const onStatusChange = (_, newValue) => {
     setTicketStatus(newValue);
     dispatch(setPageNumber(1));
-    dispatch(setPageSize(5));
+    dispatch(setPageSize(100));
     refetch();
   };
 
@@ -411,6 +411,36 @@ const IssueHandlerConcerns = () => {
                 },
               }}
             >
+              <Tab
+                value="For Approval TargetDate"
+                className="tabs-styling"
+                label="Ticket Requests"
+                icon={
+                  <Badge
+                    // badgeContent={notificationBadge?.value?.openTicketNotif}
+                    max={100000}
+                    color="warning"
+                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                    sx={{
+                      ".MuiBadge-badge": {
+                        fontSize: "0.55rem",
+                        fontWeight: 400,
+                      },
+                    }}
+                  >
+                    <DiscountOutlined />
+                  </Badge>
+                }
+                iconPosition="start"
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  ".MuiBadge-badge": {
+                    color: "#ffff",
+                  },
+                }}
+              />
+
               <Tab
                 value="Open Ticket"
                 className="tabs-styling"
@@ -724,6 +754,24 @@ const IssueHandlerConcerns = () => {
                             </Typography>
                           </Stack>
 
+                          {(ticketStatus === "Closed" || ticketStatus === "") && (
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKETED DATE: </Typography>
+                              <Chip
+                                variant="filled"
+                                size="small"
+                                icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
+                                label={item?.closed_At !== null ? moment(item?.created_At).format("LL") : "-"}
+                                sx={{
+                                  fontSize: "12px",
+                                  backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                  color: theme.palette.primary.main,
+                                  fontWeight: 800,
+                                }}
+                              />
+                            </Stack>
+                          )}
+
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE: </Typography>
                             <Chip
@@ -929,10 +977,10 @@ const IssueHandlerConcerns = () => {
 
               <TablePagination
                 sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[100, 300, 500]}
                 component="div"
                 count={data?.value?.totalCount || 0}
-                rowsPerPage={data?.value?.pageSize || 5}
+                rowsPerPage={data?.value?.pageSize || 100}
                 page={data?.value?.currentPage - 1 || 0}
                 onPageChange={onPageNumberChange}
                 onRowsPerPageChange={onPageSizeChange}
@@ -967,7 +1015,7 @@ const IssueHandlerConcerns = () => {
                           fontSize: "12px",
                         }}
                       >
-                        TICKET DESCRIPTION
+                        REQUESTOR
                       </TableCell>
 
                       <TableCell
@@ -978,10 +1026,7 @@ const IssueHandlerConcerns = () => {
                           fontSize: "12px",
                         }}
                       >
-                        <Stack direction="row" alignItems="center" gap={0.5}>
-                          <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                          TARGET DATE
-                        </Stack>
+                        TICKET DESCRIPTION
                       </TableCell>
 
                       {(ticketStatus === "Closed" || ticketStatus === "") && (
@@ -993,10 +1038,31 @@ const IssueHandlerConcerns = () => {
                             fontSize: "12px",
                           }}
                         >
-                          <Stack direction="row" alignItems="center" gap={0.5}>
-                            <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                            CLOSED DATE
-                          </Stack>
+                          TICKETED DATE
+                        </TableCell>
+                      )}
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        TARGET DATE
+                      </TableCell>
+
+                      {(ticketStatus === "Closed" || ticketStatus === "") && (
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
+                        >
+                          CLOSED DATE
                         </TableCell>
                       )}
 
@@ -1095,6 +1161,27 @@ const IssueHandlerConcerns = () => {
                               {item.ticketConcernId}
                             </TableCell>
 
+                            <TableCell onClick={() => onViewAction(item)}>
+                              <Typography
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.requestor_Name}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.department_Name}
+                              </Typography>
+                            </TableCell>
+
                             <TableCell
                               sx={{
                                 color: "#EDF2F7",
@@ -1115,6 +1202,36 @@ const IssueHandlerConcerns = () => {
                                 </span>
                               ))}
                             </TableCell>
+
+                            {(ticketStatus === "Closed" || ticketStatus === "") && (
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                                onClick={() => onViewAction(item)}
+                              >
+                                {item?.closed_At !== null ? (
+                                  <>
+                                    <Chip
+                                      variant="filled"
+                                      size="small"
+                                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                      label={moment(item?.created_At).format("LL")}
+                                      sx={{
+                                        fontSize: "12px",
+                                        backgroundColor: "#1D1F3B",
+                                        color: theme.palette.primary.main,
+                                        fontWeight: 800,
+                                      }}
+                                    />
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableCell>
+                            )}
 
                             <TableCell
                               sx={{
@@ -1375,10 +1492,10 @@ const IssueHandlerConcerns = () => {
 
               <TablePagination
                 sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[100, 300, 500]}
                 component="div"
                 count={data?.value?.totalCount || 0}
-                rowsPerPage={data?.value?.pageSize || 5}
+                rowsPerPage={data?.value?.pageSize || 100}
                 page={data?.value?.currentPage - 1 || 0}
                 onPageChange={onPageNumberChange}
                 onRowsPerPageChange={onPageSizeChange}

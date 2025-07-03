@@ -126,7 +126,21 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={viewOpen} onClose={onCloseHandler} disableEscapeKeyDown={false} sx={{ backdropFilter: "blur(5px)", borderRadius: "10px" }}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={viewOpen}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">

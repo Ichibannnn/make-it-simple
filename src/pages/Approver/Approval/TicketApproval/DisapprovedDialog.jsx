@@ -12,6 +12,7 @@ import { Toaster, toast } from "sonner";
 import { useDisapproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
@@ -222,7 +223,8 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
               description: "Disapproved request successfully! ",
               duration: 1500,
             });
-            // dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             reset();
             setSelectedTickets([]);
             onClose();
@@ -245,7 +247,21 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
   return (
     <>
       {/* <Toaster richColors position="top-right" closeButton /> */}
-      <Dialog fullWidth maxWidth="sm" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAction();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogTitle
           sx={{
             display: "flex",

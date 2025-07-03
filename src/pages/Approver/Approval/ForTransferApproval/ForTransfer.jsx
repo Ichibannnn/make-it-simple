@@ -151,10 +151,10 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
 
           <TablePagination
             sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[100, 300, 500]}
             component="div"
             count={data?.value?.totalCount || 0}
-            rowsPerPage={data?.value?.pageSize || 5}
+            rowsPerPage={data?.value?.pageSize || 100}
             page={data?.value?.currentPage - 1 || 0}
             onPageChange={onPageNumberChange}
             onRowsPerPageChange={onPageSizeChange}
@@ -329,10 +329,10 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
 
           <TablePagination
             sx={{ color: "#A0AEC0", fontWeight: 400 }}
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[100, 300, 500]}
             component="div"
             count={data?.value?.totalCount || 0}
-            rowsPerPage={data?.value?.pageSize || 5}
+            rowsPerPage={data?.value?.pageSize || 100}
             page={data?.value?.currentPage - 1 || 0}
             onPageChange={onPageNumberChange}
             onRowsPerPageChange={onPageSizeChange}

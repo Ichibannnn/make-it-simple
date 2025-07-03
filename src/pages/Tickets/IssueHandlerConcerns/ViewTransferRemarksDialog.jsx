@@ -13,7 +13,21 @@ const ViewTransferRemarksDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="sm" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAction();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           {/* REQUESTOR */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">

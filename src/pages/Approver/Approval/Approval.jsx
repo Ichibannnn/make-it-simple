@@ -15,7 +15,7 @@ import { useGetNotificationQuery } from "../../../features/api_notification/noti
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(100);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -62,7 +62,7 @@ const Approval = () => {
   const onStatusChange = (_, newValue) => {
     setTabNavigation(newValue);
     setPageNumber(1);
-    setPageSize(5);
+    setPageSize(100);
     setSearchValue("");
   };
 

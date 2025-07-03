@@ -411,7 +411,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  console.log("watchChannel: ", watch("ChannelId"));
+  // console.log("watchChannel: ", watch("ChannelId"));
 
   return (
     <>

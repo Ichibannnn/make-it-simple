@@ -514,7 +514,7 @@ const ServiceProvider = () => {
                         }}
                         align="center"
                       >
-                        <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} />
+                        <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} onArchive={onArchiveAction} />
                       </TableCell>
                     </TableRow>
                   ))}

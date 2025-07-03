@@ -119,8 +119,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               description: "Transfer ticket successfully!",
               duration: 1500,
             });
-            // dispatch(notificationApi.util.resetApiState());
-            // dispatch(notificationMessageApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             setAttachments([]);
             reset();
             onClose();
@@ -229,7 +229,21 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center">

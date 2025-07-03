@@ -85,8 +85,8 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
               duration: 1500,
             });
 
-            // dispatch(notificationApi.util.resetApiState());
-            // dispatch(notificationMessageApi.util.resetApiState());
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
 
             reset();
             onClose();
@@ -116,7 +116,21 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
   return (
     <>
       {/* <Toaster richColors position="top-right" closeButton /> */}
-      <Dialog fullWidth maxWidth="xs" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAction();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogTitle
           sx={{
             display: "flex",

@@ -350,7 +350,21 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
   return (
     <>
       {/* <Toaster richColors position="top-right" closeButton /> */}
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">

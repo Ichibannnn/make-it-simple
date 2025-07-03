@@ -19,7 +19,7 @@ const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
 });
 
-const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) => {
+const ViewConcernDetails = ({ data, setData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -148,7 +148,21 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
@@ -193,7 +207,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
                         </Box>
                       </Stack>
 
-                      {data?.request_Type === "Back Job" && (
+                      {data?.request_Type === "Rework" && (
                         <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                           <Box>
                             <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Backjob Ticket Number:</Typography>
@@ -324,17 +338,41 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
                         </Box>
 
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
+                            {data?.date_Needed ? moment(data?.date_Needed).format("LL") : "-"}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      <Stack sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                        <Box>
+                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Target Date:</Typography>
+                        </Box>
+
+                        <Box>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
+                            {data?.targetDate ? moment(data?.targetDate).format("LL") : "-"}
+                          </Typography>
                         </Box>
                       </Stack>
 
                       <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Service Provider:</Typography>
+                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Service Channel:</Typography>
                         </Box>
 
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.channel_Name}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.serviceProviderName}</Typography>
+                        </Box>
+                      </Stack>
+
+                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                        <Box>
+                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Channel:</Typography>
+                        </Box>
+
+                        <Box>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.channel_Name ? data?.channel_Name : "-"}</Typography>
                         </Box>
                       </Stack>
 
@@ -344,21 +382,27 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
                         </Box>
 
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                          {data?.getRequestTicketCategories?.map((item, i) => (
-                            <Box key={i}>
-                              <Chip
-                                variant="filled"
-                                size="small"
-                                label={item.category_Description ? item.category_Description : "-"}
-                                sx={{
-                                  backgroundColor: theme.palette.bgForm.black_1,
-                                  color: "#ffffff",
-                                  borderRadius: "none",
-                                  maxWidth: "300px",
-                                }}
-                              />
-                            </Box>
-                          ))}
+                          {data?.getRequestTicketCategories?.length === 0 ? (
+                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
+                          ) : (
+                            <>
+                              {data?.getRequestTicketCategories?.map((item, i) => (
+                                <Box key={i}>
+                                  <Chip
+                                    variant="filled"
+                                    size="small"
+                                    label={item.category_Description ? item.category_Description : "-"}
+                                    sx={{
+                                      backgroundColor: theme.palette.bgForm.black_1,
+                                      color: "#ffffff",
+                                      borderRadius: "none",
+                                      maxWidth: "300px",
+                                    }}
+                                  />
+                                </Box>
+                              ))}
+                            </>
+                          )}
                         </Box>
                       </Stack>
 
@@ -368,56 +412,29 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
                         </Box>
 
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                          {data?.getRequestSubTicketCategories?.map((item, i) => (
-                            <Box key={i}>
-                              <Chip
-                                variant="filled"
-                                size="small"
-                                label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                                sx={{
-                                  backgroundColor: theme.palette.bgForm.black_1,
-                                  color: "#ffffff",
-                                  borderRadius: "none",
-                                  maxWidth: "300px",
-                                }}
-                              />
-                            </Box>
-                          ))}
+                          {data?.getRequestSubTicketCategories?.length === 0 ? (
+                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
+                          ) : (
+                            <>
+                              {data?.getRequestSubTicketCategories?.map((item, i) => (
+                                <Box key={i}>
+                                  <Chip
+                                    variant="filled"
+                                    size="small"
+                                    label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                                    sx={{
+                                      backgroundColor: theme.palette.bgForm.black_1,
+                                      color: "#ffffff",
+                                      borderRadius: "none",
+                                      maxWidth: "300px",
+                                    }}
+                                  />
+                                </Box>
+                              ))}
+                            </>
+                          )}
                         </Box>
                       </Stack>
-
-                      {/* TECHNICIANS */}
-                      {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{  color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Technicians:</Typography>
-                    </Box>
-
-                    <Box sx={{ width: "10%" }} />
-
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                        {data?.getTechnicians?.length === 0 ? (
-                          <>
-                            {data?.getTechnicians?.map((item) => (
-                              <Chip
-                                variant="filled"
-                                size="small"
-                                label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                                sx={{
-                                  backgroundColor: theme.palette.bgForm.black_1,
-                                  color: "#ffffff",
-                                  borderRadius: "none",
-                                  maxWidth: "300px",
-                                }}
-                              />
-                            ))}
-                          </>
-                        ) : (
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
-                        )}
-                      </Stack>
-                    </Box>
-                  </Stack> */}
 
                       <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
                         <Box>
@@ -679,13 +696,41 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
 
                       <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                         <Box sx={{ width: "15%", ml: 2 }}>
+                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
+                        </Box>
+
+                        <Box sx={{ width: "10%" }} />
+
+                        <Box width={{ width: "75%", ml: 2 }}>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                            {data?.targetDate ? moment(data?.targetDate).format("LL") : "-"}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                        <Box sx={{ width: "15%", ml: 2 }}>
                           <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Service Provider:</Typography>
                         </Box>
 
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                            {data?.serviceProviderName ? data?.serviceProviderName : "-"}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                        <Box sx={{ width: "15%", ml: 2 }}>
+                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                        </Box>
+
+                        <Box sx={{ width: "10%" }} />
+
+                        <Box width={{ width: "75%", ml: 2 }}>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name ? data?.channel_Name : "-"}</Typography>
                         </Box>
                       </Stack>
 
@@ -697,25 +742,29 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                            {data?.getRequestTicketCategories?.map((item, i) => (
-                              <Box key={i}>
-                                <Chip
-                                  variant="filled"
-                                  size="small"
-                                  label={item.category_Description ? item.category_Description : "-"}
-                                  sx={{
-                                    backgroundColor: theme.palette.bgForm.black_1,
-                                    color: "#ffffff",
-                                    borderRadius: "none",
-                                    maxWidth: "300px",
-                                  }}
-                                />
-                              </Box>
-                            ))}
-                          </Stack>
-
-                          {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.category_Description}</Typography> */}
+                          {data?.getRequestTicketCategories?.length === 0 ? (
+                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
+                          ) : (
+                            <>
+                              <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                                {data?.getRequestTicketCategories?.map((item, i) => (
+                                  <Box key={i}>
+                                    <Chip
+                                      variant="filled"
+                                      size="small"
+                                      label={item.category_Description ? item.category_Description : "-"}
+                                      sx={{
+                                        backgroundColor: theme.palette.bgForm.black_1,
+                                        color: "#ffffff",
+                                        borderRadius: "none",
+                                        maxWidth: "300px",
+                                      }}
+                                    />
+                                  </Box>
+                                ))}
+                              </Stack>
+                            </>
+                          )}
                         </Box>
                       </Stack>
 
@@ -727,59 +776,31 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                            {data?.getRequestSubTicketCategories?.map((item, i) => (
-                              <Box key={i}>
-                                <Chip
-                                  variant="filled"
-                                  size="small"
-                                  label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                                  sx={{
-                                    backgroundColor: theme.palette.bgForm.black_1,
-                                    color: "#ffffff",
-                                    borderRadius: "none",
-                                    maxWidth: "300px",
-                                  }}
-                                />
-                              </Box>
-                            ))}
-                          </Stack>
-                          {/* <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategory_Description}</Typography> */}
+                          {data?.getRequestSubTicketCategories?.length === 0 ? (
+                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
+                          ) : (
+                            <>
+                              <Stack direction="row" gap={1} sx={{ width: "100%" }}>
+                                {data?.getRequestSubTicketCategories?.map((item, i) => (
+                                  <Box key={i}>
+                                    <Chip
+                                      variant="filled"
+                                      size="small"
+                                      label={item.subCategory_Description ? item.subCategory_Description : "-"}
+                                      sx={{
+                                        backgroundColor: theme.palette.bgForm.black_1,
+                                        color: "#ffffff",
+                                        borderRadius: "none",
+                                        maxWidth: "300px",
+                                      }}
+                                    />
+                                  </Box>
+                                ))}
+                              </Stack>
+                            </>
+                          )}
                         </Box>
                       </Stack>
-
-                      {/* TECHNICIANS */}
-                      {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Technicians:</Typography>
-                    </Box>
-
-                    <Box sx={{ width: "10%" }} />
-
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                        {data?.getTechnicians?.length === 0 ? (
-                          <>
-                            {data?.getTechnicians?.map((item) => (
-                              <Chip
-                                variant="filled"
-                                size="small"
-                                label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                                sx={{
-                                  backgroundColor: theme.palette.bgForm.black_1,
-                                  color: "#ffffff",
-                                  borderRadius: "none",
-                                  maxWidth: "300px",
-                                }}
-                              />
-                            ))}
-                          </>
-                        ) : (
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>-</Typography>
-                        )}
-                      </Stack>
-                    </Box>
-                  </Stack> */}
 
                       <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                         <Box sx={{ width: "15%", ml: 2 }}>
@@ -1015,7 +1036,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
           {data?.ticketRequestConcerns?.[0]?.is_Assigned === false && (
             <Stack sx={{ width: "100%", padding: 2, justifyContent: "end" }}>
               <Button size="small" variant="contained" color="success" startIcon={<Receipt sx={{ color: "#fff" }} />} onClick={() => onAssignAction()}>
-                <Typography sx={{ fontSize: "12px", color: "#fff" }}>Assign Ticket</Typography>
+                <Typography sx={{ fontSize: "12px", color: "#fff" }}>Take Ticket</Typography>
               </Button>
             </Stack>
           )}
@@ -1030,14 +1051,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose, selectedTickets }) =
         </DialogActions>
       </Dialog>
 
-      <AssignTicketDrawer
-        data={data}
-        setData={setData}
-        open={assignTicketOpen}
-        onClose={assignTicketOnClose}
-        viewConcernDetailsOnClose={onClose}
-        selectedTickets={selectedTickets}
-      />
+      <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} viewConcernDetailsOnClose={onClose} />
     </>
   );
 };

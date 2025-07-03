@@ -109,7 +109,7 @@ const theme = createTheme({
           color: "#fff",
           "& .MuiOutlinedInput-notchedOutline": {
             color: "#EDF2F7",
-            borderColor: "#2D3748",
+            borderColor: "#69717b",
           },
           "& .MuiOutlinedInput-input": {
             color: "#fff",
@@ -136,7 +136,7 @@ const theme = createTheme({
             borderColor: "#9e77ed",
           },
           "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#69717b",
+            borderColor: "#2D3748",
           },
         },
         input: {
@@ -315,12 +315,28 @@ const theme = createTheme({
           "&.MuiPickersDay-root.Mui-disabled:not(.Mui-selected)": {
             color: "rgb(255 255 255 / 38%)",
           },
+          "&.MuiIconButton-root.Mui-disabled": {
+            color: "rgb(255 255 255 / 26%)",
+          },
+          "&.MuiCheckbox-root.Mui-disabled": {
+            color: "rgb(255 255 255 / 26%)",
+          },
           "&.MuiChip-root .MuiChip-deleteIcon": {
             color: "rgb(255 255 255 / 59%)",
             "&:hover": {
               backgroundColor: "#1A222F",
               color: "#9e77ed",
             },
+          },
+        },
+      },
+    },
+
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          "&.MuiFormControlLabel-root .MuiFormControlLabel-label.Mui-disabled": {
+            color: "rgb(255 255 255 / 26%)",
           },
         },
       },

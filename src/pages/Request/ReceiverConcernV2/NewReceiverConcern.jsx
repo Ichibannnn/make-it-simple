@@ -47,13 +47,12 @@ import AssignTicketDrawer from "./AssignTicketDrawer";
 const NewReceiverConcern = () => {
   const [approveStatus, setApproveStatus] = useState("false");
   const [concernDetails, setConcernDetails] = useState(null);
-  const [selectedTickets, setSelectedTickets] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(100);
 
   // useSignalRConnection();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -79,38 +78,9 @@ const NewReceiverConcern = () => {
     setPageNumber(1);
   };
 
-  const onStatusChange = (_, newValue) => {
-    setApproveStatus(newValue);
-    setPageNumber(1);
-    setPageSize(5);
-    refetch();
-  };
-
   const onViewAction = (data) => {
-    setSelectedTickets([data]);
     setConcernDetails(data);
     viewConcernDetailsOnToggle();
-  };
-
-  const onAddTicketAction = () => {
-    addTicketOnToggle();
-  };
-
-  const handleSelectAll = (event) => {
-    if (event.target.checked) {
-      const allTicketIds = data?.value?.requestConcern?.map((item) => item) || [];
-      setSelectedTickets(allTicketIds);
-    } else {
-      setSelectedTickets([]);
-    }
-  };
-
-  const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
-  };
-
-  const approveModalHandler = () => {
-    assignMultipleOnToggle();
   };
 
   return (
@@ -129,11 +99,7 @@ const NewReceiverConcern = () => {
       <Stack>
         <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
           <Typography variant={isScreenSmall ? "h5" : "h4"}>Concerns</Typography>
-          <Stack justifyItems="space-between" direction="row" marginTop={1}>
-            <Button variant="contained" size="large" color="primary" startIcon={<PostAddOutlined />} onClick={onAddTicketAction}>
-              Create Ticket
-            </Button>
-          </Stack>
+          <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
         </Stack>
 
         <Stack
@@ -144,90 +110,9 @@ const NewReceiverConcern = () => {
             width: "100%",
           }}
         >
-          <Stack direction="row" justifyContent="space-between">
-            <Tabs
-              value={approveStatus}
-              onChange={onStatusChange}
-              variant="scrollable"
-              scrollButtons="auto"
-              sx={{
-                ".MuiTab-root": {
-                  minWidth: isScreenSmall ? "80px" : "120px",
-                  fontSize: { xs: "10px", sm: "12px", md: "13px" },
-                },
-                ".MuiTabs-scrollButtons": {
-                  color: "#fff",
-                  "&.Mui-disabled": {
-                    opacity: 0.3,
-                  },
-                },
-              }}
-            >
-              <Tab
-                className="tabs-styling"
-                value="false"
-                label="Pending"
-                icon={
-                  <Badge
-                    badgeContent={notificationBadge?.value?.receiverForApprovalNotif}
-                    max={100000}
-                    color="primary"
-                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
-                    sx={{
-                      ".MuiBadge-badge": {
-                        fontSize: "0.55rem",
-                        fontWeight: 400,
-                      },
-                    }}
-                  >
-                    <PendingActions />
-                  </Badge>
-                }
-                iconPosition="start"
-                sx={{ fontWeight: 600, fontSize: "12px" }}
-              />
-
-              <Tab
-                className="tabs-styling"
-                value="true"
-                label="Verified"
-                icon={
-                  <Badge
-                    badgeContent={notificationBadge?.value?.receiverApproveNotif}
-                    max={100000}
-                    color="primary"
-                    anchorOrigin={{ vertical: "top", horizontal: "left" }}
-                    sx={{
-                      ".MuiBadge-badge": {
-                        fontSize: "0.55rem",
-                        fontWeight: 400,
-                      },
-                    }}
-                  >
-                    <DoneAllOutlined />
-                  </Badge>
-                }
-                iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
-              />
-            </Tabs>
-          </Stack>
-
-          <Divider
-            variant="fullWidth"
-            sx={{
-              background: "#2D3748",
-              marginBottom: 1,
-              lineHeight: 1,
-            }}
-          />
-
-          <Stack sx={{ width: "100%", padding: 1, gap: 1 }}>
+          <Stack sx={{ width: "100%", padding: 3, gap: 1 }}>
             <OutlinedInput
-              placeholder="eg. Requestor Name"
+              placeholder="Search"
               startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -238,54 +123,18 @@ const NewReceiverConcern = () => {
                 lineHeight: "1.4375rem",
               }}
             />
-
-            {selectedTickets.length > 0 && (
-              <Stack
-                direction={isScreenSmall ? "column" : "row"}
-                alignItems={isScreenSmall ? "left" : "center"}
-                justifyContent="space-between"
-                gap={0.5}
-                sx={{ padding: "10px 20px", backgroundColor: theme.palette.bgForm.black2, borderRadius: "20px", marginBottom: 1 }}
-              >
-                <Stack direction="row" gap={0.5}>
-                  <LocalOffer />
-                  <Typography>
-                    {selectedTickets.length} {""}
-                    {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
-                  </Typography>
-                </Stack>
-
-                <Stack direction="row" gap={0.5}>
-                  <LoadingButton variant="contained" color="success" startIcon={<Check />} onClick={() => approveModalHandler()}>
-                    Assign
-                  </LoadingButton>
-                </Stack>
-              </Stack>
-            )}
           </Stack>
 
           {isScreenSmall ? (
-            // Card
+            // Cards
             <>
-              <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
-                <Checkbox
-                  indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.requestConcern?.length || 0)}
-                  checked={(data?.value?.requestConcern?.length || 0) > 0 && selectedTickets.length === (data?.value?.requestConcern?.length || 0)}
-                  onChange={handleSelectAll}
-                  inputProps={{ "aria-label": "select all tickets" }}
-                />
-                <Typography>Select All</Typography>
-              </Stack>
-
               <Stack spacing={2}>
                 {isSuccess &&
                   !isLoading &&
                   !isFetching &&
                   data?.value?.requestConcern?.map((item, index) => {
-                    const isSelected = selectedTickets.includes(item.requestConcernId);
-
                     return (
-                      <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                      <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                         <CardContent
                           sx={{
                             cursor: "pointer",
@@ -303,14 +152,6 @@ const NewReceiverConcern = () => {
                               alignItems: "center",
                             }}
                           >
-                            <Stack>
-                              <Checkbox
-                                checked={selectedTickets.includes(item.requestConcernId)}
-                                onChange={() => handleSelectTicket(item.requestConcernId)}
-                                inputProps={{ "aria-label": `select ticket ${item.requestConcernId}` }}
-                              />
-                            </Stack>
-
                             <Stack spacing={1} onClick={() => onViewAction(item)}>
                               <Stack mb={2}>
                                 <Stack direction="row" gap={0.5} alignItems="center">
@@ -337,6 +178,11 @@ const NewReceiverConcern = () => {
                                     </span>
                                   ))}
                                 </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>SERVICE PROVIDER:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.serviceProviderName}</Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
@@ -369,7 +215,7 @@ const NewReceiverConcern = () => {
                 {isError && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
                     <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                    <Typography variant="h6" color="error" align="center">
+                    <Typography variant="h6" align="center">
                       Something went wrong.
                     </Typography>
                   </Stack>
@@ -411,24 +257,6 @@ const NewReceiverConcern = () => {
                 <Table stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
-                      <TableCell
-                        padding="checkbox"
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                        align="center"
-                      >
-                        <Checkbox
-                          indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.requestConcern?.length || 0)}
-                          checked={(data?.value?.requestConcern?.length || 0) > 0 && selectedTickets.length === (data?.value?.requestConcern?.length || 0)}
-                          onChange={handleSelectAll}
-                          inputProps={{ "aria-label": "select all tickets" }}
-                        />{" "}
-                      </TableCell>
-
                       <TableCell
                         sx={{
                           background: "#1C2536",
@@ -485,6 +313,17 @@ const NewReceiverConcern = () => {
                           fontSize: "11px",
                         }}
                       >
+                        SERVICE PROVIDER
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                        }}
+                      >
                         CHANNEL
                       </TableCell>
 
@@ -509,31 +348,13 @@ const NewReceiverConcern = () => {
                       !isLoading &&
                       !isFetching &&
                       data?.value?.requestConcern?.map((item) => {
-                        const isSelected = selectedTickets.includes(item.requestConcernId);
-
                         return (
                           <TableRow
                             key={item.requestConcernId}
                             sx={{
-                              backgroundColor: isSelected ? "#1E2034" : "transparent",
+                              backgroundColor: "transparent",
                             }}
                           >
-                            <TableCell
-                              padding="checkbox"
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                              }}
-                              align="center"
-                            >
-                              <Checkbox
-                                checked={selectedTickets.includes(item)}
-                                onChange={() => handleSelectTicket(item)}
-                                inputProps={{ "aria-label": `select ticket ${item.requestConcernId}` }}
-                              />
-                            </TableCell>
-
                             <TableCell
                               sx={{
                                 color: "#EDF2F7",
@@ -632,6 +453,21 @@ const NewReceiverConcern = () => {
                               }}
                               onClick={() => onViewAction(item)}
                             >
+                              {item.serviceProviderName}
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
                               {item.channel_Name}
                             </TableCell>
 
@@ -691,10 +527,10 @@ const NewReceiverConcern = () => {
 
               <TablePagination
                 sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[100, 300, 500]}
                 component="div"
                 count={data?.value?.totalCount || 0}
-                rowsPerPage={data?.value?.pageSize || 5}
+                rowsPerPage={data?.value?.pageSize || 100}
                 page={data?.value?.currentPage - 1 || 0}
                 onPageChange={onPageNumberChange}
                 onRowsPerPageChange={onPageSizeChange}
@@ -702,18 +538,12 @@ const NewReceiverConcern = () => {
             </>
           )}
 
-          <ViewConcernDetails
-            data={concernDetails}
-            setData={setConcernDetails}
-            selectedTickets={selectedTickets}
-            open={viewConcernDetailsOpen}
-            onClose={viewConcernDetailsOnClose}
-          />
+          <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
 
           <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
 
           {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}
-          <AssignTicketDrawer selectedTickets={selectedTickets} setSelectedTickets={setSelectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} />
+          <AssignTicketDrawer open={assignMultipleOpen} onClose={assignMultipleOnClose} />
         </Stack>
       </Stack>
     </Stack>

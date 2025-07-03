@@ -110,7 +110,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const {
     control,
     handleSubmit,
-    register,
     setValue,
     watch,
     reset,
@@ -149,11 +148,12 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   });
 
   const onConcernFormSubmit = (formData) => {
-    console.log("FormData: ", formData);
+    // console.log("FormData: ", formData);
 
     const payload = new FormData();
 
     payload.append("RequestConcernId", formData.RequestConcernId);
+    payload.append("TicketConcernId", editData?.ticketRequestConcerns[0]?.ticketConcernId);
 
     payload.append("Request_Type", formData.Request_Type);
     payload.append("Severity", formData.Severity);
@@ -543,24 +543,21 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  // console.log("EditData: ", editData);
-  // console.log("WatchService: ", watch("ServiceProvider"));
-  // console.log("ServiceDate: ", serviceProviderData);
-
-  // console.log("WatchChannel: ", watch("ChannelId"));
-  // console.log("Channel: ", );
-
-  console.log("Error: ", errors);
-
   return (
     <>
       <Dialog
         fullWidth
         maxWidth="lg"
         open={open}
-        onClose={onCloseAction}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAction();
+        }}
         disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0 }}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
@@ -1393,7 +1390,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               minDate={new moment()}
                               error={!!errors.TargetDate}
                               helperText={errors.TargetDate ? errors.TargetDate.message : null}
-                              disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                              disabled
+                              // disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                             />
                           )}
                         />
@@ -1445,8 +1443,9 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             },
                           }}
                           fullWidth
+                          disabled
                           // disablePortal
-                          disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
+                          // disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                         />
                       );
                     }}
@@ -1737,7 +1736,21 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
             </Stack>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions sx={{ position: "sticky", bottom: 0, backgroundColor: theme.palette.bgForm.black3 }}>
+            <Button
+              variant="outlined"
+              disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
+              onClick={onCloseAction}
+              sx={{
+                ":disabled": {
+                  backgroundColor: "none",
+                  color: "black",
+                },
+              }}
+            >
+              Close
+            </Button>
+
             {editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? (
               <LoadingButton
                 size="large"
@@ -1760,20 +1773,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
             ) : (
               ""
             )}
-
-            <Button
-              variant="text"
-              disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-              onClick={onCloseAction}
-              sx={{
-                ":disabled": {
-                  backgroundColor: "none",
-                  color: "black",
-                },
-              }}
-            >
-              Close
-            </Button>
           </DialogActions>
         </form>
       </Dialog>

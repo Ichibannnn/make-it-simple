@@ -111,7 +111,7 @@ const ConcernTickets = () => {
   const onStatusChange = (_, newValue) => {
     dispatch(setStatus(newValue));
     dispatch(setPageNumber(1));
-    dispatch(setPageSize(5));
+    dispatch(setPageSize(100));
     refetch();
   };
 
@@ -685,10 +685,10 @@ const ConcernTickets = () => {
 
                 <TablePagination
                   sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[100, 300, 500]}
                   component="div"
                   count={data?.value?.totalCount || 0}
-                  rowsPerPage={data?.value?.pageSize || 5}
+                  rowsPerPage={data?.value?.pageSize || 100}
                   page={data?.value?.currentPage - 1 || 0}
                   onPageChange={onPageNumberChange}
                   onRowsPerPageChange={onPageSizeChange}
@@ -697,7 +697,7 @@ const ConcernTickets = () => {
             ) : (
               <>
                 {/* Table */}
-                <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
+                <TableContainer sx={{ minHeight: "545px", maxHeight: "545px" }}>
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
@@ -971,10 +971,10 @@ const ConcernTickets = () => {
 
                 <TablePagination
                   sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[100, 300, 500]}
                   component="div"
                   count={data?.value?.totalCount || 0}
-                  rowsPerPage={data?.value?.pageSize || 5}
+                  rowsPerPage={data?.value?.pageSize || 100}
                   page={data?.value?.currentPage - 1 || 0}
                   onPageChange={onPageNumberChange}
                   onRowsPerPageChange={onPageSizeChange}

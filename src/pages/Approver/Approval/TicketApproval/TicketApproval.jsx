@@ -15,8 +15,8 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, Error, LocalOffer } from "@mui/icons-material";
-import React, { useState } from "react";
+import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
+import { useState } from "react";
 
 import moment from "moment";
 import { theme } from "../../../../theme/theme";
@@ -285,10 +285,10 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
             <TablePagination
               sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[100, 300, 500]}
               component="div"
               count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 5}
+              rowsPerPage={data?.value?.pageSize || 100}
               page={data?.value?.currentPage - 1 || 0}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
@@ -521,10 +521,10 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
           <TablePagination
             sx={{ color: "#A0AEC0", fontWeight: 400 }}
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[100, 300, 500]}
             component="div"
             count={data?.value?.totalCount || 0}
-            rowsPerPage={data?.value?.pageSize || 5}
+            rowsPerPage={data?.value?.pageSize || 100}
             page={data?.value?.currentPage - 1 || 0}
             onPageChange={onPageNumberChange}
             onRowsPerPageChange={onPageSizeChange}

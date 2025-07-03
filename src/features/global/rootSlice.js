@@ -6,7 +6,7 @@ const initialState = {
   isLoading: false,
   ascending: true,
   pageNumber: 1,
-  pageSize: 5,
+  pageSize: 100,
 };
 
 const rootSlice = createSlice({

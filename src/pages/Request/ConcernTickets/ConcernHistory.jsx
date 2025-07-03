@@ -19,7 +19,7 @@ const ConcernHistory = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open} onClose={onCloseHandler} sx={{ backdropFilter: "blur(5px)" }}>
+      <Dialog fullWidth maxWidth="md" open={open} onClose={onCloseHandler} disableEscapeKeyDown={false} sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}>
         <DialogContent>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
