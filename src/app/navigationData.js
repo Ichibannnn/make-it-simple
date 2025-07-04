@@ -123,6 +123,11 @@ export const sidebarNavigationData = [
         name: "Approval",
         path: "/approver/approval",
       },
+      {
+        id: 2,
+        name: "View Tickets",
+        path: "/approver/view-tickets",
+      },
     ],
   },
   {

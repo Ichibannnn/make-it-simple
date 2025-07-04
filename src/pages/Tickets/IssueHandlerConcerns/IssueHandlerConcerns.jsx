@@ -90,6 +90,7 @@ const IssueHandlerConcerns = () => {
   const openTickets = useSelector((state) => state.webTickets.openTickets);
 
   const [ticketStatus, setTicketStatus] = useState("For Approval");
+  const [ascendingDate, setAscendingDate] = useState(true);
   const [filterStatus, setFilterStatus] = useState(null);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
@@ -128,6 +129,7 @@ const IssueHandlerConcerns = () => {
     Date_From: dateFrom || "",
     Date_To: dateTo || "",
     Ascending: ascending,
+    AscendingDate: ascendingDate,
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
@@ -986,7 +988,7 @@ const IssueHandlerConcerns = () => {
             </Stack>
           ) : (
             <>
-              <TableContainer sx={{ minHeight: "480px", maxHeight: "545px" }}>
+              <TableContainer>
                 <Table stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
@@ -1049,6 +1051,9 @@ const IssueHandlerConcerns = () => {
                         }}
                       >
                         TARGET DATE
+                        <IconButton size="small" onClick={() => setAscendingDate(!ascendingDate)}>
+                          {ascendingDate === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                        </IconButton>
                       </TableCell>
 
                       {(ticketStatus === "Closed" || ticketStatus === "") && (

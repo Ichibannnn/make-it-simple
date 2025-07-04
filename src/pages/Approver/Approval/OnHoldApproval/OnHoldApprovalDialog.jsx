@@ -37,8 +37,14 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
   const onApproveAction = () => {
     const approvePayload = {
-      onHoldTicketId: data?.ticketOnHoldId,
+      approveOnHoldRequests: [
+        {
+          onHoldTicketId: data?.ticketOnHoldId,
+        },
+      ],
     };
+
+    console.log("Payload for approval:", approvePayload);
 
     Swal.fire({
       title: "Confirmation",

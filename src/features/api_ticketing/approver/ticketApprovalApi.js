@@ -115,6 +115,26 @@ export const ticketApprovalApi = api.enhanceEndpoints({ addTagTypes: tags }).inj
       }),
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
+
+    // Approver Open Ticket
+    getOnHoldApproval: builder.query({
+      query: (params) => ({
+        url: "on-hold/page?UserType=Approver&IsHold=false&IsReject=false",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
+    // Approver Closed Tickets
+    getOnHoldApproval: builder.query({
+      query: (params) => ({
+        url: "on-hold/page?UserType=Approver&IsHold=false&IsReject=false",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
   }),
 });
 

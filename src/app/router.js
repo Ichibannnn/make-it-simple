@@ -38,6 +38,7 @@ import TicketingPage from "../pages/Tickets/TicketingPage";
 import IssueHandlerConcerns from "../pages/Tickets/IssueHandlerConcerns/IssueHandlerConcerns";
 import ApproverPage from "../pages/Approver/ApproverPage";
 import Approval from "../pages/Approver/Approval/Approval";
+import ViewTicketsPage from "../pages/Approver/ViewTickets/ViewTicketsPage";
 import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverConcern";
 
 import ReportsPage from "../pages/Reports/ReportsPage";
@@ -166,6 +167,10 @@ export const router = createBrowserRouter([
           {
             path: "/approver/approval",
             element: <Approval />,
+          },
+          {
+            path: "/approver/view-tickets",
+            element: <ViewTicketsPage />,
           },
         ],
       },

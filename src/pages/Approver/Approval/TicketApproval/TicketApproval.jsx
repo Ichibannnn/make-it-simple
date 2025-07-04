@@ -3,6 +3,7 @@ import {
   CardContent,
   Checkbox,
   Chip,
+  CircularProgress,
   Stack,
   Table,
   TableBody,
@@ -256,32 +257,32 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                 );
               })}
 
-            {/* {isError && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
-                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                  <Typography variant="h6" color="error" align="center">
-                    Something went wrong.
-                  </Typography>
-                </Stack>
-              )}
+            {isError && (
+              <Stack justifyContent="center" alignItems="center" padding={4}>
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <Typography variant="h6" color="error" align="center">
+                  Something went wrong.
+                </Typography>
+              </Stack>
+            )}
 
-              {(isLoading || isFetching) && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
-                  <CircularProgress />
-                  <Typography variant="h5" color="#EDF2F7">
-                    Please wait...
-                  </Typography>
-                </Stack>
-              )}
+            {(isLoading || isFetching) && (
+              <Stack justifyContent="center" alignItems="center" padding={4}>
+                <CircularProgress />
+                <Typography variant="h5" color="#EDF2F7">
+                  Please wait...
+                </Typography>
+              </Stack>
+            )}
 
-              {isSuccess && !data?.value?.requestConcern.length && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
-                  <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                  <Typography variant="h6" align="center">
-                    No records found.
-                  </Typography>
-                </Stack>
-              )} */}
+            {isSuccess && !data?.value?.closingTicket.length && (
+              <Stack justifyContent="center" alignItems="center" padding={4}>
+                <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                <Typography variant="h6" align="center">
+                  No records found.
+                </Typography>
+              </Stack>
+            )}
 
             <TablePagination
               sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
@@ -494,16 +495,16 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                   </TableRow>
                 )}
 
-                {/* {/* {(isLoading || isFetching) && (
-        <TableRow>
-          <TableCell colSpan={7} align="center">
-            <CircularProgress />
-            <Typography variant="h5" color="#EDF2F7">
-              Please wait...
-            </Typography>
-          </TableCell>
-        </TableRow>
-      )} */}
+                {(isLoading || isFetching) && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <CircularProgress />
+                      <Typography variant="h5" color="#EDF2F7">
+                        Please wait...
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
 
                 {isSuccess && !data?.value?.closingTicket?.length && (
                   <TableRow>

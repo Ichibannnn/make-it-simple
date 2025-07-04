@@ -697,7 +697,7 @@ const ConcernTickets = () => {
             ) : (
               <>
                 {/* Table */}
-                <TableContainer sx={{ minHeight: "545px", maxHeight: "545px" }}>
+                <TableContainer>
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>

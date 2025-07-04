@@ -1,4 +1,4 @@
-import { Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Badge, Box, Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
 import React, { Fragment, useEffect, useState } from "react";
 import { theme } from "../theme/theme";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSidebar } from "../features/sidebar/sidebarSlice";
 import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getMenuIcon } from "./GetIcon";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
+import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
 import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
 
 const Sidebar = () => {
@@ -17,7 +17,7 @@ const Sidebar = () => {
 
   const { data: notificationBadge } = useGetNotificationQuery();
 
-  console.log("Notification Badge: ", notificationBadge);
+  // console.log("Notification Badge: ", notificationBadge);
 
   const dispatch = useDispatch();
 
@@ -346,6 +346,11 @@ const SidebarList = () => {
           name: "Approval",
           path: "/approver/approval",
         },
+        {
+          id: 2,
+          name: "View Tickets",
+          path: "/approver/view-tickets",
+        },
       ],
     },
     {
@@ -422,6 +427,7 @@ const SidebarList = () => {
               ) : (
                 <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname}>
                   <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
+
                   <ListItemText
                     primary={item.name}
                     primaryTypographyProps={{
@@ -460,11 +466,33 @@ const SidebarList = () => {
                       .filter((subItem) => userPermission.includes(subItem.name))
                       .map((subItem, j) => (
                         <ListItemButton key={j} onClick={() => navigate(subItem.path)} selected={subItem.path === pathname} sx={{ padding: "2px" }}>
-                          {/* <ListItemIcon>
-                            {getSubMenuIcon(subItem.icon)}
-                          </ListItemIcon> */}
+                          {/* <ListItemIcon>{getSubMenuIcon(subItem.icon)}</ListItemIcon> */}
+
                           <ListItemText
-                            primary={subItem.name}
+                            primary={
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <Typography
+                                  sx={{
+                                    fontSize: "14px",
+                                    fontWeight: 600,
+                                    lineHeight: "24px",
+                                  }}
+                                >
+                                  {subItem.name}
+                                </Typography>
+
+                                <Badge
+                                  color="error"
+                                  variant="dot"
+                                  sx={{
+                                    "& .MuiBadge-badge": {
+                                      left: 8,
+                                      top: 1,
+                                    },
+                                  }}
+                                />
+                              </Box>
+                            }
                             primaryTypographyProps={{
                               fontSize: "14px",
                               fontWeight: "600",

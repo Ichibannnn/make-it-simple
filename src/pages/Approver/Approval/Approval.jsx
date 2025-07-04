@@ -1,7 +1,7 @@
 import { Badge, Divider, OutlinedInput, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
 import { DiscountOutlined, PendingOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
 
@@ -17,8 +17,6 @@ import {
 } from "../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import TargetApproval from "./TargetApproval/TargetApproval";
-import ApproverOpenTicket from "./ApproverOpenTicket/ApproverOpenTicket";
-import ApproverCloseTicket from "./ApproverClosedTicket/ApproverCloseTicket";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -273,72 +271,6 @@ const Approval = () => {
                 },
               }}
             />
-
-            <Tab
-              value="5"
-              className="tabs-styling"
-              label="Open Tickets"
-              icon={
-                <Badge
-                  // badgeContent={notificationBadge?.value?.forApprovalOnHoldNotif}
-                  max={100000}
-                  color="warning"
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                  sx={{
-                    ".MuiBadge-badge": {
-                      fontSize: "0.55rem",
-                      fontWeight: 400,
-                    },
-                  }}
-                >
-                  <DiscountOutlined />
-                </Badge>
-              }
-              iconPosition="start"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-                ".MuiBadge-badge": {
-                  color: "#ffff",
-                },
-              }}
-            />
-
-            <Tab
-              value="6"
-              className="tabs-styling"
-              label="Closed Tickets"
-              icon={
-                <Badge
-                  // badgeContent={notificationBadge?.value?.forApprovalOnHoldNotif}
-                  max={100000}
-                  color="warning"
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                  sx={{
-                    ".MuiBadge-badge": {
-                      fontSize: "0.55rem",
-                      fontWeight: 400,
-                    },
-                  }}
-                >
-                  <DiscountOutlined />
-                </Badge>
-              }
-              iconPosition="start"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-                ".MuiBadge-badge": {
-                  color: "#ffff",
-                },
-              }}
-            />
           </Tabs>
         </Stack>
 
@@ -396,33 +328,9 @@ const Approval = () => {
                 setPageSize={setPageSize}
               />
             </>
-          ) : tabNavigation === "4" ? (
-            <>
-              <OnHoldApproval
-                data={onHoldData}
-                isLoading={onHoldIsLoading}
-                isFetching={onHoldIsFetching}
-                isSuccess={onHoldIsSuccess}
-                isError={onHoldIsError}
-                setPageNumber={setPageNumber}
-                setPageSize={setPageSize}
-              />
-            </>
-          ) : tabNavigation === "5" ? (
-            <>
-              <ApproverOpenTicket
-                data={onHoldData}
-                isLoading={onHoldIsLoading}
-                isFetching={onHoldIsFetching}
-                isSuccess={onHoldIsSuccess}
-                isError={onHoldIsError}
-                setPageNumber={setPageNumber}
-                setPageSize={setPageSize}
-              />
-            </>
           ) : (
             <>
-              <ApproverCloseTicket
+              <OnHoldApproval
                 data={onHoldData}
                 isLoading={onHoldIsLoading}
                 isFetching={onHoldIsFetching}

@@ -32,8 +32,11 @@ import {
   useLazyGetDownloadTransferredTicketsQuery,
 } from "../../features/api_reports/reportsApi";
 import AllTicketsHistory from "./AllTicketsHistory";
+import { useLazyGetServiceProviderQuery } from "../../features/api masterlist/service_provider/serviceProviderApi";
+import { useSelector } from "react-redux";
 
 const schema = yup.object().shape({
+  ServiceProvider: yup.object().nullable(),
   UnitId: yup.object().nullable(),
   UserId: yup.object().nullable(),
 });
@@ -41,6 +44,10 @@ const schema = yup.object().shape({
 const ReportsPage = () => {
   const [reportNavigation, setReportNavigation] = useState(null);
   const [remarks, setRemarks] = useState(null);
+
+  const [serviceProvider, setProvider] = useState(null);
+  const [channel, setChannel] = useState(null);
+
   const [unit, setUnit] = useState(null);
   const [user, setUser] = useState(null);
   const [dateFrom, setDateFrom] = useState(new moment());
@@ -59,6 +66,8 @@ const ReportsPage = () => {
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const userId = useSelector((state) => state?.user?.id);
+  const userDetails = useSelector((state) => state?.user);
 
   // ALL TICKETS API ~~~~
   const {
@@ -77,6 +86,7 @@ const ReportsPage = () => {
     PageSize: pageSize,
   });
 
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
 
@@ -88,6 +98,7 @@ const ReportsPage = () => {
   const { control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      ServiceProvider: null,
       UnitId: null,
       UserId: null,
     },
@@ -315,200 +326,6 @@ const ReportsPage = () => {
         </Stack>
 
         <Stack sx={{ borderRadius: "20px", backgroundColor: theme.palette.bgForm.black3, marginTop: "5px", height: "730px" }}>
-          {/* <Stack direction="row" gap={1} padding={1}>
-            <Stack>
-              <Typography sx={{ fontSize: "13px" }}>Report Details:</Typography>
-              <Autocomplete
-                size="small"
-                value={reportNavigation ?? ""}
-                onChange={(_, newValue) => {
-                  setReportNavigation(newValue);
-                }}
-                options={categoryOptions}
-                renderInput={(params) => <TextField {...params} placeholder="Report Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                disableClearable
-                sx={{ width: 300 }}
-                componentsProps={{
-                  popper: {
-                    sx: {
-                      "& .MuiAutocomplete-listbox": {
-                        fontSize: "13px",
-                      },
-                    },
-                  },
-                }}
-              />
-            </Stack>
-
-            <Stack>
-              <Typography sx={{ fontSize: "13px" }}>Unit:</Typography>
-              <Controller
-                control={control}
-                name="UnitId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      size="small"
-                      value={value || null}
-                      options={unitData?.value?.unit || []}
-                      loading={unitIsLoading}
-                      renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                      onOpen={() => {
-                        if (!unitIsSuccess) getUnit();
-                      }}
-                      onChange={(_, value) => {
-                        console.log(value);
-                        onChange(value);
-
-                        setUnit(value?.id);
-                        setValue("UserId", null);
-                      }}
-                      getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      sx={{ width: 300 }}
-                      fullWidth
-                      disablePortal
-                      disableClearable
-                      componentsProps={{
-                        popper: {
-                          sx: {
-                            "& .MuiAutocomplete-listbox": {
-                              fontSize: "13px",
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  );
-                }}
-              />
-            </Stack>
-
-            <Stack>
-              <Typography sx={{ fontSize: "13px" }}>Employee:</Typography>
-              <Controller
-                control={control}
-                name="UserId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      size="small"
-                      value={value || null}
-                      options={userData?.value?.users.filter((item) => item.unitId === watch("UnitId")?.id) || []}
-                      loading={userIsLoading}
-                      renderInput={(params) => <TextField {...params} placeholder="Employee" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                      onOpen={() => {
-                        if (!userIsSuccess) getUser();
-                      }}
-                      onChange={(_, value) => {
-                        // console.log(value);
-                        onChange(value);
-
-                        setUser(value?.id);
-                      }}
-                      getOptionLabel={(option) => console.log(option)}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      sx={{ width: 300 }}
-                      fullWidth
-                      disablePortal
-                      disableClearable
-                      componentsProps={{
-                        popper: {
-                          sx: {
-                            "& .MuiAutocomplete-listbox": {
-                              fontSize: "13px",
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  );
-                }}
-              />
-            </Stack>
-
-            {reportNavigation === "Closed Tickets" ? (
-              <Stack>
-                <Typography sx={{ fontSize: "13px" }}>Remarks:</Typography>
-                <Autocomplete
-                  size="small"
-                  value={remarks}
-                  onChange={(_, newValue) => {
-                    setRemarks(newValue);
-                  }}
-                  options={remarksOptions}
-                  renderInput={(params) => <TextField {...params} placeholder="Select Remarks" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                  disableClearable
-                  sx={{ width: 200 }}
-                  componentsProps={{
-                    popper: {
-                      sx: {
-                        "& .MuiAutocomplete-listbox": {
-                          fontSize: "13px",
-                        },
-                      },
-                    },
-                  }}
-                />
-              </Stack>
-            ) : (
-              ""
-            )}
-
-            <Stack>
-              <Typography sx={{ fontSize: "13px" }}>Date From:</Typography>
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  // label="Date From"
-                  value={dateFrom}
-                  maxDate={dateTo}
-                  onChange={(newValue) => setDateFrom(newValue)}
-                  sx={{ width: 200 }}
-                  slotProps={{
-                    textField: {
-                      variant: "outlined",
-                      sx: {
-                        "& .MuiInputBase-input": {
-                          padding: "8.5px 14px",
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          fontSize: "13px",
-                        },
-                      },
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Stack>
-
-            <Stack>
-              <Typography sx={{ fontSize: "13px" }}>Date To:</Typography>
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  value={dateTo}
-                  minDate={dateFrom}
-                  onChange={(newValue) => setDateTo(newValue)}
-                  sx={{ width: 200 }}
-                  slotProps={{
-                    textField: {
-                      variant: "outlined",
-                      sx: {
-                        "& .MuiInputBase-input": {
-                          padding: "8.5px 14px",
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          fontSize: "13px",
-                        },
-                      },
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Stack>
-          </Stack> */}
-
           <Grid container spacing={2} padding={2}>
             {/* Report Details */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -533,9 +350,50 @@ const ReportsPage = () => {
               />
             </Grid>
 
+            {/* Service Provider */}
+            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Typography sx={{ fontSize: "13px" }}>Service Provider:</Typography>
+              <Controller
+                control={control}
+                name="ServiceProvider"
+                render={({ field: { ref, value, onChange } }) => (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value || null}
+                    options={unitData?.value?.unit || []}
+                    loading={unitIsLoading}
+                    renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    onOpen={() => {
+                      if (!unitIsSuccess) getUnit();
+                    }}
+                    onChange={(_, value) => {
+                      onChange(value);
+                      setUnit(value?.id);
+                      setValue("UserId", null);
+                    }}
+                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{ width: "100%" }}
+                    fullWidth
+                    disablePortal
+                    componentsProps={{
+                      popper: {
+                        sx: {
+                          "& .MuiAutocomplete-listbox": {
+                            fontSize: "13px",
+                          },
+                        },
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Grid> */}
+
             {/* Unit */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Typography sx={{ fontSize: "13px" }}>Unit:</Typography>
+              <Typography sx={{ fontSize: "13px" }}>Channel:</Typography>
               <Controller
                 control={control}
                 name="UnitId"

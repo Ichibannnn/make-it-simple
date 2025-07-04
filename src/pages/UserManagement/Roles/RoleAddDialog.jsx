@@ -50,7 +50,7 @@ const masterlistCheckbox = [
 // const channelCheckbox = ["Receiver", "Channel", "Approver"];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
-const approverCheckbox = ["Approval"];
+const approverCheckbox = ["Approval", "View Tickets"];
 const ticketingCheckbox = ["Tickets"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
