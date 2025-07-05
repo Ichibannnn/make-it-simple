@@ -365,7 +365,8 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
-  // console.log("Ascending: ", ascending);
+  console.log("TicketNo: ", ascending);
+  console.log("Date: ", ascendingDate);
 
   return (
     <Stack
@@ -1002,7 +1003,13 @@ const IssueHandlerConcerns = () => {
                         align="center"
                       >
                         TICKET NO.
-                        <IconButton size="small" onClick={() => dispatch(setAscending(!ascending))}>
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            dispatch(setAscending(!ascending));
+                            // setAscendingDate(!ascendingDate);
+                          }}
+                        >
                           {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                         </IconButton>
                       </TableCell>
@@ -1051,7 +1058,13 @@ const IssueHandlerConcerns = () => {
                         }}
                       >
                         TARGET DATE
-                        <IconButton size="small" onClick={() => setAscendingDate(!ascendingDate)}>
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setAscendingDate(!ascendingDate);
+                            dispatch(setAscending(!ascending));
+                          }}
+                        >
                           {ascendingDate === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                         </IconButton>
                       </TableCell>

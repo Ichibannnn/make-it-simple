@@ -15,8 +15,6 @@ const Sidebar = () => {
   const hideSidebar = useMediaQuery("(max-width: 1639px)");
   const [drawerOpen, setDrawerOpen] = useState(isVisible);
 
-  const { data: notificationBadge } = useGetNotificationQuery();
-
   // console.log("Notification Badge: ", notificationBadge);
 
   const dispatch = useDispatch();
@@ -138,6 +136,9 @@ const SidebarList = () => {
   const { pathname } = useLocation();
 
   const userPermission = useSelector((state) => state?.user?.permissions);
+  const { data: notificationData } = useGetNotificationQuery();
+  const openNotification = notificationData?.value?.openTicketNotif || 0;
+  const ticketApprovalNotification = notificationData?.value?.forApprovalClosingNotif || 0;
 
   const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
   const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
@@ -414,7 +415,34 @@ const SidebarList = () => {
                 <ListItemButton onClick={item.onToggle} selected={item.path === pathname}>
                   <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
                   <ListItemText
-                    primary={item.name}
+                    primary={
+                      (item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                              fontWeight: 600,
+                              lineHeight: "24px",
+                            }}
+                          >
+                            {item.name}
+                          </Typography>
+
+                          <Badge
+                            color="error"
+                            variant="dot"
+                            sx={{
+                              "& .MuiBadge-badge": {
+                                left: 8,
+                                top: 1,
+                              },
+                            }}
+                          />
+                        </Box>
+                      ) : (
+                        item.name
+                      )
+                    }
                     primaryTypographyProps={{
                       fontSize: "14px",
                       fontWeight: "600",
@@ -470,28 +498,32 @@ const SidebarList = () => {
 
                           <ListItemText
                             primary={
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                <Typography
-                                  sx={{
-                                    fontSize: "14px",
-                                    fontWeight: 600,
-                                    lineHeight: "24px",
-                                  }}
-                                >
-                                  {subItem.name}
-                                </Typography>
+                              (subItem?.name === "Tickets" && openNotification) || (subItem?.name === "Approval" && ticketApprovalNotification) ? (
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                  <Typography
+                                    sx={{
+                                      fontSize: "14px",
+                                      fontWeight: 600,
+                                      lineHeight: "24px",
+                                    }}
+                                  >
+                                    {subItem.name}
+                                  </Typography>
 
-                                <Badge
-                                  color="error"
-                                  variant="dot"
-                                  sx={{
-                                    "& .MuiBadge-badge": {
-                                      left: 8,
-                                      top: 1,
-                                    },
-                                  }}
-                                />
-                              </Box>
+                                  <Badge
+                                    color="error"
+                                    variant="dot"
+                                    sx={{
+                                      "& .MuiBadge-badge": {
+                                        left: 8,
+                                        top: 1,
+                                      },
+                                    }}
+                                  />
+                                </Box>
+                              ) : (
+                                subItem.name
+                              )
                             }
                             primaryTypographyProps={{
                               fontSize: "14px",
