@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import { useRejectTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
@@ -92,7 +92,6 @@ const CloseDisappprove = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{

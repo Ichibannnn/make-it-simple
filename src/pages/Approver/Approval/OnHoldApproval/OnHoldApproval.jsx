@@ -30,11 +30,17 @@ import OnHoldApprovalDialog from "./OnHoldApprovalDialog";
 import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { LoadingButton } from "@mui/lab";
 import { DisapproveSelectedDialog } from "./DisapprovedOnHoldDialog";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
+import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewOnHoldData, setViewOnHoldData] = useState(null);
   const [selectedTickets, setSelectedTickets] = useState([]);
 
+  const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
@@ -83,47 +89,49 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
     console.log("payload:", payload);
 
-    // Swal.fire({
-    //   title: "Confirmation",
-    //   text: "Close selected tickets?",
-    //   icon: "info",
-    //   color: "white",
-    //   showCancelButton: true,
-    //   background: "#111927",
-    //   confirmButtonColor: "#9e77ed",
-    //   confirmButtonText: "Yes",
-    //   cancelButtonText: "No",
-    //   cancelButtonColor: "#1C2536",
-    //   heightAuto: false,
-    //   width: "30em",
-    //   customClass: {
-    //     container: "custom-container",
-    //     title: "custom-title",
-    //     htmlContainer: "custom-text",
-    //     icon: "custom-icon",
-    //     confirmButton: "custom-confirm-btn",
-    //     cancelButton: "custom-cancel-btn",
-    //   },
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     approveOnHold(payload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "Ticket approved successfully!",
-    //           duration: 1500,
-    //         });
-    //         setSelectedTickets([]);
-    //       })
-    //       .catch((err) => {
-    //         console.log("Error", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-    // });
+    Swal.fire({
+      title: "Confirmation",
+      text: "Close selected tickets?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        approveOnHold(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "Ticket approved successfully!",
+              duration: 1500,
+            });
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
+            setSelectedTickets([]);
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
 
   const handleDisapproveSelected = () => {

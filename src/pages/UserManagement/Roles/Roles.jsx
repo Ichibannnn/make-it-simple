@@ -24,7 +24,7 @@ import { AddOutlined, Search } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -191,8 +191,6 @@ const Roles = () => {
         padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
-
       <Stack>
         <Stack>
           <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>

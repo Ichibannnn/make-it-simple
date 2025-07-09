@@ -27,15 +27,19 @@ import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import { LoadingButton } from "@mui/lab";
 import { useApproveTargetMutation, useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Swal from "sweetalert2";
 import TargetApprovalDialog from "./TargetApprovalDialog";
 import DisapprovedSelectedTargetDialog from "./DisapprovedSelectedTargetDialog";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
+import { useDispatch } from "react-redux";
 
 const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewApprovalData, setViewApprovalData] = useState(null);
   const [selectedTickets, setSelectedTickets] = useState([]);
 
+  const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
@@ -114,6 +118,8 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               description: "Ticket approved successfully!",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             setSelectedTickets([]);
           })
           .catch((err) => {
@@ -133,8 +139,6 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
   return (
     <Stack sx={{ width: "100%" }}>
-      <Toaster richColors position="top-right" closeButton />
-
       {selectedTickets.length > 0 && (
         <Stack
           direction={isScreenSmall ? "column" : "row"}

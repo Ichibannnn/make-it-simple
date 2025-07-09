@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGetOnHoldTicketsQuery } from "../../features/api_reports/reportsApi";
-import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
+import { CalendarMonthOutlined, Search } from "@mui/icons-material";
 import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
@@ -70,7 +70,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
         </Stack>
       </Stack>
 
-      <TableContainer sx={{ minHeight: "500px", maxHeight: "500px" }}>
+      <TableContainer>
         <Table stickyHeader sx={{ borderBottom: "none" }}>
           <TableHead>
             <TableRow>
@@ -368,10 +368,10 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
 
       <TablePagination
         sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[100, 300, 500]}
         component="div"
         count={data?.value?.totalCount || 0}
-        rowsPerPage={data?.value?.pageSize || 5}
+        rowsPerPage={data?.value?.pageSize || 100}
         page={data?.value?.currentPage - 1 || 0}
         onPageChange={onPageNumberChange}
         onRowsPerPageChange={onPageSizeChange}

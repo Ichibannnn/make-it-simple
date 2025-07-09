@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 
@@ -278,11 +278,8 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  //   console.log("Attachments: ", addAttachments);
-
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog
         fullWidth
         maxWidth="md"

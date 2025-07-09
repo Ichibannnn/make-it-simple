@@ -1,18 +1,15 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import React from "react";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
-import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { useDispatch } from "react-redux";
 import { useRejectTransferTicketMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
   reject_Remarks: yup.string().required("Remarks is required."),
@@ -94,7 +91,6 @@ const RejectTransfer = ({ data, open, onClose }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog
         fullWidth
         maxWidth="sm"

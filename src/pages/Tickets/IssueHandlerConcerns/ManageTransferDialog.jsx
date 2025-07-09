@@ -1,38 +1,13 @@
 import { LoadingButton } from "@mui/lab";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import {
-  Add,
-  AttachFileOutlined,
-  CheckOutlined,
-  Close,
-  FiberManualRecord,
-  FileDownloadOutlined,
-  FileUploadOutlined,
-  RemoveCircleOutline,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
@@ -349,7 +324,6 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog
         fullWidth
         maxWidth="md"

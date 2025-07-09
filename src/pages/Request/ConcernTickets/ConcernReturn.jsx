@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 
@@ -177,7 +177,6 @@ const ConcernReturn = ({ data, open, onClose }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 import useDebounce from "../../hooks/useDebounce";
 import { theme } from "../../theme/theme";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { IosShare } from "@mui/icons-material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -57,7 +57,7 @@ const ReportsPage = () => {
   const search = useDebounce(searchValue, 500);
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(100);
 
   const [isLoading, setIsLoading] = useState(false);
   const [sheetData, setSheetData] = useState([]);
@@ -297,8 +297,6 @@ const ReportsPage = () => {
         padding: "1px 24px 24px 24px",
       }}
     >
-      <Toaster richColors position="top-right" />
-
       <Stack>
         <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
           <Stack direction="row" gap={0.5}>
@@ -391,7 +389,7 @@ const ReportsPage = () => {
               />
             </Grid> */}
 
-            {/* Unit */}
+            {/* Channel */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <Typography sx={{ fontSize: "13px" }}>Channel:</Typography>
               <Controller
@@ -404,7 +402,7 @@ const ReportsPage = () => {
                     value={value || null}
                     options={unitData?.value?.unit || []}
                     loading={unitIsLoading}
-                    renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    renderInput={(params) => <TextField {...params} placeholder="Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onOpen={() => {
                       if (!unitIsSuccess) getUnit();
                     }}

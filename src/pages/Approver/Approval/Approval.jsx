@@ -146,9 +146,9 @@ const Approval = () => {
               label="Ticket Requests"
               icon={
                 <Badge
-                  // badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
+                  badgeContent={notificationBadge?.value?.forApprovalTargetDate}
                   max={100000}
-                  color="warning"
+                  color="error"
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left",
@@ -181,7 +181,7 @@ const Approval = () => {
                 <Badge
                   badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
                   max={100000}
-                  color="warning"
+                  color="error"
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left",
@@ -214,7 +214,7 @@ const Approval = () => {
                 <Badge
                   badgeContent={notificationBadge?.value?.forApprovalTransferNotif}
                   max={100000}
-                  color="warning"
+                  color="error"
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left",
@@ -247,7 +247,7 @@ const Approval = () => {
                 <Badge
                   badgeContent={notificationBadge?.value?.forApprovalOnHoldNotif}
                   max={100000}
-                  color="warning"
+                  color="error"
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left",

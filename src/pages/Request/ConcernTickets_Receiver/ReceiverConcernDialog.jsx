@@ -1,42 +1,19 @@
 import { LoadingButton } from "@mui/lab";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { Toaster } from "sonner";
+import { Box, Button, Dialog, DialogActions, DialogContent, Divider, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
-import {
-  AccessTimeOutlined,
-  AccountCircleRounded,
-  Add,
-  FiberManualRecord,
-  GetAppOutlined,
-  PeopleOutlined,
-} from "@mui/icons-material";
+import { AccessTimeOutlined, AccountCircleRounded, FiberManualRecord, GetAppOutlined, PeopleOutlined } from "@mui/icons-material";
 import moment from "moment";
 import { useLazyGetReceiverAttachmentQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 
 const ReceiverConcernDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
 
-  // console.log("Attachment Data: ", attachments);
-
-  const [getReceiverAttachment, { data: attachmentData }] =
-    useLazyGetReceiverAttachmentQuery();
+  const [getReceiverAttachment, { data: attachmentData }] = useLazyGetReceiverAttachmentQuery();
 
   const getAttachmentData = async (id) => {
     try {
       const res = await getReceiverAttachment({ Id: id }).unwrap();
-
-      // console.log("res", res);
 
       setAttachments(
         res?.value?.[0]?.attachments?.map((item) => ({
@@ -62,23 +39,13 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="lg" open={open}>
-        <Toaster richColors position="top-right" closeButton />
-
         <DialogContent>
           {/* REQUESTOR */}
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
               <AccountCircleRounded sx={{ fontSize: "70px" }} />
               <Stack>
-                <Typography
-                  sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
-                >
-                  {data?.empId}
-                </Typography>
+                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.empId}</Typography>
                 <Typography
                   sx={{
                     fontSize: "15px",
@@ -88,28 +55,17 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
                 >
                   {data?.fullName}
                 </Typography>
-                <Typography
-                  sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
-                >
-                  {data?.department_Name}
-                </Typography>
+                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography>
               </Stack>
             </Stack>
 
             <Stack direction="row" gap={0.5} alignItems="center">
-              <AccessTimeOutlined
-                sx={{ fontSize: "16px", color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: "12px", color: theme.palette.text.secondary }}
-              >{` ${moment(data?.created_At).format("LL")}`}</Typography>
+              <AccessTimeOutlined sx={{ fontSize: "16px", color: theme.palette.text.secondary }} />
+              <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{` ${moment(data?.created_At).format("LL")}`}</Typography>
             </Stack>
           </Stack>
 
-          <Divider
-            variant="fullWidth"
-            sx={{ background: "#2D3748", marginTop: 1 }}
-          />
+          <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
 
           {/* CONCERN DETAILS */}
           <Stack
@@ -119,11 +75,7 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
               border: "1px solid #2D3748",
             }}
           >
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
               <Typography
                 sx={{
                   fontSize: "1rem",
@@ -134,9 +86,7 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
                 Concern Details:
               </Typography>
 
-              <Typography
-                sx={{ fontSize: "12px", color: theme.palette.text.secondary }}
-              >{` ${moment(data?.created_At).format("LT")}`}</Typography>
+              <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{` ${moment(data?.created_At).format("LT")}`}</Typography>
             </Stack>
 
             <Stack direction="row" padding={2} gap={1}>
@@ -195,9 +145,7 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
                         flexDirection: "column",
                       }}
                     >
-                      <Typography sx={{ fontWeight: 500 }}>
-                        {fileName.name}
-                      </Typography>
+                      <Typography sx={{ fontWeight: 500 }}>{fileName.name}</Typography>
 
                       <Typography
                         sx={{
@@ -346,11 +294,7 @@ const ReceiverConcernDialog = ({ data, open, onClose }) => {
                 >
                   {data?.fullName}
                 </Typography>
-                <Typography
-                  sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
-                >
-                  {data?.department_Name}
-                </Typography>
+                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>{data?.department_Name}</Typography>
               </Stack>
             </Stack>
           </Stack>

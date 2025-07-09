@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
@@ -8,6 +9,7 @@ import {
   Divider,
   IconButton,
   OutlinedInput,
+  Skeleton,
   Stack,
   Tab,
   Table,
@@ -64,7 +66,7 @@ import TicketFiltering from "./TicketFiltering";
 import TicketForTransferDialog from "./TicketForTransferDialog";
 import ManageTransferDialog from "./ManageTransferDialog";
 import Swal from "sweetalert2";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
@@ -77,6 +79,7 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import ApproveTransferTicket from "./ApproveTransferTicket";
 import RejectTransfer from "./RejectTransfer";
 import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
+import AddTicketDialog from "./AddTicketDialog";
 
 const IssueHandlerConcerns = () => {
   const theming = useTheme();
@@ -106,6 +109,7 @@ const IssueHandlerConcerns = () => {
   const [cancelClosingTickets] = useCancelClosingIssueHandlerTicketsMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
+  const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
   const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
   const { open: manageHoldTicketOpen, onToggle: manageHoldTicketOnToggle, onClose: manageHoldTicketOnClose } = useDisclosure();
   const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
@@ -365,9 +369,6 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
-  console.log("TicketNo: ", ascending);
-  console.log("Date: ", ascendingDate);
-
   return (
     <Stack
       sx={{
@@ -376,16 +377,29 @@ const IssueHandlerConcerns = () => {
         display: "flex",
         backgroundColor: theme.palette.bgForm.black1,
         color: "#fff",
-        padding: isScreenSmall ? "20px" : "24px 94px 34px 94px",
+        padding: isScreenSmall ? "20px" : "2px 64px 24px 64px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack justifyItems="left">
             <Typography variant={isScreenSmall ? "h5" : "h4"}>Tickets</Typography>
           </Stack>
-          <Stack justifyItems="space-between" direction="row"></Stack>
+          <Stack justifyItems="space-between" direction="row">
+            <Stack justifyItems="space-between" direction="row" marginTop={1}>
+              <Button
+                size={isScreenSmall ? "small" : "medium"}
+                variant="contained"
+                color="primary"
+                startIcon={<DiscountOutlined />}
+                loadingPosition="start"
+                onClick={addTicketOnToggle}
+                sx={{ fontSize: "11px" }}
+              >
+                Add Ticket
+              </Button>
+            </Stack>
+          </Stack>
         </Stack>
 
         <Stack
@@ -421,7 +435,7 @@ const IssueHandlerConcerns = () => {
                 label="Ticket Requests"
                 icon={
                   <Badge
-                    // badgeContent={notificationBadge?.value?.openTicketNotif}
+                    badgeContent={notificationBadge?.value?.approvalDateNotif}
                     max={100000}
                     color="warning"
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
@@ -959,7 +973,7 @@ const IssueHandlerConcerns = () => {
               )}
 
               {(isLoading || isFetching) && (
-                <Stack justifyContent="center" alignItems="center" padding={4}>
+                <Stack justifyContent="center" alignItems="center" padding={4} sx={{ maxHeight: 300 }}>
                   <CircularProgress />
                   <Typography variant="h5" color="#EDF2F7">
                     Please wait...
@@ -990,7 +1004,7 @@ const IssueHandlerConcerns = () => {
           ) : (
             <>
               <TableContainer>
-                <Table stickyHeader sx={{ borderBottom: "none" }}>
+                <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell
@@ -1168,6 +1182,7 @@ const IssueHandlerConcerns = () => {
                                 color: "#EDF2F7",
                                 fontSize: "12px",
                                 fontWeight: 500,
+                                width: "120px",
                                 "&:hover": {
                                   background: "",
                                   color: "#EDF2F7",
@@ -1179,11 +1194,11 @@ const IssueHandlerConcerns = () => {
                               {item.ticketConcernId}
                             </TableCell>
 
-                            <TableCell onClick={() => onViewAction(item)}>
+                            <TableCell onClick={() => onViewAction(item)} sx={{ maxWidth: "200px" }}>
                               <Typography
                                 sx={{
                                   color: "#EDF2F7",
-                                  fontSize: "14px",
+                                  fontSize: "12px",
                                   fontWeight: 500,
                                 }}
                               >
@@ -1200,26 +1215,29 @@ const IssueHandlerConcerns = () => {
                               </Typography>
                             </TableCell>
 
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                maxWidth: "400px",
-                                "&:hover": {
-                                  background: "",
+                            <Tooltip title={item.concern_Description} placement="bottom-start">
+                              <TableCell
+                                className="ellipsis-styling"
+                                sx={{
                                   color: "#EDF2F7",
-                                },
-                              }}
-                              onClick={() => onViewAction(item)}
-                            >
-                              {item.concern_Description?.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-                            </TableCell>
+                                  fontSize: "11px",
+                                  fontWeight: 500,
+                                  maxWidth: "300px",
+                                  "&:hover": {
+                                    background: "",
+                                    color: "#EDF2F7",
+                                  },
+                                }}
+                                onClick={() => onViewAction(item)}
+                              >
+                                {item.concern_Description?.split("\r\n").map((line, index) => (
+                                  <span key={index}>
+                                    {line}
+                                    <br />
+                                  </span>
+                                ))}
+                              </TableCell>
+                            </Tooltip>
 
                             {ticketStatus !== "For Approval" && (
                               <TableCell
@@ -1489,6 +1507,17 @@ const IssueHandlerConcerns = () => {
                       </TableRow>
                     )}
 
+                    {(isLoading || isFetching) && (
+                      <TableRow>
+                        <TableCell colSpan={11} align="center">
+                          <CircularProgress />
+                          <Typography variant="h5" color="#EDF2F7">
+                            Please wait...
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+
                     {isSuccess && !data?.value?.openTicket.length && (
                       <TableRow>
                         <TableCell colSpan={11} align="center">
@@ -1518,6 +1547,7 @@ const IssueHandlerConcerns = () => {
         </Stack>
 
         <IssueViewDialog data={viewData} ticketStatus={ticketStatus} viewOpen={viewOpen} viewOnClose={viewOnClose} />
+        <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} />
         <ManageTicketDialog
           data={closeTicketData}
@@ -1606,7 +1636,7 @@ export default IssueHandlerConcerns;
 // import moment from "moment";
 // import Swal from "sweetalert2";
 // import { theme } from "../../../theme/theme";
-// import { Toaster, toast } from "sonner";
+// import {  toast } from "sonner";
 
 // import { Controller, useForm } from "react-hook-form";
 // import { yupResolver } from "@hookform/resolvers/yup";

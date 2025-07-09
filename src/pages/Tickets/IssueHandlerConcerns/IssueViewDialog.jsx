@@ -1,35 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Toaster } from "sonner";
+import { useEffect, useRef, useState } from "react";
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { AccountCircleRounded, AttachFileOutlined, GetAppOutlined, LocalPrintshopOutlined } from "@mui/icons-material";
+
 import { theme } from "../../../theme/theme";
-
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  IconButton,
-  Stack,
-  Tab,
-  Tabs,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, LocalPrintshopOutlined, VisibilityOutlined } from "@mui/icons-material";
-
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
-import TicketHistory from "./TicketHistory";
 import moment from "moment";
-import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
 import { useReactToPrint } from "react-to-print";
+import TicketHistory from "./TicketHistory";
+import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
 
-const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
+const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [navigation, setNavigation] = useState("1");
 
@@ -375,7 +357,9 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     </Box>
 
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                        {data?.date_Needed ? moment(data?.date_Needed).format("LL") : "-"}
+                      </Typography>
                     </Box>
                   </Stack>
 
@@ -617,7 +601,9 @@ const IssueViewDialog = ({ data, ticketStatus, viewOpen, viewOnClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.date_Needed ? moment(data?.date_Needed).format("LL") : "-"}
+                      </Typography>
                     </Box>
                   </Stack>
 

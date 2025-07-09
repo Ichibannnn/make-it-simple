@@ -7,7 +7,7 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { DeleteOutlineOutlined, Save } from "@mui/icons-material";
 
 import {
@@ -161,7 +161,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="sm" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogContent sx={{ paddingBottom: 10 }}>
           <Stack direction="column" sx={{ padding: "5px" }}>

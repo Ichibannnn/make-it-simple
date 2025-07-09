@@ -8,7 +8,7 @@ import * as yup from "yup";
 
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import { useCreateEditSubUnitMutation } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationQuery } from "../../../features/api masterlist/location/locationApi";

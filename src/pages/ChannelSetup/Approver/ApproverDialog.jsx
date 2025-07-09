@@ -7,7 +7,7 @@ import * as yup from "yup";
 
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import { useCreateEditApproverMutation, useLazyGetSubUnitListQuery, useLazyGetApproverListQuery } from "../../../features/api_channel_setup/approver/approverApi";
 

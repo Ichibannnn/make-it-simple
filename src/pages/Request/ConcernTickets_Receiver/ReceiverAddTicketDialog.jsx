@@ -8,7 +8,7 @@ import * as yup from "yup";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -411,11 +411,8 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  // console.log("watchChannel: ", watch("ChannelId"));
-
   return (
     <>
-      {/* <Toaster richColors position="bottom-right" closeButton /> */}
       <Dialog fullWidth maxWidth="lg" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "auto" } }}>
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent sx={{ paddingBottom: 8 }} dividers>

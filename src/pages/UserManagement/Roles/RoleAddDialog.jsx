@@ -1,20 +1,5 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Stack,
-  TextField,
-  useMediaQuery,
-} from "@mui/material";
-import React, { useEffect } from "react";
+import { Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Stack, TextField, useMediaQuery } from "@mui/material";
+import { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,7 +9,7 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 
 import { useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 const schema = yup.object().shape({
   user_Role_Name: yup.string().required("Role Name is required."),
@@ -240,7 +225,6 @@ const RoleAddDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth open={open}>
         <DialogTitle
           sx={{

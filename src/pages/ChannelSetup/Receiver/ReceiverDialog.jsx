@@ -24,7 +24,7 @@ import * as yup from "yup";
 
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import { useCreateEditReceiverMutation, useLazyGetReceiverBusinessListQuery, useLazyGetReceiverListQuery } from "../../../features/api_channel_setup/receiver/receiverApi";
 
@@ -182,7 +182,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="sm" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogContent sx={{ paddingBottom: 10 }}>
           <Stack direction="column" sx={{ padding: "5px" }}>

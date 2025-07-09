@@ -24,12 +24,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
-import {
-  useCreateChannelMutation,
-  useUpdateChannelMutation,
-} from "../../../features/api_channel_setup/channel/channelApi";
+import { useCreateChannelMutation, useUpdateChannelMutation } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 
 const schema = yup.object().shape({
@@ -41,14 +38,7 @@ const schema = yup.object().shape({
 const ChannelDrawer = ({ data, open, onClose }) => {
   const [createChannel] = useCreateChannelMutation();
   const [updateChannel] = useUpdateChannelMutation();
-  const [
-    getSubUnit,
-    {
-      data: subUnitData,
-      isLoading: subUnitIsLoading,
-      isSuccess: subUnitIsSuccess,
-    },
-  ] = useLazyGetSubUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
 
   const {
     control,
@@ -145,7 +135,6 @@ const ChannelDrawer = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" />
       <Drawer anchor="right" open={open}>
         <Stack sx={{ padding: 3 }}>
           <Typography
@@ -217,12 +206,8 @@ const ChannelDrawer = ({ data, open, onClose }) => {
                             });
                         }}
                         onChange={(_, value) => onChange(value)}
-                        getOptionLabel={(option) =>
-                          `${option.subUnit_Code} - ${option.subUnit_Name}`
-                        }
-                        isOptionEqualToValue={(option, value) =>
-                          option.subUnitId === value.subUnitId
-                        }
+                        getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                        isOptionEqualToValue={(option, value) => option.subUnitId === value.subUnitId}
                         sx={{
                           flex: 2,
                         }}
@@ -236,12 +221,7 @@ const ChannelDrawer = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            <Stack
-              direction="row"
-              justifyContent="right"
-              alignItems="center"
-              sx={{ paddingTop: 2, gap: 1 }}
-            >
+            <Stack direction="row" justifyContent="right" alignItems="center" sx={{ paddingTop: 2, gap: 1 }}>
               <LoadingButton
                 type="submit"
                 variant="contained"

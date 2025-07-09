@@ -56,7 +56,7 @@ import { notificationMessageApi, useGetNotificationMessageQuery, useGetNotificat
 import useSignalRConnection from "../hooks/useSignalRConnection";
 import moment from "moment";
 import { useEffect } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { ParameterContext } from "../context/ParameterContext";
 import { Controller, useForm } from "react-hook-form";
 import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
@@ -64,7 +64,6 @@ import { LoadingButton } from "@mui/lab";
 import { signOut } from "../features/auth/authSlice";
 
 const Header = () => {
-  // const hideMenu = useMediaQuery("(max-width: 1069px)");
   const hideMenu = useMediaQuery("(max-width: 1639px)");
 
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
@@ -75,8 +74,6 @@ const Header = () => {
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // useSignalRConnection();
 
   const fullName = useSelector((state) => state?.user?.fullname);
   const userName = useSelector((state) => state?.user?.username);
@@ -223,7 +220,6 @@ const Header = () => {
         paddingRight: "16px",
       }}
     >
-      <Toaster richColors position="top-right" />
       <Box>
         {hideMenu && (
           <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
@@ -344,8 +340,6 @@ const Header = () => {
 
         {openChangePassword && <ChangePassword open={openChangePassword} onClose={changePasswordOnClose} />}
       </Box>
-
-      {showAlert && <ReusableAlert severity={alertData.severity} title={alertData.title} description={alertData.description} onClose={handleAlertClose} />}
     </Stack>
   );
 };
@@ -427,8 +421,6 @@ const ChangePassword = ({ open, onClose }) => {
   return (
     <div>
       <Dialog fullWidth maxWidth="xs" open={open}>
-        <Toaster richColors position="top-right" closeButton />
-
         <IconButton
           aria-label="close"
           onClick={onClose}

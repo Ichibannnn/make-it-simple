@@ -27,7 +27,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import Swal from "sweetalert2";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 import useDisclosure from "../../../../hooks/useDisclosure";
 import { useApproveTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
@@ -224,7 +224,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog
         fullWidth
         maxWidth="md"

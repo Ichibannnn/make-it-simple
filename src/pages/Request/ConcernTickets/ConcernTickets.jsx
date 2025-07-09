@@ -39,7 +39,7 @@ import {
 } from "@mui/icons-material";
 
 import { theme } from "../../../theme/theme";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Swal from "sweetalert2";
 import moment from "moment";
 
@@ -129,8 +129,6 @@ const ConcernTickets = () => {
     const payload = {
       requestConcernId: data?.requestConcernId,
     };
-
-    // console.log("Payload: ", payload);
 
     Swal.fire({
       title: "Confirmation",
@@ -304,7 +302,6 @@ const ConcernTickets = () => {
         padding: isScreenSmall ? "20px" : "24px 94px 34px 94px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
           <Stack justifyItems="left">

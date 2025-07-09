@@ -165,7 +165,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog
         fullWidth
         maxWidth="md"

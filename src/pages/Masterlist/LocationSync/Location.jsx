@@ -21,7 +21,7 @@ import { FileUploadOutlined, FileDownloadOutlined, Search, SyncOutlined } from "
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
 import { theme } from "../../../theme/theme";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
@@ -130,7 +130,6 @@ const Location = () => {
         padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
       <Stack>
         <Stack>
           <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>

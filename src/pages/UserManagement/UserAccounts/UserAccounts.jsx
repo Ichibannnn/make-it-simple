@@ -20,23 +20,21 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
+import Swal from "sweetalert2";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-
-import Swal from "sweetalert2";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { AddOutlined, Search } from "@mui/icons-material";
 
 import UserAccountAction from "./UserAccountAction";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
-
 import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation } from "../../../features/user_management_api/user/userApi";
 
 const UserAccounts = () => {
@@ -240,8 +238,6 @@ const UserAccounts = () => {
         padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
-
       <Stack>
         <Stack>
           <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>

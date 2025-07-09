@@ -71,7 +71,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
         </Stack>
       </Stack>
 
-      <TableContainer sx={{ minHeight: "500px", maxHeight: "500px" }}>
+      <TableContainer>
         <Table stickyHeader sx={{ borderBottom: "none" }}>
           <TableHead>
             <TableRow>
@@ -399,10 +399,10 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
 
       <TablePagination
         sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[100, 300, 500]}
         component="div"
         count={data?.value?.totalCount || 0}
-        rowsPerPage={data?.value?.pageSize || 5}
+        rowsPerPage={data?.value?.pageSize || 100}
         page={data?.value?.currentPage - 1 || 0}
         onPageChange={onPageNumberChange}
         onRowsPerPageChange={onPageSizeChange}

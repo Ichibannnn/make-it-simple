@@ -1,15 +1,10 @@
 import {
-  Badge,
-  Button,
   Card,
   CardContent,
-  Checkbox,
   Chip,
   CircularProgress,
-  Divider,
   OutlinedInput,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -17,13 +12,12 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, DoneAllOutlined, FlashOn, LocalOffer, PendingActions, PostAddOutlined, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, FlashOn, Search } from "@mui/icons-material";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import moment from "moment";
 
 import { theme } from "../../../theme/theme";
@@ -33,15 +27,11 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { Toaster } from "sonner";
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import { useGetReceiverConcernsQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
-import { LoadingButton } from "@mui/lab";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 
 import ViewConcernDetails from "./ViewConcernDetails";
 import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
-import MultipleAssignDialog from "./MultipleAssignTicket/MultipleAssignDialog";
 import AssignTicketDrawer from "./AssignTicketDrawer";
 
 const NewReceiverConcern = () => {
@@ -58,7 +48,7 @@ const NewReceiverConcern = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: notificationBadge } = useGetNotificationQuery();
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetReceiverConcernsQuery({
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetReceiverConcernsQuery({
     is_Approve: approveStatus,
     Search: search,
     PageNumber: pageNumber,
@@ -94,8 +84,6 @@ const NewReceiverConcern = () => {
         padding: isScreenSmall ? "20px" : "7px 94px 34px 94px",
       }}
     >
-      <Toaster richColors position="top-right" closeButton />
-
       <Stack>
         <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
           <Typography variant={isScreenSmall ? "h5" : "h4"}>Concerns</Typography>

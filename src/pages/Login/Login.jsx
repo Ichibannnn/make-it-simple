@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 import useDisclosure from "../../hooks/useDisclosure";
 import ReusableAlert from "../../hooks/ReusableAlert";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
 import { notificationApi } from "../../features/api_notification/notificationApi";
 import { useChangeUserPasswordMutation } from "../../features/user_management_api/user/userApi";
@@ -367,7 +367,6 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
   return (
     <div>
       <Dialog fullWidth maxWidth="xs" open={open}>
-        <Toaster richColors position="top-right" closeButton />
         <IconButton
           aria-label="close"
           onClick={onCloseAction}

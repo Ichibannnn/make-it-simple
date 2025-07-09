@@ -342,6 +342,14 @@ const theme = createTheme({
       },
     },
 
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#283245",
+        },
+      },
+    },
+
     MuiAccordionSummary: {
       styleOverrides: {
         expandIconWrapper: {

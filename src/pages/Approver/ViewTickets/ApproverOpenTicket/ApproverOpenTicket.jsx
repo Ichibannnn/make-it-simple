@@ -275,6 +275,7 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                       fontWeight: 700,
                       fontSize: "12px",
                     }}
+                    align="center"
                   >
                     DELAY DAYS
                   </TableCell>
@@ -426,6 +427,7 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                           fontSize: "12px",
                           fontWeight: 500,
                         }}
+                        align="center"
                         onClick={() => onViewAction(item)}
                       >
                         {item.delay_Days > 0 ? item.delay_Days : ""}

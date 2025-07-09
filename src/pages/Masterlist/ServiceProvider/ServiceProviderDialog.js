@@ -7,7 +7,7 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { Save } from "@mui/icons-material";
 
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
@@ -132,7 +132,6 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
         <DialogTitle
           sx={{

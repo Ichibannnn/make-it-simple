@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardContent,
@@ -26,7 +25,7 @@ import { AddOutlined, Search } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
@@ -174,34 +173,6 @@ const ServiceProvider = () => {
     }
   }, [searchValue]);
 
-  // const data = {
-  //   value: {
-  //     serviceProvider: [
-  //       {
-  //         id: 1,
-  //         serviceProvider: "Management Information System",
-  //         is_Active: true,
-  //         channels: [
-  //           {
-  //             channelId: 1,
-  //             channelName: "SAAD - System Automation and Application Development",
-  //           },
-  //           {
-  //             channelId: 2,
-  //             channelName: "SS - System Support",
-  //           },
-  //           {
-  //             channelId: 3,
-  //             channelName: "SAD - System Analysis and Design",
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // };
-
-  console.log("Data: ", data);
-
   return (
     <Stack
       sx={{
@@ -213,7 +184,6 @@ const ServiceProvider = () => {
         padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
       }}
     >
-      <Toaster richColors position="top-right" />
       <Stack>
         <Stack>
           <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>

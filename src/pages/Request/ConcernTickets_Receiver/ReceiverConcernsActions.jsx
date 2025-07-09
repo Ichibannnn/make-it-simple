@@ -1,11 +1,11 @@
-import { ArchiveOutlined, BackspaceOutlined, DoneAllOutlined, EditOutlined, MoreHoriz, RefreshOutlined, RemoveRedEyeOutlined, RestoreOutlined } from "@mui/icons-material";
+import { DoneAllOutlined, MoreHoriz } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { useApproveReceiverConcernMutation } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 
 export const ReceiverConcernsActions = ({ data, onView, onClose, setAddData, setEditData }) => {
@@ -97,7 +97,6 @@ export const ReceiverConcernsActions = ({ data, onView, onClose, setAddData, set
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <IconButton ref={ref} onClick={onToggle}>
         <MoreHoriz />
       </IconButton>

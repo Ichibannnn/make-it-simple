@@ -7,7 +7,7 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import { theme } from "../../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import { useDisapproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useDispatch } from "react-redux";
@@ -94,7 +94,6 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog fullWidth maxWidth="sm" open={open}>
         <DialogTitle
           sx={{
@@ -246,7 +245,6 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog
         fullWidth
         maxWidth="sm"

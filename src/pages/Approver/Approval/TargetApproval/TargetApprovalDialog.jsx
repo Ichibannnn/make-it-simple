@@ -177,7 +177,6 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
 
   return (
     <>
-      {/* <Toaster richColors position="top-right" closeButton /> */}
       <Dialog
         fullWidth
         maxWidth="md"
@@ -322,18 +321,9 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Date Needed:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Chip
-                        variant="filled"
-                        size="30px"
-                        icon={<CalendarMonthOutlined fontSize="small" color="text" />}
-                        sx={{
-                          fontSize: "12px",
-                          backgroundColor: theme.palette.bgForm.black_1,
-                          color: "#ffffff",
-                          fontWeight: 800,
-                        }}
-                        label={moment(data?.dateNeeded).format("LL")}
-                      />
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.dateNeeded ? moment(data?.dateNeeded).format("LL") : "-"}
+                      </Typography>
                     </Box>
                   </Stack>
 
@@ -477,18 +467,9 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%" }}>
-                      <Chip
-                        variant="filled"
-                        size="30px"
-                        icon={<CalendarMonthOutlined fontSize="small" color="text" />}
-                        sx={{
-                          fontSize: "12px",
-                          backgroundColor: theme.palette.bgForm.black_1,
-                          color: "#ffffff",
-                          fontWeight: 800,
-                        }}
-                        label={moment(data?.dateNeeded).format("LL")}
-                      />
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>
+                        {data?.dateNeeded ? moment(data?.dateNeeded).format("LL") : "-"}
+                      </Typography>
                     </Box>
                   </Stack>
 

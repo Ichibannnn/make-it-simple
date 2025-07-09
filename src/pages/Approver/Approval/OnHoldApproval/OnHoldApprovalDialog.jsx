@@ -5,7 +5,7 @@ import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
 import { theme } from "../../../../theme/theme";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import useDisclosure from "../../../../hooks/useDisclosure";
 import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useDispatch } from "react-redux";
@@ -164,7 +164,6 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog
         fullWidth
         maxWidth="md"

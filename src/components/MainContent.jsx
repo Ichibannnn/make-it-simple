@@ -11,7 +11,7 @@ const MainContent = () => {
       sx={{
         height: "100vh",
         backgroundColor: theme.palette.bgForm.black1,
-        padding: isSmallScreen ? "8px" : "16px",
+        padding: isSmallScreen ? "4px" : "12px",
         overflowY: "auto",
       }}
     >

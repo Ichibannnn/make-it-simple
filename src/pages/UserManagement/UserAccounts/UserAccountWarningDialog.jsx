@@ -2,7 +2,7 @@ import { Warning } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import React from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
 
@@ -49,7 +49,6 @@ const UserAccountWarningDialog = ({ data, payload, open, onClose, userOnClose })
 
   return (
     <>
-      <Toaster richColors position="top-right" closeButton />
       <Dialog fullWidth maxWidth="xs" open={open}>
         <DialogContent>
           <Stack sx={{ width: "100%", padding: 2, justifyContent: "center" }}>

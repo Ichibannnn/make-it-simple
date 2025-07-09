@@ -29,7 +29,6 @@ import {
   DoneAllOutlined,
   FiberManualRecord,
   FileDownloadOutlined,
-  FileUploadOutlined,
   GetAppOutlined,
   PendingActions,
   PostAddOutlined,
@@ -40,7 +39,7 @@ import {
   WarningRounded,
 } from "@mui/icons-material";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -58,10 +57,9 @@ import SomethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LoadingButton } from "@mui/lab";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import {
-  concernReceiverApi,
   useApproveReceiverConcernMutation,
   useCreateEditReceiverConcernMutation,
   useGetReceiverConcernsQuery,
@@ -72,13 +70,13 @@ import { useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 
-import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
-import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
 import { useDispatch } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { notificationMessageApi, useGetNotificationMessageQuery } from "../../../features/api_notification_message/notificationMessageApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+
+import ReceiverAddTicketDialog from "./ReceiverAddTicketDialog";
+import ViewTransferRemarksDialog from "../../Tickets/IssueHandlerConcerns/ViewTransferRemarksDialog";
 
 const schema = yup.object().shape({
   Requestor_By: yup.string().nullable(),
@@ -568,9 +566,6 @@ const ReceiverConcerns = () => {
     }
   }, [data]);
 
-  // console.log("Params: ", parameter);
-  // console.log("isApprove Status: ", approveStatus);
-
   return (
     <>
       <Stack
@@ -583,7 +578,6 @@ const ReceiverConcerns = () => {
           padding: "0px 24px 24px 24px",
         }}
       >
-        <Toaster richColors position="top-right" closeButton />
         <Stack>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack>

@@ -29,11 +29,15 @@ import TicketApprovalDialog from "./TicketApprovalDialog";
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import { LoadingButton } from "@mui/lab";
 import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { DisapproveSelectedDialog } from "./DisapprovedDialog";
 import Swal from "sweetalert2";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
+import { useDispatch } from "react-redux";
 
 const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
+  const dispatch = useDispatch();
   const [viewApprovalData, setViewApprovalData] = useState(null);
   const [selectedTickets, setSelectedTickets] = useState([]);
 
@@ -115,6 +119,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               description: "Ticket approved successfully!",
               duration: 1500,
             });
+            dispatch(notificationApi.util.resetApiState());
+            dispatch(notificationMessageApi.util.resetApiState());
             setSelectedTickets([]);
           })
           .catch((err) => {
@@ -134,8 +140,6 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
   return (
     <Stack sx={{ width: "100%" }}>
-      <Toaster richColors position="top-right" closeButton />
-
       {selectedTickets.length > 0 && (
         <Stack
           direction={isScreenSmall ? "column" : "row"}

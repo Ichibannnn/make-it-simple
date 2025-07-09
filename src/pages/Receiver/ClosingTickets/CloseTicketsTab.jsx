@@ -11,7 +11,7 @@ import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import { LoadingButton } from "@mui/lab";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Swal from "sweetalert2";
 
 import { useCloseTicketMutation } from "../../../features/api_ticketing/receiver/closingTicketApi";
@@ -133,8 +133,6 @@ const CloseTicketsTab = ({ data, isLoading, isFetching, isSuccess, isError, setP
 
   return (
     <Stack sx={{ width: "100%" }}>
-      <Toaster richColors position="top-right" closeButton />
-
       {selectedTickets.length > 0 && (
         <Stack
           direction="row"
