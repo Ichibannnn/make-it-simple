@@ -275,9 +275,9 @@ const ConcernDialog = ({ open, onClose }) => {
           Concern: [""],
           Notes: "",
         });
+        replace([""]);
         setAttachments([]);
         setIsLoading(false);
-        replace([""]); // Reset the concerns field array to have one empty useFieldArray
         onClose();
       })
       .catch((err) => {
@@ -991,7 +991,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 {/* CONCERN INFORMATION */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
 
-                <Stack sx={{ width: "100%", mt: 1 }}>
+                <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
                   {/* Self-Assign */}
                   <Controller
                     name="IssueHandler"
@@ -1016,8 +1016,8 @@ const ConcernDialog = ({ open, onClose }) => {
 
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    {/* Service Provider */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      {/* Service Provider */}
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
                       <Controller
                         control={control}
@@ -1175,8 +1175,8 @@ const ConcernDialog = ({ open, onClose }) => {
                       />
                     </Stack>
 
+                    {/* Sub Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      {/* Sub Category */}
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
                       <Controller
                         control={control}
@@ -1228,7 +1228,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Date Needed */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                    <Stack sx={{ width: "100%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
@@ -1267,7 +1267,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     </Stack>
 
                     {/* Target Date */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%", display: "none" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Target Date: </Typography>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller

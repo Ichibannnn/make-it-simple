@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useGetAllTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
+import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
@@ -84,7 +84,6 @@ const AllTicketsHistory = ({
                   fontWeight: 700,
                   fontSize: "12px",
                 }}
-                align="center"
               >
                 TICKET NO.
               </TableCell>
@@ -224,23 +223,26 @@ const AllTicketsHistory = ({
                   </TableCell>
 
                   <TableCell
+                    className="ellipsis-styling"
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      maxWidth: "600px",
+                      width: "100px",
                       "&:hover": {
                         background: "",
                         color: "#EDF2F7",
                       },
                     }}
                   >
-                    {item.concerns?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
+                    <Tooltip title={item.concerns} placement="bottom-start">
+                      {item.concerns?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </Tooltip>
                   </TableCell>
 
                   <TableCell

@@ -25,7 +25,7 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 
 import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 
-import noRecordsFound from "../../../../assets/svg/SomethingWentWrong.svg";
+import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 
 const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {

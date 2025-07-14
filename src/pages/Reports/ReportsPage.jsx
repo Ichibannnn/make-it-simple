@@ -78,7 +78,7 @@ const ReportsPage = () => {
     isError: allTicketIsError,
   } = useGetAllTicketsQuery({
     Search: search,
-    Unit: unit,
+    Channel: unit,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),
@@ -323,7 +323,7 @@ const ReportsPage = () => {
           </LoadingButton>
         </Stack>
 
-        <Stack sx={{ borderRadius: "20px", backgroundColor: theme.palette.bgForm.black3, marginTop: "5px", height: "730px" }}>
+        <Stack sx={{ borderRadius: "20px", backgroundColor: theme.palette.bgForm.black3, marginTop: "5px", minHeight: "730px" }}>
           <Grid container spacing={2} padding={2}>
             {/* Report Details */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -367,6 +367,7 @@ const ReportsPage = () => {
                     }}
                     onChange={(_, value) => {
                       onChange(value);
+
                       setUnit(value?.id);
                       setValue("UserId", null);
                     }}

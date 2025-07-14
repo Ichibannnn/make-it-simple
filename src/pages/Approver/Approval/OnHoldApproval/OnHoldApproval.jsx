@@ -278,7 +278,7 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.onHoldTicket.length && (
+            {isSuccess && !data?.value?.onHoldTicket.length && !isLoading && !isFetching && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -532,7 +532,16 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                   </TableRow>
                 )}
 
-                {isSuccess && !data?.value?.onHoldTicket?.length && (
+                {(isLoading || isFetching) && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <CircularProgress />
+                    <Typography variant="h5" color="#EDF2F7">
+                      Please wait...
+                    </Typography>
+                  </Stack>
+                )}
+
+                {isSuccess && !data?.value?.onHoldTicket?.length && !isLoading && !isFetching && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

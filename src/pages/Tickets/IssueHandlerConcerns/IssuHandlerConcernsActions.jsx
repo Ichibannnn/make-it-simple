@@ -2,6 +2,7 @@ import {
   ArrowForwardOutlined,
   ChecklistRtlOutlined,
   CloseOutlined,
+  DoneOutlined,
   KeyboardBackspaceOutlined,
   LocalPrintshopOutlined,
   ModeEditOutlineOutlined,
@@ -15,6 +16,7 @@ import React, { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
+import { useSelector } from "react-redux";
 
 const IssueHandlerConcernsActions = ({
   data,
@@ -30,8 +32,12 @@ const IssueHandlerConcernsActions = ({
   onCancelTransfer,
   onRejectTransferTicket,
   onPrintTicket,
+  onConfirm,
 }) => {
   const ref = useRef(null);
+  const userDetails = useSelector((state) => state?.user);
+
+  console.log("User: ", userDetails);
 
   const { open, onToggle } = useDisclosure();
 
@@ -93,6 +99,11 @@ const IssueHandlerConcernsActions = ({
   const onPrintTicketAction = (data) => {
     onToggle();
     onPrintTicket(data);
+  };
+
+  const onConfirmAction = (data) => {
+    onToggle();
+    onConfirm(data);
   };
 
   const menuItems = [];
@@ -187,6 +198,17 @@ const IssueHandlerConcernsActions = ({
           </ListItemIcon>
           <Typography>View Ticket</Typography>
         </Stack>
+      </MenuItem>
+    );
+  }
+
+  if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && userDetails?.id === data?.requestor_By) {
+    menuItems.push(
+      <MenuItem onClick={() => onConfirmAction(data)}>
+        <ListItemIcon>
+          <DoneOutlined fontSize="small" color="success" />
+        </ListItemIcon>
+        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Confirm</Typography>
       </MenuItem>
     );
   }

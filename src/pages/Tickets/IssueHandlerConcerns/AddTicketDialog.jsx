@@ -128,7 +128,6 @@ const AddTicketDialog = ({ open, onClose }) => {
     mode: "onChange",
     defaultValues: {
       RequestTransactionId: "",
-      // Concern: "",
       Concern: [""],
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
@@ -162,6 +161,25 @@ const AddTicketDialog = ({ open, onClose }) => {
     control,
     name: "Concern",
   });
+
+  const defaultValue = {
+    Request_Type: "New Request",
+    Severity: "Normal",
+    BackJobId: null,
+    UserId: {
+      id: userInformation?.id || "",
+      fullname: userInformation?.fullname || "",
+    },
+    Contact_Number: "",
+    DateNeeded: null,
+    CategoryId: [],
+    SubCategoryId: [],
+    TargetDate: null,
+    IssueHandler: userId,
+
+    Concern: [""],
+    Notes: "",
+  };
 
   // Show Concern #1 initially
   useEffect(() => {
@@ -251,30 +269,10 @@ const AddTicketDialog = ({ open, onClose }) => {
         });
         dispatch(notificationApi.util.resetApiState());
         dispatch(notificationMessageApi.util.resetApiState());
-        reset({
-          Request_Type: "New Request",
-          Severity: "Normal",
-          BackJobId: null,
-          UserId: {
-            id: userInformation?.id || "",
-            fullname: userInformation?.fullname || "",
-          },
-          Contact_Number: "",
-
-          // ServiceProvider: null,
-          // ChannelId: null,
-          DateNeeded: null,
-          CategoryId: [],
-          SubCategoryId: [],
-          TargetDate: null,
-          IssueHandler: userId,
-
-          Concern: [""],
-          Notes: "",
-        });
+        reset(defaultValue);
+        replace([""]);
         setAttachments([]);
         setIsLoading(false);
-        replace([""]); // Reset the concerns field array to have one empty useFieldArray
         onClose();
       })
       .catch((err) => {
@@ -448,7 +446,7 @@ const AddTicketDialog = ({ open, onClose }) => {
     <>
       <Dialog
         fullWidth
-        maxWidth="lg"
+        maxWidth="md"
         open={open}
         onClose={(event, reason) => {
           if (reason === "backdropClick") {
@@ -1283,8 +1281,8 @@ const AddTicketDialog = ({ open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  {/* Concern */}
-                  <Typography sx={{ fontSize: "11px" }}>Concern Details:</Typography>
+                  {/* Ticket Description */}
+                  <Typography sx={{ fontSize: "11px" }}>Ticket Description:</Typography>
                   {fields.map((field, index) => (
                     <Stack key={field.id} direction="row" alignItems="flex-start" sx={{ width: "100%", mt: 1 }}>
                       <Controller

@@ -13,7 +13,7 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetTransferredTicketsQuery({
     Search: search,
-    Unit: unit,
+    Channel: unit,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),

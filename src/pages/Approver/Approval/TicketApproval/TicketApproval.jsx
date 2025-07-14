@@ -279,7 +279,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.closingTicket.length && (
+            {isSuccess && !data?.value?.closingTicket.length && !isLoading && !isFetching && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -510,7 +510,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                   </TableRow>
                 )}
 
-                {isSuccess && !data?.value?.closingTicket?.length && (
+                {isSuccess && !data?.value?.closingTicket?.length && !isLoading && !isFetching && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

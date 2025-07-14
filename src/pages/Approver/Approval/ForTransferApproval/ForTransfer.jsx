@@ -211,7 +211,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.transferTicket.length && (
+            {isSuccess && !data?.value?.transferTicket.length && !isLoading && !isFetching && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -449,7 +449,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
                   </TableRow>
                 )}
 
-                {isSuccess && !data?.value?.transferTicket?.length && (
+                {isSuccess && !data?.value?.transferTicket?.length && !isLoading && !isFetching && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

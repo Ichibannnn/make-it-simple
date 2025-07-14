@@ -1321,7 +1321,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Date Needed */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                    <Stack sx={{ width: "100%" }}>
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
@@ -1360,7 +1360,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       </LocalizationProvider>
                     </Stack>
 
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%", display: "none" }}>
                       {/* Target Date */}
                       <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Target Date: </Typography>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -1401,7 +1401,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ width: "100%", mt: 1 }}>
+                <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
                   {/* Assign to */}
                   <Typography
                     sx={{

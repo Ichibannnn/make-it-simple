@@ -12,7 +12,7 @@ const OpenTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, d
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOpenTicketsQuery({
     Search: search,
-    Unit: unit,
+    Channel: unit,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),

@@ -12,7 +12,7 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetClosedTicketsQuery({
     Search: search,
-    Unit: unit,
+    Channel: unit,
     UserId: user,
     Remarks: remarks,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),

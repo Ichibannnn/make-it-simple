@@ -140,6 +140,8 @@ const SidebarList = () => {
   const openNotification = notificationData?.value?.openTicketNotif || 0;
   const ticketApprovalNotification = notificationData?.value?.forApprovalClosingNotif || 0;
 
+  console.log("appproval_notif: ", ticketApprovalNotification);
+
   const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
   const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
   const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
@@ -415,34 +417,7 @@ const SidebarList = () => {
                 <ListItemButton onClick={item.onToggle} selected={item.path === pathname}>
                   <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
                   <ListItemText
-                    primary={
-                      (item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                          <Typography
-                            sx={{
-                              fontSize: "14px",
-                              fontWeight: 600,
-                              lineHeight: "24px",
-                            }}
-                          >
-                            {item.name}
-                          </Typography>
-
-                          <Badge
-                            color="error"
-                            variant="dot"
-                            sx={{
-                              "& .MuiBadge-badge": {
-                                left: 8,
-                                top: 1,
-                              },
-                            }}
-                          />
-                        </Box>
-                      ) : (
-                        item.name
-                      )
-                    }
+                    primary={item.name}
                     primaryTypographyProps={{
                       fontSize: "14px",
                       fontWeight: "600",
@@ -450,7 +425,15 @@ const SidebarList = () => {
                       mb: "2px",
                     }}
                   />
-                  {item.open ? <ExpandLess /> : <ExpandMore />}
+                  {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
+                    <Badge color="error" variant="dot">
+                      {item.open ? <ExpandLess /> : <ExpandMore />}
+                    </Badge>
+                  ) : item.open ? (
+                    <ExpandLess />
+                  ) : (
+                    <ExpandMore />
+                  )}
                 </ListItemButton>
               ) : (
                 <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname}>
@@ -499,7 +482,7 @@ const SidebarList = () => {
                           <ListItemText
                             primary={
                               (subItem?.name === "Tickets" && openNotification) || (subItem?.name === "Approval" && ticketApprovalNotification) ? (
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <Box sx={{ display: "flex", width: "100%", alignItems: "center", gap: 0.5 }}>
                                   <Typography
                                     sx={{
                                       fontSize: "14px",
@@ -512,11 +495,14 @@ const SidebarList = () => {
 
                                   <Badge
                                     color="error"
-                                    variant="dot"
+                                    badgeContent={subItem?.name === "Tickets" ? openNotification : ticketApprovalNotification}
+                                    // variant="dot"
                                     sx={{
                                       "& .MuiBadge-badge": {
-                                        left: 8,
+                                        left: 92,
                                         top: 1,
+                                        fontSize: "0.65rem",
+                                        fontWeight: 400,
                                       },
                                     }}
                                   />

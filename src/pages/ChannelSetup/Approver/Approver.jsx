@@ -186,8 +186,6 @@ const Approver = () => {
     }
   }, [searchValue]);
 
-  // console.log("Data: ", data);
-
   return (
     <Stack
       sx={{
@@ -355,18 +353,6 @@ const Approver = () => {
               <Table sx={{ borderBottom: "none" }}>
                 <TableHead>
                   <TableRow>
-                    {/* <TableCell
-          sx={{
-            background: "#1C2536",
-            color: "#D65DB1",
-            fontWeight: 700,
-            fontSize: "12px",
-          }}
-          align="center"
-        >
-          LINE NO.
-        </TableCell> */}
-
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -377,18 +363,6 @@ const Approver = () => {
                     >
                       SUB UNIT
                     </TableCell>
-
-                    {/* <TableCell
-          sx={{
-            background: "#1C2536",
-            color: "#D65DB1",
-            fontWeight: 700,
-            fontSize: "12px",
-          }}
-          align="center"
-        >
-          APPROVERS
-        </TableCell> */}
 
                     <TableCell
                       sx={{
@@ -421,17 +395,6 @@ const Approver = () => {
                     !isFetching &&
                     data?.value?.approver?.map((item, index) => (
                       <TableRow key={index}>
-                        {/* <TableCell
-              sx={{
-                color: "#EDF2F7",
-                fontSize: "14px",
-                fontWeight: 500,
-              }}
-              align="center"
-            >
-              {index + 1}
-            </TableCell> */}
-
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
@@ -497,16 +460,6 @@ const Approver = () => {
                       </TableCell>
                     </TableRow>
                   )}
-
-                  {/* {isSuccess && !data?.value?.approver.length && (
-        <TableRow>
-          <TableCell colSpan={7} align="center">
-            <Typography variant="h5" color="#EDF2F7">
-              No records found.
-            </Typography>
-          </TableCell>
-        </TableRow>
-      )} */}
 
                   {isSuccess && !data?.value?.approver.length && (
                     <TableRow>

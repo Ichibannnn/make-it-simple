@@ -12,7 +12,7 @@ const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user,
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOnHoldTicketsQuery({
     Search: search,
-    Unit: unit,
+    Channel: unit,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),

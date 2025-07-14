@@ -218,7 +218,7 @@ const NewReceiverConcern = () => {
                   </Stack>
                 )}
 
-                {isSuccess && !data?.value?.requestConcern.length && (
+                {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
                     <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h6" align="center">
@@ -499,7 +499,18 @@ const NewReceiverConcern = () => {
                       </TableRow>
                     )}
 
-                    {isSuccess && !data?.value?.requestConcern.length && (
+                    {(isLoading || isFetching) && (
+                      <TableRow>
+                        <TableCell colSpan={10} align="center">
+                          <CircularProgress />
+                          <Typography variant="h5" color="#EDF2F7">
+                            Please wait...
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+
+                    {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
                       <TableRow>
                         <TableCell colSpan={10} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
