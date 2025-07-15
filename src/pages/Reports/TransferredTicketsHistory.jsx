@@ -1,19 +1,48 @@
 import React, { useEffect } from "react";
 import { useGetTransferredTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
+import {
+  Chip,
+  CircularProgress,
+  OutlinedInput,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
+const TransferredTicketsHistory = ({
+  search,
+  searchValue,
+  setSearchValue,
+  serviceProvider,
+  channel,
+  user,
+  dateFrom,
+  dateTo,
+  pageNumber,
+  setPageNumber,
+  pageSize,
+  setPageSize,
+  setSheetData,
+}) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetTransferredTicketsQuery({
     Search: search,
-    Channel: unit,
+    serviceProvider: serviceProvider,
+    Channel: channel,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),
@@ -180,9 +209,9 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.reports?.map((item) => (
+              data?.value?.reports?.map((item, index) => (
                 <TableRow
-                  key={item.ticketConcernId}
+                  key={index}
                   sx={{
                     "&:hover": {
                       background: "",
@@ -383,7 +412,18 @@ const TransferredTicketsHistory = ({ search, searchValue, setSearchValue, unit, 
               </TableRow>
             )}
 
-            {isSuccess && !data?.value?.reports.length && (
+            {(isLoading || isFetching) && (
+              <TableRow>
+                <TableCell colSpan={14} align="center">
+                  <CircularProgress />
+                  <Typography variant="h5" color="#EDF2F7">
+                    Please wait...
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+
+            {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
               <TableRow>
                 <TableCell colSpan={10} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

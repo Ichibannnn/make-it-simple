@@ -242,44 +242,6 @@ const ConcernTickets = () => {
     }
   }, [searchValue]);
 
-  // For Datagrid
-  const columns = [
-    { field: "lineNo", headerName: "Line No.", width: 90 },
-    {
-      field: "requestConcernId",
-      headerName: "Concern No.",
-      width: 150,
-      editable: true,
-    },
-    {
-      field: "ticketRequestConcerns",
-      headerName: "Request Details",
-      width: 150,
-      editable: true,
-    },
-    {
-      field: "concern",
-      headerName: "Request Details",
-      // type: "number",
-      width: 110,
-      editable: true,
-    },
-    {
-      field: "created_At",
-      headerName: "Date Created",
-      // description: "This column has a value getter and is not sortable.",
-      // sortable: false,
-      width: 160,
-    },
-    {
-      field: "concern_Status",
-      headerName: "Status",
-      // type: "number",
-      width: 110,
-      editable: true,
-    },
-  ];
-
   const rows = data?.value?.requestConcern?.map((item, index) => {
     return {
       lineNo: index + 1,
@@ -671,7 +633,7 @@ const ConcernTickets = () => {
                   </Stack>
                 )}
 
-                {isSuccess && !data?.value?.requestConcern.length && (
+                {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
                     <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h6" align="center">
@@ -709,7 +671,7 @@ const ConcernTickets = () => {
                         >
                           <Stack direction="row" gap={0.2} justifyContent="center" alignItems="center">
                             CONCERN NO.
-                            <IconButton size="small" onClick={() => setAscending(!ascending)}>
+                            <IconButton size="small" onClick={() => dispatch(setAscending(!ascending))}>
                               {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                             </IconButton>
                           </Stack>

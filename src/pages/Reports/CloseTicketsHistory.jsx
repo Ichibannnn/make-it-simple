@@ -1,18 +1,48 @@
 import React, { useEffect } from "react";
 import { useGetClosedTicketsQuery } from "../../features/api_reports/reportsApi";
 import { AccessTimeOutlined, CalendarMonthOutlined, FiberManualRecord, History, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
+import {
+  Chip,
+  CircularProgress,
+  OutlinedInput,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, remarks, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
+const CloseTicketsHistory = ({
+  search,
+  searchValue,
+  setSearchValue,
+  serviceProvider,
+  channel,
+  user,
+  remarks,
+  dateFrom,
+  dateTo,
+  pageNumber,
+  setPageNumber,
+  pageSize,
+  setPageSize,
+  setSheetData,
+}) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetClosedTicketsQuery({
     Search: search,
-    Channel: unit,
+    ServiceProvider: serviceProvider,
+    Channel: channel,
     UserId: user,
     Remarks: remarks,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
@@ -247,9 +277,9 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.reports?.map((item) => (
+              data?.value?.reports?.map((item, index) => (
                 <TableRow
-                  key={item.ticket_Number}
+                  key={index}
                   sx={{
                     "&:hover": {
                       background: "",
@@ -558,7 +588,18 @@ const CloseTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, 
               </TableRow>
             )}
 
-            {isSuccess && !data?.value?.reports.length && (
+            {(isLoading || isFetching) && (
+              <TableRow>
+                <TableCell colSpan={14} align="center">
+                  <CircularProgress />
+                  <Typography variant="h5" color="#EDF2F7">
+                    Please wait...
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+
+            {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
               <TableRow>
                 <TableCell colSpan={14} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

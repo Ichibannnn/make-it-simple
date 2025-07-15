@@ -1,9 +1,8 @@
 import { Autocomplete, Divider, Grid, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import useDebounce from "../../hooks/useDebounce";
 import { theme } from "../../theme/theme";
-import { toast } from "sonner";
 import { IosShare } from "@mui/icons-material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -22,8 +21,6 @@ import { LoadingButton } from "@mui/lab";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
-import { useLazyGetUnitQuery } from "../../features/api masterlist/unit/unitApi";
-import { useLazyGetUsersQuery } from "../../features/user_management_api/user/userApi";
 import {
   useGetAllTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
@@ -34,9 +31,11 @@ import {
 import AllTicketsHistory from "./AllTicketsHistory";
 import { useLazyGetServiceProviderQuery } from "../../features/api masterlist/service_provider/serviceProviderApi";
 import { useSelector } from "react-redux";
+import { useLazyGetChannelsQuery } from "../../features/api_channel_setup/channel/channelApi";
 
 const schema = yup.object().shape({
   ServiceProvider: yup.object().nullable(),
+  Channel: yup.object().nullable(),
   UnitId: yup.object().nullable(),
   UserId: yup.object().nullable(),
 });
@@ -45,10 +44,9 @@ const ReportsPage = () => {
   const [reportNavigation, setReportNavigation] = useState(null);
   const [remarks, setRemarks] = useState(null);
 
-  const [serviceProvider, setProvider] = useState(null);
+  const [serviceProvider, setServiceProvider] = useState(null);
   const [channel, setChannel] = useState(null);
 
-  const [unit, setUnit] = useState(null);
   const [user, setUser] = useState(null);
   const [dateFrom, setDateFrom] = useState(new moment());
   const [dateTo, setDateTo] = useState(new moment());
@@ -78,7 +76,8 @@ const ReportsPage = () => {
     isError: allTicketIsError,
   } = useGetAllTicketsQuery({
     Search: search,
-    Channel: unit,
+    ServiceProvider: serviceProvider,
+    Channel: channel,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),
@@ -87,8 +86,7 @@ const ReportsPage = () => {
   });
 
   const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
-  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
-  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetChannelsQuery();
 
   const [getDownloadOpenTickets] = useLazyGetDownloadOpenTicketsQuery();
   const [getDownloadClosedTickets] = useLazyGetDownloadClosedTicketsQuery();
@@ -99,7 +97,7 @@ const ReportsPage = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       ServiceProvider: null,
-      UnitId: null,
+      Channel: null,
       UserId: null,
     },
   });
@@ -110,7 +108,8 @@ const ReportsPage = () => {
       try {
         const response = await getDownloadOpenTickets({
           Search: search,
-          Unit: unit,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
           UserId: user,
           Date_From: moment(dateFrom).format("YYYY-MM-DD"),
           Date_To: moment(dateTo).format("YYYY-MM-DD"),
@@ -134,7 +133,8 @@ const ReportsPage = () => {
       try {
         const response = await getDownloadClosedTickets({
           Search: search,
-          Unit: unit,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
           UserId: user,
           Remarks: remarks,
           Date_From: moment(dateFrom).format("YYYY-MM-DD"),
@@ -159,7 +159,8 @@ const ReportsPage = () => {
       try {
         const response = await getDownloadTransferredTickets({
           Search: search,
-          Unit: unit,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
           UserId: user,
           Date_From: moment(dateFrom).format("YYYY-MM-DD"),
           Date_To: moment(dateTo).format("YYYY-MM-DD"),
@@ -183,7 +184,8 @@ const ReportsPage = () => {
       try {
         const response = await getDownloadOnHoldTickets({
           Search: search,
-          Unit: unit,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
           UserId: user,
           Date_From: moment(dateFrom).format("YYYY-MM-DD"),
           Date_To: moment(dateTo).format("YYYY-MM-DD"),
@@ -211,7 +213,9 @@ const ReportsPage = () => {
         { header: "Ticket Description", key: "Ticket Description", width: 20 },
         { header: "Category", key: "Category", width: 20 },
         { header: "Sub Category", key: "Sub Category", width: 20 },
+        { header: "Service Provider", key: "Service Provider", width: 20 },
         { header: "Channel", key: "Channel", width: 20 },
+        { header: "Start Date", key: "Start Date", width: 20 },
         { header: "Target Date", key: "Target Date", width: 20 },
         { header: "Requestor", key: "Requestor", width: 20 },
         { header: "Company", key: "Company", width: 20 },
@@ -242,7 +246,9 @@ const ReportsPage = () => {
           "Ticket Description": item["Ticket Description"],
           Category: item.Category,
           "Sub Category": item["Sub Category"],
+          "Service Provider": item["Service Provider"],
           Channel: item.Channel,
+          "Start Date": item["Start Date"],
           "Target Date": item["Target Date"],
           Requestor: item.Requestor,
           Company: item.Company,
@@ -271,7 +277,9 @@ const ReportsPage = () => {
             "Ticket Description": item.concerns,
             Category: item.ticketCategoryDescriptions,
             "Sub Category": item.ticketSubCategoryDescriptions,
+            "Service Provider": item.serviceProviderName,
             Channel: item.channel_Name,
+            "Start Date": moment(item.startDate).format("MM/DD/YYYY"),
             "Target Date": moment(item.target_Date).format("MM/DD/YYYY"),
             Requestor: item.requestor_Name,
             Company: `${item.company_Code} - ${item.company_Name}`,
@@ -287,6 +295,30 @@ const ReportsPage = () => {
       );
     }
   }, [allTicketData]);
+
+  useEffect(() => {
+    if (userDetails) {
+      setValue("ServiceProvider", {
+        id: userDetails?.serviceProviders?.[0]?.id,
+        serviceProviderName: userDetails?.serviceProviders?.[0]?.serviceProviderName,
+      });
+
+      setValue("Channel", {
+        channelId: userDetails?.channels?.[0]?.channelId,
+        channelName: userDetails?.channels?.[0]?.channelName,
+      });
+
+      setServiceProvider(userDetails?.serviceProviders?.[0]?.id);
+      setChannel(userDetails?.channels?.[0]?.channelId);
+    } else {
+      setValue("ServiceProvider", null);
+      setValue("ChannelId", null);
+      setServiceProvider(null);
+      setChannel(null);
+    }
+  }, [userDetails]);
+
+  console.log("channel_state: ", channel);
 
   return (
     <Stack
@@ -330,10 +362,10 @@ const ReportsPage = () => {
               <Typography sx={{ fontSize: "13px" }}>Report Details:</Typography>
               <Autocomplete
                 size="small"
-                value={reportNavigation ?? ""}
-                onChange={(_, newValue) => setReportNavigation(newValue)}
-                options={categoryOptions}
+                value={reportNavigation}
+                options={categoryOptions || []}
                 renderInput={(params) => <TextField {...params} placeholder="Report Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                onChange={(_, newValue) => setReportNavigation(newValue)}
                 disableClearable
                 sx={{ width: "100%" }}
                 componentsProps={{
@@ -349,7 +381,7 @@ const ReportsPage = () => {
             </Grid>
 
             {/* Service Provider */}
-            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
               <Typography sx={{ fontSize: "13px" }}>Service Provider:</Typography>
               <Controller
                 control={control}
@@ -359,19 +391,22 @@ const ReportsPage = () => {
                     ref={ref}
                     size="small"
                     value={value || null}
-                    options={unitData?.value?.unit || []}
-                    loading={unitIsLoading}
-                    renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    options={userDetails ? userDetails?.serviceProviders : serviceProviderData?.value?.serviceProvider || []}
+                    loading={serviceProviderIsLoading}
+                    renderInput={(params) => <TextField {...params} placeholder="Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onOpen={() => {
-                      if (!unitIsSuccess) getUnit();
+                      if (!serviceProviderIsSuccess)
+                        getServiceProvider({
+                          Status: true,
+                        });
                     }}
                     onChange={(_, value) => {
                       onChange(value);
 
-                      setUnit(value?.id);
+                      setServiceProvider(value?.id);
                       setValue("UserId", null);
                     }}
-                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                    getOptionLabel={(option) => option.serviceProviderName}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{ width: "100%" }}
                     fullWidth
@@ -388,32 +423,29 @@ const ReportsPage = () => {
                   />
                 )}
               />
-            </Grid> */}
+            </Grid>
 
             {/* Channel */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <Typography sx={{ fontSize: "13px" }}>Channel:</Typography>
               <Controller
                 control={control}
-                name="UnitId"
+                name="Channel"
                 render={({ field: { ref, value, onChange } }) => (
                   <Autocomplete
                     ref={ref}
                     size="small"
                     value={value || null}
-                    options={unitData?.value?.unit || []}
-                    loading={unitIsLoading}
-                    renderInput={(params) => <TextField {...params} placeholder="Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                    onOpen={() => {
-                      if (!unitIsSuccess) getUnit();
-                    }}
+                    options={userDetails ? userDetails?.channels : watch("ServiceProvider")?.serviceChannel || []}
+                    renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onChange={(_, value) => {
                       onChange(value);
-                      setUnit(value?.id);
+
+                      setChannel(value?.channelId);
                       setValue("UserId", null);
                     }}
-                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) => option.channelName}
+                    isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                     sx={{ width: "100%" }}
                     fullWidth
                     disablePortal
@@ -433,7 +465,7 @@ const ReportsPage = () => {
 
             {/* Employee */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Typography sx={{ fontSize: "13px" }}>Employee:</Typography>
+              <Typography sx={{ fontSize: "13px" }}>Issue Handler:</Typography>
               <Controller
                 control={control}
                 name="UserId"
@@ -442,21 +474,21 @@ const ReportsPage = () => {
                     ref={ref}
                     size="small"
                     value={value || null}
-                    options={userData?.value?.users.filter((item) => item.unitId === watch("UnitId")?.id) || []}
+                    options={userData?.value?.channel.find((item) => item.id === watch("Channel")?.channelId)?.channelUsers || []}
                     loading={userIsLoading}
-                    renderInput={(params) => <TextField {...params} placeholder="Employee (Please select Unit)" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                    renderInput={(params) => <TextField {...params} placeholder="Employee (Please select Channel)" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onOpen={() => {
                       if (!userIsSuccess) getUser();
                     }}
                     onChange={(_, value) => {
                       onChange(value);
-                      setUser(value?.id);
+                      setUser(value?.userId);
                     }}
                     getOptionLabel={(option) => `${option.fullname}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    isOptionEqualToValue={(option, value) => option.userId === value.userId}
                     sx={{ width: "100%" }}
                     fullWidth
-                    disabled={!watch("UnitId")}
+                    disabled={!watch("Channel")}
                     disablePortal
                     componentsProps={{
                       popper: {
@@ -557,33 +589,24 @@ const ReportsPage = () => {
           <Stack>
             {reportNavigation === "All Tickets" ? (
               <AllTicketsHistory
-                search={search}
-                searchValue={searchValue}
-                setSearchValue={setSearchValue}
-                unit={unit}
-                user={user}
-                remarks={remarks}
-                dateFrom={dateFrom}
-                dateTo={dateTo}
-                pageNumber={pageNumber}
-                setPageNumber={setPageNumber}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                // API
                 data={allTicketData}
                 isLoading={allTicketIsLoading}
                 isFetching={allTicketIsFetching}
                 isSuccess={allTicketIsSuccess}
                 isError={allTicketIsError}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
               />
             ) : reportNavigation === "Open Tickets" ? (
               <OpenTicketsHistory
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
-                unit={unit}
+                serviceProvider={serviceProvider}
+                channel={channel}
                 user={user}
-                remarks={remarks}
                 dateFrom={dateFrom}
                 dateTo={dateTo}
                 pageNumber={pageNumber}
@@ -597,7 +620,8 @@ const ReportsPage = () => {
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
-                unit={unit}
+                serviceProvider={serviceProvider}
+                channel={channel}
                 user={user}
                 remarks={remarks}
                 dateFrom={dateFrom}
@@ -613,7 +637,8 @@ const ReportsPage = () => {
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
-                unit={unit}
+                serviceProvider={serviceProvider}
+                channel={channel}
                 user={user}
                 remarks={remarks}
                 dateFrom={dateFrom}
@@ -629,7 +654,8 @@ const ReportsPage = () => {
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
-                unit={unit}
+                serviceProvider={serviceProvider}
+                channel={channel}
                 user={user}
                 remarks={remarks}
                 dateFrom={dateFrom}

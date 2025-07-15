@@ -8,11 +8,26 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, unit, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
+const OnHoldTicketsHistory = ({
+  search,
+  searchValue,
+  setSearchValue,
+  serviceProvider,
+  channel,
+  user,
+  dateFrom,
+  dateTo,
+  pageNumber,
+  setPageNumber,
+  pageSize,
+  setPageSize,
+  setSheetData,
+}) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOnHoldTicketsQuery({
     Search: search,
-    Channel: unit,
+    ServiceProvider: serviceProvider,
+    Channel: channel,
     UserId: user,
     Date_From: moment(dateFrom).format("YYYY-MM-DD"),
     Date_To: moment(dateTo).format("YYYY-MM-DD"),

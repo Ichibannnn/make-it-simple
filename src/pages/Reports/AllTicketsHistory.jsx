@@ -1,32 +1,27 @@
-import React, { useEffect } from "react";
-import { useGetAllTicketsQuery } from "../../features/api_reports/reportsApi";
-import { AccessTimeOutlined, CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { CalendarMonthOutlined, Search } from "@mui/icons-material";
+import {
+  Chip,
+  CircularProgress,
+  OutlinedInput,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const AllTicketsHistory = ({
-  data,
-  isLoading,
-  isFetching,
-  isSuccess,
-  isError,
-  search,
-  searchValue,
-  setSearchValue,
-  unit,
-  user,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, searchValue, setSearchValue, setPageNumber, setPageSize }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const onPageNumberChange = (_, page) => {
@@ -39,113 +34,146 @@ const AllTicketsHistory = ({
   };
 
   return (
-    <Stack sx={{ width: "100%" }}>
+    <>
       <Stack sx={{ width: "100%" }}>
-        <Stack
-          direction={isScreenSmall ? "column" : "row"}
-          justifyContent="space-between"
-          alignItems={isScreenSmall ? "left" : "center"}
-          gap={isScreenSmall ? 0.5 : 0}
-          mt={1}
-          mb={1}
-          ml={2}
-          mr={2}
-        >
-          <Stack>
-            <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>All Tickets Report</Typography>
-          </Stack>
+        <Stack sx={{ width: "100%" }}>
+          <Stack
+            direction={isScreenSmall ? "column" : "row"}
+            justifyContent="space-between"
+            alignItems={isScreenSmall ? "left" : "center"}
+            gap={isScreenSmall ? 0.5 : 0}
+            mt={1}
+            mb={1}
+            ml={2}
+            mr={2}
+          >
+            <Stack>
+              <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>All Tickets Report</Typography>
+            </Stack>
 
-          <Stack>
-            <OutlinedInput
-              placeholder="Search"
-              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              sx={{
-                // width: 400,
-                borderRadius: "15px",
-                fontSize: "small",
-                fontWeight: 400,
-                lineHeight: "1.4375rem",
-              }}
-            />
+            <Stack>
+              <OutlinedInput
+                placeholder="Search"
+                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                sx={{
+                  // width: 400,
+                  borderRadius: "15px",
+                  fontSize: "small",
+                  fontWeight: 400,
+                  lineHeight: "1.4375rem",
+                }}
+              />
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
 
-      <TableContainer>
-        <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TICKET NO.
-              </TableCell>
+        <Paper sx={{ width: "100%", overflow: "auto" }}>
+          <TableContainer>
+            <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    TICKET NO.
+                  </TableCell>
 
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TICKET DESCRIPTION
-              </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    TICKET DESCRIPTION
+                  </TableCell>
 
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                CATEGORY
-              </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CATEGORY
+                  </TableCell>
 
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                SUB CATEGORY
-              </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    SUB CATEGORY
+                  </TableCell>
 
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                CHANNEL
-              </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    SERVICE PROVIDER
+                  </TableCell>
 
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  TARGET DATE
-                </Stack>
-              </TableCell>
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CHANNEL
+                  </TableCell>
 
-              {/* <TableCell
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    START DATE
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    TARGET DATE
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CLOSED DATE
+                  </TableCell>
+
+                  {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -158,161 +186,190 @@ const AllTicketsHistory = ({
                 </Stack>
               </TableCell> */}
 
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                REQUESTOR
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                ISSUE HANDLER
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                STATUS
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.reports?.map((item) => (
-                <TableRow
-                  key={item.ticketConcernId}
-                  sx={{
-                    "&:hover": {
-                      background: "",
-                      color: "#EDF2F7",
-                    },
-                  }}
-                >
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
                       fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                    align="center"
-                  >
-                    {item.ticketConcernId}
-                  </TableCell>
-
-                  <TableCell
-                    className="ellipsis-styling"
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      width: "100px",
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
-                    <Tooltip title={item.concerns} placement="bottom-start">
-                      {item.concerns?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </Tooltip>
+                    REQUESTOR
                   </TableCell>
 
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
                       fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
-                    {item.ticketCategoryDescriptions}
+                    ISSUE HANDLER
                   </TableCell>
 
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
                       fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
-                    {item.ticketSubCategoryDescriptions}
+                    STATUS
                   </TableCell>
+                </TableRow>
+              </TableHead>
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.channel_Name}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+              <TableBody>
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.reports?.map((item, index) => (
+                    <TableRow
+                      key={index}
                       sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
+                        "&:hover": {
+                          background: "",
+                          color: "#EDF2F7",
+                        },
                       }}
-                      label={moment(item.target_Date).format("LL")}
-                    />
-                  </TableCell>
+                    >
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                        align="center"
+                      >
+                        {item.ticketConcernId}
+                      </TableCell>
 
-                  {/* <TableCell
+                      <TableCell
+                        className="ellipsis-styling"
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          width: "100px",
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.concerns?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.ticketCategoryDescriptions}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.ticketSubCategoryDescriptions}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.serviceProviderName}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.channel_Name}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {moment(item.startDate).format("LL")}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {moment(item.target_Date).format("LL")}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item?.closedDate ? moment(item.closedDate).format("LL") : "-"}
+                      </TableCell>
+
+                      {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -337,180 +394,139 @@ const AllTicketsHistory = ({
                     />
                   </TableCell> */}
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.requestor_Name}
-                    {/* <Typography
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.requestor_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.companyName}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.department_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.unit_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.subUnit_Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.location_Name}
-                    </Typography> */}
-                  </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.requestor_Name}
+                      </TableCell>
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.personnel}
-                  </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.personnel}
+                      </TableCell>
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="small"
-                      label={
-                        item.ticket_Status === "Open"
-                          ? "Open"
-                          : item.ticket_Status === "Transfer"
-                          ? "Transfer"
-                          : item.ticket_Status === "For On-Hold"
-                          ? "Hold Approval"
-                          : item.ticket_Status === "On-Hold"
-                          ? "On-Hold"
-                          : item.ticket_Status === "For Closing Ticket"
-                          ? "For Closing"
-                          : item.ticket_Status === "Confirmation"
-                          ? "For Confirmation"
-                          : item.ticket_Status === "Closed"
-                          ? "Closed"
-                          : ""
-                      }
-                      sx={{
-                        backgroundColor:
-                          item.ticket_Status === "Open"
-                            ? "#ec9d29"
-                            : item.ticket_Status === "Transfer"
-                            ? "#ff7043"
-                            : item.ticket_Status === "For On-Hold"
-                            ? "#ffb74d"
-                            : item.ticket_Status === "On-Hold"
-                            ? "#ff6d00"
-                            : item.ticket_Status === "For Closing Ticket"
-                            ? "#3A96FA"
-                            : item.ticket_Status === "For Confirmation"
-                            ? "#009688"
-                            : item.ticket_Status === "Closed"
-                            ? "#00913c"
-                            : "transparent",
-                        color: "#ffffffde",
-                        borderRadius: "20px",
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={
+                            item.ticket_Status === "Open"
+                              ? "Open"
+                              : item.ticket_Status === "Transfer"
+                              ? "Transfer"
+                              : item.ticket_Status === "For On-Hold"
+                              ? "Hold Approval"
+                              : item.ticket_Status === "On-Hold"
+                              ? "On-Hold"
+                              : item.ticket_Status === "For Closing Ticket"
+                              ? "For Closing"
+                              : item.ticket_Status === "Confirmation"
+                              ? "For Confirmation"
+                              : item.ticket_Status === "Closed"
+                              ? "Closed"
+                              : ""
+                          }
+                          sx={{
+                            backgroundColor:
+                              item.ticket_Status === "Open"
+                                ? "#ec9d29"
+                                : item.ticket_Status === "Transfer"
+                                ? "#ff7043"
+                                : item.ticket_Status === "For On-Hold"
+                                ? "#ffb74d"
+                                : item.ticket_Status === "On-Hold"
+                                ? "#ff6d00"
+                                : item.ticket_Status === "For Closing Ticket"
+                                ? "#3A96FA"
+                                : item.ticket_Status === "For Confirmation"
+                                ? "#009688"
+                                : item.ticket_Status === "Closed"
+                                ? "#00913c"
+                                : "transparent",
+                            color: "#ffffffde",
+                            borderRadius: "20px",
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
-            {isError && (
-              <TableRow>
-                <TableCell colSpan={10} align="center">
-                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                  <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                    Something went wrong.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+                {isError && (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center">
+                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        Something went wrong.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
 
-            {isSuccess && !data?.value?.reports.length && (
-              <TableRow>
-                <TableCell colSpan={10} align="center">
-                  <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                  <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                    No records found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                {(isLoading || isFetching) && (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center">
+                      <CircularProgress />
+                      <Typography variant="h5" color="#EDF2F7">
+                        Please wait...
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
 
-      <TablePagination
-        sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
-        rowsPerPageOptions={[100, 300, 500]}
-        component="div"
-        count={data?.value?.totalCount || 0}
-        rowsPerPage={data?.value?.pageSize || 100}
-        page={data?.value?.currentPage - 1 || 0}
-        onPageChange={onPageNumberChange}
-        onRowsPerPageChange={onPageSizeChange}
-      />
-    </Stack>
+                {isSuccess && !data?.value?.reports.length && !isLoading & !isFetching && (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center">
+                      <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                      <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        No records found.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+
+        <TablePagination
+          sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
+          rowsPerPageOptions={[100, 300, 500]}
+          component="div"
+          count={data?.value?.totalCount || 0}
+          rowsPerPage={data?.value?.pageSize || 100}
+          page={data?.value?.currentPage - 1 || 0}
+          onPageChange={onPageNumberChange}
+          onRowsPerPageChange={onPageSizeChange}
+        />
+      </Stack>
+    </>
   );
 };
 
