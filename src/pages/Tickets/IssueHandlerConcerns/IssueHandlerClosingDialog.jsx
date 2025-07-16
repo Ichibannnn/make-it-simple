@@ -432,13 +432,17 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                   <Stack mt={2} gap={0.5}>
                     <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
                       <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Category:
-                        </Typography>
+                        <Stack direction="row">
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Category:
+                          </Typography>
+                          <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        </Stack>
+
                         <Controller
                           control={control}
                           name="CategoryId"
@@ -496,13 +500,16 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                       </Stack>
 
                       <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Sub Category:
-                        </Typography>
+                        <Stack direction="row">
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Sub Category:
+                          </Typography>
+                          <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        </Stack>
                         <Controller
                           control={control}
                           name="SubCategoryId"
@@ -550,13 +557,16 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                     </Stack>
 
                     <Stack mt={2} gap={0.5}>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                        }}
-                      >
-                        Resolution:
-                      </Typography>
+                      <Stack direction="row">
+                        <Typography
+                          sx={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          Resolution:
+                        </Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
 
                       <Controller
                         control={control}

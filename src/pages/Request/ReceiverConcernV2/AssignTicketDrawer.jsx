@@ -1,5 +1,5 @@
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { Add, AttachFileOutlined, CheckOutlined, GetAppOutlined } from "@mui/icons-material";
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { Add, AttachFileOutlined, CheckOutlined, FiberManualRecord, GetAppOutlined } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -573,13 +573,17 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                 </Stack>
 
                 <Stack gap={0.5}>
-                  <Typography
-                    sx={{
-                      fontSize: "13px",
-                    }}
-                  >
-                    Channel Name:
-                  </Typography>
+                  <Stack direction="row">
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      Channel
+                    </Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   <Controller
                     control={control}
                     name="ChannelId"
@@ -590,14 +594,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           size="small"
                           value={value}
                           options={userDetails?.channels || []}
-                          // loading={channelIsLoading}
                           renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                          // onOpen={() => {
-                          //   if (!channelIsSuccess)
-                          //     getChannel({
-                          //       Status: true,
-                          //     });
-                          // }}
                           onChange={(_, value) => {
                             onChange(value);
                             setValue("CategoryId", []);
@@ -619,7 +616,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                             },
                           }}
                           fullWidth
-                          // disablePortal
                           disableClearable
                         />
                       );
@@ -628,7 +624,17 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                 </Stack>
 
                 <Stack gap={0.5}>
-                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
+                  <Stack direction="row">
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      Category
+                    </Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   <Controller
                     control={control}
                     name="CategoryId"
@@ -683,7 +689,17 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                 </Stack>
 
                 <Stack gap={0.5}>
-                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
+                  <Stack direction="row">
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      Sub Category
+                    </Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   <Controller
                     control={control}
                     name="SubCategoryId"
@@ -730,13 +746,17 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                 </Stack>
 
                 <Stack gap={0.5}>
-                  <Typography
-                    sx={{
-                      fontSize: "13px",
-                    }}
-                  >
-                    Target Date:
-                  </Typography>
+                  <Stack direction="row">
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      Target Date
+                    </Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    {/* <Chip label="Required" color="error" size="small" sx={{ borderRadius: 0, fontSize: "10px", height: "15px" }} /> */}
+                  </Stack>
 
                   <LocalizationProvider dateAdapter={AdapterMoment}>
                     <Controller
@@ -856,6 +876,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           autoComplete="off"
                           rows={6}
                           multiline
+                          disabled
                         />
                       );
                     }}

@@ -45,7 +45,7 @@ import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_m
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { AddOutlined, RemoveCircleOutline } from "@mui/icons-material";
+import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import ConcernMenuActions from "../../Request/ConcernTickets/ConcernMenuActions";
 
@@ -492,7 +492,11 @@ const AddTicketDialog = ({ open, onClose }) => {
                     mb: 1,
                   }}
                 >
-                  <Typography sx={{ fontSize: "11px" }}>Request Type:</Typography>
+                  <Stack direction="row">
+                    <Typography sx={{ fontSize: "11px" }}>Request Type</Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   <Controller
                     name="Request_Type"
                     control={control}
@@ -511,7 +515,11 @@ const AddTicketDialog = ({ open, onClose }) => {
 
                 {watch("Request_Type") === "Rework" && (
                   <Stack sx={{ width: "100%", mb: 1 }}>
-                    <Typography sx={{ fontSize: "11px" }}>Ticket Number:</Typography>
+                    <Stack direction="row">
+                      <Typography sx={{ fontSize: "11px" }}>Ticket Number</Typography>
+                      <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    </Stack>
+
                     <Controller
                       control={control}
                       name="BackJobId"
@@ -559,7 +567,11 @@ const AddTicketDialog = ({ open, onClose }) => {
                     mb: 1,
                   }}
                 >
-                  <Typography sx={{ fontSize: "11px" }}>Severity:</Typography>
+                  <Stack direction="row">
+                    <Typography sx={{ fontSize: "11px" }}>Severity</Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   <Controller
                     name="Severity"
                     control={control}
@@ -986,6 +998,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* CONCERN INFORMATION */}
+
                 <Typography sx={{ fontSize: "13px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
 
                 <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
@@ -1014,7 +1027,11 @@ const AddTicketDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       {/* Service Provider */}
-                      <Typography sx={{ fontSize: "11px" }}>Service Provider:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "11px" }}>Service Provider</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
+
                       <Controller
                         control={control}
                         name="ServiceProvider"
@@ -1063,7 +1080,10 @@ const AddTicketDialog = ({ open, onClose }) => {
 
                     {/* Channel */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "11px" }}>Channel:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "11px" }}>Channel</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -1109,7 +1129,10 @@ const AddTicketDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "11px" }}>Category:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "11px" }}>Category</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
                       <Controller
                         control={control}
                         name="CategoryId"
@@ -1182,7 +1205,10 @@ const AddTicketDialog = ({ open, onClose }) => {
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       {/* Sub Category */}
-                      <Typography sx={{ fontSize: "11px" }}>Sub Category:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "11px" }}>Sub Category</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
                       <Controller
                         control={control}
                         name="SubCategoryId"
@@ -1234,7 +1260,10 @@ const AddTicketDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Target Date */}
                     <Stack sx={{ width: "100%" }}>
-                      <Typography sx={{ fontSize: "11px" }}>Target Date: </Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "11px" }}>Target Date</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
                           control={control}
@@ -1282,7 +1311,11 @@ const AddTicketDialog = ({ open, onClose }) => {
                   }}
                 >
                   {/* Ticket Description */}
-                  <Typography sx={{ fontSize: "11px" }}>Ticket Description:</Typography>
+                  <Stack direction="row">
+                    <Typography sx={{ fontSize: "11px" }}>Ticket Description</Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   {fields.map((field, index) => (
                     <Stack key={field.id} direction="row" alignItems="flex-start" sx={{ width: "100%", mt: 1 }}>
                       <Controller
@@ -1348,7 +1381,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography sx={{ fontSize: "11px" }}>Notes (Optional):</Typography>
+                  <Typography sx={{ fontSize: "11px" }}>Notes (Optional)</Typography>
 
                   <Controller
                     control={control}
@@ -1392,7 +1425,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography sx={{ fontSize: "11px" }}>Attachment (Optional):</Typography>
+                  <Typography sx={{ fontSize: "11px" }}>Attachment (Optional)</Typography>
                   <Stack
                     sx={{
                       width: "100%",
@@ -1556,6 +1589,8 @@ const AddTicketDialog = ({ open, onClose }) => {
                 (watch("Request_Type") === "Rework" && !watch("BackJobId")) ||
                 !watch("TargetDate") ||
                 !watch("ChannelId") ||
+                watch("CategoryId")?.length === 0 ||
+                watch("SubCategoryId")?.length === 0 ||
                 errors.Concern
               }
             >

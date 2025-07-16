@@ -46,7 +46,7 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
-import { AddOutlined, RemoveCircleOutline } from "@mui/icons-material";
+import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 
 const ConcernDialog = ({ open, onClose }) => {
@@ -496,7 +496,11 @@ const ConcernDialog = ({ open, onClose }) => {
                     mb: 1,
                   }}
                 >
-                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Request Type:</Typography>
+                  <Stack direction="row">
+                    <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Request Type</Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   <Controller
                     name="Request_Type"
                     control={control}
@@ -516,7 +520,11 @@ const ConcernDialog = ({ open, onClose }) => {
 
                 {watch("Request_Type") === "Rework" && (
                   <Stack sx={{ width: "100%", mb: 1 }}>
-                    <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
+                    <Stack direction="row">
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
+                      <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    </Stack>
+
                     <Controller
                       control={control}
                       name="BackJobId"
@@ -564,7 +572,10 @@ const ConcernDialog = ({ open, onClose }) => {
                     mb: 1,
                   }}
                 >
-                  <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Severity:</Typography>
+                  <Stack direction="row">
+                    <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Severity</Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
                   <Controller
                     name="Severity"
                     control={control}
@@ -597,11 +608,14 @@ const ConcernDialog = ({ open, onClose }) => {
 
                 {/* REQUESTOR DETAILS */}
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Requestor Details</Typography>
-                <Stack direction="row" sx={{ width: "100%" }}>
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Requestor Name */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Requestor Name:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Requestor Name</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
                       <Controller
                         control={control}
                         name="UserId"
@@ -674,7 +688,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     </Stack>
                     {/* Conctact Number */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Contact Number (Optional):</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Contact Number (Optional)</Typography>
                       <Controller
                         control={control}
                         name="Contact_Number"
@@ -731,7 +745,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Company */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Company:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Company</Typography>
                       <Controller
                         control={control}
                         name="CompanyId"
@@ -774,7 +788,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       {/* Business Unit */}
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Business Unit:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Business Unit</Typography>
                       <Controller
                         control={control}
                         name="BusinessUnitId"
@@ -818,7 +832,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Department */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Department:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Department</Typography>
                       <Controller
                         control={control}
                         name="DepartmentId"
@@ -858,7 +872,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Unit */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Unit:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Unit</Typography>
                       <Controller
                         control={control}
                         name="UnitId"
@@ -902,7 +916,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Sub Unit */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Unit:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Unit</Typography>
                       <Controller
                         control={control}
                         name="SubUnitId"
@@ -948,7 +962,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Location */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Location:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Location</Typography>
                       <Controller
                         control={control}
                         name="LocationId"
@@ -1017,8 +1031,13 @@ const ConcernDialog = ({ open, onClose }) => {
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Service Provider */}
+
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Service Provider</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
+
                       <Controller
                         control={control}
                         name="ServiceProvider"
@@ -1068,7 +1087,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Channel */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Channel</Typography>
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -1115,7 +1134,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Category</Typography>
                       <Controller
                         control={control}
                         name="CategoryId"
@@ -1177,7 +1196,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Sub Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category:</Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Sub Category</Typography>
                       <Controller
                         control={control}
                         name="SubCategoryId"
@@ -1229,7 +1248,11 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Date Needed */}
                     <Stack sx={{ width: "100%" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed:</Typography>
+                      <Stack direction="row">
+                        <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Date Needed</Typography>
+                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      </Stack>
+
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
                           control={control}
@@ -1268,7 +1291,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Target Date */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%", display: "none" }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Target Date: </Typography>
+                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Target Date</Typography>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
                           control={control}
@@ -1316,7 +1339,12 @@ const ConcernDialog = ({ open, onClose }) => {
                   }}
                 >
                   {/* Concern */}
-                  <Typography sx={{ fontSize: "13px" }}>Concern Details:</Typography>
+
+                  <Stack direction="row">
+                    <Typography sx={{ fontSize: "13px" }}>Concern Details</Typography>
+                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  </Stack>
+
                   {fields.map((field, index) => (
                     <Stack key={field.id} direction="row" alignItems="flex-start" sx={{ width: "100%", mt: 1 }}>
                       <Controller
@@ -1383,7 +1411,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     mt: 2,
                   }}
                 >
-                  <Typography sx={{ fontSize: "13px" }}>Notes (Optional):</Typography>
+                  <Typography sx={{ fontSize: "13px" }}>Notes (Optional)</Typography>
 
                   <Controller
                     control={control}
@@ -1427,7 +1455,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <Typography sx={{ fontSize: "13px" }}>Attachment (Optional):</Typography>
+                  <Typography sx={{ fontSize: "13px" }}>Attachment (Optional)</Typography>
                   <Stack
                     sx={{
                       width: "100%",

@@ -326,13 +326,16 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Typography>
 
               <Stack gap={0.5} mt={2}>
-                <Typography
-                  sx={{
-                    fontSize: "14px",
-                  }}
-                >
-                  Channel:
-                </Typography>
+                <Stack direction="row">
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Channel:
+                  </Typography>
+                  <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                </Stack>
 
                 <Controller
                   control={control}
@@ -379,50 +382,16 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack gap={0.5} mt={2}>
-                <Typography
-                  sx={{
-                    fontSize: "14px",
-                  }}
-                >
-                  Transfer to:
-                </Typography>
-
-                {/* <Controller
-                  control={control}
-                  name="Transfer_To"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={issueHandlerData?.value || []}
-                        loading={issueHandlerIsLoading}
-                        renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
-                        onOpen={() => {
-                          if (!issueHandlerIsSuccess) getIssueHandler();
-                        }}
-                        onChange={(_, value) => {
-                          onChange(value);
-                        }}
-                        getOptionLabel={(option) => option.fullname}
-                        isOptionEqualToValue={(option, value) => option?.id === value?.id}
-                        fullWidth
-                        disablePortal
-                        disableClearable
-                        componentsProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiAutocomplete-listbox": {
-                                fontSize: "14px",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    );
-                  }}
-                /> */}
+                <Stack direction="row">
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Transfer to:
+                  </Typography>
+                  <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                </Stack>
 
                 <Controller
                   control={control}
@@ -467,13 +436,16 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack sx={{ gap: 0.5, mt: 2 }}>
-                <Typography
-                  sx={{
-                    fontSize: "14px",
-                  }}
-                >
-                  Transfer Remarks:
-                </Typography>
+                <Stack direction="row">
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  >
+                    Transfer Remarks:
+                  </Typography>
+                  <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                </Stack>
 
                 <Controller
                   control={control}
