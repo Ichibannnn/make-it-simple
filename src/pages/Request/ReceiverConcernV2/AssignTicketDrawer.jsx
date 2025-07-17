@@ -755,7 +755,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                       Target Date
                     </Typography>
                     <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
-                    {/* <Chip label="Required" color="error" size="small" sx={{ borderRadius: 0, fontSize: "10px", height: "15px" }} /> */}
                   </Stack>
 
                   <LocalizationProvider dateAdapter={AdapterMoment}>
