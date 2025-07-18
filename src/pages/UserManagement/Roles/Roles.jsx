@@ -42,7 +42,6 @@ const Roles = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
