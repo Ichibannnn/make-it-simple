@@ -326,7 +326,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Typography>
 
               <Stack gap={0.5} mt={2}>
-                <Stack direction="row">
+                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                   <Typography
                     sx={{
                       fontSize: "14px",
@@ -334,7 +334,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                   >
                     Channel:
                   </Typography>
-                  <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                 </Stack>
 
                 <Controller
@@ -382,7 +382,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack gap={0.5} mt={2}>
-                <Stack direction="row">
+                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                   <Typography
                     sx={{
                       fontSize: "14px",
@@ -390,7 +390,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                   >
                     Transfer to:
                   </Typography>
-                  <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                 </Stack>
 
                 <Controller
@@ -436,7 +436,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack sx={{ gap: 0.5, mt: 2 }}>
-                <Stack direction="row">
+                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                   <Typography
                     sx={{
                       fontSize: "14px",
@@ -444,7 +444,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
                   >
                     Transfer Remarks:
                   </Typography>
-                  <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                 </Stack>
 
                 <Controller

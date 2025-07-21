@@ -432,7 +432,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                   <Stack mt={2} gap={0.5}>
                     <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
                       <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Stack direction="row">
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -440,7 +440,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           >
                             Category:
                           </Typography>
-                          <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                         </Stack>
 
                         <Controller
@@ -500,7 +500,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                       </Stack>
 
                       <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Stack direction="row">
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -508,7 +508,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                           >
                             Sub Category:
                           </Typography>
-                          <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                         </Stack>
                         <Controller
                           control={control}
@@ -557,7 +557,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                     </Stack>
 
                     <Stack mt={2} gap={0.5}>
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -565,7 +565,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                         >
                           Resolution:
                         </Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
 
                       <Controller

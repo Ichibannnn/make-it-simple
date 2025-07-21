@@ -546,13 +546,17 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   <Stack gap={0.5} mt={2}>
                     <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
                       <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Category:
-                        </Typography>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Category:
+                          </Typography>
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                        </Stack>
+
                         <Controller
                           control={control}
                           name="CategoryId"
@@ -612,13 +616,16 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       </Stack>
 
                       <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Sub Category:
-                        </Typography>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Sub Category:
+                          </Typography>
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                        </Stack>
                         <Controller
                           control={control}
                           name="SubCategoryId"
@@ -669,13 +676,16 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                     </Stack>
 
                     <Stack mt={2} gap={0.5}>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                        }}
-                      >
-                        Resolution:
-                      </Typography>
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                        <Typography
+                          sx={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          Resolution:
+                        </Typography>
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                      </Stack>
 
                       <Controller
                         control={control}

@@ -49,6 +49,15 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getSlaTickets: builder.query({
+      query: (params) => ({
+        url: "reports/sla-report",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     getDownloadOpenTickets: builder.query({
       query: (params) => ({
         url: `export/open`,
@@ -97,6 +106,7 @@ export const {
   useGetClosedTicketsQuery,
   useGetTransferredTicketsQuery,
   useGetOnHoldTicketsQuery,
+  useGetSlaTicketsQuery,
 
   useLazyGetAllTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,

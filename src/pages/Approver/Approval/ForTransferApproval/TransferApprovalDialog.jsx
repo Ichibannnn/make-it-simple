@@ -600,14 +600,17 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
               <Stack sx={{ width: "100%", gap: 1, mt: 2 }}>
                 <Stack gap={0.5}>
-                  <Typography
-                    sx={{
-                      fontSize: isScreenSmall ? "13px" : "14px",
-                      color: theme.palette.primary.main,
-                    }}
-                  >
-                    Tranferred to:
-                  </Typography>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: isScreenSmall ? "13px" : "14px",
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Tranferred to:
+                    </Typography>
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                  </Stack>
 
                   <Controller
                     control={control}
@@ -652,14 +655,17 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                 </Stack>
 
                 <Stack gap={0.5}>
-                  <Typography
-                    sx={{
-                      fontSize: isScreenSmall ? "13px" : "14px",
-                      color: theme.palette.primary.main,
-                    }}
-                  >
-                    New Target Date:
-                  </Typography>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: isScreenSmall ? "13px" : "14px",
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      New Target Date:
+                    </Typography>
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                  </Stack>
 
                   <LocalizationProvider dateAdapter={AdapterMoment}>
                     <Controller

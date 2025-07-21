@@ -325,7 +325,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
 
                   <Stack mt={2} gap={0.5}>
                     <Stack gap={0.5}>
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -333,7 +333,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
                         >
                           Reason:
                         </Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
 
                       <Controller

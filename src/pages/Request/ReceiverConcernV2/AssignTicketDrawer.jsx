@@ -572,8 +572,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                   </Stack>
                 </Stack>
 
-                <Stack gap={0.5}>
-                  <Stack direction="row">
+                <Stack>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography
                       sx={{
                         fontSize: "13px",
@@ -581,7 +581,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                     >
                       Channel
                     </Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   <Controller
@@ -623,8 +623,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                   />
                 </Stack>
 
-                <Stack gap={0.5}>
-                  <Stack direction="row">
+                <Stack>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography
                       sx={{
                         fontSize: "13px",
@@ -632,7 +632,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                     >
                       Category
                     </Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   <Controller
@@ -688,8 +688,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                   />
                 </Stack>
 
-                <Stack gap={0.5}>
-                  <Stack direction="row">
+                <Stack>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography
                       sx={{
                         fontSize: "13px",
@@ -697,7 +697,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                     >
                       Sub Category
                     </Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   <Controller
@@ -745,8 +745,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                   />
                 </Stack>
 
-                <Stack gap={0.5}>
-                  <Stack direction="row">
+                <Stack>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography
                       sx={{
                         fontSize: "13px",
@@ -754,7 +754,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                     >
                       Target Date
                     </Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -845,7 +845,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                       fontSize: "13px",
                     }}
                   >
-                    Ticket Description:
+                    Ticket Description
                   </Typography>
                   <Controller
                     control={control}

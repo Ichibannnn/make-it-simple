@@ -515,13 +515,16 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                 </Stack>
 
                 <Stack sx={{ gap: 0.5, mt: 2 }}>
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                    }}
-                  >
-                    Transfer Remarks:
-                  </Typography>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      Transfer Remarks:
+                    </Typography>
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                  </Stack>
 
                   <Controller
                     control={control}

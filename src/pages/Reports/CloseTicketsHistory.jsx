@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGetClosedTicketsQuery } from "../../features/api_reports/reportsApi";
-import { AccessTimeOutlined, CalendarMonthOutlined, FiberManualRecord, History, Search } from "@mui/icons-material";
+import { CalendarMonthOutlined, FiberManualRecord, Search } from "@mui/icons-material";
 import {
   Chip,
   CircularProgress,
@@ -16,6 +16,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
@@ -137,7 +138,6 @@ const CloseTicketsHistory = ({
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   START DATE
                 </Stack>
               </TableCell>
@@ -151,7 +151,6 @@ const CloseTicketsHistory = ({
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   END DATE
                 </Stack>
               </TableCell>
@@ -198,7 +197,6 @@ const CloseTicketsHistory = ({
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {/* <AccessTimeOutlined sx={{ fontSize: "16px" }} /> */}
                   TARGET DATE
                 </Stack>
               </TableCell>

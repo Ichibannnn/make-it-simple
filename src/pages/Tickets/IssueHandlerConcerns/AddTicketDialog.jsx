@@ -492,9 +492,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                     mb: 1,
                   }}
                 >
-                  <Stack direction="row">
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography sx={{ fontSize: "11px" }}>Request Type</Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   <Controller
@@ -515,9 +515,9 @@ const AddTicketDialog = ({ open, onClose }) => {
 
                 {watch("Request_Type") === "Rework" && (
                   <Stack sx={{ width: "100%", mb: 1 }}>
-                    <Stack direction="row">
+                    <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                       <Typography sx={{ fontSize: "11px" }}>Ticket Number</Typography>
-                      <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                      <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                     </Stack>
 
                     <Controller
@@ -567,9 +567,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                     mb: 1,
                   }}
                 >
-                  <Stack direction="row">
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography sx={{ fontSize: "11px" }}>Severity</Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   <Controller
@@ -1027,9 +1027,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
                       {/* Service Provider */}
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography sx={{ fontSize: "11px" }}>Service Provider</Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
 
                       <Controller
@@ -1080,9 +1080,9 @@ const AddTicketDialog = ({ open, onClose }) => {
 
                     {/* Channel */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography sx={{ fontSize: "11px" }}>Channel</Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
                       <Controller
                         control={control}
@@ -1129,9 +1129,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography sx={{ fontSize: "11px" }}>Category</Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
                       <Controller
                         control={control}
@@ -1203,11 +1203,11 @@ const AddTicketDialog = ({ open, onClose }) => {
                       />
                     </Stack>
 
+                    {/* Sub Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      {/* Sub Category */}
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography sx={{ fontSize: "11px" }}>Sub Category</Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
                       <Controller
                         control={control}
@@ -1257,12 +1257,12 @@ const AddTicketDialog = ({ open, onClose }) => {
                 </Stack>
 
                 <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  {/* Target Date */}
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Target Date */}
                     <Stack sx={{ width: "100%" }}>
-                      <Stack direction="row">
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography sx={{ fontSize: "11px" }}>Target Date</Typography>
-                        <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <Controller
@@ -1311,9 +1311,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                   }}
                 >
                   {/* Ticket Description */}
-                  <Stack direction="row">
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                     <Typography sx={{ fontSize: "11px" }}>Ticket Description</Typography>
-                    <FiberManualRecord color="primary" sx={{ fontSize: "10px" }} />
+                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
 
                   {fields.map((field, index) => (

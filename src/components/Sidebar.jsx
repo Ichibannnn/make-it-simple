@@ -140,8 +140,6 @@ const SidebarList = () => {
   const openNotification = notificationData?.value?.openTicketNotif || 0;
   const ticketApprovalNotification = notificationData?.value?.forApprovalClosingNotif || 0;
 
-  console.log("appproval_notif: ", ticketApprovalNotification);
-
   const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
   const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
   const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));

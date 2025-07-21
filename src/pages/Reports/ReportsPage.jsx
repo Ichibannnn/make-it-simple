@@ -7,11 +7,6 @@ import { IosShare } from "@mui/icons-material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
-import OpenTicketsHistory from "./OpenTicketsHistory";
-import CloseTicketsHistory from "./CloseTicketsHistory";
-import OnHoldTicketsHistory from "./OnHoldTicketsHistory";
-import TransferredTicketsHistory from "./TransferredTicketsHistory";
-
 import * as yup from "yup";
 import moment from "moment";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,6 +16,13 @@ import { LoadingButton } from "@mui/lab";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
+import AllTicketsHistory from "./AllTicketsHistory";
+import OpenTicketsHistory from "./OpenTicketsHistory";
+import CloseTicketsHistory from "./CloseTicketsHistory";
+import OnHoldTicketsHistory from "./OnHoldTicketsHistory";
+import TransferredTicketsHistory from "./TransferredTicketsHistory";
+import ServiceLevelAgreement from "./ServiceLevelAgreement";
+
 import {
   useGetAllTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
@@ -28,7 +30,6 @@ import {
   useLazyGetDownloadOpenTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,
 } from "../../features/api_reports/reportsApi";
-import AllTicketsHistory from "./AllTicketsHistory";
 import { useLazyGetServiceProviderQuery } from "../../features/api masterlist/service_provider/serviceProviderApi";
 import { useSelector } from "react-redux";
 import { useLazyGetChannelsQuery } from "../../features/api_channel_setup/channel/channelApi";
@@ -36,7 +37,6 @@ import { useLazyGetChannelsQuery } from "../../features/api_channel_setup/channe
 const schema = yup.object().shape({
   ServiceProvider: yup.object().nullable(),
   Channel: yup.object().nullable(),
-  UnitId: yup.object().nullable(),
   UserId: yup.object().nullable(),
 });
 
@@ -60,7 +60,7 @@ const ReportsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sheetData, setSheetData] = useState([]);
 
-  const categoryOptions = ["All Tickets", "Open Tickets", "Closed Tickets", "Transferred Tickets", "On-Hold Tickets"];
+  const categoryOptions = ["All Tickets", "Open Tickets", "Closed Tickets", "Transferred Tickets", "On-Hold Tickets", "Service Level Agreement"];
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -83,6 +83,18 @@ const ReportsPage = () => {
     Date_To: moment(dateTo).format("YYYY-MM-DD"),
     PageNumber: pageNumber,
     PageSize: pageSize,
+  });
+
+  // ALL TICKETS SHEETDATA ~~~~
+  const { data: allTicketSheetData } = useGetAllTicketsQuery({
+    Search: search,
+    ServiceProvider: serviceProvider,
+    Channel: channel,
+    UserId: user,
+    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+    Date_To: moment(dateTo).format("YYYY-MM-DD"),
+    PageNumber: pageNumber,
+    PageSize: 1000000,
   });
 
   const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
@@ -269,9 +281,9 @@ const ReportsPage = () => {
   };
 
   useEffect(() => {
-    if (allTicketData) {
+    if (allTicketSheetData) {
       setSheetData(
-        allTicketData?.value?.reports?.map((item) => {
+        allTicketSheetData?.value?.reports?.map((item) => {
           return {
             "Ticket Number": item.ticketConcernId,
             "Ticket Description": item.concerns,
@@ -651,6 +663,23 @@ const ReportsPage = () => {
               />
             ) : reportNavigation === "On-Hold Tickets" ? (
               <OnHoldTicketsHistory
+                search={search}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                serviceProvider={serviceProvider}
+                channel={channel}
+                user={user}
+                remarks={remarks}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                setSheetData={setSheetData}
+              />
+            ) : reportNavigation === "Service Level Agreement" ? (
+              <ServiceLevelAgreement
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
