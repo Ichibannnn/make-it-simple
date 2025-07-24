@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Add, CheckOutlined, RemoveCircleOutline } from "@mui/icons-material";
+import { Add, CheckOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -195,27 +195,10 @@ const ConcernReturn = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={{ padding: "5px", gap: 0.5 }}>
-              <Typography
-                sx={{
-                  fontSize: "16px",
-                }}
-              >
-                Remarks:
-              </Typography>
-
-              {/* <TextField
-                {...register("reject_Remarks")}
-                variant="outlined"
-                // label="Enters Re"
-                placeholder="Enter Remarks"
-                helperText={errors?.reject_Remarks?.message}
-                error={!!errors?.reject_Remarks?.message}
-                sx={{ borderColor: "primary" }}
-                rows={6}
-                multiline
-                fullWidth
-                autoComplete="off"
-              /> */}
+              <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                <Typography sx={{ fontSize: "16px" }}>Remarks: </Typography>
+                <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+              </Stack>
 
               <Controller
                 control={control}
@@ -371,7 +354,7 @@ const ConcernReturn = ({ data, open, onClose }) => {
               type="submit"
               variant="contained"
               loading={returnConcernIsLoading || returnConcernIsFetching}
-              disabled={!watch("remarks") || !addAttachments.length}
+              disabled={!watch("remarks")}
               sx={{
                 ":disabled": {
                   backgroundColor: theme.palette.secondary.main,

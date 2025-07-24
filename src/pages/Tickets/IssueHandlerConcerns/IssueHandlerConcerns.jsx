@@ -444,7 +444,6 @@ const IssueHandlerConcerns = () => {
                 variant="contained"
                 color="primary"
                 startIcon={<DiscountOutlined />}
-                loadingPosition="start"
                 onClick={addTicketOnToggle}
                 sx={{ fontSize: "11px" }}
               >

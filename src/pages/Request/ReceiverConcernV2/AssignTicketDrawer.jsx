@@ -223,7 +223,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
   };
 
   const onSubmitAction = (formData) => {
-    // console.log("FormData: ", formData);
+    console.log("FormData: ", formData);
 
     const payload = new FormData();
 
@@ -246,7 +246,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     payload.append("Notes", data?.notes === null ? "" : data?.notes);
 
     payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
-    payload.append("TargetDate", moment(formData.targetDate).format("YYYY-MM-DD"));
+    payload.append("TargetDate", moment(formData.TargetDate).format("YYYY-MM-DD"));
     payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler : "");
     payload.append("Concern", formData.Concern);
 
@@ -283,7 +283,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       payload.append(`RequestAttachmentsFile[0].attachment`, "");
     }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     // const smsPayload = {
     //   system_name: "Make It Simple",

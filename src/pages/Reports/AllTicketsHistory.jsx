@@ -173,18 +173,18 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
                     CLOSED DATE
                   </TableCell>
 
-                  {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  AGING DAYS
-                </Stack>
-              </TableCell> */}
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                      AGING DAYS
+                    </Stack>
+                  </TableCell>
 
                   <TableCell
                     sx={{
@@ -217,6 +217,17 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
                     }}
                   >
                     STATUS
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CLOSING STATUS
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -366,33 +377,23 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
                           },
                         }}
                       >
-                        {item?.closedDate ? moment(item.closedDate).format("LL") : "-"}
+                        {item?.closedDate ? moment(item.closedDate).format("LL") : "--"}
                       </TableCell>
 
-                      {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={`${item.aging_Days} Day(s)`}
-                    />
-                  </TableCell> */}
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                        align="center"
+                      >
+                        {item.aging_Days !== 0 ? item?.aging_Days : "--"}
+                      </TableCell>
 
                       <TableCell
                         sx={{
@@ -470,6 +471,29 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
                                 : item.ticket_Status === "Closed"
                                 ? "#00913c"
                                 : "transparent",
+                            color: "#ffffffde",
+                            borderRadius: "20px",
+                          }}
+                        />
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={item.closingStatus === "On-Time" ? "On-Time" : item.closingStatus === "Delayed" ? "Delayed" : "--"}
+                          sx={{
+                            backgroundColor: item.closingStatus === "Delayed" ? "#ff7043" : item.closingStatus === "On-Time" ? "#00913c" : "transparent",
                             color: "#ffffffde",
                             borderRadius: "20px",
                           }}

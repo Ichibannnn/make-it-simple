@@ -277,6 +277,7 @@ const ConcernDialog = ({ open, onClose }) => {
         });
 
         replace([""]);
+        remove();
         setAttachments([]);
         setIsLoading(false);
         onClose();
@@ -454,12 +455,7 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [watch("IssueHandler")]);
 
   const clearFields = () => {
-    // Remove all existing fields
-    fields.forEach((_, index) => {
-      remove(index);
-    });
-
-    append("");
+    remove();
   };
 
   return (

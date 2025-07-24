@@ -18,6 +18,7 @@ import {
   TablePagination,
   TableRow,
   Tabs,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -721,6 +722,17 @@ const ConcernTickets = () => {
                             fontWeight: 700,
                             fontSize: "12px",
                           }}
+                        >
+                          RESOLUTION
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            background: "#1C2536",
+                            color: "#D65DB1",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                          }}
                           align="center"
                         >
                           DATE CREATED
@@ -800,6 +812,26 @@ const ConcernTickets = () => {
                                   <br />
                                 </span>
                               ))}
+                            </TableCell>
+
+                            <TableCell
+                              className="ellipsis-styling"
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                maxWidth: "500px",
+                              }}
+                              onClick={() => onViewHistoryAction(item)}
+                            >
+                              <Tooltip title={item.resolution} placement="bottom-start">
+                                {item.resolution?.split("\r\n").map((line, index) => (
+                                  <span key={index}>
+                                    {line}
+                                    <br />
+                                  </span>
+                                ))}
+                              </Tooltip>
                             </TableCell>
 
                             <TableCell
