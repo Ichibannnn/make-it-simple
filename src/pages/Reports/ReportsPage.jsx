@@ -28,6 +28,7 @@ import {
   useLazyGetDownloadClosedTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
+  useLazyGetDownloadSlaTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,
 } from "../../features/api_reports/reportsApi";
 import { useLazyGetServiceProviderQuery } from "../../features/api masterlist/service_provider/serviceProviderApi";
@@ -104,6 +105,7 @@ const ReportsPage = () => {
   const [getDownloadClosedTickets] = useLazyGetDownloadClosedTicketsQuery();
   const [getDownloadTransferredTickets] = useLazyGetDownloadTransferredTicketsQuery();
   const [getDownloadOnHoldTickets] = useLazyGetDownloadOnHoldTicketsQuery();
+  const [getDownloadSlaTickets] = useLazyGetDownloadSlaTicketsQuery();
 
   const { control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
@@ -209,6 +211,31 @@ const ReportsPage = () => {
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "OnHold_Tickets_Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    } else if (reportNavigation === "Service Level Agreement") {
+      setIsLoading(true);
+      try {
+        const response = await getDownloadSlaTickets({
+          Search: search,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
+          UserId: user,
+          Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+          Date_To: moment(dateTo).format("YYYY-MM-DD"),
+        }).unwrap();
+
+        console.log("Response: ", response);
+
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "SLA_Tickets_Report.xlsx");
         document.body.appendChild(link);
         link.click();
         link.remove();

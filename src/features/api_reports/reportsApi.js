@@ -97,6 +97,16 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       }),
       providesTags: tags,
     }),
+
+    getDownloadSlaTickets: builder.query({
+      query: (params) => ({
+        url: `export/sla-export`,
+        method: "GET",
+        params: params,
+        responseHandler: (response) => response.blob(),
+      }),
+      providesTags: tags,
+    }),
   }),
 });
 
@@ -113,4 +123,5 @@ export const {
   useLazyGetDownloadClosedTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
+  useLazyGetDownloadSlaTicketsQuery,
 } = reportsApi;
