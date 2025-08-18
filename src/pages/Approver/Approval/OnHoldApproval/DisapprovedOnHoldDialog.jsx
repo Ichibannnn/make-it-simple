@@ -208,7 +208,7 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
 
   const onSubmitAction = (formData) => {
     const disapprovePayload = {
-      approveOnHoldRequests: selectedTickets.map((item) => ({
+      rejectOnHoldRequests: selectedTickets.map((item) => ({
         onHoldTicketId: item,
       })),
       reject_Remarks: formData?.reject_Remarks,

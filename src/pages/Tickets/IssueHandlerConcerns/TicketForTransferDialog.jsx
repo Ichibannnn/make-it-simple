@@ -28,7 +28,7 @@ const schema = yup.object().shape({
   Transfer_To: yup.object().required().label("Issue handler"),
 });
 
-const TicketForTransferDialog = ({ data, open, onClose }) => {
+const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -72,7 +72,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
     payload.append("TicketConcernId", data?.ticketConcernId);
     payload.append("TransferRemarks", formData?.TransferRemarks);
 
-    // payload.append("Transfer_To", formData?.Transfer_To?.id);
+    payload.append("TransferChannelId", formData?.ChannelId?.id);
     payload.append("Transfer_To", formData?.Transfer_To?.userId);
 
     // Attachments
@@ -86,6 +86,8 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
       payload.append(`AddTransferAttachments[0].ticketAttachmentId`, "");
       payload.append(`AddTransferAttachments[0].attachment`, "");
     }
+
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     Swal.fire({
       title: "Confirmation",
@@ -110,8 +112,6 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log("Payload Entries: ", [...payload.entries()]);
-
         transferTicket(payload)
           .unwrap()
           .then(() => {
@@ -123,6 +123,7 @@ const TicketForTransferDialog = ({ data, open, onClose }) => {
             dispatch(notificationMessageApi.util.resetApiState());
             setAttachments([]);
             reset();
+            viewOnClose();
             onClose();
           })
           .catch((err) => {

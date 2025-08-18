@@ -509,25 +509,25 @@ const ConcernTickets = () => {
                           cursor: "pointer",
                           "&:hover": {
                             backgroundColor: "#1A222F",
-                            color: "#9e77ed", // Change the text color when hovering
+                            color: "#9e77ed",
                           },
                         }}
                       >
                         <Stack spacing={1}>
                           <Stack spacing={1} onClick={() => onViewHistoryAction(item)}>
-                            <Stack direction="row" gap={0.5} alignItems="center">
+                            {/* <Stack direction="row" gap={0.5} alignItems="center">
                               <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NUMBER:</Typography>
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
-                            </Stack>
+                            </Stack> */}
 
-                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item?.concern_Status !== "For Approval" ? item.ticketRequestConcerns?.[0]?.ticketConcernId : "-"}
-                                </Typography>
-                              </Stack>
-                            )}
+                            {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && ( */}
+                            <Stack direction="row" gap={0.5} alignItems="center">
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
+                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                              </Typography>
+                            </Stack>
+                            {/* )} */}
 
                             <Stack direction="row" gap={0.5} alignItems="center">
                               <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
@@ -661,7 +661,7 @@ const ConcernTickets = () => {
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
-                        <TableCell
+                        {/* <TableCell
                           sx={{
                             background: "#1C2536",
                             color: "#D65DB1",
@@ -676,23 +676,10 @@ const ConcernTickets = () => {
                               {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                             </IconButton>
                           </Stack>
-                        </TableCell>
+                        </TableCell> */}
 
-                        {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && (
-                          <TableCell
-                            sx={{
-                              background: "#1C2536",
-                              color: "#D65DB1",
-                              fontWeight: 700,
-                              fontSize: "12px",
-                            }}
-                            align="center"
-                          >
-                            TICKET NO.
-                          </TableCell>
-                        )}
-
-                        {/* <TableCell
+                        {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && ( */}
+                        <TableCell
                           sx={{
                             background: "#1C2536",
                             color: "#D65DB1",
@@ -702,7 +689,8 @@ const ConcernTickets = () => {
                           align="center"
                         >
                           TICKET NO.
-                        </TableCell> */}
+                        </TableCell>
+                        {/* )} */}
 
                         <TableCell
                           sx={{
@@ -771,6 +759,7 @@ const ConcernTickets = () => {
                         !isFetching &&
                         data?.value?.requestConcern?.map((item, index) => (
                           <TableRow key={index}>
+                            {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && ( */}
                             <TableCell
                               sx={{
                                 color: "#EDF2F7",
@@ -780,22 +769,9 @@ const ConcernTickets = () => {
                               align="center"
                               onClick={() => onViewHistoryAction(item)}
                             >
-                              {item.requestConcernId}
+                              {item.ticketRequestConcerns?.[0]?.ticketConcernId}
                             </TableCell>
-
-                            {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && (
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                }}
-                                align="center"
-                                onClick={() => onViewHistoryAction(item)}
-                              >
-                                {item?.concern_Status !== "For Approval" ? item.ticketRequestConcerns?.[0]?.ticketConcernId : "-"}
-                              </TableCell>
-                            )}
+                            {/* )} */}
 
                             <TableCell
                               sx={{
@@ -946,7 +922,7 @@ const ConcernTickets = () => {
                         </TableRow>
                       )}
 
-                      {isSuccess && !data?.value?.requestConcern?.length && (
+                      {isSuccess && !data?.value?.requestConcern?.length && !isLoading && !isFetching && (
                         <TableRow>
                           <TableCell colSpan={7} align="center">
                             <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

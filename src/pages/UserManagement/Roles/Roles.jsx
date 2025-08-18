@@ -507,7 +507,7 @@ const Roles = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.userRole.length && (
+                  {isSuccess && !data?.value?.userRole.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

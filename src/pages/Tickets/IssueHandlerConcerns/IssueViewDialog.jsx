@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, GetAppOutlined, LocalPrintshopOutlined } from "@mui/icons-material";
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  AccountCircleRounded,
+  AttachFileOutlined,
+  ChecklistRtlOutlined,
+  Close,
+  GetAppOutlined,
+  LocalPrintshopOutlined,
+  MoveDownOutlined,
+  PendingOutlined,
+} from "@mui/icons-material";
 
 import { theme } from "../../../theme/theme";
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
@@ -10,8 +19,11 @@ import moment from "moment";
 import { useReactToPrint } from "react-to-print";
 import TicketHistory from "./TicketHistory";
 import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
+import IssueHandlerClosingDialog from "./IssueHandlerClosingDialog";
+import TicketForTransferDialog from "./TicketForTransferDialog";
+import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 
-const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
+const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
   const [attachments, setAttachments] = useState([]);
   const [navigation, setNavigation] = useState("1");
 
@@ -48,6 +60,14 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
   }, [data]);
 
   const onCloseHandler = () => {
+    viewOnClose();
+  };
+
+  const onTransferCloseHandler = () => {
+    viewOnClose();
+  };
+
+  const onHoldCloseHandler = () => {
     viewOnClose();
   };
 
@@ -106,6 +126,8 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
     content: () => componentRef.current,
   });
 
+  // console.log("View Data: ", data);
+
   return (
     <>
       <Dialog
@@ -125,7 +147,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
       >
         <DialogContent>
           {/* REQUESTOR */}
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack direction="row" justifyContent="space-between" alignItems="end">
             <Stack direction="row" gap={1} alignItems="center">
               <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
               <Stack>
@@ -153,6 +175,12 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                 </Typography>
               </Stack>
             </Stack>
+
+            <Stack direction="row" gap={0.5} alignItems="center">
+              <IconButton onClick={onCloseHandler}>
+                <Close />
+              </IconButton>
+            </Stack>
           </Stack>
 
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
@@ -169,9 +197,9 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
               />
             </Tabs>
 
-            <Button variant="contained" size="small" onClick={handlePrint} startIcon={<LocalPrintshopOutlined />}>
+            {/* <Button variant="contained" size="small" onClick={handlePrint} startIcon={<LocalPrintshopOutlined />}>
               <Typography sx={{ fontSize: "12px" }}>Print</Typography>
-            </Button>
+            </Button> */}
           </Stack>
 
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
@@ -407,7 +435,14 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                       </Box>
 
                       <Box sx={{ ml: 2 }}>
-                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                          {data?.getForClosingTickets?.[0]?.resolution?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </Typography>
                       </Box>
                     </Stack>
                   )}
@@ -622,16 +657,26 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                       <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
-                    <Box sx={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
+                    <Tooltip
+                      title={data?.concern_Description.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                      placement="bottom-start"
+                    >
+                      <Box className="ellipsis-styling-label" sx={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                          {data?.concern_Description?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
                   </Stack>
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
@@ -652,7 +697,14 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                       </Box>
                       <Box sx={{ width: "10%" }} />
                       <Box sx={{ width: "75%", ml: 2 }}>
-                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                          {data?.getForClosingTickets?.[0]?.resolution?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </Typography>
                       </Box>
                     </Stack>
                   )}
@@ -993,11 +1045,18 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
                   {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
                     <Stack direction="row" sx={{ padding: 1, border: "1px solid black" }}>
                       <Box sx={{ width: "15%", ml: 2 }}>
-                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Resolution:</Typography>
+                        <Typography sx={{ textAlign: "right", color: "black", fontWeight: "bold", fontSize: "14px" }}>Resolutionzxczxczx:</Typography>
                       </Box>
                       <Box sx={{ width: "10%" }} />
                       <Box sx={{ width: "75%", ml: 2 }}>
-                        <Typography sx={{ color: "black", fontWeight: "500", fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                          {data?.getForClosingTickets?.[0]?.resolution?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </Typography>
                       </Box>
                     </Stack>
                   )}
@@ -1012,8 +1071,29 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={onCloseHandler}>Close</Button>
+          {/* BUTTONS */}
+          {data?.ticket_Status === "Open Ticket" && (
+            <>
+              <Stack direction="row" gap={0.5} alignItems="center" mb={1}>
+                <Button variant="contained" size="small" onClick={() => onClosing(data)} color="success" startIcon={<ChecklistRtlOutlined />} sx={{ borderRadius: "1px" }}>
+                  <Typography sx={{ fontSize: "12px" }}>Close</Typography>
+                </Button>
+
+                <Button variant="contained" size="small" onClick={() => onTransfer(data)} color="info" startIcon={<MoveDownOutlined />} sx={{ borderRadius: "1px" }}>
+                  <Typography sx={{ fontSize: "12px" }}>Transfer</Typography>
+                </Button>
+
+                <Button variant="contained" size="small" onClick={() => onHold(data)} color="warning" startIcon={<PendingOutlined />} sx={{ borderRadius: "1px" }}>
+                  <Typography sx={{ fontSize: "12px" }}>Hold</Typography>
+                </Button>
+              </Stack>
+            </>
+          )}
         </DialogActions>
+
+        <IssueHandlerClosingDialog data={data} viewOnClose={onCloseHandler} />
+        <TicketForTransferDialog data={data} viewOnClose={onTransferCloseHandler} />
+        <IssueHandlerHoldDialog data={data} viewOnClose={onHoldCloseHandler} />
       </Dialog>
 
       {selectedImage && (

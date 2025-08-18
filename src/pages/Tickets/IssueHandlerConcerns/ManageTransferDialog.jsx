@@ -174,6 +174,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
         payload.append("TicketConcernId", formData.TicketConcernId);
         payload.append("TransferRemarks", formData.TransferRemarks);
 
+        payload.append("TransferChannelId", formData?.ChannelId?.id);
         payload.append("Transfer_To", formData?.Transfer_To?.userId);
 
         // Attachments
@@ -227,8 +228,8 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
       setValue("TransferRemarks", data?.getForTransferTickets?.[0]?.transfer_Remarks);
 
       setValue("ChannelId", {
-        id: data?.channelId,
-        channel_Name: data?.channel_Name,
+        id: data?.transferChannelId,
+        channel_Name: data?.transfer_Channel_Name,
       });
 
       setValue("Transfer_To", {

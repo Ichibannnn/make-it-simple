@@ -640,9 +640,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!subCategoryIsSuccess) getSubCategory();
-                                }}
+                                // onOpen={() => {
+                                //   if (!subCategoryIsSuccess) getSubCategory();
+                                // }}
                                 onChange={(_, value) => {
                                   // console.log("Value ", value);
 

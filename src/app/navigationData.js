@@ -28,62 +28,67 @@ export const sidebarNavigationData = [
     sub: [
       {
         id: 1,
+        name: "One Charging",
+        path: "/masterlist/one-charging",
+      },
+      {
+        id: 2,
         name: "Company",
         path: "/masterlist/company",
       },
       {
-        id: 2,
+        id: 3,
         name: "Business Unit",
         path: "/masterlist/business-unit",
       },
       {
-        id: 3,
+        id: 4,
         name: "Department",
         path: "/masterlist/department",
       },
       {
-        id: 4,
+        id: 5,
         name: "Unit",
         path: "/masterlist/unit",
       },
       {
-        id: 5,
+        id: 6,
         name: "Sub Unit",
         path: "/masterlist/sub-unit",
       },
       {
-        id: 6,
+        id: 7,
         name: "Location",
         path: "/masterlist/location",
       },
       {
-        id: 7,
+        id: 8,
         name: "Category",
         path: "/masterlist/category",
       },
 
       {
-        id: 8,
+        id: 9,
         name: "Sub Category",
         path: "/masterlist/sub-category",
       },
       {
-        id: 9,
+        id: 10,
         name: "Receiver",
         path: "/masterlist/receiver-setup",
       },
       {
-        id: 10,
+        id: 11,
         name: "Channel Setup",
         path: "/masterlist/channel-setup",
       },
       {
-        id: 11,
+        id: 12,
         name: "Service Provider",
         path: "/masterlist/service-provider",
       },
       {
-        id: 12,
+        id: 13,
         name: "Approver",
         path: "/masterlist/approver-setup",
       },

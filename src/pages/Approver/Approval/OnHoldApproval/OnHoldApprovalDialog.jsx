@@ -20,8 +20,8 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [disapproveData, setDisapproveData] = useState(null);
 
-  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
 

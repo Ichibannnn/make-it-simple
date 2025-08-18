@@ -511,7 +511,7 @@ const ServiceProvider = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.serviceProvider.length && (
+                  {isSuccess && !data?.value?.serviceProvider.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />

@@ -558,7 +558,7 @@ const UserAccounts = () => {
                       </TableRow>
                     )}
 
-                    {isSuccess && !data?.value?.users.length && (
+                    {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
                       <TableRow>
                         <TableCell colSpan={7} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

@@ -621,7 +621,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                           ref={ref}
                           size="small"
                           value={value}
-                          options={issueHandlerData?.value?.channel?.find((item) => item.id === data?.channelId)?.channelUsers || []}
+                          options={issueHandlerData?.value?.channel?.find((item) => item.id === data?.transferChannelId)?.channelUsers || []}
                           loading={issueHandlerIsLoading}
                           renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                           onOpen={() => {

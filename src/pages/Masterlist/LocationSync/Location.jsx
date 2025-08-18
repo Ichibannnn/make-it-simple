@@ -382,7 +382,7 @@ const Location = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.location.length && (
+                  {isSuccess && !data?.value?.location.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

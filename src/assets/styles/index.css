@@ -231,11 +231,23 @@ body {
 }
 
 .ellipsis-styling {
-  display: block;
-  width: 100px;
+  display: inline-block;
+  max-width: 300px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  vertical-align: bottom;
+  line-height: 1.4;
+}
+
+.ellipsis-styling-label {
+  display: inline-block;
+  max-width: 700px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  line-height: 1.4;
 }
 
 .ellipsis-styling2 {

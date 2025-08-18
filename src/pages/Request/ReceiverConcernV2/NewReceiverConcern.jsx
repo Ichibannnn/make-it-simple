@@ -152,8 +152,10 @@ const NewReceiverConcern = () => {
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NUMBER:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item.ticketRequestConcerns[0]?.ticketConcernId}
+                                </Typography>
                               </Stack>
 
                               <Stack direction="row">
@@ -254,22 +256,8 @@ const NewReceiverConcern = () => {
                         }}
                         align="center"
                       >
-                        CONCERN NO.
+                        TICKET NO.
                       </TableCell>
-
-                      {approveStatus === "true" && (
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "11px",
-                          }}
-                          align="center"
-                        >
-                          TICKET NO.
-                        </TableCell>
-                      )}
 
                       <TableCell
                         sx={{
@@ -358,27 +346,9 @@ const NewReceiverConcern = () => {
                             >
                               <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
                                 {item.severity === "Urgent" && <FlashOn color="warning" />}
-                                <Typography sx={{ fontSize: "15px" }}>{item.requestConcernId}</Typography>
+                                <Typography sx={{ fontSize: "12px" }}>{item.ticketRequestConcerns[0]?.ticketConcernId}</Typography>
                               </Stack>
                             </TableCell>
-
-                            {approveStatus === "true" && (
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  "&:hover": {
-                                    background: "",
-                                    color: "#EDF2F7",
-                                  },
-                                }}
-                                align="center"
-                                onClick={() => onViewAction(item)}
-                              >
-                                {item.ticketRequestConcerns[0]?.ticketConcernId}
-                              </TableCell>
-                            )}
 
                             <TableCell
                               sx={{
@@ -403,6 +373,15 @@ const NewReceiverConcern = () => {
                                 }}
                               >
                                 {item.department_Name}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.location_Name}
                               </Typography>
                             </TableCell>
 

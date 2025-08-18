@@ -19,6 +19,7 @@ const schema = yup.object().shape({
 const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Reports", "Filing", "Generate"];
 const userManagementCheckbox = ["User Account", "User Role"];
 const masterlistCheckbox = [
+  "One Charging",
   "Company",
   "Business Unit",
   "Department",

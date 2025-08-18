@@ -17,6 +17,8 @@ const ConcernHistory = ({ data, open, onClose }) => {
     onClose();
   };
 
+  console.log("dATA: ", data);
+
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} onClose={onCloseHandler} disableEscapeKeyDown={false} sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}>
@@ -25,7 +27,7 @@ const ConcernHistory = ({ data, open, onClose }) => {
             <Stack direction="row" gap={1} alignItems="center">
               <Stack>
                 <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "700", fontSize: "18px" }}>
-                  {`Concern Number: ${data?.requestConcernId}`}
+                  {`Ticket Number: ${data?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                 </Typography>
               </Stack>
             </Stack>

@@ -38,7 +38,11 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
 
   const onSubmitAction = (formData) => {
     const disapprovePayload = {
-      closingTicketId: data?.closingTicketId,
+      rejectClosingRequests: [
+        {
+          closingTicketId: data?.closingTicketId,
+        },
+      ],
       reject_Remarks: formData?.reject_Remarks,
     };
 

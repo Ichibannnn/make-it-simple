@@ -119,9 +119,46 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                             />
                           </Stack>
 
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}> STATUS:</Typography>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={
+                                item.ticketStatus === "Ongoing"
+                                  ? "Open"
+                                  : item.ticketStatus === "For Closing Ticket"
+                                  ? "For Closing"
+                                  : item.ticketStatus === "For Transfer"
+                                  ? "For Transfer"
+                                  : item.ticketStatus === "For On-Hold"
+                                  ? "Hold Approval"
+                                  : item.ticketStatus === "On-Hold"
+                                  ? "On-Hold"
+                                  : ""
+                              }
+                              sx={{
+                                backgroundColor:
+                                  item.ticketStatus === "Ongoing"
+                                    ? "#ec9d29"
+                                    : item.ticketStatus === "For Closing Ticket"
+                                    ? "#3A96FA"
+                                    : item.ticketStatus === "For Transfer"
+                                    ? "#ff7043"
+                                    : item.ticketStatus === "For On-Hold"
+                                    ? "#ffb74d"
+                                    : item.ticketStatus === "On-Hold"
+                                    ? "#ff6d00"
+                                    : "transparent",
+                                color: "#ffffffde",
+                                borderRadius: "20px",
+                              }}
+                            />
+                          </Stack>
+
                           {item?.delay_Days > 0 && (
                             <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}> STATUS:</Typography>
+                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CLOSING STATUS:</Typography>
                               <Chip
                                 variant="filled"
                                 size="small"
@@ -275,6 +312,17 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                       fontWeight: 700,
                       fontSize: "12px",
                     }}
+                  >
+                    CLOSING STATUS
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
                     align="center"
                   >
                     DELAY DAYS
@@ -394,6 +442,48 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                             fontWeight: 800,
                           }}
                           label={moment(item.target_Date).format("LL")}
+                        />
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        <Chip
+                          variant="filled"
+                          size="small"
+                          label={
+                            item.ticketStatus === "Ongoing"
+                              ? "Open"
+                              : item.ticketStatus === "For Transfer"
+                              ? "For Transfer"
+                              : item.ticketStatus === "For On-Hold"
+                              ? "Hold Approval"
+                              : item.ticketStatus === "On-Hold"
+                              ? "On-Hold"
+                              : item.ticketStatus === "For Closing Ticket"
+                              ? "For Closing"
+                              : ""
+                          }
+                          sx={{
+                            backgroundColor:
+                              item.ticketStatus === "Ongoing"
+                                ? "#ec9d29"
+                                : item.ticketStatus === "For Transfer"
+                                ? "#ff7043"
+                                : item.ticketStatus === "For On-Hold"
+                                ? "#ffb74d"
+                                : item.ticketStatus === "On-Hold"
+                                ? "#ff6d00"
+                                : item.ticketStatus === "For Closing Ticket"
+                                ? "#3A96FA"
+                                : "transparent",
+                            color: "#ffffffde",
+                            borderRadius: "20px",
+                          }}
                         />
                       </TableCell>
 

@@ -35,7 +35,7 @@ const schema = yup.object().shape({
   Notes: yup.string().notRequired(),
 });
 
-const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
+const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -136,7 +136,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
     }
 
     // 4pm Cut-off Warning
-    const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
+    // const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
     Swal.fire({
       title: "Confirmation",
       text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
@@ -158,11 +158,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
-      footer: isAfter4PM
-        ? '<span style="color: orange; border-color: none !important;">' +
-          '<Warning style="margin-right: 5px;" />' +
-          "Please note that closing of tickets are only available until 4:00pm.</span>"
-        : "",
+      // footer: isAfter4PM
+      //   ? '<span style="color: orange; border-color: none !important;">' +
+      //     '<Warning style="margin-right: 5px;" />' +
+      //     "Please note that closing of tickets are only available until 4:00pm.</span>"
+      //   : "",
     }).then((result) => {
       if (result.isConfirmed) {
         closeIssueHandlerTickets(payload)
@@ -176,6 +176,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
             dispatch(notificationMessageApi.util.resetApiState());
             setAddAttachments([]);
             reset();
+            viewOnClose();
             onClose();
           })
           .catch((err) => {
@@ -283,8 +284,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      console.log("Data: ", data);
-
       setValue("ticketConcernId", data?.ticketConcernId);
 
       setValue("ChannelId", {
@@ -405,16 +404,27 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ width: "5%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
+
+                    <Tooltip
+                      title={data?.concern_Description.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                      placement="bottom-start"
+                    >
+                      <Box className="ellipsis-styling-label" width={{ width: "75%", ml: 2 }}>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                          {data?.concern_Description?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
                   </Stack>
                 )}
 
@@ -524,9 +534,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose }) => {
                                 options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!subCategoryIsSuccess) getSubCategory();
-                                }}
+                                // onOpen={() => {
+                                //   if (!subCategoryIsSuccess) getSubCategory();
+                                // }}
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}

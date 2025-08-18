@@ -499,7 +499,7 @@ const Category = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.subCategory.length && (
+                  {isSuccess && !data?.value?.subCategory.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

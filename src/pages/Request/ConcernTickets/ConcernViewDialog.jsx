@@ -54,7 +54,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestConcernId: yup.string().nullable(),
-    Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
+    Concern: yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required").label("Concern Details"),
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
@@ -584,7 +584,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     fontWeight: 500,
                   }}
                 >
-                  {`Request Number: ${editData?.requestConcernId}`}
+                  {`Ticket Number: ${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                 </Typography>
 
                 {/* REQUEST TYPE */}
@@ -1293,16 +1293,13 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!subCategoryIsSuccess) getSubCategory();
-                              }}
+                              // onOpen={() => {
+                              //   if (!subCategoryIsSuccess) getSubCategory();
+                              // }}
                               onChange={(_, value) => {
-                                // console.log("Value ", value);
-
                                 onChange(value);
                               }}
                               getOptionLabel={(option) => option?.sub_Category_Description || ""}

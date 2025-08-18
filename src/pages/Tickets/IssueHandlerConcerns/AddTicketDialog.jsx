@@ -42,7 +42,6 @@ import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitA
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
-import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
@@ -64,8 +63,7 @@ const AddTicketDialog = ({ open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    // Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
-    Concern: yup.array().of(yup.string().min(2, "Concern must be more than character long").required("This field is required")).min(1, "At least one concern is required"),
+    Concern: yup.array().of(yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required")).min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
@@ -270,7 +268,10 @@ const AddTicketDialog = ({ open, onClose }) => {
         dispatch(notificationApi.util.resetApiState());
         dispatch(notificationMessageApi.util.resetApiState());
         reset(defaultValue);
-        replace([""]);
+        replace([{ value: "" }]);
+        setTimeout(() => {
+          reset({ Concern: [""] });
+        }, 0);
         setAttachments([]);
         setIsLoading(false);
         onClose();
@@ -441,6 +442,9 @@ const AddTicketDialog = ({ open, onClose }) => {
       setValue("ChannelId", null);
     }
   }, [watch("IssueHandler"), userDetails]);
+
+  // console.log("Watch Concern: ", watch("Concern"));
+  // console.log("Fields: ", fields);
 
   return (
     <>
@@ -1222,9 +1226,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
-                              onOpen={() => {
-                                if (!subCategoryIsSuccess) getSubCategory();
-                              }}
+                              // onOpen={() => {
+                              //   if (!subCategoryIsSuccess) getSubCategory();
+                              // }}
                               onChange={(_, value) => {
                                 onChange(value || []);
                               }}
@@ -1367,7 +1371,20 @@ const AddTicketDialog = ({ open, onClose }) => {
                     )}
 
                   <Stack sx={{ width: "100%", mt: 1 }}>
-                    <Button size="small" variant="contained" onClick={() => append("")} startIcon={<AddOutlined />} sx={{ borderRadius: "0%" }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => append("")}
+                      startIcon={<AddOutlined />}
+                      // disabled={!watch("Concern")}
+                      sx={{
+                        borderRadius: "0%",
+                        ":disabled": {
+                          backgroundColor: "none",
+                          color: "black",
+                        },
+                      }}
+                    >
                       <Typography sx={{ fontSize: "11px" }}>Add Concern</Typography>
                     </Button>
                   </Stack>

@@ -672,7 +672,7 @@ const SubUnit = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.subUnit.length && (
+                  {isSuccess && !data?.value?.subUnit.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

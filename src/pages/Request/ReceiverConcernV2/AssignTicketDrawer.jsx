@@ -465,6 +465,8 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     }
   }, [subCategoryData]);
 
+  console.log("CPicking Data: ", data);
+
   return (
     <>
       <Dialog
@@ -510,7 +512,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           fontWeight: "500",
                         }}
                       >
-                        Concern No:
+                        Ticket Number:
                       </Typography>
                     </Box>
 
@@ -520,7 +522,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           fontSize: "13px",
                         }}
                       >
-                        {data?.requestConcernId}
+                        {data?.ticketRequestConcerns[0]?.ticketConcernId}
                       </Typography>
                     </Box>
                   </Stack>

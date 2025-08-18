@@ -382,7 +382,7 @@ const Department = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.department.length && (
+                  {isSuccess && !data?.value?.department.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

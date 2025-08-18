@@ -25,7 +25,7 @@ const schema = yup.object().shape({
   OnHoldAttachments: yup.array().nullable(),
 });
 
-const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
+const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -113,6 +113,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose }) => {
 
             setAddAttachments([]);
             reset();
+            viewOnClose();
             onClose();
           })
           .catch((err) => {

@@ -355,7 +355,7 @@ const Company = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.company.length && (
+                  {isSuccess && !data?.value?.company.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

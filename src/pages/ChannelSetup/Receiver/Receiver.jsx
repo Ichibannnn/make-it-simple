@@ -488,7 +488,7 @@ const Receiver = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.receiver.length && (
+                  {isSuccess && !data?.value?.receiver.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

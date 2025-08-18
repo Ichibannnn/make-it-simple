@@ -498,7 +498,7 @@ const Channel = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.channel.length && (
+                  {isSuccess && !data?.value?.channel.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

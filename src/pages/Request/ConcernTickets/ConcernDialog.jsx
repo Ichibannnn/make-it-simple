@@ -21,7 +21,7 @@ import {
 
 import * as yup from "yup";
 import moment from "moment";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, set, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { theme } from "../../../theme/theme";
@@ -48,6 +48,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import ConcernMenuActions from "./ConcernMenuActions";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import Swal from "sweetalert2";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -62,12 +63,19 @@ const ConcernDialog = ({ open, onClose }) => {
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
-  console.log("UserDetails:", userDetails);
-
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    // Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
-    Concern: yup.array().of(yup.string().min(2, "Concern must be more than character long").required("This field is required")).min(1, "At least one concern is required"),
+    // Concern: yup
+    //   .array()
+    //   .of(
+    //     yup.object({
+    //       value: yup.string().min(2, "Concern must be at least 2 characters long"),
+    //     })
+    //   )
+    //   .required("This field is required")
+    //   .min(1, "At least one concern is required")
+    //   .label("Concern"),
+    Concern: yup.array().of(yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required")).min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
@@ -124,14 +132,17 @@ const ConcernDialog = ({ open, onClose }) => {
     setValue,
     watch,
     reset,
-    register,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(requestorSchema),
     mode: "onChange",
     defaultValues: {
       RequestTransactionId: "",
-      // Concern: "",
+      // Concern: [
+      //   {
+      //     value: "",
+      //   },
+      // ],
       Concern: [""],
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
@@ -174,8 +185,6 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [fields, append]);
 
   const onConcernFormSubmit = (formData) => {
-    console.log("FormData:", formData);
-
     const payload = new FormData();
 
     payload.append("Request_Type", formData.Request_Type);
@@ -218,6 +227,11 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
     }
 
+    // const concern = formData.Concern;
+    // for (let i = 0; i < concern.length; i++) {
+    //   payload.append(`ListOfConcerns[${i}].concern`, concern[i]?.value);
+    // }
+
     const concern = formData.Concern;
     for (let i = 0; i < concern.length; i++) {
       payload.append(`ListOfConcerns[${i}].concern`, concern[i]);
@@ -227,7 +241,6 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`ListOfConcerns[0].concern`, "");
     }
 
-    // payload.append("Concern", formData.Concern);
     payload.append("Notes", formData.Notes);
 
     const files = formData.RequestAttachmentsFiles;
@@ -243,52 +256,109 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
-    createEditRequestorConcern(payload)
-      .unwrap()
-      .then(() => {
-        toast.success("Success!", {
-          description: "Concern added successfully!",
-          duration: 1500,
+    // Validation if Concern is greater than 1 (Message Box Notif)
+    if (formData?.Concern.length > 1) {
+      // Without Notification Box
+      createEditRequestorConcern(payload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Concern added successfully!",
+            duration: 1500,
+          });
+          dispatch(notificationApi.util.resetApiState());
+          dispatch(notificationMessageApi.util.resetApiState());
+          setIsLoading(false);
+          replace([{ value: "" }]);
+          setTimeout(() => {
+            reset({ Concern: [""] });
+          }, 0);
+          // setTimeout(() => {
+          //   reset({ Concern: [{ value: "" }] });
+          // }, 0);
+          setAttachments([]);
+          onClose();
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
+          toast?.error("Error!", {
+            description: err?.data?.error?.message,
+            duration: 1500,
+          });
         });
-        dispatch(notificationApi.util.resetApiState());
-        dispatch(notificationMessageApi.util.resetApiState());
-        reset({
-          Request_Type: "New Request",
-          Severity: "Normal",
-          BackJobId: null,
-          UserId: {
-            id: userInformation?.id || "",
-            fullname: userInformation?.fullname || "",
-          },
-          Contact_Number: "",
+    } else {
+      // With Notification Box
+      createEditRequestorConcern(payload)
+        .unwrap()
+        .then((res) => {
+          console.log("Response: ", res);
 
-          ServiceProvider: null,
-          DateNeeded: moment().format("YYYY-MM-DD"),
-          ChannelId: null,
-          CategoryId: [],
-          SubCategoryId: [],
-          TargetDate: null,
-          IssueHandler: "",
+          Swal.fire({
+            title: "Success!",
+            html: `Thank you for submitting your concern.<br><br>
+               A service ticket <strong>#${res?.value}</strong> has been created.`,
+            icon: "success",
+            color: "white",
+            showCancelButton: true,
+            background: "#111927",
+            confirmButtonColor: "#9e77ed",
+            confirmButtonText: `Copy`,
+            cancelButtonText: "Close",
+            cancelButtonColor: "#1C2536",
+            heightAuto: false,
+            width: "30em",
+            customClass: {
+              container: "custom-container",
+              title: "custom-title",
+              htmlContainer: "custom-text",
+              confirmButton: "custom-confirm-btn",
+              cancelButton: "custom-cancel-btn",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              console.log("result: ", result);
 
-          Concern: [""],
-          Notes: "",
+              const ticketMessage = `Thank you for submitting your concern. A service ticket #${res?.value} has been created.`;
+
+              navigator.clipboard.writeText(ticketMessage).then(() => {
+                Swal.fire({
+                  title: "Copied!",
+                  icon: "success",
+                  color: "white",
+                  background: "#111927",
+                  text: `Copied to clipboard.`,
+                  timer: 2000,
+                  showConfirmButton: false,
+                  heightAuto: false,
+                  width: "30em",
+                  customClass: {
+                    container: "custom-container",
+                    title: "custom-title",
+                    htmlContainer: "custom-text",
+                    confirmButton: "custom-confirm-btn",
+                    cancelButton: "custom-cancel-btn",
+                  },
+                });
+              });
+            }
+          });
+
+          dispatch(notificationApi.util.resetApiState());
+          dispatch(notificationMessageApi.util.resetApiState());
+
+          setAttachments([]);
+          setIsLoading(false);
+          onCloseAction();
+        })
+        .catch((err) => {
+          toast.error("Error!", {
+            description: err.data.error.message,
+            duration: 1500,
+          });
         });
-
-        replace([""]);
-        remove();
-        setAttachments([]);
-        setIsLoading(false);
-        onClose();
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-        toast?.error("Error!", {
-          description: err?.data?.error?.message,
-          duration: 1500,
-        });
-      });
+    }
   };
 
   const handleAttachments = (event) => {
@@ -320,12 +390,7 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const onCloseAction = () => {
-    reset({
-      UserId: {
-        id: userInformation?.id || "",
-        fullname: userInformation?.fullname || "",
-      },
-    });
+    reset();
     setAttachments([]);
     onClose();
   };
@@ -453,10 +518,6 @@ const ConcernDialog = ({ open, onClose }) => {
       setValue("ChannelId", null);
     }
   }, [watch("IssueHandler")]);
-
-  const clearFields = () => {
-    remove();
-  };
 
   return (
     <>
@@ -1220,9 +1281,6 @@ const ConcernDialog = ({ open, onClose }) => {
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                              onOpen={() => {
-                                if (!subCategoryIsSuccess) getSubCategory();
-                              }}
                               onChange={(_, value) => {
                                 onChange(value || []);
                               }}
@@ -1407,10 +1465,6 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack sx={{ width: "100%", mt: 1 }}>
                     <Button size="small" variant="outlined" onClick={() => append("")} startIcon={<AddOutlined />}>
                       <Typography sx={{ fontSize: "12px" }}>Add Concern</Typography>
-                    </Button>
-
-                    <Button size="small" variant="outlined" onClick={() => clearFields()} startIcon={<AddOutlined />}>
-                      <Typography sx={{ fontSize: "12px" }}>Clear Concern</Typography>
                     </Button>
                   </Stack>
                 </Stack>
@@ -1600,7 +1654,9 @@ const ConcernDialog = ({ open, onClose }) => {
             <LoadingButton
               variant="outlined"
               disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-              onClick={onCloseAction}
+              onClick={() => {
+                onCloseAction();
+              }}
               sx={{
                 ":disabled": {
                   backgroundColor: "none",

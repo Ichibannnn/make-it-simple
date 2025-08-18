@@ -33,11 +33,10 @@ const IssueHandlerConcernsActions = ({
   onRejectTransferTicket,
   onPrintTicket,
   onConfirm,
+  onRejectDate,
 }) => {
   const ref = useRef(null);
   const userDetails = useSelector((state) => state?.user);
-
-  console.log("User: ", userDetails);
 
   const { open, onToggle } = useDisclosure();
 
@@ -104,6 +103,11 @@ const IssueHandlerConcernsActions = ({
   const onConfirmAction = (data) => {
     onToggle();
     onConfirm(data);
+  };
+
+  const onRejectDateAction = (data) => {
+    onToggle();
+    onRejectDate(data);
   };
 
   const menuItems = [];
@@ -174,6 +178,17 @@ const IssueHandlerConcernsActions = ({
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
         Update On-Hold
+      </MenuItem>
+    );
+  }
+
+  if (data?.ticket_Status === "Pending Request") {
+    menuItems.push(
+      <MenuItem key="resume" onClick={() => onRejectDateAction(data)}>
+        <ListItemIcon>
+          <ModeEditOutlineOutlined fontSize="small" />
+        </ListItemIcon>
+        <Typography sx={{ fontSize: "17px", fontWeight: 500 }}>Manage Ticket</Typography>
       </MenuItem>
     );
   }

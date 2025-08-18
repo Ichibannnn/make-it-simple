@@ -44,6 +44,7 @@ import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverCo
 import ReportsPage from "../pages/Reports/ReportsPage";
 import ChangePassword from "../pages/ChangePassword/ChangePassword";
 import AuthRedirect from "./AuthRedirect";
+import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
 
 export const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ export const router = createBrowserRouter([
         path: "/masterlist",
         element: <MasterlistPage />,
         children: [
+          {
+            path: "/masterlist/one-charging",
+            element: <OneCharging />,
+          },
           {
             path: "/masterlist/company",
             element: <Company />,

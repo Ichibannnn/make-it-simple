@@ -382,7 +382,7 @@ const Unit = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.unit.length && (
+                  {isSuccess && !data?.value?.unit.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <Typography variant="h5" color="#EDF2F7">

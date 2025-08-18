@@ -279,7 +279,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
+            {isSuccess && !data?.value?.closingTicket.length && !isLoading && !isFetching && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
