@@ -88,30 +88,7 @@ export const router = createBrowserRouter([
             path: "/masterlist/one-charging",
             element: <OneCharging />,
           },
-          {
-            path: "/masterlist/company",
-            element: <Company />,
-          },
-          {
-            path: "/masterlist/business-unit",
-            element: <Business />,
-          },
-          {
-            path: "/masterlist/department",
-            element: <Department />,
-          },
-          {
-            path: "/masterlist/unit",
-            element: <Unit />,
-          },
-          {
-            path: "/masterlist/sub-unit",
-            element: <SubUnit />,
-          },
-          {
-            path: "/masterlist/location",
-            element: <Location />,
-          },
+
           {
             path: "/masterlist/category",
             element: <Category />,

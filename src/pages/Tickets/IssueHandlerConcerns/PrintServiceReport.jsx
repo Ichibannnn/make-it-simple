@@ -71,7 +71,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack direction="row" sx={{ borderBottom: "1px solid black", borderLeft: "1px solid black", borderRight: "1px solid black" }}>
-                <Stack sx={{ width: "75%" }}>
+                <Stack sx={{ width: "60%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black", borderRight: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET NUMBER:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.ticketConcernId} </Typography>
@@ -83,7 +83,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ width: "25%" }}>
+                <Stack sx={{ width: "40%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>DATE NEEDED:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
@@ -97,7 +97,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack direction="row" sx={{ borderBottom: "1px solid black", borderLeft: "1px solid black", borderRight: "1px solid black" }}>
-                <Stack sx={{ width: "75%" }}>
+                <Stack sx={{ width: "60%" }}>
                   <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black", borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CATEGORY:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>
@@ -127,7 +127,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ width: "25%" }}>
+                <Stack sx={{ width: "40%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TARGET DATE:{"  "}</Typography>
                     <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.target_Date).format("MM/DD/YYYY")} </Typography>
@@ -147,7 +147,14 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 2 }}>
-                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>{data?.concern_Description}</Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
+                      {data?.concern_Description?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </Typography>
                   </Stack>
                 </Stack>
 
@@ -157,7 +164,14 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 2 }}>
-                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>{data?.getForClosingTickets?.[0]?.resolution}</Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
+                      {data?.getForClosingTickets?.[0]?.resolution?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </Typography>
                   </Stack>
                 </Stack>
               </Stack>
@@ -186,7 +200,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                     </Stack>
                   </Stack>
 
-                  <Stack sx={{ width: "100%" }}>
+                  {/* <Stack sx={{ width: "100%" }}>
                     <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>CLOSED BY:</Typography>
 
                     <Stack mt={2}>
@@ -195,15 +209,15 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                         <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Receiver`}</Typography>
                       </Stack>
                     </Stack>
-                  </Stack>
+                  </Stack> */}
                 </Stack>
               </Stack>
             </Stack>
           </Stack>
 
+          {/* Printed */}
           <Stack display="none">
             <Stack sx={{ padding: 4, backgroundColor: "#fff", width: "100%" }} ref={componentRef}>
-              {/* Printed */}
               <Stack sx={{ border: "1px solid black", padding: 2 }}>
                 <Stack direction="row">
                   <Stack sx={{ border: "1px solid black" }}>
@@ -219,100 +233,122 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                       width: "100%",
                     }}
                   >
-                    <Typography align="center" sx={{ fontWeight: "bold", color: "black" }}>
-                      RDF FEED, LIVESTOCK AND FOODS, INC.
+                    <Typography align="center" sx={{ fontWeight: "semibold", color: "black", borderBottom: "1px solid black", fontSize: "11px", fontStyle: "italic" }}>
+                      This document is for INTERNAL USE ONLY. Limited copies may be made only by RDF employees. or by the contractors and third party who have signed an appropriate
+                      nondisclosure agreement or with prior consent from the management.
                     </Typography>
-                    <Typography align="center" sx={{ fontWeight: "bold", color: "black", borderTop: "1px solid black" }}>
+
+                    <Typography align="center" sx={{ fontWeight: "bold", color: "black" }}>
                       SERVICE REPORT
+                    </Typography>
+
+                    <Typography align="center" sx={{ fontWeight: "bold", color: "black", borderTop: "1px solid black" }}>
+                      MANAGEMENT INFORMATION SYSTEM
                     </Typography>
                   </Stack>
                 </Stack>
 
                 <Stack direction="row" sx={{ borderBottom: "1px solid black", borderLeft: "1px solid black", borderRight: "1px solid black" }}>
-                  <Stack sx={{ width: "50%" }}>
+                  <Stack sx={{ width: "60%" }}>
                     <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black", borderRight: "1px solid black" }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET NUMBER:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET NUMBER:</Typography>
                       <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.ticketConcernId} </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black" }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>SYSTEM:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CHANNEL:</Typography>
                       <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.channel_Name} </Typography>
                     </Stack>
                   </Stack>
 
-                  <Stack sx={{ width: "50%" }}>
+                  <Stack sx={{ width: "40%" }}>
                     <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>DATE NEEDED:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>DATE NEEDED:</Typography>
                       <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={1}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>START DATE:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>START DATE:</Typography>
                       <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
                     </Stack>
                   </Stack>
                 </Stack>
 
                 <Stack direction="row" sx={{ borderBottom: "1px solid black", borderLeft: "1px solid black", borderRight: "1px solid black" }}>
-                  <Stack sx={{ width: "50%" }}>
+                  <Stack sx={{ width: "60%" }}>
                     <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black", borderBottom: "1px solid black" }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CATEGORY:{"  "}</Typography>
-                      <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.category_Description} </Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CATEGORY:</Typography>
+                      <Typography sx={{ color: "black", fontSize: "14px" }}>
+                        <Stack direction="row" spacing={1}>
+                          {data?.getOpenTicketCategories?.map((item, i) => (
+                            <React.Fragment key={i}>
+                              {item.category_Description}
+                              {i < data.getOpenTicketCategories.length - 1 && ", "}
+                            </React.Fragment>
+                          ))}
+                        </Stack>
+                      </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={1} sx={{ borderRight: "1px solid black" }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>SUB-CATEGORY:{"  "}</Typography>
-                      <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.subCategory_Description} </Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "13px", marginLeft: 1 }}>SUB-CATEGORY:</Typography>
+                      <Typography sx={{ color: "black", fontSize: "14px" }}>
+                        <Stack direction="row" spacing={1}>
+                          {data?.getOpenTicketSubCategories?.map((item, i) => (
+                            <React.Fragment key={i}>
+                              {item.subCategory_Description}
+                              {i < data.getOpenTicketSubCategories.length - 1 && ", "}
+                            </React.Fragment>
+                          ))}
+                        </Stack>
+                      </Typography>
                     </Stack>
                   </Stack>
 
-                  <Stack sx={{ width: "50%" }}>
+                  <Stack sx={{ width: "40%" }}>
                     <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TARGET DATE:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TARGET DATE:</Typography>
                       <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.target_Date).format("MM/DD/YYYY")} </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={1}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CLOSED DATE:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CLOSED DATE:</Typography>
                       <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.close_At).format("MM/DD/YYYY")} </Typography>
                     </Stack>
                   </Stack>
                 </Stack>
 
                 <Stack sx={{ marginTop: 8, minHeight: "600px", gap: 4 }}>
-                  <Stack sx={{ width: "100%", minHeight: 170, border: "1px solid black" }}>
+                  <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                     <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>TICKET DESCRIPTION:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>A. TICKET DESCRIPTION:</Typography>
                     </Stack>
 
                     <Stack sx={{ width: "100%", padding: 2 }}>
                       <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
-                        In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying
-                        on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a
-                        placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as
-                        a placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the
-                        visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.
-                        In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying
-                        on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                       </Typography>
                     </Stack>
                   </Stack>
 
-                  <Stack sx={{ width: "100%", minHeight: 170, border: "1px solid black" }}>
+                  <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                     <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
-                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>RESOLUTION:{"  "}</Typography>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>B. RESOLUTION:</Typography>
                     </Stack>
 
                     <Stack sx={{ width: "100%", padding: 2 }}>
                       <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
-                        In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying
-                        on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a
-                        placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as
-                        a placeholder before the final copy is available. In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the
-                        visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.
-                        In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying
-                        on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.
+                        {data?.getForClosingTickets?.[0]?.resolution?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -342,7 +378,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                       </Stack>
                     </Stack>
 
-                    <Stack sx={{ width: "100%" }}>
+                    {/* <Stack sx={{ width: "100%" }}>
                       <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>CLOSED BY:</Typography>
 
                       <Stack mt={2}>
@@ -351,7 +387,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                           <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Receiver`}</Typography>
                         </Stack>
                       </Stack>
-                    </Stack>
+                    </Stack> */}
                   </Stack>
                 </Stack>
               </Stack>

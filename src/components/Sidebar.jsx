@@ -15,8 +15,6 @@ const Sidebar = () => {
   const hideSidebar = useMediaQuery("(max-width: 1639px)");
   const [drawerOpen, setDrawerOpen] = useState(isVisible);
 
-  // console.log("Notification Badge: ", notificationBadge);
-
   const dispatch = useDispatch();
 
   // Sync drawerOpen state with isVisible from Redux store
@@ -41,7 +39,7 @@ const Sidebar = () => {
           open={isVisible}
           onClose={() => handleDrawerToggle(false)}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
         >
           <Stack
@@ -209,72 +207,36 @@ const SidebarList = () => {
         },
         {
           id: 2,
-          name: "Company",
-          path: "/masterlist/company",
-          icon: "BusinessOutlinedIcon",
-        },
-        {
-          id: 3,
-          name: "Business Unit",
-          path: "/masterlist/business-unit",
-          icon: "LanOutlined",
-        },
-        {
-          id: 4,
-          name: "Department",
-          path: "/masterlist/department",
-          icon: "DomainAddOutlined",
-        },
-        {
-          id: 5,
-          name: "Unit",
-          path: "/masterlist/unit",
-          icon: "AccountTreeOutlined",
-        },
-        {
-          id: 6,
-          name: "Sub Unit",
-          path: "/masterlist/sub-unit",
-          icon: "ListOutlined",
-        },
-        {
-          id: 7,
-          name: "Location",
-          path: "/masterlist/location",
-          icon: "RoomOutlined",
-        },
-        {
-          id: 8,
           name: "Category",
           path: "/masterlist/category",
           icon: "CategoryOutlined",
         },
         {
-          id: 9,
+          id: 3,
           name: "Sub Category",
           path: "/masterlist/sub-category",
           icon: "AutoAwesomeMotionOutlined",
         },
         {
-          id: 10,
+          id: 4,
           name: "Receiver Setup",
           path: "/masterlist/receiver-setup",
           icon: "ContactsOutlined",
         },
         {
-          id: 11,
+          id: 5,
           name: "Channel Setup",
           path: "/masterlist/channel-setup",
           icon: "HubOutlined",
         },
         {
-          id: 12,
+          id: 6,
           name: "Service Provider",
           path: "/masterlist/service-provider",
           icon: "HubOutlined",
         },
         {
-          id: 13,
+          id: 7,
           name: "Approver Setup",
           path: "/masterlist/approver-setup",
           icon: "GroupsOutlined",
@@ -325,12 +287,6 @@ const SidebarList = () => {
           path: "/receiver/receiver-concerns",
           icon: "DiscountOutlined",
         },
-        // {
-        //   id: 2,
-        //   name: "Close Tickets",
-        //   path: "/receiver/close-tickets",
-        //   icon: "DiscountOutlined",
-        // },
       ],
     },
     {
@@ -500,7 +456,6 @@ const SidebarList = () => {
                                   <Badge
                                     color="error"
                                     badgeContent={subItem?.name === "Tickets" ? openNotification : ticketApprovalNotification}
-                                    // variant="dot"
                                     sx={{
                                       "& .MuiBadge-badge": {
                                         left: 92,

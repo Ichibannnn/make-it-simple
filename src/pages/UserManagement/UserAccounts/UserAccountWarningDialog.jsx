@@ -1,7 +1,6 @@
 import { Warning } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
-import React from "react";
+import { Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";

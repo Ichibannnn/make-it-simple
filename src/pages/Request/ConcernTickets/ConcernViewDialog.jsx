@@ -904,7 +904,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={businessUnitData?.value?.businessUnit.filter((item) => item.companyId === watch("CompanyId")?.id) || []}
+                              options={businessUnitData?.value?.businessUnit?.filter((item) => item?.companyId === watch("CompanyId")?.id) || []}
                               loading={businessUnitIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Business Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => onChange(value)}
@@ -947,7 +947,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={departmentData?.value?.department.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
+                              options={departmentData?.value?.department?.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
                               loading={departmentIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => onChange(value)}
@@ -1029,7 +1029,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={subUnitData?.value?.subUnit.filter((item) => item.unitId === watch("UnitId")?.id) || []}
+                              options={subUnitData?.value?.subUnit?.filter((item) => item.unitId === watch("UnitId")?.id) || []}
                               loading={subUnitIsLoading}
                               onOpen={() => {
                                 if (!subUnitIsSuccess)
@@ -1231,8 +1231,8 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                               value={value}
                               options={
                                 editData
-                                  ? categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []
-                                  : categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []
+                                  ? categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []
+                                  : categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.id) || []
                               }
                               loading={categoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}

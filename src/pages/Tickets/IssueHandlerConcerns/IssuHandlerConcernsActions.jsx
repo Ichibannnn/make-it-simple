@@ -217,7 +217,7 @@ const IssueHandlerConcernsActions = ({
     );
   }
 
-  if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && userDetails?.id === data?.requestor_By) {
+  if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && userDetails?.id === data?.requestor_By && data?.ticket_Status !== "Closed") {
     menuItems.push(
       <MenuItem onClick={() => onConfirmAction(data)}>
         <ListItemIcon>

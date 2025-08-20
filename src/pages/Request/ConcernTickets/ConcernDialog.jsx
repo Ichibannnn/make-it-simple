@@ -519,6 +519,10 @@ const ConcernDialog = ({ open, onClose }) => {
     }
   }, [watch("IssueHandler")]);
 
+  // console.log("UserDetails:", userDetails);
+  // console.log("UserData:", userData);
+  console.log("Location", locationData);
+
   return (
     <>
       <Dialog
@@ -695,7 +699,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               options={
                                 userDetails?.userRoleName === "Helpdesk Associate"
                                   ? userData?.value?.users || []
-                                  : userData?.value?.users.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []
+                                  : userData?.value?.users?.filter((item) => item?.departmentId === watch("DepartmentId")?.id) || []
                               }
                               loading={userIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
@@ -834,7 +838,7 @@ const ConcernDialog = ({ open, onClose }) => {
                                 if (!companyIsSuccess) getCompany();
                               }}
                               onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
+                              getOptionLabel={(option) => `${option?.company_Code} - ${option?.company_Name}`}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               sx={{
                                 flex: 2,
@@ -870,7 +874,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={businessUnitData?.value?.businessUnit.filter((item) => item.companyId === watch("CompanyId")?.id) || []}
+                              options={businessUnitData?.value?.businessUnit?.filter((item) => item.companyId === watch("CompanyId")?.id) || []}
                               loading={businessUnitIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Business Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => onChange(value)}
@@ -914,7 +918,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={departmentData?.value?.department.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
+                              options={departmentData?.value?.department?.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
                               loading={departmentIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => onChange(value)}
@@ -954,7 +958,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={unitData?.value?.unit.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
+                              options={unitData?.value?.unit?.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
                               loading={unitIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Unit" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => onChange(value)}
@@ -998,7 +1002,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={subUnitData?.value?.subUnit.filter((item) => item.unitId === watch("UnitId")?.id) || []}
+                              options={subUnitData?.value?.subUnit?.filter((item) => item.unitId === watch("UnitId")?.id) || []}
                               loading={subUnitIsLoading}
                               onOpen={() => {
                                 if (!subUnitIsSuccess)
@@ -1044,7 +1048,9 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={locationData?.value?.location.filter((item) => item.subUnits.some((subUnitItem) => subUnitItem.subUnitId === watch("SubUnitId")?.id)) || []}
+                              options={
+                                locationData?.value?.location?.filter((item) => item?.subUnits?.some((subUnitItem) => subUnitItem?.subUnitId === watch("SubUnitId")?.id)) || []
+                              }
                               loading={locationIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Location" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => onChange(value)}

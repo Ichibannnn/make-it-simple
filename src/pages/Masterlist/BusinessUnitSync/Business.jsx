@@ -28,13 +28,9 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-import { useGetBusinessUnitQuery, useSyncBusinessUnitMutation } from "../../../features/api masterlist/business-unit/businessUnitApi";
-import { useLazyGetBusinessUnitsQuery } from "../../../features/ymir/ymirApi";
-
-import { BusinessErrorDialog } from "./BusinessErrorDialog";
+import { useGetBusinessUnitQuery } from "../../../features/api masterlist/business-unit/businessUnitApi";
 
 const Business = () => {
-  const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -45,15 +41,10 @@ const Business = () => {
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetBusinessUnitQuery({
-    Status: status,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
-
-  const [getBusinessUnits, { isLoading: isBusinessUnitLoading, isFetching: isBusinessUnitFetching }] = useLazyGetBusinessUnitsQuery();
-
-  const [syncCompanies, { error: errorData, isLoading: isBusinessUnitSyncLoading, isFetching: isBusinessUnitSyncFetching }] = useSyncBusinessUnitMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -61,53 +52,6 @@ const Business = () => {
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
-  };
-
-  const onSyncBusinessUnit = () => {
-    Swal.fire({
-      title: "Confirmation?",
-      text: "Are you sure you want to sync the business list?",
-      icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        getBusinessUnits()
-          .unwrap()
-          .then(async (response) => {
-            await syncCompanies(response)
-              .unwrap()
-              .then(() => {
-                toast.success("Success!", {
-                  description: "Sync data successfully!",
-                });
-              })
-              .catch((error) => {
-                if (error.status === 400) {
-                  onToggle();
-                }
-              });
-          })
-          .catch(() => {
-            toast.error("Error!", {
-              description: "Business unit sync failed",
-            });
-          });
-      }
-    });
   };
 
   useEffect(() => {
@@ -132,26 +76,6 @@ const Business = () => {
           <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
             <Stack justifyItems="left">
               <Typography variant={isSmallScreen ? "h5" : "h4"}>Business Unit</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <LoadingButton
-                variant="contained"
-                size={isSmallScreen ? "medium" : "large"}
-                color="primary"
-                startIcon={<SyncOutlined />}
-                loadingPosition="start"
-                onClick={() => onSyncBusinessUnit()}
-                loading={isBusinessUnitLoading || isBusinessUnitFetching || isBusinessUnitSyncLoading || isBusinessUnitSyncFetching}
-                sx={{
-                  ":disabled": {
-                    backgroundColor: theme.palette.primary.main,
-                    color: "black",
-                  },
-                }}
-              >
-                Sync Business Unit
-              </LoadingButton>
             </Stack>
           </Stack>
         </Stack>
@@ -188,7 +112,7 @@ const Business = () => {
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.businessUnit?.map((item, index) => (
+              data?.value?.oneCharging?.map((item, index) => (
                 <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                   <CardContent>
                     <Stack spacing={1}>
@@ -237,7 +161,7 @@ const Business = () => {
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.businessUnit.length && (
+            {isSuccess && !data?.value?.oneCharging?.length && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -315,7 +239,7 @@ const Business = () => {
                   {isSuccess &&
                     !isLoading &&
                     !isFetching &&
-                    data?.value?.businessUnit?.map((item, index) => (
+                    data?.value?.onecharging?.map((item, index) => (
                       <TableRow key={item.id}>
                         <TableCell
                           sx={{
@@ -383,7 +307,7 @@ const Business = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.businessUnit.length && !isLoading && !isFetching && (
+                  {isSuccess && !data?.value?.onecharging?.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
@@ -409,8 +333,6 @@ const Business = () => {
             />
           </>
         )}
-
-        <BusinessErrorDialog errorData={errorData} open={open} onClose={onClose} />
       </Stack>
     </Stack>
   );

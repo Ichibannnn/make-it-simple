@@ -20,6 +20,7 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import useDisclosure from "../../../hooks/useDisclosure";
 import UserAccountWarningDialog from "./UserAccountWarningDialog";
+import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [storeCheckbox, setStoreCheckbox] = useState(false);
@@ -32,6 +33,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   const [getEmployees, { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess }] = useLazyGetEmployeesQuery();
   const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] = useLazyGetRolesQuery();
+  const [getOneCharging, { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess }] = useLazyGetOneChargingQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -51,6 +53,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         fullname: yup.string().required().label("Fullname"),
         username: yup.string().required().label("Username"),
         userRoleId: yup.object().required().label("Role"),
+        oneCharging: yup.object().required().label("Charging"),
         companyId: yup.object().required().label("Company"),
         businessUnitId: yup.object().required().label("Business Unit"),
         departmentId: yup.object().required().label("Department"),
@@ -76,6 +79,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       fullname: "",
       username: "",
       userRoleId: null,
+      oneCharging: null,
       companyId: null,
       businessUnitId: null,
       departmentId: null,
@@ -88,6 +92,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   useEffect(() => {
     if (data) {
       // if (employeeIsSuccess) getEmployees();
+      if (!oneChargingIsSuccess) getOneCharging();
       if (!companyIsSuccess) getCompany();
       if (!businessUnitIsSuccess) getBusinessUnit();
       if (!departmentIsSuccess) getDepartment();
@@ -123,6 +128,15 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         id: data?.userRoleId,
         user_Role_Name: data?.user_Role_Name,
       });
+
+      if (data?.oneChargingCode === null) {
+        setValue("oneCharging", null);
+      } else {
+        setValue("oneCharging", {
+          code: data?.oneChargingCode,
+          name: data?.oneChargingName,
+        });
+      }
 
       setValue("companyId", {
         id: data?.companyId,
@@ -162,17 +176,21 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   const onSubmitHandler = (formData) => {
+    console.log("FormData:", formData);
+
     if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
       setWarningData({
         id: data.id,
         userRoleId: formData.userRoleId.id,
         user_Role_Name: formData.userRoleId.user_Role_Name,
         username: formData.username,
-        departmentId: formData.departmentId.id,
-        subUnitId: formData.subUnitId.id,
-        unitId: formData.unitId.id,
+        oneChargingCode: formData.oneCharging.code,
+        oneChargingName: formData.oneCharging.name,
         companyId: formData.companyId.id,
         businessUnitId: formData.businessUnitId.id,
+        departmentId: formData.departmentId.id,
+        unitId: formData.unitId.id,
+        subUnitId: formData.subUnitId.id,
         locationCode: formData.locationId.location_Code,
       });
       warningOnToggle();
@@ -183,16 +201,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           empId: data.empId,
           fullname: data.fullname,
           userRoleId: formData.userRoleId.id,
+          oneChargingCode: formData.oneCharging.code,
+          oneChargingName: formData.oneCharging.name,
           username: formData.username,
-          departmentId: formData.departmentId.id,
-          subUnitId: formData.subUnitId.id,
-          unitId: formData.unitId.id,
           companyId: formData.companyId.id,
           businessUnitId: formData.businessUnitId.id,
+          departmentId: formData.departmentId.id,
+          unitId: formData.unitId.id,
+          subUnitId: formData.subUnitId.id,
           locationCode: formData.locationId.location_Code,
         };
 
-        console.log("Update Payload: ", submitUpdateUser);
+        console.log("UpdateUser: ", submitUpdateUser);
 
         Swal.fire({
           title: "Information",
@@ -215,6 +235,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           },
         }).then((result) => {
           if (result.isConfirmed) {
+            console.log("Update User: ", submitUpdateUser);
             updateUser(submitUpdateUser)
               .unwrap()
               .then(() => {
@@ -238,12 +259,14 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           fullname: !storeCheckbox ? formData.empId.general_info.full_name : formData.fullname,
           username: formData.username,
           userRoleId: formData.userRoleId.id,
-          departmentId: formData.departmentId.id,
-          subUnitId: formData.subUnitId.id,
-          unitId: formData.unitId.id,
+          oneChargingCode: formData.oneCharging.code,
+          oneChargingName: formData.oneCharging.name,
           companyId: formData.companyId.id,
-          locationCode: formData.locationId.location_Code,
           businessUnitId: formData.businessUnitId.id,
+          departmentId: formData.departmentId.id,
+          unitId: formData.unitId.id,
+          subUnitId: formData.subUnitId.id,
+          locationCode: formData.locationId.location_Code,
           is_Store: !storeCheckbox ? false : true,
         };
 
@@ -298,69 +321,15 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   };
 
   const storeCheckboxHandler = (event) => {
-    console.log("Event: ", event.target.checked);
     setStoreCheckbox(event.target.checked);
-    reset();
+    // reset();
   };
 
-  const storeEmpIdHandler = (data) => {
-    setStoreEmpId(data);
-  };
-
-  const storeFullnameHandler = (data) => {
-    setStoreFullname(data);
-  };
-
-  const storeUsernameHandler = (data) => {
-    setStoreUsername(data);
-  };
-
-  // useEffect(() => {
-  //   reset({
-  //     empId: !storeCheckbox ? null : "",
-  //   });
-  // }, [storeCheckbox, reset]);
-
-  // useEffect(() => {
-  //   // const currentStoreValue = storeCheckbox;
-
-  //   if (!storeCheckbox) {
-  //     setValue("empId", null);
-  //     setValue("fullname", "");
-  //     setValue("username", "");
-  //     setValue("userRoleId", null);
-  //     setValue("companyId", null);
-  //     setValue("businessUnitId", null);
-  //     setValue("departmentId", null);
-  //     setValue("unitId", null);
-  //     setValue("subUnitId", null);
-  //     setValue("location", null);
-  //     reset();
-  //   } else if (storeCheckbox) {
-  //     setValue("empId", "");
-  //     setValue("fullname", "");
-  //     setValue("username", "");
-  //     setValue("userRoleId", null);
-  //     setValue("companyId", null);
-  //     setValue("businessUnitId", null);
-  //     setValue("departmentId", null);
-  //     setValue("unitId", null);
-  //     setValue("subUnitId", null);
-  //     setValue("location", null);
-  //     reset();
-  //   }
-  // }, [storeCheckbox]);
-
-  // console.log("Errors: ", errors);
-  // console.log("EmpId: ", watch("empId"));
-
-  // console.log("Data: ", data);
-
-  console.log("SubUnit: ", watch("subUnitId"));
+  // console.log("OneChargingData: ", oneChargingData);
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog fullWidth maxWidth="md" open={open} PaperProps={{ style: { overflow: "auto" } }}>
         <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>{!data ? "Create User Account" : "Update User Account"}</DialogTitle>
 
         <DialogContent>
@@ -541,7 +510,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 3, marginBottom: 3 }} />
+            <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
 
             <Typography
               sx={{
@@ -552,6 +521,72 @@ const UserAccountDialog = ({ data, open, onClose }) => {
             >
               Other Information
             </Typography>
+
+            <Controller
+              control={control}
+              name="oneCharging"
+              render={({ field: { ref, value, onChange } }) => {
+                return (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value}
+                    options={oneChargingData?.value?.onecharging || []}
+                    loading={oneChargingIsLoading}
+                    renderInput={(params) => <TextField {...params} label="Charging Code" />}
+                    onOpen={() => {
+                      if (!oneChargingIsSuccess) getOneCharging();
+                    }}
+                    onChange={(_, value) => {
+                      setValue("companyId", {
+                        id: value?.companyId,
+                        company_Code: value?.companyCode,
+                        company_Name: value?.companyName,
+                      });
+
+                      setValue("businessUnitId", {
+                        id: value?.businessUnitId,
+                        business_Code: value?.businessUnitCode,
+                        business_Name: value?.businessUnitName,
+                      });
+
+                      setValue("departmentId", {
+                        id: value?.departmentId,
+                        department_Code: value?.departmentCode,
+                        department_Name: value?.deparmentName,
+                      });
+
+                      setValue("unitId", {
+                        id: value?.unitId,
+                        unit_Code: value?.unitCode,
+                        unit_Name: value?.unitName,
+                      });
+
+                      setValue("subUnitId", {
+                        id: value?.subUnitId,
+                        subUnit_Code: value?.subUnitCode,
+                        subUnit_Name: value?.subUnitName,
+                      });
+
+                      setValue("locationId", {
+                        location_Code: value?.locationCode,
+                        location_Name: value?.locationName,
+                      });
+
+                      onChange(value);
+                    }}
+                    getOptionLabel={(option) => `${option?.code} - ${option?.name}`}
+                    isOptionEqualToValue={(option, value) => option.code === value.code}
+                    sx={{
+                      flex: 2,
+                    }}
+                    fullWidth
+                    disablePortal
+                    disableClearable
+                  />
+                );
+              }}
+            />
 
             <Controller
               control={control}
@@ -570,14 +605,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     }}
                     onChange={(_, value) => {
                       onChange(value);
-
-                      setValue("businessUnitId", null);
-                      setValue("departmentId", null);
-                      setValue("unitId", null);
-                      setValue("subUnitId", null);
-                      setValue("locationId", null);
-
-                      getBusinessUnit();
                     }}
                     getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -585,8 +612,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       flex: 2,
                     }}
                     fullWidth
-                    disablePortal
-                    disableClearable
+                    disabled
                   />
                 );
               }}
@@ -601,18 +627,11 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={businessUnitData?.value?.businessUnit.filter((item) => item.companyId === watch("companyId")?.id) || []}
+                    options={businessUnitData?.value?.businessUnit || []}
                     loading={businessUnitIsLoading}
                     renderInput={(params) => <TextField {...params} label="Business Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
-
-                      setValue("departmentId", null);
-                      setValue("unitId", null);
-                      setValue("subUnitId", null);
-                      setValue("locationId", null);
-
-                      getDepartment();
                     }}
                     getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -620,8 +639,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       flex: 2,
                     }}
                     fullWidth
-                    disablePortal
-                    disableClearable
+                    disabled
                   />
                 );
               }}
@@ -636,17 +654,11 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={departmentData?.value?.department.filter((item) => item.businessUnitId === watch("businessUnitId")?.id) || []}
+                    options={departmentData?.value?.department || []}
                     loading={departmentIsLoading}
                     renderInput={(params) => <TextField {...params} label="Department" />}
                     onChange={(_, value) => {
                       onChange(value);
-
-                      setValue("unitId", null);
-                      setValue("subUnitId", null);
-                      setValue("locationId", null);
-
-                      getUnit();
                     }}
                     getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -654,8 +666,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       flex: 2,
                     }}
                     fullWidth
-                    disablePortal
-                    disableClearable
+                    disabled
                   />
                 );
               }}
@@ -670,16 +681,11 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={unitData?.value?.unit.filter((item) => item.departmentId === watch("departmentId")?.id) || []}
+                    options={unitData?.value?.unit || []}
                     loading={unitIsLoading}
                     renderInput={(params) => <TextField {...params} label="Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
-
-                      setValue("subUnitId", null);
-                      setValue("locationId", null);
-
-                      getSubUnit();
                     }}
                     getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -687,8 +693,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       flex: 2,
                     }}
                     fullWidth
-                    disablePortal
-                    disableClearable
+                    disabled
                   />
                 );
               }}
@@ -703,7 +708,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={subUnitData?.value?.subUnit.filter((item) => item.unitId === watch("unitId")?.id) || []}
+                    options={subUnitData?.value?.subUnit || []}
                     loading={subUnitIsLoading}
                     onOpen={() => {
                       if (!subUnitIsSuccess)
@@ -714,10 +719,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     renderInput={(params) => <TextField {...params} label="Sub Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
-
-                      setValue("locationId", null);
-
-                      getLocation();
                     }}
                     getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -725,8 +726,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       flex: 2,
                     }}
                     fullWidth
-                    disablePortal
-                    disableClearable
+                    disabled
                   />
                 );
               }}
@@ -741,7 +741,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     ref={ref}
                     size="small"
                     value={value}
-                    options={locationData?.value?.location.filter((item) => item.subUnits.some((subUnitItem) => subUnitItem.subUnitId === watch("subUnitId")?.id)) || []}
+                    options={locationData?.value?.location || []}
                     loading={locationIsLoading}
                     renderInput={(params) => <TextField {...params} label="Location" />}
                     onChange={(_, value) => {
@@ -753,8 +753,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       flex: 2,
                     }}
                     fullWidth
-                    disablePortal
-                    disableClearable
+                    disabled
                   />
                 );
               }}

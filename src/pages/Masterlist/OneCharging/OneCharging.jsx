@@ -174,8 +174,8 @@ const OneCharging = () => {
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.onecharging?.map((item) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+              data?.value?.onecharging?.map((item, index) => (
+                <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -269,7 +269,7 @@ const OneCharging = () => {
 
             <TablePagination
               sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[100, 300, 500]}
+              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 100}
@@ -389,8 +389,8 @@ const OneCharging = () => {
                   {isSuccess &&
                     !isLoading &&
                     !isFetching &&
-                    data?.value?.onecharging?.map((item) => (
-                      <TableRow key={item.id}>
+                    data?.value?.onecharging?.map((item, index) => (
+                      <TableRow key={index}>
                         <TableCell
                           sx={{
                             color: "#EDF2F7",
@@ -522,7 +522,7 @@ const OneCharging = () => {
 
             <TablePagination
               sx={{ color: "#A0AEC0", fontWeight: 400 }}
-              rowsPerPageOptions={[100, 300, 500]}
+              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 100}

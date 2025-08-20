@@ -1826,7 +1826,7 @@ const IssueHandlerConcerns = () => {
                                     align="center"
                                     onClick={() => onViewAction(item)}
                                   >
-                                    {item.aging_Days !== null ? `${item.aging_Days} Day(s)` : ""}
+                                    {item.aging_Days !== null ? `${item.aging_Days} day(s)` : ""}
                                   </TableCell>
                                 ))}
 

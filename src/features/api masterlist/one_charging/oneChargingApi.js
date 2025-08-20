@@ -23,4 +23,4 @@ export const oneChargingApi = api.enhanceEndpoints({ addTagTypes: tags }).inject
   }),
 });
 
-export const { useGetOneChargingQuery, useSyncOneChargingMutation } = oneChargingApi;
+export const { useGetOneChargingQuery, useSyncOneChargingMutation, useLazyGetOneChargingQuery } = oneChargingApi;

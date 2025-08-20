@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,23 +15,16 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { Search, SyncOutlined } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 
-import Swal from "sweetalert2";
-import { LoadingButton } from "@mui/lab";
 import { theme } from "../../../theme/theme";
-import { toast } from "sonner";
-
 import useDebounce from "../../../hooks/useDebounce";
-
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { useGetCompanyQuery, useSyncCompanyMutation } from "../../../features/api masterlist/company/companyApi";
-import { useLazyGetCompaniesQuery } from "../../../features/ymir/ymirApi";
+import { useGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
 
 const Company = () => {
-  const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -40,23 +33,11 @@ const Company = () => {
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  // const { toast } = useSweetAlert();
-
   const { data, isLoading, isFetching, isSuccess, isError } = useGetCompanyQuery({
-    Status: status,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
-
-  const [getCompanies, { data: companyData, isLoading: isCompanyLoading, isFetching: isCompanyFetching, isSuccess: companyIsSuccess }] = useLazyGetCompaniesQuery();
-  const [syncCompanies, { isLoading: isCompanySyncLoading, isFetching: isCompanySyncFetching }] = useSyncCompanyMutation();
-
-  useEffect(() => {
-    getCompanies();
-  }, []);
-
-  console.log("Company: ", companyData);
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -71,56 +52,6 @@ const Company = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
-
-  const onSyncCompany = () => {
-    Swal.fire({
-      title: "Confirmation?",
-      text: "Are you sure you want to sync the company list?",
-      icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        getCompanies()
-          .unwrap()
-          .then(async (response) => {
-            await syncCompanies(response)
-              .unwrap()
-              .then(() => {
-                toast.success("Success", {
-                  description: "Sync data successfully",
-                  classNames: {
-                    toast: "bg-blue-400",
-                  },
-                });
-              })
-              .catch(() => {
-                toast.error("Error!", {
-                  description: "Company sync failed!",
-                });
-              });
-          })
-          .catch(() => {
-            toast.error("Error!", {
-              description: "Company sync failed!",
-            });
-          });
-      }
-    });
-  };
 
   return (
     <Stack
@@ -138,26 +69,6 @@ const Company = () => {
           <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
             <Stack justifyItems="left">
               <Typography variant={isSmallScreen ? "h5" : "h4"}>Company</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <LoadingButton
-                variant="contained"
-                size={isSmallScreen ? "medium" : "large"}
-                color="primary"
-                startIcon={<SyncOutlined />}
-                loadingPosition="start"
-                onClick={() => onSyncCompany()}
-                loading={isCompanyLoading || isCompanyFetching || isCompanySyncLoading || isCompanySyncFetching}
-                sx={{
-                  ":disabled": {
-                    backgroundColor: theme.palette.primary.main,
-                    color: "black",
-                  },
-                }}
-              >
-                Sync Company
-              </LoadingButton>
             </Stack>
           </Stack>
         </Stack>
@@ -192,7 +103,7 @@ const Company = () => {
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.company?.map((item, index) => (
+              data?.value?.onecharging?.map((item, index) => (
                 <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                   <CardContent>
                     <Stack spacing={1}>
@@ -204,10 +115,10 @@ const Company = () => {
 
                       <Stack gap={0} sx={{ marginTop: 2 }}>
                         <Typography variant="body2" color="#D65DB1">
-                          {item.company_Code} -
+                          {item.companyCode} -
                         </Typography>
                         <Typography variant="h5" sx={{ color: "#EDF2F7" }}>
-                          {item.company_Name}
+                          {item.companyName}
                         </Typography>
                       </Stack>
                     </Stack>
@@ -233,7 +144,7 @@ const Company = () => {
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.company.length && (
+            {isSuccess && !data?.value?.onecharging?.length && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -298,7 +209,7 @@ const Company = () => {
                   {isSuccess &&
                     !isLoading &&
                     !isFetching &&
-                    data?.value?.company?.map((item, index) => (
+                    data?.value?.onecharging?.map((item, index) => (
                       <TableRow key={item.id}>
                         <TableCell
                           sx={{
@@ -318,7 +229,7 @@ const Company = () => {
                             fontWeight: 500,
                           }}
                         >
-                          {item.company_Code}
+                          {item.companyCode}
                         </TableCell>
 
                         <TableCell
@@ -328,7 +239,7 @@ const Company = () => {
                             fontWeight: 500,
                           }}
                         >
-                          {item.company_Name}
+                          {item.companyName}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -355,7 +266,7 @@ const Company = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.company.length && !isLoading && !isFetching && (
+                  {isSuccess && !data?.value?.onecharging?.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />

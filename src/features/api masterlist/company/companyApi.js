@@ -6,21 +6,13 @@ export const companyApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
   endpoints: (builder) => ({
     getCompany: builder.query({
       query: (params) => ({
-        url: "company/page?Status=true",
+        url: "GetOneCharging/page_company?Status=true",
         method: "GET",
         params: params,
       }),
       providesTags: tags,
     }),
-    syncCompany: builder.mutation({
-      query: (body) => ({
-        url: "company",
-        method: "POST",
-        body: body,
-      }),
-      invalidatesTags: (_, error) => (error ? [] : tags),
-    }),
   }),
 });
 
-export const { useGetCompanyQuery, useSyncCompanyMutation, useLazyGetCompanyQuery } = companyApi;
+export const { useGetCompanyQuery, useLazyGetCompanyQuery } = companyApi;
