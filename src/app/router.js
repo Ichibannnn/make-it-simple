@@ -45,6 +45,7 @@ import ReportsPage from "../pages/Reports/ReportsPage";
 import ChangePassword from "../pages/ChangePassword/ChangePassword";
 import AuthRedirect from "./AuthRedirect";
 import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
+import NewApprover from "../pages/ChannelSetup/ApproverSetup/NewApprover";
 
 export const router = createBrowserRouter([
   {
@@ -111,7 +112,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/masterlist/approver-setup",
-            element: <Approver />,
+            element: <NewApprover />,
           },
         ],
       },
