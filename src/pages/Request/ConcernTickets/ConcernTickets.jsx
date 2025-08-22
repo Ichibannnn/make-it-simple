@@ -24,8 +24,6 @@ import {
 } from "@mui/material";
 import {
   AddOutlined,
-  ArrowDownward,
-  ArrowUpward,
   CalendarMonthOutlined,
   ChecklistRtlOutlined,
   ClearAllOutlined,
@@ -50,9 +48,9 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
+import ConcernActions from "./ConcernActions";
 import ConcernDialog from "./ConcernDialog";
 import ConcernViewDialog from "./ConcernViewDialog";
-import ConcernActions from "./ConcernActions";
 import ConcernReturn from "./ConcernReturn";
 import ConcernHistory from "./ConcernHistory";
 
@@ -242,17 +240,6 @@ const ConcernTickets = () => {
       dispatch(setPageNumber(1));
     }
   }, [searchValue]);
-
-  const rows = data?.value?.requestConcern?.map((item, index) => {
-    return {
-      lineNo: index + 1,
-      requestConcernId: item.requestConcernId,
-      ticketRequestConcerns: item.ticketRequestConcerns[0]?.ticketConcernId,
-      concern: item.concern,
-      created_At: item.created_At,
-      concern_Status: item.concern_Status,
-    };
-  });
 
   return (
     <Stack
@@ -515,19 +502,12 @@ const ConcernTickets = () => {
                       >
                         <Stack spacing={1}>
                           <Stack spacing={1} onClick={() => onViewHistoryAction(item)}>
-                            {/* <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NUMBER:</Typography>
-                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.requestConcernId}</Typography>
-                            </Stack> */}
-
-                            {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && ( */}
                             <Stack direction="row" gap={0.5} alignItems="center">
                               <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
                                 {item.ticketRequestConcerns?.[0]?.ticketConcernId}
                               </Typography>
                             </Stack>
-                            {/* )} */}
 
                             <Stack direction="row" gap={0.5} alignItems="center">
                               <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
@@ -661,24 +641,6 @@ const ConcernTickets = () => {
                   <Table stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
-                        {/* <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                          align="center"
-                        >
-                          <Stack direction="row" gap={0.2} justifyContent="center" alignItems="center">
-                            CONCERN NO.
-                            <IconButton size="small" onClick={() => dispatch(setAscending(!ascending))}>
-                              {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
-                            </IconButton>
-                          </Stack>
-                        </TableCell> */}
-
-                        {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && ( */}
                         <TableCell
                           sx={{
                             background: "#1C2536",
@@ -690,7 +652,6 @@ const ConcernTickets = () => {
                         >
                           TICKET NO.
                         </TableCell>
-                        {/* )} */}
 
                         <TableCell
                           sx={{
@@ -759,7 +720,6 @@ const ConcernTickets = () => {
                         !isFetching &&
                         data?.value?.requestConcern?.map((item, index) => (
                           <TableRow key={index}>
-                            {/* {(status === "Ongoing" || status === "For Confirmation" || status === "Done" || status === "") && ( */}
                             <TableCell
                               sx={{
                                 color: "#EDF2F7",
@@ -771,7 +731,6 @@ const ConcernTickets = () => {
                             >
                               {item.ticketRequestConcerns?.[0]?.ticketConcernId}
                             </TableCell>
-                            {/* )} */}
 
                             <TableCell
                               sx={{
@@ -958,19 +917,18 @@ const ConcernTickets = () => {
               </>
             )}
 
-            <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />
-
-            <ConcernViewDialog
-              editData={editData}
-              open={viewConcernOpen}
-              onClose={() => {
-                viewConcernOnClose(setEditData(null));
-              }}
-            />
-
-            <ConcernHistory data={viewHistoryData} status={status} open={viewHistoryOpen} onClose={viewHistoryOnClose} />
-
-            <ConcernReturn data={returnData} open={returnOpen} onClose={returnOnClose} />
+            {addConcernOpen && <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />}
+            {viewConcernOpen && (
+              <ConcernViewDialog
+                editData={editData}
+                open={viewConcernOpen}
+                onClose={() => {
+                  viewConcernOnClose(setEditData(null));
+                }}
+              />
+            )}
+            {viewHistoryOpen && <ConcernHistory data={viewHistoryData} status={status} open={viewHistoryOpen} onClose={viewHistoryOnClose} />}
+            {returnOpen && <ConcernReturn data={returnData} open={returnOpen} onClose={returnOnClose} />}
           </Stack>
         </Stack>
       </Stack>

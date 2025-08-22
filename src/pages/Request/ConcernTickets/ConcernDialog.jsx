@@ -65,16 +65,6 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    // Concern: yup
-    //   .array()
-    //   .of(
-    //     yup.object({
-    //       value: yup.string().min(2, "Concern must be at least 2 characters long"),
-    //     })
-    //   )
-    //   .required("This field is required")
-    //   .min(1, "At least one concern is required")
-    //   .label("Concern"),
     Concern: yup.array().of(yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required")).min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
