@@ -1,9 +1,7 @@
 import React, { useRef } from "react";
-import { theme } from "../../../theme/theme";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
 import { Print } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 
 import rdfLogo from "../../../assets/images/RDF Logo.png";
 import moment from "moment";
@@ -88,7 +86,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                 <Stack sx={{ width: "40%" }}>
                   <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>DATE NEEDED:{"  "}</Typography>
-                    <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.date_Needed ? moment(data?.date_Needed).format("MM/DD/YYYY") : "--"} </Typography>
                   </Stack>
 
                   <Stack direction="row" gap={1}>
@@ -288,7 +286,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   <Stack sx={{ width: "40%" }}>
                     <Stack direction="row" gap={1} sx={{ borderBottom: "1px solid black" }}>
                       <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>DATE NEEDED:</Typography>
-                      <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
+                      <Typography sx={{ color: "black", fontSize: "14px" }}>{data?.date_Needed ? moment(data?.date_Needed).format("MM/DD/YYYY") : "--"} </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={1}>

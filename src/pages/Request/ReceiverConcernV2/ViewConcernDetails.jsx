@@ -1051,7 +1051,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} viewConcernDetailsOnClose={onClose} />
+      {assignTicketOpen && <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} viewConcernDetailsOnClose={onClose} />}
     </>
   );
 };

@@ -2066,80 +2066,96 @@ const IssueHandlerConcerns = () => {
           )}
         </Stack>
 
-        <IssueViewDialog
-          data={viewData}
-          setData={setViewData}
-          ticketStatus={ticketStatus}
-          viewOpen={viewOpen}
-          viewOnClose={viewOnClose}
-          // Buttons in View Dialog ~~~~
-          onClosing={onCloseTicketAction}
-          onTransfer={onTransferTicketAction}
-          onHold={onHoldTicketAction}
-        />
-        <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
-        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
-
-        <RejectDateDialog
-          data={rejectDateData}
-          open={rejectDateOpen}
-          onClose={() => {
-            rejectDateOnClose(setRejectDateData(null));
-          }}
-        />
-
-        <ManageTicketDialog
-          data={closeTicketData}
-          open={manageTicketOpen}
-          onClose={() => {
-            manageTicketOnClose(setCloseTicketData(null));
-          }}
-        />
-        <TicketForTransferDialog
-          data={transferTicketData}
-          open={transferTicketOpen}
-          onClose={() => {
-            transferTicketOnClose(setTransferTicketData(null));
-          }}
-          viewOnClose={viewOnClose}
-        />
-        <ManageTransferDialog
-          data={transferTicketData}
-          open={manageTransferOpen}
-          onClose={() => {
-            manageTransferOnClose(setTransferTicketData(null));
-          }}
-        />
-        <ApproveTransferTicket
-          data={transferTicketData}
-          open={approveTransferOpen}
-          onClose={() => {
-            approveTransferOnClose(setTransferTicketData(null));
-          }}
-        />
-        <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />
-        <IssueHandlerHoldDialog
-          data={holdTicketData}
-          open={holdTicketOpen}
-          onClose={() => {
-            holdTicketOnClose(setHoldTicketData(null));
-          }}
-          viewOnClose={viewOnClose}
-        />
-        <ManageOnHoldTicketDialog
-          data={holdTicketData}
-          open={manageHoldTicketOpen}
-          onClose={() => {
-            manageHoldTicketOnClose(setHoldTicketData(null));
-          }}
-        />
-        <PrintServiceReport
-          data={printData}
-          open={printTicketOpen}
-          onClose={() => {
-            printTicketOnClose(setPrintData(null));
-          }}
-        />
+        {viewOpen && (
+          <IssueViewDialog
+            data={viewData}
+            setData={setViewData}
+            ticketStatus={ticketStatus}
+            viewOpen={viewOpen}
+            viewOnClose={viewOnClose}
+            // Buttons in View Dialog ~~~~
+            onClosing={onCloseTicketAction}
+            onTransfer={onTransferTicketAction}
+            onHold={onHoldTicketAction}
+          />
+        )}
+        {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
+        {closeTicketOpen && <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />}
+        {rejectDateOpen && (
+          <RejectDateDialog
+            data={rejectDateData}
+            open={rejectDateOpen}
+            onClose={() => {
+              rejectDateOnClose(setRejectDateData(null));
+            }}
+          />
+        )}
+        {manageTicketOpen && (
+          <ManageTicketDialog
+            data={closeTicketData}
+            open={manageTicketOpen}
+            onClose={() => {
+              manageTicketOnClose(setCloseTicketData(null));
+            }}
+          />
+        )}
+        {transferTicketOpen && (
+          <TicketForTransferDialog
+            data={transferTicketData}
+            open={transferTicketOpen}
+            onClose={() => {
+              transferTicketOnClose(setTransferTicketData(null));
+            }}
+            viewOnClose={viewOnClose}
+          />
+        )}
+        {manageTransferOpen && (
+          <ManageTransferDialog
+            data={transferTicketData}
+            open={manageTransferOpen}
+            onClose={() => {
+              manageTransferOnClose(setTransferTicketData(null));
+            }}
+          />
+        )}
+        {approveTransferOpen && (
+          <ApproveTransferTicket
+            data={transferTicketData}
+            open={approveTransferOpen}
+            onClose={() => {
+              approveTransferOnClose(setTransferTicketData(null));
+            }}
+          />
+        )}
+        {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
+        {holdTicketOpen && (
+          <IssueHandlerHoldDialog
+            data={holdTicketData}
+            open={holdTicketOpen}
+            onClose={() => {
+              holdTicketOnClose(setHoldTicketData(null));
+            }}
+            viewOnClose={viewOnClose}
+          />
+        )}
+        {manageHoldTicketOpen && (
+          <ManageOnHoldTicketDialog
+            data={holdTicketData}
+            open={manageHoldTicketOpen}
+            onClose={() => {
+              manageHoldTicketOnClose(setHoldTicketData(null));
+            }}
+          />
+        )}
+        {printTicketOpen && (
+          <PrintServiceReport
+            data={printData}
+            open={printTicketOpen}
+            onClose={() => {
+              printTicketOnClose(setPrintData(null));
+            }}
+          />
+        )}
       </Stack>
     </Stack>
   );

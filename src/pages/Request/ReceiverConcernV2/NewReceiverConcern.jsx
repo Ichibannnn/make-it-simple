@@ -516,12 +516,11 @@ const NewReceiverConcern = () => {
             </>
           )}
 
-          <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />
-
-          <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
+          {viewConcernDetailsOpen && <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />}
+          {addTicketOpen && <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
+          {assignMultipleOpen && <AssignTicketDrawer open={assignMultipleOpen} onClose={assignMultipleOnClose} />}
 
           {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}
-          <AssignTicketDrawer open={assignMultipleOpen} onClose={assignMultipleOnClose} />
         </Stack>
       </Stack>
     </Stack>
