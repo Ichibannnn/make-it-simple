@@ -1,4 +1,4 @@
-import { CalendarMonthOutlined, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import {
   Chip,
   CircularProgress,
@@ -20,9 +20,36 @@ import { theme } from "../../theme/theme";
 
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
+import { useGetAllTicketsQuery } from "../../features/api_reports/reportsApi";
+import { useEffect } from "react";
 
-const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, searchValue, setSearchValue, setPageNumber, setPageSize }) => {
+const AllTicketsHistory = ({
+  search,
+  searchValue,
+  setSearchValue,
+  serviceProvider,
+  channel,
+  user,
+  dateFrom,
+  dateTo,
+  pageNumber,
+  setPageNumber,
+  pageSize,
+  setPageSize,
+  setSheetData,
+}) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+  // ALL TICKETS API ~~~~
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetAllTicketsQuery({
+    Search: search,
+    ServiceProvider: serviceProvider,
+    Channel: channel,
+    UserId: user,
+    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+    Date_To: moment(dateTo).format("YYYY-MM-DD"),
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -32,6 +59,12 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
     setPageSize(e.target.value);
     setPageNumber(1);
   };
+
+  useEffect(() => {
+    if (data?.value?.reports.length) {
+      setSheetData(data?.value?.reports);
+    }
+  }, [data?.value?.reports.length]);
 
   return (
     <>
@@ -228,6 +261,17 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
                     }}
                   >
                     CLOSING STATUS
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    RESOLUTION
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -499,12 +543,33 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
                           }}
                         />
                       </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.resolution
+                          ? item.resolution?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </TableCell>
                     </TableRow>
                   ))}
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={14} align="center">
+                    <TableCell colSpan={15} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -515,7 +580,7 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={14} align="center">
+                    <TableCell colSpan={15} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -526,7 +591,7 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
 
                 {isSuccess && !data?.value?.reports.length && !isLoading & !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={14} align="center">
+                    <TableCell colSpan={15} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.
@@ -541,7 +606,7 @@ const AllTicketsHistory = ({ data, isLoading, isFetching, isSuccess, isError, se
 
         <TablePagination
           sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
-          rowsPerPageOptions={[100, 300, 500]}
+          rowsPerPageOptions={[100, 300, 500, , { value: data?.value?.totalCount, label: "All" }]}
           component="div"
           count={data?.value?.totalCount || 0}
           rowsPerPage={data?.value?.pageSize || 100}

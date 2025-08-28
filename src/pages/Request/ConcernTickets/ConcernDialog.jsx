@@ -21,7 +21,7 @@ import {
 
 import * as yup from "yup";
 import moment from "moment";
-import { Controller, set, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { theme } from "../../../theme/theme";
@@ -42,13 +42,13 @@ import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitA
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
-import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import Swal from "sweetalert2";
+import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -77,6 +77,7 @@ const ConcernDialog = ({ open, onClose }) => {
       excludeEmptyString: true,
     }),
     UserId: yup.object().required().label("Requestor is required"),
+    ChargingCode: yup.object().required().label("Charging code is required"),
     CompanyId: yup.object().required().label("Company is required"),
     BusinessUnitId: yup.object().required().label("Business Unit"),
     DepartmentId: yup.object().required().label("Department is required"),
@@ -104,6 +105,7 @@ const ConcernDialog = ({ open, onClose }) => {
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
   const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
+  const [getChargingCode, { data: chargingCodeData, isLoading: chargingCodeIsLoading, isSuccess: chargingCodeIsSuccess }] = useLazyGetOneChargingQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -112,7 +114,6 @@ const ConcernDialog = ({ open, onClose }) => {
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
 
   const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
@@ -128,11 +129,6 @@ const ConcernDialog = ({ open, onClose }) => {
     mode: "onChange",
     defaultValues: {
       RequestTransactionId: "",
-      // Concern: [
-      //   {
-      //     value: "",
-      //   },
-      // ],
       Concern: [""],
       RequestConcernId: "",
       RequestAttachmentsFiles: [],
@@ -176,62 +172,47 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const onConcernFormSubmit = (formData) => {
     const payload = new FormData();
+    console.log("Form Data: ", formData);
 
     payload.append("Request_Type", formData.Request_Type);
     payload.append("Severity", formData.Severity);
     payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id); // ~~~~ Requestor
     payload.append("Contact_Number", formData.Contact_Number);
-    payload.append("CompanyId", formData.CompanyId?.id);
-    payload.append("BusinessUnitId", formData.BusinessUnitId?.id);
-    payload.append("DepartmentId", formData.DepartmentId?.id);
-    payload.append("UnitId", formData.UnitId?.id);
-    payload.append("SubUnitId", formData.SubUnitId?.id);
-    payload.append("Location_Code", formData.LocationId?.location_Code);
-
     payload.append("ServiceProviderId", formData.ServiceProvider?.id);
     payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
     payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
     payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
     payload.append("AssignTo", formData.IssueHandler);
+    payload.append("Notes", formData.Notes);
 
+    // For Arrray Payload data
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
       payload.append(`AddRequestTicketCategories[${i}].ticketCategoryId`, "");
       payload.append(`AddRequestTicketCategories[${i}].categoryId`, category[i]?.id);
     }
-
     if (category.length === 0) {
       payload.append(`AddRequestTicketCategories[0].ticketCategoryId`, "");
       payload.append(`AddRequestTicketCategories[0].categoryId`, "");
     }
-
     const subCategory = formData.SubCategoryId;
     for (let i = 0; i < subCategory.length; i++) {
       payload.append(`AddRequestTicketSubCategories[${i}].ticketSubCategoryId`, "");
       payload.append(`AddRequestTicketSubCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
-
     if (subCategory.length === 0) {
       payload.append(`AddRequestTicketSubCategories[0].ticketSubCategoryId`, "");
       payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
     }
 
-    // const concern = formData.Concern;
-    // for (let i = 0; i < concern.length; i++) {
-    //   payload.append(`ListOfConcerns[${i}].concern`, concern[i]?.value);
-    // }
-
     const concern = formData.Concern;
     for (let i = 0; i < concern.length; i++) {
       payload.append(`ListOfConcerns[${i}].concern`, concern[i]);
     }
-
     if (concern.length === 0) {
       payload.append(`ListOfConcerns[0].concern`, "");
     }
-
-    payload.append("Notes", formData.Notes);
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
@@ -240,15 +221,12 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, "");
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }
-
     if (files.length === 0) {
       payload.append(`RequestAttachmentsFiles[0].ticketAttachmentId`, "");
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
     // console.log("Payload Entries: ", [...payload.entries()]);
-
-    // Validation if Concern is greater than 1 (Message Box Notif)
     if (formData?.Concern.length > 1) {
       // Without Notification Box
       createEditRequestorConcern(payload)
@@ -431,6 +409,7 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [userApiIsSuccess, userApiData, userId]);
 
   useEffect(() => {
+    if (!chargingCodeIsSuccess) getChargingCode();
     if (!companyIsSuccess) getCompany();
     if (!businessUnitIsSuccess) getBusinessUnit();
     if (!departmentIsSuccess) getDepartment();
@@ -444,6 +423,10 @@ const ConcernDialog = ({ open, onClose }) => {
         fullname: userInformation?.fullname,
       });
     }
+    setValue("ChargingCode", {
+      code: userInformation?.oneChargingCode,
+      name: userInformation?.oneChargingName,
+    });
 
     setValue("CompanyId", {
       id: userInformation?.companyId,
@@ -508,10 +491,6 @@ const ConcernDialog = ({ open, onClose }) => {
       setValue("ChannelId", null);
     }
   }, [watch("IssueHandler")]);
-
-  // console.log("UserDetails:", userDetails);
-  // console.log("UserData:", userData);
-  console.log("Location", locationData);
 
   return (
     <>
@@ -700,6 +679,10 @@ const ConcernDialog = ({ open, onClose }) => {
                                   });
                               }}
                               onChange={(_, value) => {
+                                setValue("ChargingCode", {
+                                  code: value?.oneChargingCode,
+                                  name: value?.oneChargingName,
+                                });
                                 setValue("CompanyId", {
                                   id: value?.companyId,
                                   company_Code: value?.company_Code,
@@ -804,6 +787,51 @@ const ConcernDialog = ({ open, onClose }) => {
                         }}
                       />
                     </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack display="none" direction="row" sx={{ width: "100%", mt: 1 }}>
+                  {/* One Charging no display*/}
+                  <Stack sx={{ width: "100%" }}>
+                    <Typography sx={{ fontSize: "13px" }}>Charging</Typography>
+                    <Controller
+                      control={control}
+                      name="ChargingCode"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={chargingCodeData?.value?.onecharging || []}
+                            loading={chargingCodeIsLoading}
+                            renderInput={(params) => <TextField {...params} placeholder="Company" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                            onOpen={() => {
+                              if (!companyIsSuccess) getCompany();
+                            }}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) => `${option?.code} - ${option?.name}`}
+                            isOptionEqualToValue={(option, value) => option.code === value.code}
+                            sx={{
+                              flex: 2,
+                            }}
+                            fullWidth
+                            disablePortal
+                            disableClearable
+                            disabled
+                            componentsProps={{
+                              popper: {
+                                sx: {
+                                  "& .MuiAutocomplete-listbox": {
+                                    fontSize: "13px",
+                                  },
+                                },
+                              },
+                            }}
+                          />
+                        );
+                      }}
+                    />
                   </Stack>
                 </Stack>
 
@@ -1223,11 +1251,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               }}
                               onChange={(_, value) => {
                                 onChange(value);
-
                                 const categoryIdParams = value?.map((category) => category?.id);
-
-                                // console.log("categoryIdParams: ", categoryIdParams);
-
                                 getSubCategory({
                                   CategoryId: categoryIdParams,
                                 });
@@ -1674,6 +1698,8 @@ const ConcernDialog = ({ open, onClose }) => {
                 watch("Concern")?.length === 0 ||
                 !watch("Request_Type") ||
                 !watch("Severity") ||
+                !watch("ChargingCode") ||
+                watch("ChargingCode")?.code === null ||
                 !watch("CompanyId") ||
                 !watch("BusinessUnitId") ||
                 !watch("DepartmentId") ||

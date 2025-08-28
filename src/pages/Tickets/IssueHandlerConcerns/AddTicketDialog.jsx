@@ -187,8 +187,6 @@ const AddTicketDialog = ({ open, onClose }) => {
   }, [fields, append]);
 
   const onConcernFormSubmit = (formData) => {
-    console.log("FormData:", formData);
-
     const payload = new FormData();
 
     payload.append("Request_Type", formData.Request_Type);
@@ -196,19 +194,14 @@ const AddTicketDialog = ({ open, onClose }) => {
     payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id); // ~~~~ Requestor
     payload.append("Contact_Number", formData.Contact_Number);
-    payload.append("CompanyId", formData.CompanyId?.id);
-    payload.append("BusinessUnitId", formData.BusinessUnitId?.id);
-    payload.append("DepartmentId", formData.DepartmentId?.id);
-    payload.append("UnitId", formData.UnitId?.id);
-    payload.append("SubUnitId", formData.SubUnitId?.id);
-    payload.append("Location_Code", formData.LocationId?.location_Code);
-
     payload.append("ServiceProviderId", formData.ServiceProvider?.id);
     payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
     payload.append("DateNeeded", "");
     payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
     payload.append("AssignTo", formData.IssueHandler);
+    payload.append("Notes", formData.Notes);
 
+    // For Arrray Payload data
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
       payload.append(`AddRequestTicketCategories[${i}].ticketCategoryId`, "");
@@ -240,9 +233,6 @@ const AddTicketDialog = ({ open, onClose }) => {
       payload.append(`ListOfConcerns[0].concern`, "");
     }
 
-    // payload.append("Concern", formData.Concern);
-    payload.append("Notes", formData.Notes);
-
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
       console.log("i: ", i);
@@ -256,7 +246,7 @@ const AddTicketDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     createEditRequestorConcern(payload)
       .unwrap()
@@ -442,9 +432,6 @@ const AddTicketDialog = ({ open, onClose }) => {
       setValue("ChannelId", null);
     }
   }, [watch("IssueHandler"), userDetails]);
-
-  // console.log("Watch Concern: ", watch("Concern"));
-  // console.log("Fields: ", fields);
 
   return (
     <>

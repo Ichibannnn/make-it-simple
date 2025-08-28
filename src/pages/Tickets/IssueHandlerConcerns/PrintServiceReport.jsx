@@ -20,6 +20,8 @@ const PrintServiceReport = ({ data, open, onClose }) => {
     onClose();
   };
 
+  console.log("Print Data: ", data);
+
   return (
     <>
       <Dialog
@@ -141,6 +143,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
               </Stack>
 
               <Stack sx={{ marginTop: 8, minHeight: "600px", gap: 4 }}>
+                {/* TICKET DESCRIPTION */}
                 <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                   <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>A. TICKET DESCRIPTION:{"  "}</Typography>
@@ -158,6 +161,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                   </Stack>
                 </Stack>
 
+                {/* RESOLUTION */}
                 <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                   <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>B. RESOLUTION:{"  "}</Typography>
@@ -174,17 +178,48 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                     </Typography>
                   </Stack>
                 </Stack>
+
+                {/* TECHNICIANS */}
+                <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
+                  <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
+                    <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>C. TECHNICIANS:{"  "}</Typography>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%", padding: 2 }}>
+                    {data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.length > 0 ? (
+                      data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.map((item, i) => (
+                        <Typography key={i} sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
+                          {i + 1}. {item.fullname}
+                          <br />
+                        </Typography>
+                      ))
+                    ) : (
+                      <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1, fontStyle: "italic" }}>No technician assigned.</Typography>
+                    )}
+                  </Stack>
+                </Stack>
               </Stack>
 
               <Stack sx={{ padding: 2, width: "100%" }}>
                 <Stack direction="row" sx={{ border: "1px solid black", padding: 1 }}>
                   <Stack sx={{ width: "100%" }}>
-                    <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>PREPARED BY:</Typography>
+                    <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>REQUESTED BY:</Typography>
 
                     <Stack mt={2}>
                       <Stack sx={{ width: "100%" }}>
                         <Typography sx={{ color: "black", fontWeight: 500, fontSize: "14px" }}>{data?.requestor_Name}</Typography>
                         <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Requestor`}</Typography>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+
+                  <Stack sx={{ width: "100%" }}>
+                    <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>PREPARED BY:</Typography>
+
+                    <Stack mt={2}>
+                      <Stack sx={{ width: "100%" }}>
+                        <Typography sx={{ color: "black", fontWeight: 500, fontSize: "14px" }}>{data?.issue_Handler}</Typography>
+                        <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Issue Handler`}</Typography>
                       </Stack>
                     </Stack>
                   </Stack>
@@ -199,17 +234,6 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                       </Stack>
                     </Stack>
                   </Stack>
-
-                  {/* <Stack sx={{ width: "100%" }}>
-                    <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>CLOSED BY:</Typography>
-
-                    <Stack mt={2}>
-                      <Stack sx={{ width: "100%" }}>
-                        <Typography sx={{ color: "black", fontWeight: 500, fontSize: "14px" }}>{data?.modified_By}</Typography>
-                        <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Receiver`}</Typography>
-                      </Stack>
-                    </Stack>
-                  </Stack> */}
                 </Stack>
               </Stack>
             </Stack>
@@ -319,6 +343,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                 </Stack>
 
                 <Stack sx={{ marginTop: 8, minHeight: "600px", gap: 4 }}>
+                  {/* TICKET DESCRIPTION */}
                   <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                     <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
                       <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>A. TICKET DESCRIPTION:</Typography>
@@ -336,6 +361,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                     </Stack>
                   </Stack>
 
+                  {/* RESOLUTION */}
                   <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
                     <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
                       <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>B. RESOLUTION:</Typography>
@@ -352,42 +378,62 @@ const PrintServiceReport = ({ data, open, onClose }) => {
                       </Typography>
                     </Stack>
                   </Stack>
+
+                  {/* TECHNICIANS */}
+                  <Stack sx={{ width: "100%", height: "auto", border: "1px solid black" }}>
+                    <Stack sx={{ borderBottom: "1px solid black", width: "100%", padding: 1 }}>
+                      <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>C. TECHNICIANS:{"  "}</Typography>
+                    </Stack>
+
+                    <Stack sx={{ width: "100%", padding: 2 }}>
+                      {data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.length > 0 ? (
+                        data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.map((item, i) => (
+                          <Typography key={i} sx={{ color: "black", fontSize: "14px", marginLeft: 1 }}>
+                            {i + 1}. {item.fullname}
+                            <br />
+                          </Typography>
+                        ))
+                      ) : (
+                        <Typography sx={{ color: "black", fontSize: "14px", marginLeft: 1, fontStyle: "italic" }}>No technician assigned.</Typography>
+                      )}
+                    </Stack>
+                  </Stack>
                 </Stack>
 
                 <Stack sx={{ padding: 2, width: "100%" }}>
                   <Stack direction="row" sx={{ border: "1px solid black", padding: 1 }}>
                     <Stack sx={{ width: "100%" }}>
-                      <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>PREPARED BY:</Typography>
+                      <Typography sx={{ color: "black", fontWeight: 600, fontSize: "11px" }}>REQUESTED BY:</Typography>
 
                       <Stack mt={2}>
                         <Stack sx={{ width: "100%" }}>
-                          <Typography sx={{ color: "black", fontWeight: 500, fontSize: "14px" }}>{data?.requestor_Name}</Typography>
-                          <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Requestor`}</Typography>
+                          <Typography sx={{ color: "black", fontWeight: 500, fontSize: "12px" }}>{data?.requestor_Name}</Typography>
+                          <Typography sx={{ color: "black", fontWeight: 600, fontSize: "12px" }}>{`Requestor`}</Typography>
                         </Stack>
                       </Stack>
                     </Stack>
 
                     <Stack sx={{ width: "100%" }}>
-                      <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>CHECKED BY:</Typography>
+                      <Typography sx={{ color: "black", fontWeight: 600, fontSize: "11px" }}>PREPARED BY:</Typography>
 
                       <Stack mt={2}>
                         <Stack sx={{ width: "100%" }}>
-                          <Typography sx={{ color: "black", fontWeight: 500, fontSize: "14px" }}>{data?.getForClosingTickets?.[0]?.approverLists?.[0]?.approverName}</Typography>
-                          <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Approver`}</Typography>
+                          <Typography sx={{ color: "black", fontWeight: 500, fontSize: "12px" }}>{data?.issue_Handler}</Typography>
+                          <Typography sx={{ color: "black", fontWeight: 600, fontSize: "12px" }}>{`Issue Handler`}</Typography>
                         </Stack>
                       </Stack>
                     </Stack>
 
-                    {/* <Stack sx={{ width: "100%" }}>
-                      <Typography sx={{ color: "black", fontWeight: 600, fontSize: "13px" }}>CLOSED BY:</Typography>
+                    <Stack sx={{ width: "100%" }}>
+                      <Typography sx={{ color: "black", fontWeight: 600, fontSize: "11px" }}>CHECKED BY:</Typography>
 
                       <Stack mt={2}>
                         <Stack sx={{ width: "100%" }}>
-                          <Typography sx={{ color: "black", fontWeight: 500, fontSize: "14px" }}>{data?.modified_By}</Typography>
-                          <Typography sx={{ color: "black", fontWeight: 600, fontSize: "14px" }}>{`Receiver`}</Typography>
+                          <Typography sx={{ color: "black", fontWeight: 500, fontSize: "12px" }}>{data?.getForClosingTickets?.[0]?.approverLists?.[0]?.approverName}</Typography>
+                          <Typography sx={{ color: "black", fontWeight: 600, fontSize: "12px" }}>{`Approver`}</Typography>
                         </Stack>
                       </Stack>
-                    </Stack> */}
+                    </Stack>
                   </Stack>
                 </Stack>
               </Stack>

@@ -43,7 +43,6 @@ const schema = yup.object().shape({
 });
 
 const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOnClose }) => {
-  // const attachments = useSelector((state) => state.attachment.attachments);
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -58,14 +57,15 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
+
   // useSignalRConnection();
+  // const [smsNotification] = useSendSmsNotificationMutation();
+  // const attachments = useSelector((state) => state.attachment.attachments);
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
-  const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useEditRequestorConcernMutation();
-  // const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
   const [getAddReceiverAttachment] = useLazyGetReceiverAttachmentQuery();
@@ -232,24 +232,19 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
     payload.append("Request_Type", data?.request_Type);
     payload.append("Severity", data?.severity);
     payload.append("BackJobId", data?.backJobId === null ? "" : data?.backJobId);
-    payload.append("UserId", data?.requestorId);
+    payload.append("UserId", data?.requestorId); //Requestor
     payload.append("Contact_Number", data?.contact_Number === null ? "" : data?.contact_Number);
 
-    payload.append("CompanyId", data?.companyId);
-    payload.append("BusinessUnitId", data?.businessUnitId);
-    payload.append("DepartmentId", data?.departmentId);
-    payload.append("UnitId", data?.unitId);
-    payload.append("SubUnitId", data?.subUnitId);
-    payload.append("Location_Code", data?.locationId);
     payload.append("ServiceProviderId", data?.serviceProviderId);
     payload.append("DateNeeded", moment(data.date_Needed).format("YYYY-MM-DD"));
     payload.append("Notes", data?.notes === null ? "" : data?.notes);
 
     payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
     payload.append("TargetDate", moment(formData.TargetDate).format("YYYY-MM-DD"));
-    payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler : "");
+    payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler : ""); //Issue Handler
     payload.append("Concern", formData.Concern);
 
+    // For Arrray Payload data
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
       payload.append(`AddRequestTicketCategory[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
@@ -283,7 +278,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       payload.append(`RequestAttachmentsFile[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     // const smsPayload = {
     //   system_name: "Make It Simple",
@@ -316,63 +311,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       if (result.isConfirmed) {
         createEditReceiverConcern(payload)
           .unwrap()
-          .then((response) => {
-            console.log("Response: ", response);
-            // For Assigning ticket purposes
-            // Swal.fire({
-            //   title: "Success!",
-            //   html: `Thank you for submitting your concern.<br><br>
-            //            A service ticket <strong>#${response?.value}</strong> has been created.`,
-            //   icon: "success",
-            //   color: "white",
-            //   showCancelButton: true,
-            //   background: "#111927",
-            //   confirmButtonColor: "#9e77ed",
-            //   confirmButtonText: `Copy`,
-            //   cancelButtonText: "Close",
-            //   cancelButtonColor: "#1C2536",
-            //   heightAuto: false,
-            //   width: "30em",
-            //   customClass: {
-            //     container: "custom-container",
-            //     title: "custom-title",
-            //     htmlContainer: "custom-text",
-            //     // icon: "custom-icon",
-            //     confirmButton: "custom-confirm-btn",
-            //     cancelButton: "custom-cancel-btn",
-            //   },
-            // }).then((result) => {
-            //   if (result.isConfirmed) {
-            //     const ticketMessage = `Thank you for submitting your concern. A service ticket #${response?.value} has been created.`;
-
-            //     navigator.clipboard.writeText(ticketMessage).then(() => {
-            //       Swal.fire({
-            //         title: "Copied!",
-            //         icon: "success",
-            //         color: "white",
-            //         background: "#111927",
-            //         text: `Copied to clipboard.`,
-            //         timer: 2000,
-            //         showConfirmButton: false,
-            //         heightAuto: false,
-            //         width: "30em",
-            //         customClass: {
-            //           container: "custom-container",
-            //           title: "custom-title",
-            //           htmlContainer: "custom-text",
-            //           // icon: "custom-icon",
-            //           confirmButton: "custom-confirm-btn",
-            //           cancelButton: "custom-cancel-btn",
-            //         },
-            //       });
-            //     });
-            //   } else {
-            //     const ticketMessage = `Thank you for submitting your concern. A service ticket #${response?.value} has been created.`;
-
-            //     navigator.clipboard.writeText(ticketMessage);
-            //   }
-            // });
-
+          .then(() => {
             toast.success("Success!", {
               description: "Approve concern successfully!",
               duration: 1500,
@@ -464,8 +403,6 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  console.log("CPicking Data: ", data);
 
   return (
     <>
@@ -659,12 +596,13 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           onChange={(_, value) => {
                             onChange(value);
                             const categoryIdParams = value?.map((category) => category?.id);
-                            if (watch("CategoryId").length === 0) {
-                              setValue("SubCategoryId", []);
-                            }
                             getSubCategory({
                               CategoryId: categoryIdParams,
                             });
+
+                            if (watch("CategoryId").length === 0) {
+                              setValue("SubCategoryId", []);
+                            }
                           }}
                           getOptionLabel={(option) => option.category_Description || ""}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -673,7 +611,7 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                             flex: 2,
                           }}
                           fullWidth
-                          // disablePortal
+                          disablePortal
                           disableClearable
                           componentsProps={{
                             popper: {
@@ -711,13 +649,10 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                           multiple
                           ref={ref}
                           size="small"
-                          value={value}
+                          value={value || []}
                           options={subCategoryData?.value || []}
                           loading={subCategoryIsLoading}
                           renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                          onOpen={() => {
-                            if (!subCategoryIsSuccess) getSubCategory();
-                          }}
                           onChange={(_, value) => {
                             onChange(value);
                           }}
@@ -729,9 +664,9 @@ const AssignTicketDrawer = ({ data, setData, open, onClose, viewConcernDetailsOn
                             flex: 2,
                           }}
                           fullWidth
-                          // disablePortal
+                          disablePortal
                           disableClearable
-                          disabled={!watch("ChannelId")}
+                          disabled={!watch("ChannelId") || watch("CategoryId")?.length === 0}
                           componentsProps={{
                             popper: {
                               sx: {

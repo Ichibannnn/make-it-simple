@@ -50,12 +50,17 @@ const Roles = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRolesQuery({
-    Status: status,
-    Search: search,
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRolesQuery(
+    {
+      Status: status,
+      Search: search,
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const [archiveRole] = useArchiveRoleMutation();
 
@@ -72,7 +77,6 @@ const Roles = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {

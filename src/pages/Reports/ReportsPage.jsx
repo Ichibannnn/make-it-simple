@@ -25,6 +25,7 @@ import ServiceLevelAgreement from "./ServiceLevelAgreement";
 
 import {
   useGetAllTicketsQuery,
+  useLazyGetDownloadAllTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
@@ -68,39 +69,10 @@ const ReportsPage = () => {
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
-  // ALL TICKETS API ~~~~
-  const {
-    data: allTicketData,
-    isLoading: allTicketIsLoading,
-    isFetching: allTicketIsFetching,
-    isSuccess: allTicketIsSuccess,
-    isError: allTicketIsError,
-  } = useGetAllTicketsQuery({
-    Search: search,
-    ServiceProvider: serviceProvider,
-    Channel: channel,
-    UserId: user,
-    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
-    Date_To: moment(dateTo).format("YYYY-MM-DD"),
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
-
-  // ALL TICKETS SHEETDATA ~~~~
-  const { data: allTicketSheetData } = useGetAllTicketsQuery({
-    Search: search,
-    ServiceProvider: serviceProvider,
-    Channel: channel,
-    UserId: user,
-    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
-    Date_To: moment(dateTo).format("YYYY-MM-DD"),
-    PageNumber: pageNumber,
-    PageSize: 1000000,
-  });
-
   const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetChannelsQuery();
 
+  const [getDownloadAllTickets] = useLazyGetDownloadAllTicketsQuery();
   const [getDownloadOpenTickets] = useLazyGetDownloadOpenTicketsQuery();
   const [getDownloadClosedTickets] = useLazyGetDownloadClosedTicketsQuery();
   const [getDownloadTransferredTickets] = useLazyGetDownloadTransferredTicketsQuery();
@@ -244,96 +216,96 @@ const ReportsPage = () => {
         console.log("Error", error);
       }
     } else if (reportNavigation === "All Tickets") {
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Sheet1");
+      setIsLoading(true);
+      try {
+        const response = await getDownloadAllTickets({
+          Search: search,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
+          UserId: user,
+          Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+          Date_To: moment(dateTo).format("YYYY-MM-DD"),
+        }).unwrap();
 
-      worksheet.columns = [
-        { header: "Ticket Number", key: "Ticket Number", width: 10 },
-        { header: "Ticket Description", key: "Ticket Description", width: 20 },
-        { header: "Category", key: "Category", width: 20 },
-        { header: "Sub Category", key: "Sub Category", width: 20 },
-        { header: "Service Provider", key: "Service Provider", width: 20 },
-        { header: "Channel", key: "Channel", width: 20 },
-        { header: "Start Date", key: "Start Date", width: 20 },
-        { header: "Target Date", key: "Target Date", width: 20 },
-        { header: "Requestor", key: "Requestor", width: 20 },
-        { header: "Company", key: "Company", width: 20 },
-        { header: "Business Unit", key: "Business Unit", width: 20 },
-        { header: "Department", key: "Department", width: 20 },
-        { header: "Unit", key: "Unit", width: 20 },
-        { header: "Sub Unit", key: "Sub Unit", width: 20 },
-        { header: "Location", key: "Location", width: 20 },
-        { header: "Issue Handler", key: "Issue Handler", width: 20 },
-        { header: "Status", key: "Status", width: 20 },
-      ];
+        console.log("Response: ", response);
 
-      worksheet.getRow(1).eachCell((cell, colNumber) => {
-        console.log("Column Number: ", colNumber);
-
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "967BB6" },
-        };
-        cell.font = { bold: true };
-        cell.alignment = { vertical: "middle", horizontal: "center" };
-      });
-
-      sheetData.forEach((item) => {
-        worksheet.addRow({
-          "Ticket Number": item["Ticket Number"],
-          "Ticket Description": item["Ticket Description"],
-          Category: item.Category,
-          "Sub Category": item["Sub Category"],
-          "Service Provider": item["Service Provider"],
-          Channel: item.Channel,
-          "Start Date": item["Start Date"],
-          "Target Date": item["Target Date"],
-          Requestor: item.Requestor,
-          Company: item.Company,
-          "Business Unit": item["Business Unit"],
-          Department: item.Department,
-          Unit: item.Unit,
-          "Sub Unit": item["Sub Unit"],
-          Location: item.Location,
-          "Issue Handler": item["Issue Handler"],
-          Status: item.Status,
-        });
-      });
-
-      const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      saveAs(blob, "All_Tickets_History.xlsx");
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "All_Tickets_Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error", error);
+      }
     }
+
+    // Old All Tickets Export
+    // else if (reportNavigation === "All Tickets") {
+    //   const workbook = new ExcelJS.Workbook();
+    //   const worksheet = workbook.addWorksheet("Sheet1");
+
+    //   worksheet.columns = [
+    //     { header: "Ticket Number", key: "Ticket Number", width: 10 },
+    //     { header: "Ticket Description", key: "Ticket Description", width: 20 },
+    //     { header: "Category", key: "Category", width: 20 },
+    //     { header: "Sub Category", key: "Sub Category", width: 20 },
+    //     { header: "Service Provider", key: "Service Provider", width: 20 },
+    //     { header: "Channel", key: "Channel", width: 20 },
+    //     { header: "Start Date", key: "Start Date", width: 20 },
+    //     { header: "Target Date", key: "Target Date", width: 20 },
+    //     { header: "Requestor", key: "Requestor", width: 20 },
+    //     { header: "Company", key: "Company", width: 20 },
+    //     { header: "Business Unit", key: "Business Unit", width: 20 },
+    //     { header: "Department", key: "Department", width: 20 },
+    //     { header: "Unit", key: "Unit", width: 20 },
+    //     { header: "Sub Unit", key: "Sub Unit", width: 20 },
+    //     { header: "Location", key: "Location", width: 20 },
+    //     { header: "Issue Handler", key: "Issue Handler", width: 20 },
+    //     { header: "Status", key: "Status", width: 20 },
+    //   ];
+
+    //   worksheet.getRow(1).eachCell((cell, colNumber) => {
+    //     console.log("Column Number: ", colNumber);
+
+    //     cell.fill = {
+    //       type: "pattern",
+    //       pattern: "solid",
+    //       fgColor: { argb: "967BB6" },
+    //     };
+    //     cell.font = { bold: true };
+    //     cell.alignment = { vertical: "middle", horizontal: "center" };
+    //   });
+
+    //   sheetData.forEach((item) => {
+    //     worksheet.addRow({
+    //       "Ticket Number": item["Ticket Number"],
+    //       "Ticket Description": item["Ticket Description"],
+    //       Category: item.Category,
+    //       "Sub Category": item["Sub Category"],
+    //       "Service Provider": item["Service Provider"],
+    //       Channel: item.Channel,
+    //       "Start Date": item["Start Date"],
+    //       "Target Date": item["Target Date"],
+    //       Requestor: item.Requestor,
+    //       Company: item.Company,
+    //       "Business Unit": item["Business Unit"],
+    //       Department: item.Department,
+    //       Unit: item.Unit,
+    //       "Sub Unit": item["Sub Unit"],
+    //       Location: item.Location,
+    //       "Issue Handler": item["Issue Handler"],
+    //       Status: item.Status,
+    //     });
+    //   });
+
+    //   const buffer = await workbook.xlsx.writeBuffer();
+    //   const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    //   saveAs(blob, "All_Tickets_History.xlsx");
+    // }
   };
-
-  useEffect(() => {
-    if (allTicketSheetData) {
-      setSheetData(
-        allTicketSheetData?.value?.reports?.map((item) => {
-          return {
-            "Ticket Number": item.ticketConcernId,
-            "Ticket Description": item.concerns,
-            Category: item.ticketCategoryDescriptions,
-            "Sub Category": item.ticketSubCategoryDescriptions,
-            "Service Provider": item.serviceProviderName,
-            Channel: item.channel_Name,
-            "Start Date": moment(item.startDate).format("MM/DD/YYYY"),
-            "Target Date": moment(item.target_Date).format("MM/DD/YYYY"),
-            Requestor: item.requestor_Name,
-            Company: `${item.company_Code} - ${item.company_Name}`,
-            "Business Unit": `${item.businessUnit_Code} - ${item.businessUnit_Name}`,
-            Department: `${item.department_Code} - ${item.department_Name}`,
-            Unit: `${item.unit_Code} - ${item.unit_Name}`,
-            "Sub Unit": `${item.subUnit_Code} - ${item.subUnit_Name}`,
-            Location: `${item.location_Code} - ${item.location_Name}`,
-            "Issue Handler": item.personnel,
-            Status: item.ticket_Status,
-          };
-        })
-      );
-    }
-  }, [allTicketData]);
 
   useEffect(() => {
     if (userDetails) {
@@ -628,15 +600,19 @@ const ReportsPage = () => {
           <Stack>
             {reportNavigation === "All Tickets" ? (
               <AllTicketsHistory
-                data={allTicketData}
-                isLoading={allTicketIsLoading}
-                isFetching={allTicketIsFetching}
-                isSuccess={allTicketIsSuccess}
-                isError={allTicketIsError}
+                search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
+                serviceProvider={serviceProvider}
+                channel={channel}
+                user={user}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                pageNumber={pageNumber}
                 setPageNumber={setPageNumber}
+                pageSize={pageSize}
                 setPageSize={setPageSize}
+                setSheetData={setSheetData}
               />
             ) : reportNavigation === "Open Tickets" ? (
               <OpenTicketsHistory

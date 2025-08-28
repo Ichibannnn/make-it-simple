@@ -622,7 +622,7 @@ const ServiceLevelAgreement = ({
 
       <TablePagination
         sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
-        rowsPerPageOptions={[100, 300, 500]}
+        rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
         component="div"
         count={data?.value?.totalCount || 0}
         rowsPerPage={data?.value?.pageSize || 100}

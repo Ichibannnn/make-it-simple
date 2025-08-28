@@ -37,6 +37,7 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -90,6 +91,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
   const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
+  const [getChargingCode, { data: chargingCodeData, isLoading: chargingCodeIsLoading, isSuccess: chargingCodeIsSuccess }] = useLazyGetOneChargingQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -128,6 +130,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       Contact_Number: "",
 
       UserId: null,
+      ChargingCode: null,
       CompanyId: null,
       BusinessUnitId: null,
       DepartmentId: null,
@@ -390,6 +393,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   useEffect(() => {
     if (editData) {
+      if (!chargingCodeIsSuccess) getChargingCode();
       if (!companyIsSuccess) getCompany();
       if (!businessUnitIsSuccess) getBusinessUnit();
       if (!departmentIsSuccess) getDepartment();
@@ -422,6 +426,11 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       } else {
         setValue("Contact_Number", editData.contact_Number);
       }
+
+      // setValue("ChargingCode", {
+      //   code: userInformation?.oneChargingCode,
+      //   name: userInformation?.oneChargingName,
+      // });
 
       setValue("CompanyId", {
         id: editData?.companyId,

@@ -58,6 +58,16 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getDownloadAllTickets: builder.query({
+      query: (params) => ({
+        url: `export/all-ticket-export`,
+        method: "GET",
+        params: params,
+        responseHandler: (response) => response.blob(),
+      }),
+      providesTags: tags,
+    }),
+
     getDownloadOpenTickets: builder.query({
       query: (params) => ({
         url: `export/open`,
@@ -118,7 +128,7 @@ export const {
   useGetOnHoldTicketsQuery,
   useGetSlaTicketsQuery,
 
-  useLazyGetAllTicketsQuery,
+  useLazyGetDownloadAllTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,

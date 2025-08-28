@@ -22,6 +22,8 @@ const UserAccountWarningDialog = ({ data, payload, open, onClose, userOnClose })
       companyId: payload.companyId,
       businessUnitId: payload.businessUnitId,
       locationCode: payload.locationCode,
+      oneChargingCode: payload.oneChargingCode,
+      oneChargingName: payload.oneChargingName,
     };
 
     console.log("submitUpdateUser", submitUpdateUser);
