@@ -12,6 +12,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -249,6 +250,17 @@ const AllTicketsHistory = ({
                       fontSize: "12px",
                     }}
                   >
+                    TECHNICIANS
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
                     STATUS
                   </TableCell>
 
@@ -305,26 +317,28 @@ const AllTicketsHistory = ({
                         {item.ticketConcernId}
                       </TableCell>
 
-                      <TableCell
-                        className="ellipsis-styling"
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          width: "100px",
-                          "&:hover": {
-                            background: "",
+                      <Tooltip title={item?.concerns} placement="bottom-start">
+                        <TableCell
+                          className="ellipsis-styling"
+                          sx={{
                             color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item.concerns?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </TableCell>
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            width: "100px",
+                            "&:hover": {
+                              background: "",
+                              color: "#EDF2F7",
+                            },
+                          }}
+                        >
+                          {item.concerns?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </TableCell>
+                      </Tooltip>
 
                       <TableCell
                         sx={{
@@ -393,7 +407,7 @@ const AllTicketsHistory = ({
                           },
                         }}
                       >
-                        {moment(item.startDate).format("LL")}
+                        {moment(item.startDate).format("LL hh:mma")}
                       </TableCell>
 
                       <TableCell
@@ -421,7 +435,7 @@ const AllTicketsHistory = ({
                           },
                         }}
                       >
-                        {item?.closedDate ? moment(item.closedDate).format("LL") : "--"}
+                        {item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
                       </TableCell>
 
                       <TableCell
@@ -465,6 +479,20 @@ const AllTicketsHistory = ({
                         }}
                       >
                         {item.personnel}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.technicians ? item.technicians : "--"}
                       </TableCell>
 
                       <TableCell
@@ -569,7 +597,7 @@ const AllTicketsHistory = ({
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={15} align="center">
+                    <TableCell colSpan={16} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -580,7 +608,7 @@ const AllTicketsHistory = ({
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={15} align="center">
+                    <TableCell colSpan={16} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -591,7 +619,7 @@ const AllTicketsHistory = ({
 
                 {isSuccess && !data?.value?.reports.length && !isLoading & !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={15} align="center">
+                    <TableCell colSpan={16} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.
@@ -606,7 +634,7 @@ const AllTicketsHistory = ({
 
         <TablePagination
           sx={{ color: "#A0AEC0", fontWeight: 400, borderRadius: "0px 0px 20px 20px" }}
-          rowsPerPageOptions={[100, 300, 500, , { value: data?.value?.totalCount, label: "All" }]}
+          rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
           component="div"
           count={data?.value?.totalCount || 0}
           rowsPerPage={data?.value?.pageSize || 100}

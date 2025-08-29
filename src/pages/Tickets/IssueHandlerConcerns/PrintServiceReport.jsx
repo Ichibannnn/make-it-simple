@@ -91,7 +91,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
 
                   <Stack direction="row" gap={1}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>START DATE:{"  "}</Typography>
-                    <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.dateStarted).format("MM/DD/YYYY hh:mma")} </Typography>
                   </Stack>
                 </Stack>
               </Stack>
@@ -135,7 +135,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
 
                   <Stack direction="row" gap={1}>
                     <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CLOSED DATE:{"  "}</Typography>
-                    <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.close_At).format("MM/DD/YYYY")} </Typography>
+                    <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.close_At).format("MM/DD/YYYY hh:mma")} </Typography>
                   </Stack>
                 </Stack>
               </Stack>
@@ -291,7 +291,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
 
                     <Stack direction="row" gap={1}>
                       <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>START DATE:</Typography>
-                      <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY")} </Typography>
+                      <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.start_Date).format("MM/DD/YYYY hh:mma")} </Typography>
                     </Stack>
                   </Stack>
                 </Stack>
@@ -335,7 +335,7 @@ const PrintServiceReport = ({ data, open, onClose }) => {
 
                     <Stack direction="row" gap={1}>
                       <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "14px", marginLeft: 1 }}>CLOSED DATE:</Typography>
-                      <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.close_At).format("MM/DD/YYYY")} </Typography>
+                      <Typography sx={{ color: "black", fontSize: "14px" }}>{moment(data?.close_At).format("MM/DD/YYYY hh:mma")} </Typography>
                     </Stack>
                   </Stack>
                 </Stack>

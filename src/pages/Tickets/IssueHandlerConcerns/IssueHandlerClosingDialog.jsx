@@ -303,8 +303,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         sub_Category_Description: item.subCategory_Description,
       }));
 
-      setValue("CategoryId", null);
-      setValue("SubCategoryId", null);
+      // setValue("CategoryId", null);
+      // setValue("SubCategoryId", null);
 
       const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
 
@@ -315,6 +315,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       });
     }
   }, [data]);
+
+  console.log("Data: ", data);
 
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
@@ -548,7 +550,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                   flex: 2,
                                 }}
                                 fullWidth
-                                disablePortal
+                                // disablePortal
                                 disableClearable
                                 componentsProps={{
                                   popper: {

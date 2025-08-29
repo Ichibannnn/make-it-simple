@@ -524,7 +524,7 @@ const IssueHandlerConcerns = () => {
   }, [ticketStatus]);
 
   // console.log("userDetails: ", userDetails);
-  console.log("Selected Tix: ", selectedTickets);
+  // console.log("Selected Tix: ", selectedTickets);
 
   return (
     <Stack
@@ -2080,7 +2080,7 @@ const IssueHandlerConcerns = () => {
           />
         )}
         {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-        {closeTicketOpen && <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />}
+        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
         {rejectDateOpen && (
           <RejectDateDialog
             data={rejectDateData}
