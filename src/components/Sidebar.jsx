@@ -219,24 +219,30 @@ const SidebarList = () => {
         },
         {
           id: 4,
+          name: "Concern Category",
+          path: "/masterlist/concern-category",
+          icon: "AutoAwesomeMotionOutlined",
+        },
+        {
+          id: 5,
           name: "Receiver Setup",
           path: "/masterlist/receiver-setup",
           icon: "ContactsOutlined",
         },
         {
-          id: 5,
+          id: 6,
           name: "Channel Setup",
           path: "/masterlist/channel-setup",
           icon: "HubOutlined",
         },
         {
-          id: 6,
+          id: 7,
           name: "Service Provider",
           path: "/masterlist/service-provider",
           icon: "HubOutlined",
         },
         {
-          id: 7,
+          id: 8,
           name: "Approver Setup",
           path: "/masterlist/approver-setup",
           icon: "GroupsOutlined",

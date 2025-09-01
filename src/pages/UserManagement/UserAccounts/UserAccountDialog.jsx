@@ -1,7 +1,7 @@
 import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
@@ -131,47 +131,49 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
       if (data?.oneChargingCode === null) {
         setValue("oneCharging", null);
+        setValue("companyId", null);
+        setValue("businessUnitId", null);
+        setValue("departmentId", null);
+        setValue("unitId", null);
+        setValue("subUnitId", null);
+        setValue("locationId", null);
       } else {
         setValue("oneCharging", {
           code: data?.oneChargingCode,
           name: data?.oneChargingName,
         });
+        setValue("companyId", {
+          id: data?.companyId,
+          company_Code: data?.company_Code,
+          company_Name: data?.company_Name,
+        });
+        setValue("businessUnitId", {
+          id: data?.businessUnitId,
+          business_Code: data?.businessUnit_Code,
+          business_Name: data?.businessUnit_Name,
+        });
+        setValue("departmentId", {
+          id: data?.departmentId,
+          department_Code: data?.department_Code,
+          department_Name: data?.department_Name,
+        });
+        setValue("unitId", {
+          id: data?.unitId,
+          unit_Code: data?.unit_Code,
+          unit_Name: data?.unit_Name,
+        });
+
+        setValue("subUnitId", {
+          id: data?.subUnitId,
+          subUnit_Code: data?.subUnit_Code,
+          subUnit_Name: data?.subUnit_Name,
+        });
+
+        setValue("locationId", {
+          location_Code: data?.location_Code,
+          location_Name: data?.location_Name,
+        });
       }
-
-      setValue("companyId", {
-        id: data?.companyId,
-        company_Code: data?.company_Code,
-        company_Name: data?.company_Name,
-      });
-
-      setValue("businessUnitId", {
-        id: data?.businessUnitId,
-        business_Code: data?.businessUnit_Code,
-        business_Name: data?.businessUnit_Name,
-      });
-
-      setValue("departmentId", {
-        id: data?.departmentId,
-        department_Code: data?.department_Code,
-        department_Name: data?.department_Name,
-      });
-
-      setValue("unitId", {
-        id: data?.unitId,
-        unit_Code: data?.unit_Code,
-        unit_Name: data?.unit_Name,
-      });
-
-      setValue("subUnitId", {
-        id: data?.subUnitId,
-        subUnit_Code: data?.subUnit_Code,
-        subUnit_Name: data?.subUnit_Name,
-      });
-
-      setValue("locationId", {
-        location_Code: data?.location_Code,
-        location_Name: data?.location_Name,
-      });
     }
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
@@ -324,8 +326,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     setStoreCheckbox(event.target.checked);
     // reset();
   };
-
-  // console.log("OneChargingData: ", oneChargingData);
 
   return (
     <>

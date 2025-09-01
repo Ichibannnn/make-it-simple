@@ -11,27 +11,18 @@ import UserAccounts from "../pages/UserManagement/UserAccounts/UserAccounts";
 import Roles from "../pages/UserManagement/Roles/Roles";
 
 import MasterlistPage from "../pages/Masterlist/MasterlistPage";
-import Company from "../pages/Masterlist/CompanySync/Company";
-import Business from "../pages/Masterlist/BusinessUnitSync/Business";
-import Department from "../pages/Masterlist/DepartmentSync/Department";
-import Unit from "../pages/Masterlist/UnitSync/Unit";
-import SubUnit from "../pages/Masterlist/SubUnitSync/SubUnit";
-import Location from "../pages/Masterlist/LocationSync/Location";
 import Category from "../pages/Masterlist/Category/Category";
 import SubCategory from "../pages/Masterlist/Sub-Category/SubCategory";
+import CategoryConcern from "../pages/Masterlist/ConcernCategory/CategoryConcern";
 
 import RequestsPage from "../pages/Request/RequestsPage";
-import RequestTickets from "../pages/Request/RequestTickets/RequestTickets";
 import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
 
-import ChannelPage from "../pages/ChannelSetup/ChannelPage";
 import Receiver from "../pages/ChannelSetup/Receiver/Receiver";
 import Channel from "../pages/ChannelSetup/Channel/Channel";
 import ServiceProvider from "../pages/Masterlist/ServiceProvider/ServiceProvider";
-import Approver from "../pages/ChannelSetup/Approver/Approver";
 
 import ReceiverPage from "../pages/Request/ReceiverPage";
-import ReceiverConcerns from "../pages/Request/ConcernTickets_Receiver/ReceiverConcerns";
 import ReceiverCloseTickets from "../pages/Receiver/ClosingTickets/ReceiverCloseTickets";
 
 import TicketingPage from "../pages/Tickets/TicketingPage";
@@ -97,6 +88,10 @@ export const router = createBrowserRouter([
           {
             path: "/masterlist/sub-category",
             element: <SubCategory />,
+          },
+          {
+            path: "/masterlist/concern-category",
+            element: <CategoryConcern />,
           },
           {
             path: "/masterlist/receiver-setup",

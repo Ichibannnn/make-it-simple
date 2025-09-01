@@ -45,21 +45,26 @@ export const sidebarNavigationData = [
       },
       {
         id: 4,
+        name: "Concern Category",
+        path: "/masterlist/concern-category",
+      },
+      {
+        id: 5,
         name: "Receiver",
         path: "/masterlist/receiver-setup",
       },
       {
-        id: 5,
+        id: 6,
         name: "Channel Setup",
         path: "/masterlist/channel-setup",
       },
       {
-        id: 6,
+        id: 7,
         name: "Service Provider",
         path: "/masterlist/service-provider",
       },
       {
-        id: 7,
+        id: 8,
         name: "Approver",
         path: "/masterlist/approver-setup",
       },

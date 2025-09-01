@@ -40,7 +40,7 @@ import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(100);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -73,7 +73,6 @@ const UserAccounts = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -399,10 +398,10 @@ const UserAccounts = () => {
 
             <TablePagination
               sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[5, 10, 25, { value: data?.value?.totalCount, label: "All" }]}
+              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
               component="div"
               count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 5}
+              rowsPerPage={data?.value?.pageSize || 100}
               page={data?.value?.currentPage - 1 || 0}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
@@ -412,7 +411,7 @@ const UserAccounts = () => {
           // Table Layout for Larger Screens
           <>
             <Paper sx={{ width: "100%", overflow: "hidden" }}>
-              <TableContainer sx={{ minHeight: "423px", maxHeight: "423px" }}>
+              <TableContainer>
                 <Table stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
@@ -575,10 +574,10 @@ const UserAccounts = () => {
 
             <TablePagination
               sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[5, 10, 25, { value: data?.value?.totalCount, label: "All" }]}
+              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
               component="div"
               count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 5}
+              rowsPerPage={data?.value?.pageSize || 100}
               page={data?.value?.currentPage - 1 || 0}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}

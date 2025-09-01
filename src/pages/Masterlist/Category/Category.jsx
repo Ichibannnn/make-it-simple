@@ -449,7 +449,7 @@ const Category = () => {
                   {isSuccess &&
                     !isLoading &&
                     !isFetching &&
-                    data?.value?.category?.map((item) => (
+                    data?.value?.category?.map((item, i) => (
                       <TableRow key={item.id}>
                         <TableCell
                           sx={{
@@ -459,7 +459,7 @@ const Category = () => {
                           }}
                           align="center"
                         >
-                          {item.id}
+                          {i + 1}
                         </TableCell>
 
                         <TableCell
