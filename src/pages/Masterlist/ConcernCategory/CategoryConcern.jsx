@@ -36,6 +36,7 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { CategoryConcernActions } from "./CategoryConcernActions";
 import { CategoryConcernDialog } from "./CategoryConcernDialog";
 import { useArchiveCategoryConcernMutation, useGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
+import { use } from "react";
 
 const CategoryConcern = () => {
   const theming = useTheme();
@@ -72,10 +73,12 @@ const CategoryConcern = () => {
   };
 
   const onStatusChange = (_, newValue) => {
+    console.log("Status: ", newValue);
+
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
+    // refetch();
   };
 
   const onDialogClose = () => {
@@ -174,6 +177,12 @@ const CategoryConcern = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   return (
     <Stack

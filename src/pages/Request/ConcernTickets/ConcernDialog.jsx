@@ -13,6 +13,7 @@ import {
   InputAdornment,
   MenuItem,
   Select,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -77,7 +78,6 @@ const ConcernDialog = ({ open, onClose }) => {
       excludeEmptyString: true,
     }),
     UserId: yup.object().required().label("Requestor is required"),
-    ChargingCode: yup.object().required().label("Charging code is required"),
     CompanyId: yup.object().required().label("Company is required"),
     BusinessUnitId: yup.object().required().label("Business Unit"),
     DepartmentId: yup.object().required().label("Department is required"),
@@ -105,7 +105,6 @@ const ConcernDialog = ({ open, onClose }) => {
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
   const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
-  const [getChargingCode, { data: chargingCodeData, isLoading: chargingCodeIsLoading, isSuccess: chargingCodeIsSuccess }] = useLazyGetOneChargingQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
   const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -243,9 +242,6 @@ const ConcernDialog = ({ open, onClose }) => {
           setTimeout(() => {
             reset({ Concern: [""] });
           }, 0);
-          // setTimeout(() => {
-          //   reset({ Concern: [{ value: "" }] });
-          // }, 0);
           setAttachments([]);
           onClose();
         })
@@ -409,7 +405,6 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [userApiIsSuccess, userApiData, userId]);
 
   useEffect(() => {
-    if (!chargingCodeIsSuccess) getChargingCode();
     if (!companyIsSuccess) getCompany();
     if (!businessUnitIsSuccess) getBusinessUnit();
     if (!departmentIsSuccess) getDepartment();
@@ -423,10 +418,6 @@ const ConcernDialog = ({ open, onClose }) => {
         fullname: userInformation?.fullname,
       });
     }
-    setValue("ChargingCode", {
-      code: userInformation?.oneChargingCode,
-      name: userInformation?.oneChargingName,
-    });
 
     setValue("CompanyId", {
       id: userInformation?.companyId,
@@ -491,6 +482,8 @@ const ConcernDialog = ({ open, onClose }) => {
       setValue("ChannelId", null);
     }
   }, [watch("IssueHandler")]);
+
+  // console.log("Watch: ", watch("Concern"));
 
   return (
     <>
@@ -656,6 +649,7 @@ const ConcernDialog = ({ open, onClose }) => {
                         <Typography sx={{ fontSize: "13px" }}>Requestor Name</Typography>
                         <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
+
                       <Controller
                         control={control}
                         name="UserId"
@@ -733,6 +727,90 @@ const ConcernDialog = ({ open, onClose }) => {
                           );
                         }}
                       />
+
+                      {/* {watch("UserId") ? (
+                        <Controller
+                          control={control}
+                          name="UserId"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                options={
+                                  userDetails?.userRoleName === "Helpdesk Associate"
+                                    ? userData?.value?.users || []
+                                    : userData?.value?.users?.filter((item) => item?.departmentId === watch("DepartmentId")?.id) || []
+                                }
+                                loading={userIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!userIsSuccess)
+                                    getUser({
+                                      Status: true,
+                                    });
+                                }}
+                                onChange={(_, value) => {
+                                  setValue("ChargingCode", {
+                                    code: value?.oneChargingCode,
+                                    name: value?.oneChargingName,
+                                  });
+                                  setValue("CompanyId", {
+                                    id: value?.companyId,
+                                    company_Code: value?.company_Code,
+                                    company_Name: value?.company_Name,
+                                  });
+                                  setValue("BusinessUnitId", {
+                                    id: value?.businessUnitId,
+                                    business_Code: value?.businessUnit_Code,
+                                    business_Name: value?.businessUnit_Name,
+                                  });
+                                  setValue("DepartmentId", {
+                                    id: value?.departmentId,
+                                    department_Code: value?.department_Code,
+                                    department_Name: value?.department_Name,
+                                  });
+                                  setValue("UnitId", {
+                                    id: value?.unitId,
+                                    unit_Code: value?.unit_Code,
+                                    unit_Name: value?.unit_Name,
+                                  });
+                                  setValue("SubUnitId", {
+                                    id: value?.subUnitId,
+                                    subUnit_Code: value?.subUnit_Code,
+                                    subUnit_Name: value?.subUnit_Name,
+                                  });
+                                  setValue("LocationId", {
+                                    location_Code: value?.location_Code,
+                                    location_Name: value?.location_Name,
+                                  });
+
+                                  onChange(value);
+                                }}
+                                getOptionLabel={(option) => option?.fullname}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                fullWidth
+                                disablePortal
+                                disableClearable
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      ) : (
+                        <Stack sx={{ width: "100%", padding: 0, mb: 4 }}>
+                          <Skeleton height={50} />
+                        </Stack>
+                      )} */}
                     </Stack>
 
                     {/* Conctact Number */}
@@ -787,51 +865,6 @@ const ConcernDialog = ({ open, onClose }) => {
                         }}
                       />
                     </Stack>
-                  </Stack>
-                </Stack>
-
-                <Stack display="none" direction="row" sx={{ width: "100%", mt: 1 }}>
-                  {/* One Charging no display*/}
-                  <Stack sx={{ width: "100%" }}>
-                    <Typography sx={{ fontSize: "13px" }}>Charging</Typography>
-                    <Controller
-                      control={control}
-                      name="ChargingCode"
-                      render={({ field: { ref, value, onChange } }) => {
-                        return (
-                          <Autocomplete
-                            ref={ref}
-                            size="small"
-                            value={value}
-                            options={chargingCodeData?.value?.onecharging || []}
-                            loading={chargingCodeIsLoading}
-                            renderInput={(params) => <TextField {...params} placeholder="Company" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                            onOpen={() => {
-                              if (!companyIsSuccess) getCompany();
-                            }}
-                            onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) => `${option?.code} - ${option?.name}`}
-                            isOptionEqualToValue={(option, value) => option.code === value.code}
-                            sx={{
-                              flex: 2,
-                            }}
-                            fullWidth
-                            disablePortal
-                            disableClearable
-                            disabled
-                            componentsProps={{
-                              popper: {
-                                sx: {
-                                  "& .MuiAutocomplete-listbox": {
-                                    fontSize: "13px",
-                                  },
-                                },
-                              },
-                            }}
-                          />
-                        );
-                      }}
-                    />
                   </Stack>
                 </Stack>
 
@@ -1225,7 +1258,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                <Stack direction="row" display="none" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
@@ -1698,8 +1731,6 @@ const ConcernDialog = ({ open, onClose }) => {
                 watch("Concern")?.length === 0 ||
                 !watch("Request_Type") ||
                 !watch("Severity") ||
-                !watch("ChargingCode") ||
-                watch("ChargingCode")?.code === null ||
                 !watch("CompanyId") ||
                 !watch("BusinessUnitId") ||
                 !watch("DepartmentId") ||

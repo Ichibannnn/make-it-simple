@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardContent,
@@ -23,7 +22,7 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
@@ -43,7 +42,6 @@ import { useArchiveCategoryMutation, useGetCategoryQuery } from "../../../featur
 const Category = () => {
   const theming = useTheme();
   const isMobile = useMediaQuery(theming.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);

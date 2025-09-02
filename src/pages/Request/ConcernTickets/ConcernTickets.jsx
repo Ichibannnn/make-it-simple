@@ -111,7 +111,6 @@ const ConcernTickets = () => {
     dispatch(setStatus(newValue));
     dispatch(setPageNumber(1));
     dispatch(setPageSize(100));
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -234,6 +233,12 @@ const ConcernTickets = () => {
     viewHistoryOnToggle();
     setViewHistoryData(data);
   };
+
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   useEffect(() => {
     if (searchValue) {

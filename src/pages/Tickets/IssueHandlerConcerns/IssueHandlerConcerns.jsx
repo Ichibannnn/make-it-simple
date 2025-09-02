@@ -30,9 +30,6 @@ import {
   ArrowUpward,
   CalendarMonthOutlined,
   Check,
-  CheckBox,
-  CheckBoxOutlineBlank,
-  Close,
   DiscountOutlined,
   DoneAllOutlined,
   FiberManualRecord,
@@ -72,7 +69,6 @@ import ManageTransferDialog from "./ManageTransferDialog";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
@@ -86,7 +82,6 @@ import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../
 import AddTicketDialog from "./AddTicketDialog";
 import { useConfirmConcernMutation } from "../../../features/api_request/concerns/concernApi";
 import { LoadingButton } from "@mui/lab";
-import RejectDateDialoag from "./RejectDateDialog";
 import RejectDateDialog from "./RejectDateDialog";
 
 const IssueHandlerConcerns = () => {
@@ -97,8 +92,6 @@ const IssueHandlerConcerns = () => {
   const pageSize = useSelector((state) => state.root.pageSize);
   const searchValue = useSelector((state) => state.root.searchValue);
   const search = useDebounce(searchValue, 500);
-
-  const openTickets = useSelector((state) => state.webTickets.openTickets);
 
   const [ticketStatus, setTicketStatus] = useState("For Approval");
   const [ascendingDate, setAscendingDate] = useState(true);
@@ -165,7 +158,6 @@ const IssueHandlerConcerns = () => {
     setTicketStatus(newValue);
     dispatch(setPageNumber(1));
     dispatch(setPageSize(100));
-    refetch();
   };
 
   const onViewAction = (data) => {
@@ -216,15 +208,11 @@ const IssueHandlerConcerns = () => {
   };
 
   const onPrintTicketAction = (data) => {
-    // console.log("Print Data: ", data);
-
     printTicketOnToggle();
     setPrintData(data);
   };
 
   const onRejectDateAction = (data) => {
-    // console.log("Print Data: ", data);
-
     rejectDateOnToggle();
     setRejectDateData(data);
   };
@@ -505,8 +493,13 @@ const IssueHandlerConcerns = () => {
     setTransferTicketData(null);
     setPrintData(null);
     closeTicketOnClose();
-    // manageTicketOnClose();
   };
+
+  useEffect(() => {
+    if (ticketStatus) {
+      refetch();
+    }
+  }, [ticketStatus]);
 
   useEffect(() => {
     if (ticketStatus !== "") {
@@ -522,9 +515,6 @@ const IssueHandlerConcerns = () => {
       setSelectedTickets([]);
     }
   }, [ticketStatus]);
-
-  // console.log("userDetails: ", userDetails);
-  // console.log("Selected Tix: ", selectedTickets);
 
   return (
     <Stack
@@ -2080,7 +2070,9 @@ const IssueHandlerConcerns = () => {
           />
         )}
         {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
+
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
+
         {rejectDateOpen && (
           <RejectDateDialog
             data={rejectDateData}
@@ -2090,15 +2082,15 @@ const IssueHandlerConcerns = () => {
             }}
           />
         )}
-        {manageTicketOpen && (
-          <ManageTicketDialog
-            data={closeTicketData}
-            open={manageTicketOpen}
-            onClose={() => {
-              manageTicketOnClose(setCloseTicketData(null));
-            }}
-          />
-        )}
+
+        <ManageTicketDialog
+          data={closeTicketData}
+          open={manageTicketOpen}
+          onClose={() => {
+            manageTicketOnClose(setCloseTicketData(null));
+          }}
+        />
+
         {transferTicketOpen && (
           <TicketForTransferDialog
             data={transferTicketData}
@@ -2109,6 +2101,7 @@ const IssueHandlerConcerns = () => {
             viewOnClose={viewOnClose}
           />
         )}
+
         {manageTransferOpen && (
           <ManageTransferDialog
             data={transferTicketData}
@@ -2118,6 +2111,7 @@ const IssueHandlerConcerns = () => {
             }}
           />
         )}
+
         {approveTransferOpen && (
           <ApproveTransferTicket
             data={transferTicketData}
@@ -2127,7 +2121,9 @@ const IssueHandlerConcerns = () => {
             }}
           />
         )}
+
         {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
+
         {holdTicketOpen && (
           <IssueHandlerHoldDialog
             data={holdTicketData}

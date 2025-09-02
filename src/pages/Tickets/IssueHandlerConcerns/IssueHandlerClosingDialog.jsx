@@ -1,8 +1,8 @@
 import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { Add, Warning, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -13,13 +13,11 @@ import Swal from "sweetalert2";
 
 import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import moment from "moment";
 import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 
 const schema = yup.object().shape({
@@ -39,8 +37,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
-  const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
@@ -84,9 +82,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
     payload.append("TicketConcernId", formData.ticketConcernId);
     payload.append("Resolution", formData.resolution);
-
-    // payload.append("CategoryId", formData.CategoryId.id);
-    // payload.append("SubCategoryId", formData.SubCategoryId.id);
     payload.append("Notes", formData.Notes);
 
     const category = formData.CategoryId;
@@ -191,7 +186,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -210,8 +204,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -303,8 +295,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         sub_Category_Description: item.subCategory_Description,
       }));
 
-      // setValue("CategoryId", null);
-      // setValue("SubCategoryId", null);
+      setValue("CategoryId", null);
+      setValue("SubCategoryId", null);
 
       const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
 
@@ -315,8 +307,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       });
     }
   }, [data]);
-
-  console.log("Data: ", data);
 
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
@@ -532,13 +522,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
                                 options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                // onOpen={() => {
-                                //   if (!subCategoryIsSuccess) getSubCategory();
-                                // }}
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}

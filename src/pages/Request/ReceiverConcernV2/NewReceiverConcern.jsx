@@ -1,6 +1,7 @@
 import {
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   OutlinedInput,
@@ -12,6 +13,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -37,6 +39,9 @@ import AssignTicketDrawer from "./AssignTicketDrawer";
 const NewReceiverConcern = () => {
   const [approveStatus, setApproveStatus] = useState("false");
   const [concernDetails, setConcernDetails] = useState(null);
+
+  const [selectedConcernNo, setSelectedConcernNo] = useState([]);
+  const [selectedTicketNo, setSelectedTicketNo] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -71,6 +76,66 @@ const NewReceiverConcern = () => {
   const onViewAction = (data) => {
     setConcernDetails(data);
     viewConcernDetailsOnToggle();
+  };
+
+  const handleSelectAll = (event) => {
+    // if (event.target.checked) {
+    //   const allTicketIds = data?.value?.closingTicket.map((item) => item.closingTicketId) || [];
+    //   setSelectedConcernNo(allTicketIds);
+    // } else {
+    //   setSelectedConcernNo([]);
+    // }
+  };
+
+  const handleSelectTicket = (item) => {
+    // setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+  };
+
+  const handleApproveSelected = () => {
+    // console.log("payload:", payload);
+    // Swal.fire({
+    //   title: "Confirmation",
+    //   text: "Close selected tickets?",
+    //   icon: "info",
+    //   color: "white",
+    //   showCancelButton: true,
+    //   background: "#111927",
+    //   confirmButtonColor: "#9e77ed",
+    //   confirmButtonText: "Yes",
+    //   cancelButtonText: "No",
+    //   cancelButtonColor: "#1C2536",
+    //   heightAuto: false,
+    //   width: "30em",
+    //   customClass: {
+    //     container: "custom-container",
+    //     title: "custom-title",
+    //     htmlContainer: "custom-text",
+    //     icon: "custom-icon",
+    //     confirmButton: "custom-confirm-btn",
+    //     cancelButton: "custom-cancel-btn",
+    //   },
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     approveTicket(payload)
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success!", {
+    //           description: "Ticket approved successfully!",
+    //           duration: 1500,
+    //         });
+    //         dispatch(notificationApi.util.resetApiState());
+    //         dispatch(notificationMessageApi.util.resetApiState());
+    //         setSelectedTickets([]);
+    //       })
+    //       .catch((err) => {
+    //         console.log("Error", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
+    //   }
+    // });
   };
 
   return (
@@ -121,8 +186,10 @@ const NewReceiverConcern = () => {
                   !isLoading &&
                   !isFetching &&
                   data?.value?.requestConcern?.map((item, index) => {
+                    const isSelected = selectedConcernNo.includes(item.ticketConcernId);
+
                     return (
-                      <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                      <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                         <CardContent
                           sx={{
                             cursor: "pointer",
@@ -138,8 +205,17 @@ const NewReceiverConcern = () => {
                             direction="row"
                             sx={{
                               alignItems: "center",
+                              padding: 2,
                             }}
                           >
+                            <Stack>
+                              <Checkbox
+                                checked={selectedConcernNo.includes(item.requestConcernId)}
+                                onChange={() => handleSelectTicket(item.requestConcernId)}
+                                inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
+                              />
+                            </Stack>
+
                             <Stack spacing={1} onClick={() => onViewAction(item)}>
                               <Stack mb={2}>
                                 <Stack direction="row" gap={0.5} alignItems="center">
@@ -148,7 +224,12 @@ const NewReceiverConcern = () => {
                                   {item.severity === "Urgent" && <FlashOn color="warning" />}
                                 </Stack>
 
-                                <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.department_Name}</Typography>
+                                <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>
+                                  {item.department_Code} - {item.department_Name}{" "}
+                                </Typography>
+                                <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>
+                                  {item.location_Code} - {item.location_Name}
+                                </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
@@ -177,7 +258,9 @@ const NewReceiverConcern = () => {
 
                               <Stack direction="row" gap={0.5} alignItems="center">
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.channel_Name}</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item.channel_Name ? item.channel_Name : "--"}
+                                </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
@@ -193,6 +276,22 @@ const NewReceiverConcern = () => {
                                     fontWeight: 800,
                                   }}
                                   label={moment(item.created_At).format("LL")}
+                                />
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE NEEDED:</Typography>
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: "#1D1F3B",
+                                    color: theme.palette.primary.main,
+                                    fontWeight: 800,
+                                  }}
+                                  label={moment(item.date_Needed).format("LL")}
                                 />
                               </Stack>
                             </Stack>
@@ -243,8 +342,8 @@ const NewReceiverConcern = () => {
             </>
           ) : (
             <>
-              <TableContainer sx={{ minHeight: "480px", maxHeight: "653px" }}>
-                <Table stickyHeader sx={{ borderBottom: "none" }}>
+              <TableContainer>
+                <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
                   <TableHead>
                     <TableRow>
                       <TableCell
@@ -311,10 +410,18 @@ const NewReceiverConcern = () => {
                           fontSize: "11px",
                         }}
                       >
-                        <Stack direction="row" alignItems="center" gap={0.5}>
-                          <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                          DATE CREATED
-                        </Stack>
+                        DATE CREATED
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                        }}
+                      >
+                        DATE NEEDED
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -352,7 +459,7 @@ const NewReceiverConcern = () => {
 
                             <TableCell
                               sx={{
-                                maxWidth: "150px",
+                                width: "200px",
                               }}
                               onClick={() => onViewAction(item)}
                             >
@@ -372,8 +479,9 @@ const NewReceiverConcern = () => {
                                   fontWeight: 500,
                                 }}
                               >
-                                {item.department_Name}
+                                {item.department_Code} - {item.department_Name}
                               </Typography>
+
                               <Typography
                                 sx={{
                                   color: theme.palette.text.secondary,
@@ -381,32 +489,42 @@ const NewReceiverConcern = () => {
                                   fontWeight: 500,
                                 }}
                               >
-                                {item.location_Name}
+                                {item.location_Code} - {item.location_Name}
                               </Typography>
                             </TableCell>
 
-                            <TableCell
-                              className="ellipsis-styling"
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                minWidth: "300px",
-                                maxWidth: "300px",
-                                "&:hover": {
-                                  background: "",
-                                  color: "#EDF2F7",
-                                },
-                              }}
-                              onClick={() => onViewAction(item)}
-                            >
-                              {item.concern?.split("\r\n").map((line, index) => (
+                            <Tooltip
+                              title={item.concern.split("\r\n").map((line, index) => (
                                 <span key={index}>
                                   {line}
                                   <br />
                                 </span>
                               ))}
-                            </TableCell>
+                              placement="bottom-start"
+                            >
+                              <TableCell
+                                className="ellipsis-styling"
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  minWidth: "300px",
+                                  maxWidth: "300px",
+                                  "&:hover": {
+                                    background: "",
+                                    color: "#EDF2F7",
+                                  },
+                                }}
+                                onClick={() => onViewAction(item)}
+                              >
+                                {item.concern?.split("\r\n").map((line, index) => (
+                                  <span key={index}>
+                                    {line}
+                                    <br />
+                                  </span>
+                                ))}
+                              </TableCell>
+                            </Tooltip>
 
                             <TableCell
                               sx={{
@@ -450,18 +568,22 @@ const NewReceiverConcern = () => {
                               }}
                               onClick={() => onViewAction(item)}
                             >
-                              <Chip
-                                variant="filled"
-                                size="30px"
-                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: "#1D1F3B",
-                                  color: theme.palette.primary.main,
-                                  fontWeight: 800,
-                                }}
-                                label={moment(item.created_At).format("LL")}
-                              />
+                              {moment(item.created_At).format("LL")}
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              {moment(item.date_Needed).format("LL")}
                             </TableCell>
                           </TableRow>
                         );
