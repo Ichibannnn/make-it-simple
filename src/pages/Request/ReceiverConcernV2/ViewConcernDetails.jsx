@@ -58,16 +58,12 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
 
-    // console.log("uniqueFiles: ", uniqueNewFiles);
-
     setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
   };
 
   const getAttachmentData = async (id) => {
     try {
       const res = await getRequestorAttachment({ Id: id }).unwrap();
-
-      //   console.log("res", res);
 
       setAttachments(
         res?.value?.[0]?.attachments?.map((item) => ({
@@ -344,7 +340,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         </Box>
                       </Stack>
 
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
                         <Box>
                           <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Target Date:</Typography>
                         </Box>
@@ -1032,7 +1028,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
+        {/* <DialogActions>
           {data?.ticketRequestConcerns?.[0]?.is_Assigned === false && (
             <Stack sx={{ width: "100%", padding: 2, justifyContent: "end" }}>
               <Button size="small" variant="contained" color="success" startIcon={<Receipt sx={{ color: "#fff" }} />} onClick={() => onAssignAction()}>
@@ -1040,7 +1036,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
               </Button>
             </Stack>
           )}
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
 
       {/* Dialog to view image */}
@@ -1051,7 +1047,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      {assignTicketOpen && <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} viewConcernDetailsOnClose={onClose} />}
+      {assignTicketOpen && <AssignTicketDrawer data={data} setData={setData} open={assignTicketOpen} onClose={assignTicketOnClose} />}
     </>
   );
 };

@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   Checkbox,
@@ -17,7 +18,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, FlashOn, Search } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search } from "@mui/icons-material";
 
 import { useState } from "react";
 import moment from "moment";
@@ -42,6 +43,7 @@ const NewReceiverConcern = () => {
 
   const [selectedConcernNo, setSelectedConcernNo] = useState([]);
   const [selectedTicketNo, setSelectedTicketNo] = useState([]);
+  const [selectedConcerns, setSelectedConcerns] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -78,65 +80,22 @@ const NewReceiverConcern = () => {
     viewConcernDetailsOnToggle();
   };
 
-  const handleSelectAll = (event) => {
-    // if (event.target.checked) {
-    //   const allTicketIds = data?.value?.closingTicket.map((item) => item.closingTicketId) || [];
-    //   setSelectedConcernNo(allTicketIds);
-    // } else {
-    //   setSelectedConcernNo([]);
-    // }
-  };
-
   const handleSelectTicket = (item) => {
-    // setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+    console.log("item:", item);
+    // const concernNo = item?.requestConcernId;
+    // const ticketNo = item?.ticketRequestConcerns[0]?.ticketConcernId;
+    // const concern = item?.concern;
+
+    setSelectedConcernNo((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((newItem) => newItem !== item) : [...prevSelected, item]));
+    // setSelectedTicketNo((prevSelected) => (prevSelected.includes(ticketNo) ? prevSelected.filter((newItem) => newItem !== ticketNo) : [...prevSelected, ticketNo]));
+    // setSelectedConcerns((prevSelected) => (prevSelected.includes(concern) ? prevSelected.filter((newItem) => newItem !== concern) : [...prevSelected, concern]));
   };
 
-  const handleApproveSelected = () => {
-    // console.log("payload:", payload);
-    // Swal.fire({
-    //   title: "Confirmation",
-    //   text: "Close selected tickets?",
-    //   icon: "info",
-    //   color: "white",
-    //   showCancelButton: true,
-    //   background: "#111927",
-    //   confirmButtonColor: "#9e77ed",
-    //   confirmButtonText: "Yes",
-    //   cancelButtonText: "No",
-    //   cancelButtonColor: "#1C2536",
-    //   heightAuto: false,
-    //   width: "30em",
-    //   customClass: {
-    //     container: "custom-container",
-    //     title: "custom-title",
-    //     htmlContainer: "custom-text",
-    //     icon: "custom-icon",
-    //     confirmButton: "custom-confirm-btn",
-    //     cancelButton: "custom-cancel-btn",
-    //   },
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     approveTicket(payload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "Ticket approved successfully!",
-    //           duration: 1500,
-    //         });
-    //         dispatch(notificationApi.util.resetApiState());
-    //         dispatch(notificationMessageApi.util.resetApiState());
-    //         setSelectedTickets([]);
-    //       })
-    //       .catch((err) => {
-    //         console.log("Error", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-    // });
-  };
+  console.log("SelectedData:", selectedConcernNo);
+  // console.log("TicketNo:", selectedTicketNo);
+  // console.log("Concern:", selectedConcerns);
+
+  const takeTicketHandler = () => {};
 
   return (
     <Stack
@@ -163,6 +122,36 @@ const NewReceiverConcern = () => {
             width: "100%",
           }}
         >
+          {selectedConcernNo.length > 0 && (
+            <Stack
+              direction={isScreenSmall ? "column" : "row"}
+              alignItems={isScreenSmall ? "left" : "center"}
+              justifyContent="space-between"
+              gap={0.5}
+              sx={{
+                padding: "10px 20px",
+                backgroundColor: theme.palette.bgForm.black2,
+                borderRadius: "20px",
+                marginBottom: 0.5,
+                marginTop: 0.5,
+              }}
+            >
+              <Stack direction="row" gap={0.5}>
+                <LocalOffer />
+                <Typography>
+                  {selectedConcernNo.length} {""}
+                  {selectedConcernNo.length > 1 ? "Tickets selected" : "Ticket selected"}
+                </Typography>
+              </Stack>
+
+              <Stack direction="row" gap={0.5}>
+                <Button variant="contained" color="success" onClick={takeTicketHandler} startIcon={<Check />}>
+                  Take Ticket
+                </Button>
+              </Stack>
+            </Stack>
+          )}
+
           <Stack sx={{ width: "100%", padding: 3, gap: 1 }}>
             <OutlinedInput
               placeholder="Search"
@@ -210,8 +199,8 @@ const NewReceiverConcern = () => {
                           >
                             <Stack>
                               <Checkbox
-                                checked={selectedConcernNo.includes(item.requestConcernId)}
-                                onChange={() => handleSelectTicket(item.requestConcernId)}
+                                // checked={selectedConcernNo.includes(item.requestConcernId)}
+                                onChange={() => handleSelectTicket(item)}
                                 inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                               />
                             </Stack>
@@ -330,10 +319,10 @@ const NewReceiverConcern = () => {
 
                 <TablePagination
                   sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
                   component="div"
                   count={data?.value?.totalCount || 0}
-                  rowsPerPage={data?.value?.pageSize || 5}
+                  rowsPerPage={data?.value?.pageSize || 100}
                   page={data?.value?.currentPage - 1 || 0}
                   onPageChange={onPageNumberChange}
                   onRowsPerPageChange={onPageSizeChange}
@@ -449,9 +438,16 @@ const NewReceiverConcern = () => {
                                 },
                               }}
                               align="center"
-                              onClick={() => onViewAction(item)}
+                              // onClick={() => onViewAction(item)}
                             >
-                              <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+                              <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
+                                <Stack>
+                                  <Checkbox
+                                    // checked={selectedConcernNo.includes(item.requestConcernId)}
+                                    onChange={() => handleSelectTicket(item)}
+                                    inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
+                                  />
+                                </Stack>
                                 {item.severity === "Urgent" && <FlashOn color="warning" />}
                                 <Typography sx={{ fontSize: "12px" }}>{item.ticketRequestConcerns[0]?.ticketConcernId}</Typography>
                               </Stack>
@@ -640,7 +636,18 @@ const NewReceiverConcern = () => {
 
           {viewConcernDetailsOpen && <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />}
           {addTicketOpen && <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-          {assignMultipleOpen && <AssignTicketDrawer open={assignMultipleOpen} onClose={assignMultipleOnClose} />}
+          {assignMultipleOpen && (
+            <AssignTicketDrawer
+              open={assignMultipleOpen}
+              onClose={assignMultipleOnClose}
+              selectedConcernNo={selectedConcernNo}
+              setSelectedConcernNo={setSelectedConcernNo}
+              selectedTicketNo={selectedTicketNo}
+              setSelectedTicketNo={setSelectedTicketNo}
+              selectedConcerns={selectedConcerns}
+              setSelectedConcerns={setSelectedConcerns}
+            />
+          )}
 
           {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}
         </Stack>

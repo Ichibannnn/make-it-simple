@@ -19,6 +19,7 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
+import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -28,6 +29,7 @@ const schema = yup.object().shape({
   ChannelId: yup.object().required().label("Channel"),
   CategoryId: yup.array().required().label("Category"),
   SubCategoryId: yup.array().required().label("Sub Category"),
+  CategoryConcern: yup.object().required().label("Concern Category"),
   Technicians: yup.array().notRequired(),
 
   Notes: yup.string().notRequired(),
@@ -46,7 +48,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   // useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryArrayQuery();
+  const [getConcernCategory, { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess }] = useLazyGetCategoryConcernQuery();
   const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
@@ -69,6 +72,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
+      CategoryConcern: null,
       Technicians: [],
 
       Notes: "",
@@ -81,6 +85,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
+    payload.append("CategoryConcern", formData.CategoryConcern.categoryConcern);
     payload.append("Resolution", formData.resolution);
     payload.append("Notes", formData.Notes);
 
@@ -129,6 +134,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
       payload.append(`AddClosingAttachments[0].attachment`, "");
     }
+
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     // 4pm Cut-off Warning
     // const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
@@ -554,6 +561,64 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                       </Stack>
                     </Stack>
 
+                    <Stack gap={1}>
+                      <Stack gap={0.5} sx={{ width: "100%" }}>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Concern Category:
+                          </Typography>
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                        </Stack>
+
+                        <Controller
+                          control={control}
+                          name="CategoryConcern"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                options={concernCategoryData?.value?.category || []}
+                                loading={concernCategoryIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Concern Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!concernCategoryIsSuccess)
+                                    getConcernCategory({
+                                      Status: true,
+                                    });
+                                }}
+                                onChange={(_, value) => {
+                                  onChange(value);
+                                }}
+                                getOptionLabel={(option) => option.categoryConcern || ""}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                sx={{
+                                  flex: 2,
+                                }}
+                                fullWidth
+                                disablePortal
+                                disableClearable
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+
                     <Stack mt={2} gap={0.5}>
                       <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography
@@ -811,7 +876,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
               form="closeTicket"
               variant="contained"
               loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
-              disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0}
+              disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || !watch("CategoryConcern")}
             >
               Submit
             </LoadingButton>
