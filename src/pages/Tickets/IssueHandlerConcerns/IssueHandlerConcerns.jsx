@@ -2102,15 +2102,13 @@ const IssueHandlerConcerns = () => {
           />
         )}
 
-        {manageTransferOpen && (
-          <ManageTransferDialog
-            data={transferTicketData}
-            open={manageTransferOpen}
-            onClose={() => {
-              manageTransferOnClose(setTransferTicketData(null));
-            }}
-          />
-        )}
+        <ManageTransferDialog
+          data={transferTicketData}
+          open={manageTransferOpen}
+          onClose={() => {
+            manageTransferOnClose(setTransferTicketData(null));
+          }}
+        />
 
         {approveTransferOpen && (
           <ApproveTransferTicket

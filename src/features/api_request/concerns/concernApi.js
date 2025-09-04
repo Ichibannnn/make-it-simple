@@ -44,6 +44,7 @@ export const concernApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
+    // OLD API FOR TAKE TICKET
     editRequestorConcern: builder.mutation({
       query: (body) => ({
         url: "request-concern/update-request-concern",
@@ -51,6 +52,15 @@ export const concernApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : tags),
+    }),
+
+    takeCherryPickTicket: builder.mutation({
+      query: (body) => ({
+        url: "request-concern/cherry-pick-concern",
+        method: "POST",
         body: body,
       }),
       invalidatesTags: (_, error) => (error ? [] : tags),
@@ -112,6 +122,7 @@ export const {
   useLazyGetTechniciansQuery,
   useCreateEditRequestorConcernMutation,
   useEditRequestorConcernMutation,
+  useTakeCherryPickTicketMutation,
   useLazyGetRequestorAttachmentQuery,
   useGetRequestorAttachmentQuery,
   useDeleteRequestorAttachmentMutation,

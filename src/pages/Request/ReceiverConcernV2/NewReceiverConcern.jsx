@@ -41,9 +41,7 @@ const NewReceiverConcern = () => {
   const [approveStatus, setApproveStatus] = useState("false");
   const [concernDetails, setConcernDetails] = useState(null);
 
-  const [selectedConcernNo, setSelectedConcernNo] = useState([]);
-  const [selectedTicketNo, setSelectedTicketNo] = useState([]);
-  const [selectedConcerns, setSelectedConcerns] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -64,7 +62,7 @@ const NewReceiverConcern = () => {
 
   const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
   const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
-  const { open: assignMultipleOpen, onToggle: assignMultipleOnToggle, onClose: assignMultipleOnClose } = useDisclosure();
+  const { open: takeTicketOpen, onToggle: takeTicketOnToggle, onClose: takeTicketOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -81,21 +79,27 @@ const NewReceiverConcern = () => {
   };
 
   const handleSelectTicket = (item) => {
-    console.log("item:", item);
-    // const concernNo = item?.requestConcernId;
-    // const ticketNo = item?.ticketRequestConcerns[0]?.ticketConcernId;
-    // const concern = item?.concern;
+    const concernAndTicketNo = {
+      ticketConcernId: item?.ticketRequestConcerns[0]?.ticketConcernId,
+      requestConcernId: item?.requestConcernId,
+    };
 
-    setSelectedConcernNo((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((newItem) => newItem !== item) : [...prevSelected, item]));
-    // setSelectedTicketNo((prevSelected) => (prevSelected.includes(ticketNo) ? prevSelected.filter((newItem) => newItem !== ticketNo) : [...prevSelected, ticketNo]));
-    // setSelectedConcerns((prevSelected) => (prevSelected.includes(concern) ? prevSelected.filter((newItem) => newItem !== concern) : [...prevSelected, concern]));
+    setSelectedIds((prevSelected) => {
+      const exists = prevSelected.some((id) => id.ticketConcernId === concernAndTicketNo.ticketConcernId && id.requestConcernId === concernAndTicketNo.requestConcernId);
+
+      if (exists) {
+        return prevSelected.filter((id) => !(id.ticketConcernId === concernAndTicketNo.ticketConcernId && id.requestConcernId === concernAndTicketNo.requestConcernId));
+      } else {
+        return [...prevSelected, concernAndTicketNo];
+      }
+    });
   };
 
-  console.log("SelectedData:", selectedConcernNo);
-  // console.log("TicketNo:", selectedTicketNo);
-  // console.log("Concern:", selectedConcerns);
+  // console.log("SelectedData:", selectedIds);
 
-  const takeTicketHandler = () => {};
+  const takeTicketHandler = () => {
+    takeTicketOnToggle();
+  };
 
   return (
     <Stack
@@ -122,7 +126,7 @@ const NewReceiverConcern = () => {
             width: "100%",
           }}
         >
-          {selectedConcernNo.length > 0 && (
+          {selectedIds.length > 0 && (
             <Stack
               direction={isScreenSmall ? "column" : "row"}
               alignItems={isScreenSmall ? "left" : "center"}
@@ -139,8 +143,8 @@ const NewReceiverConcern = () => {
               <Stack direction="row" gap={0.5}>
                 <LocalOffer />
                 <Typography>
-                  {selectedConcernNo.length} {""}
-                  {selectedConcernNo.length > 1 ? "Tickets selected" : "Ticket selected"}
+                  {selectedIds.length} {""}
+                  {selectedIds.length > 1 ? "Tickets selected" : "Ticket selected"}
                 </Typography>
               </Stack>
 
@@ -175,7 +179,7 @@ const NewReceiverConcern = () => {
                   !isLoading &&
                   !isFetching &&
                   data?.value?.requestConcern?.map((item, index) => {
-                    const isSelected = selectedConcernNo.includes(item.ticketConcernId);
+                    const isSelected = selectedIds.includes(item.ticketConcernId);
 
                     return (
                       <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
@@ -199,7 +203,7 @@ const NewReceiverConcern = () => {
                           >
                             <Stack>
                               <Checkbox
-                                // checked={selectedConcernNo.includes(item.requestConcernId)}
+                                // checked={selectedIds.includes(item.requestConcernId)}
                                 onChange={() => handleSelectTicket(item)}
                                 inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                               />
@@ -443,7 +447,7 @@ const NewReceiverConcern = () => {
                               <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
                                 <Stack>
                                   <Checkbox
-                                    // checked={selectedConcernNo.includes(item.requestConcernId)}
+                                    // checked={selectedIds.includes(item.requestConcernId)}
                                     onChange={() => handleSelectTicket(item)}
                                     inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                                   />
@@ -636,20 +640,7 @@ const NewReceiverConcern = () => {
 
           {viewConcernDetailsOpen && <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />}
           {addTicketOpen && <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-          {assignMultipleOpen && (
-            <AssignTicketDrawer
-              open={assignMultipleOpen}
-              onClose={assignMultipleOnClose}
-              selectedConcernNo={selectedConcernNo}
-              setSelectedConcernNo={setSelectedConcernNo}
-              selectedTicketNo={selectedTicketNo}
-              setSelectedTicketNo={setSelectedTicketNo}
-              selectedConcerns={selectedConcerns}
-              setSelectedConcerns={setSelectedConcerns}
-            />
-          )}
-
-          {/* <MultipleAssignDialog selectedTickets={selectedTickets} open={assignMultipleOpen} onClose={assignMultipleOnClose} /> */}
+          {takeTicketOpen && <AssignTicketDrawer open={takeTicketOpen} onClose={takeTicketOnClose} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />}
         </Stack>
       </Stack>
     </Stack>

@@ -1,49 +1,22 @@
 import { LoadingButton } from "@mui/lab";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import {
-  Add,
-  AttachFileOutlined,
-  CheckOutlined,
-  Close,
-  FiberManualRecord,
-  FileDownloadOutlined,
-  FileUploadOutlined,
-  RemoveCircleOutline,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
-import Swal from "sweetalert2";
+
 import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
-import { useLazyGetSubCategoryArrayQuery, useLazyGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { useDispatch } from "react-redux";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { notificationApi } from "../../../features/api_notification/notificationApi";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
 
 const schema = yup.object().shape({
@@ -55,6 +28,7 @@ const schema = yup.object().shape({
   ChannelId: yup.object().required().label("Channel"),
   CategoryId: yup.array().required().label("Category"),
   SubCategoryId: yup.array().required().label("Sub Category"),
+  CategoryConcern: yup.object().required().label("Concern Category"),
   Technicians: yup.array().notRequired(),
 
   Notes: yup.string().notRequired(),
@@ -69,13 +43,13 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
-  const dispatch = useDispatch();
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryArrayQuery();
+  const [getConcernCategory, { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess }] = useLazyGetCategoryConcernQuery();
   const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
@@ -101,6 +75,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       ChannelId: null,
       CategoryId: [],
       SubCategoryId: [],
+      CategoryConcern: null,
       Technicians: [],
 
       Notes: "",
@@ -126,14 +101,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     fileInputRef.current.click();
   };
 
-  const handleUpdateFile = (id) => {
-    setTicketAttachmentId(id);
-    fileInputRef.current.click();
-  };
-
   const handleDeleteFile = async (fileNameToDelete) => {
-    console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -214,10 +182,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
         payload.append("TicketConcernId", formData.ticketConcernId);
         payload.append("ClosingTicketId", formData.closingTicketId);
+        payload.append("CategoryConcernId", formData.CategoryConcern.id);
+        payload.append("CategoryConcern", formData.CategoryConcern.categoryConcern);
         payload.append("Resolution", formData.resolution);
-
-        // payload.append("CategoryId", formData.CategoryId.id);
-        // payload.append("SubCategoryId", formData.SubCategoryId.id);
         payload.append("Notes", formData.Notes);
 
         const category = formData.CategoryId;
@@ -337,6 +304,11 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         CategoryId: categoryIdParams,
       });
 
+      setValue("CategoryConcern", {
+        id: data?.getForClosingTickets?.[0]?.categoryConcernId,
+        categoryConcern: data?.getForClosingTickets?.[0]?.categoryConcernName,
+      });
+
       setValue("Notes", data?.notes);
 
       const manageTicketArray = data?.getForClosingTickets?.map((item) =>
@@ -360,6 +332,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       );
     }
   }, [data]);
+
+  console.log("Data: ", data);
 
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
@@ -438,9 +412,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
-
-  // console.log("Data: ", data);
-  // console.log("Error: ", errors);
 
   return (
     <>
@@ -636,16 +607,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                // options={subCategoryData?.value?.filter((item) => watch("CategoryId").some((category) => item.categoryId === category.id)) || []}
                                 options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
                                 renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                // onOpen={() => {
-                                //   if (!subCategoryIsSuccess) getSubCategory();
-                                // }}
                                 onChange={(_, value) => {
-                                  // console.log("Value ", value);
-
                                   onChange(value);
                                 }}
                                 getOptionLabel={(option) => option?.sub_Category_Description || ""}
@@ -658,6 +623,64 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 fullWidth
                                 disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 disablePortal
+                                disableClearable
+                                componentsProps={{
+                                  popper: {
+                                    sx: {
+                                      "& .MuiAutocomplete-listbox": {
+                                        fontSize: "13px",
+                                      },
+                                    },
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+
+                    <Stack gap={1}>
+                      <Stack gap={0.5} sx={{ width: "100%" }}>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                          <Typography
+                            sx={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Concern Category:
+                          </Typography>
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                        </Stack>
+
+                        <Controller
+                          control={control}
+                          name="CategoryConcern"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <Autocomplete
+                                ref={ref}
+                                size="small"
+                                value={value}
+                                options={concernCategoryData?.value?.category || []}
+                                loading={concernCategoryIsLoading}
+                                renderInput={(params) => <TextField {...params} placeholder="Concern Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                onOpen={() => {
+                                  if (!concernCategoryIsSuccess)
+                                    getConcernCategory({
+                                      Status: true,
+                                    });
+                                }}
+                                onChange={(_, value) => {
+                                  onChange(value);
+                                }}
+                                getOptionLabel={(option) => option.categoryConcern || ""}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                sx={{
+                                  flex: 2,
+                                }}
+                                fullWidth
+                                // disablePortal
                                 disableClearable
                                 componentsProps={{
                                   popper: {

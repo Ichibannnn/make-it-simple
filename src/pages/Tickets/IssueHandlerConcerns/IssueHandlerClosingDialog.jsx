@@ -85,6 +85,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
+    payload.append("CategoryConcernId", formData.CategoryConcern.id);
     payload.append("CategoryConcern", formData.CategoryConcern.categoryConcern);
     payload.append("Resolution", formData.resolution);
     payload.append("Notes", formData.Notes);
