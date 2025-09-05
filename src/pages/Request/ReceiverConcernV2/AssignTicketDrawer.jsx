@@ -20,16 +20,16 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { useSelector } from "react-redux";
-import { useEditRequestorConcernMutation, useTakeCherryPickTicketMutation } from "../../../features/api_request/concerns/concernApi";
+import { useTakeCherryPickTicketMutation } from "../../../features/api_request/concerns/concernApi";
+import Swal from "sweetalert2";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import Swal from "sweetalert2";
 import { toast } from "sonner";
 
 const schema = yup.object().shape({
   ChannelId: yup.object().notRequired(),
   TargetDate: yup.date().notRequired(),
-  IssueHandler: yup.string().notRequired(),
+  IssueHandler: yup.object().nullable(),
 });
 
 const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }) => {
@@ -45,7 +45,6 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
   // const attachments = useSelector((state) => state.attachment.attachments);
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useEditRequestorConcernMutation();
   const [takeTicket, { isLoading: takeTicketIsLoading, isFetching: takeTicketIsFetching }] = useTakeCherryPickTicketMutation();
 
   const {
@@ -61,7 +60,7 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
     defaultValues: {
       ChannelId: null,
       TargetDate: null,
-      IssueHandler: userDetails?.userRoleName?.includes("Approver") ? null : userId,
+      IssueHandler: null,
     },
   });
 
@@ -72,13 +71,12 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
   };
 
   const onSubmitAction = (formData) => {
-    // console.log("FormData: ", formData);
-    // console.log("Selected Ids: ", selectedIds);
+    console.log("FormData: ", formData);
 
     const payload = {
       ticketConcernIdCherryLists: selectedIds?.map((item) => item),
       targetDate: moment(formData?.TargetDate).format("YYYY-MM-DD"),
-      assignTo: formData?.IssueHandler,
+      assignTo: userDetails?.userRoleName?.includes("Approver") ? formData?.IssueHandler?.userId : userId,
     };
 
     console.log("Payload: ", payload);
@@ -162,6 +160,8 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
       Status: true,
     });
   }, [userDetails]);
+
+  console.log("errors: ", errors);
 
   return (
     <>
@@ -271,7 +271,7 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
                             size="small"
                             value={value}
                             options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.channelId)?.channelUsers || []}
-                            // loading={issueHandlerIsLoading}
+                            loading={channelIsLoading}
                             renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                             // onOpen={() => {
                             //   if (!issueHandlerIsSuccess) getIssueHandler();
@@ -352,15 +352,15 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
             </DialogContent>
 
             <DialogActions>
-              <LoadingButton variant="outlined" onClick={onCloseAction} size="small">
+              <LoadingButton size="small" variant="outlined" loading={takeTicketIsLoading || takeTicketIsFetching} onClick={onCloseAction}>
                 Cancel
               </LoadingButton>
               <LoadingButton
                 size="small"
                 type="submit"
                 variant="contained"
-                loading={isCreateEditReceiverConcernLoading || isCreateEditReceiverConcernFetching}
-                disabled={!watch("ChannelId") || !watch("TargetDate") || selectedIds?.length === 0}
+                loading={takeTicketIsLoading || takeTicketIsFetching}
+                disabled={!watch("ChannelId") || !watch("TargetDate") || (userDetails?.userRoleName?.includes("Approver") && !watch("IssueHandler")) || selectedIds?.length === 0}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

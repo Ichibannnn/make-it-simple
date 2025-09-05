@@ -146,7 +146,7 @@ const ConcernTickets = () => {
         title: "custom-title",
         htmlContainer: "custom-text",
         icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
+        confirmButton: "mui-loading-btn",
         cancelButton: "custom-cancel-btn",
       },
     }).then((result) => {
@@ -178,8 +178,6 @@ const ConcernTickets = () => {
       requestConcernId: data?.requestConcernId,
     };
 
-    // console.log("Payload: ", payload);
-
     Swal.fire({
       title: "Confirmation",
       text: "Cancel this request?",
@@ -193,6 +191,7 @@ const ConcernTickets = () => {
       cancelButtonColor: "#1C2536",
       heightAuto: false,
       width: "30em",
+      allowOutsideClick: false, // prevent closing while loading
       customClass: {
         container: "custom-container",
         title: "custom-title",
@@ -201,27 +200,86 @@ const ConcernTickets = () => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
+      preConfirm: async () => {
+        try {
+          Swal.getConfirmButton().innerHTML = `
+        <div class="mui-btn-content">
+          <span class="mui-spinner"></span>
+          <span class="mui-label">Processing...</span>
+        </div>
+      `;
+          Swal.getConfirmButton().disabled = true;
+          await cancelConcern(payload).unwrap();
+
+          dispatch(notificationApi.util.resetApiState());
+          toast.success("Success!", {
+            description: "Cancelled request successfully!",
+            duration: 1500,
+          });
+
+          return true; // resolves success
+        } catch (err) {
+          console.log("Error", err);
+          Swal.hideLoading();
+          Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+          return false; // keeps modal open
+        }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        cancelConcern(payload)
-          .unwrap()
-          .then(() => {
-            dispatch(notificationApi.util.resetApiState());
-            toast.success("Success!", {
-              description: "Cancelled request successfully!",
-              duration: 1500,
-            });
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
+        Swal.close(); // close once API success
       }
     });
   };
+
+  // const onCancelAction = (data) => {
+  //   const payload = {
+  //     requestConcernId: data?.requestConcernId,
+  //   };
+
+  //   Swal.fire({
+  //     title: "Confirmation",
+  //     text: "Cancel this request?",
+  //     icon: "info",
+  //     color: "white",
+  //     showCancelButton: true,
+  //     background: "#111927",
+  //     confirmButtonColor: "#9e77ed",
+  //     confirmButtonText: "Yes",
+  //     cancelButtonText: "No",
+  //     cancelButtonColor: "#1C2536",
+  //     heightAuto: false,
+  //     width: "30em",
+  //     allowOutsideClick: false,
+  //     customClass: {
+  //       container: "custom-container",
+  //       title: "custom-title",
+  //       htmlContainer: "custom-text",
+  //       icon: "custom-icon",
+  //       confirmButton: "custom-confirm-btn",
+  //       cancelButton: "custom-cancel-btn",
+  //     },
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       cancelConcern(payload)
+  //         .unwrap()
+  //         .then(() => {
+  //           dispatch(notificationApi.util.resetApiState());
+  //           toast.success("Success!", {
+  //             description: "Cancelled request successfully!",
+  //             duration: 1500,
+  //           });
+  //         })
+  //         .catch((err) => {
+  //           console.log("Error", err);
+  //           toast.error("Error!", {
+  //             description: err.data.error.message,
+  //             duration: 1500,
+  //           });
+  //         });
+  //     }
+  //   });
+  // };
 
   const onReturnAction = (data) => {
     // console.log("Return: ", data);

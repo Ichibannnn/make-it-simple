@@ -142,6 +142,42 @@ body {
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 
+.mui-loading-btn {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+  height: 36px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.mui-btn-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mui-spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.mui-label {
+  font-size: 14px;
+}
+
 .custom-cancel-btn {
   font-size: 13px !important;
   font-family: "Plus Jakarta Sans", sans-serif;

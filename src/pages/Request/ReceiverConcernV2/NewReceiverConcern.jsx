@@ -169,6 +169,80 @@ const NewReceiverConcern = () => {
                 lineHeight: "1.4375rem",
               }}
             />
+
+            <Stack>
+              {/* <Controller
+                control={control}
+                name="DepartmentId"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <Autocomplete
+                      ref={ref}
+                      size="small"
+                      value={value}
+                      options={departmentData?.value?.department?.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
+                      loading={departmentIsLoading}
+                      renderInput={(params) => <TextField {...params} placeholder="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      onChange={(_, value) => onChange(value)}
+                      getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      sx={{
+                        flex: 2,
+                      }}
+                      fullWidth
+                      disabled
+                      disablePortal
+                      disableClearable
+                      componentsProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiAutocomplete-listbox": {
+                              fontSize: "13px",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  );
+                }}
+              />
+
+              <Controller
+                control={control}
+                name="LocationId"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <Autocomplete
+                      ref={ref}
+                      size="small"
+                      value={value}
+                      options={locationData?.value?.location?.filter((item) => item?.subUnits?.some((subUnitItem) => subUnitItem?.subUnitId === watch("SubUnitId")?.id)) || []}
+                      loading={locationIsLoading}
+                      renderInput={(params) => <TextField {...params} placeholder="Location" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      onChange={(_, value) => onChange(value)}
+                      getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                      isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
+                      sx={{
+                        flex: 2,
+                      }}
+                      fullWidth
+                      disabled
+                      disablePortal
+                      disableClearable
+                      componentsProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiAutocomplete-listbox": {
+                              fontSize: "13px",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  );
+                }}
+              /> */}
+            </Stack>
           </Stack>
 
           {isScreenSmall ? (
