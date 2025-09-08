@@ -191,7 +191,7 @@ const ConcernTickets = () => {
       cancelButtonColor: "#1C2536",
       heightAuto: false,
       width: "30em",
-      allowOutsideClick: false, // prevent closing while loading
+      allowOutsideClick: false,
       customClass: {
         container: "custom-container",
         title: "custom-title",

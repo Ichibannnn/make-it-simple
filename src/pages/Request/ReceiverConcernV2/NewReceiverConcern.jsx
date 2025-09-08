@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   Card,
   CardContent,
@@ -14,6 +15,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -31,15 +33,45 @@ import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
-import { useGetReceiverConcernsQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
+import {
+  useGetReceiverConcernsQuery,
+  useLazyGetFilteredDepartmentQuery,
+  useLazyGetFilteredLocationQuery,
+} from "../../../features/api_request/concerns_receiver/concernReceiverApi";
 
 import ViewConcernDetails from "./ViewConcernDetails";
 import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
 import AssignTicketDrawer from "./AssignTicketDrawer";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 
 const NewReceiverConcern = () => {
+  const schema = yup.object().shape({
+    DepartmentId: yup.object().notRequired(),
+    LocationId: yup.object().notRequired(),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange",
+    defaultValues: {
+      DepartmentId: null,
+      LocationId: null,
+    },
+  });
+
   const [approveStatus, setApproveStatus] = useState("false");
   const [concernDetails, setConcernDetails] = useState(null);
+  const userId = useSelector((state) => state?.user?.id);
 
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -58,7 +90,12 @@ const NewReceiverConcern = () => {
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
+    DepartmentId: watch("DepartmentId")?.id,
+    LocationId: watch("LocationId")?.id,
   });
+
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetFilteredDepartmentQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetFilteredLocationQuery();
 
   const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
   const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
@@ -96,6 +133,9 @@ const NewReceiverConcern = () => {
   };
 
   // console.log("SelectedData:", selectedIds);
+  // console.log("DepartmentData:", departmentData);
+  // console.log("UserId:", userId);
+  console.log("WatchData:", watch("DepartmentId")?.id);
 
   const takeTicketHandler = () => {
     takeTicketOnToggle();
@@ -163,45 +203,47 @@ const NewReceiverConcern = () => {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               sx={{
-                borderRadius: "15px",
+                // borderRadius: "15px",
                 fontSize: "small",
                 fontWeight: 400,
                 lineHeight: "1.4375rem",
               }}
             />
 
-            <Stack>
-              {/* <Controller
+            <Stack gap={1} sx={{ flexDirection: "row", width: "100%" }}>
+              <Controller
                 control={control}
                 name="DepartmentId"
                 render={({ field: { ref, value, onChange } }) => {
                   return (
                     <Autocomplete
                       ref={ref}
-                      size="small"
                       value={value}
-                      options={departmentData?.value?.department?.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
+                      options={departmentData?.value?.onecharging || []}
                       loading={departmentIsLoading}
-                      renderInput={(params) => <TextField {...params} placeholder="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      renderInput={(params) => <TextField {...params} label="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      onOpen={() => {
+                        if (!departmentIsSuccess)
+                          getDepartment({
+                            UserId: userId,
+                          });
+                      }}
                       onChange={(_, value) => onChange(value)}
-                      getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                      getOptionLabel={(option) => `${option.departmentCode} - ${option.departmentName}`}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                       sx={{
-                        flex: 2,
+                        flex: 1,
                       }}
                       fullWidth
-                      disabled
-                      disablePortal
-                      disableClearable
-                      componentsProps={{
-                        popper: {
-                          sx: {
-                            "& .MuiAutocomplete-listbox": {
-                              fontSize: "13px",
-                            },
-                          },
-                        },
-                      }}
+                      // componentsProps={{
+                      //   popper: {
+                      //     sx: {
+                      //       "& .MuiAutocomplete-listbox": {
+                      //         fontSize: "13px",
+                      //       },
+                      //     },
+                      //   },
+                      // }}
                     />
                   );
                 }}
@@ -214,34 +256,36 @@ const NewReceiverConcern = () => {
                   return (
                     <Autocomplete
                       ref={ref}
-                      size="small"
                       value={value}
-                      options={locationData?.value?.location?.filter((item) => item?.subUnits?.some((subUnitItem) => subUnitItem?.subUnitId === watch("SubUnitId")?.id)) || []}
+                      options={locationData?.value?.onecharging || []}
                       loading={locationIsLoading}
-                      renderInput={(params) => <TextField {...params} placeholder="Location" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      renderInput={(params) => <TextField {...params} label="Location" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      onOpen={() => {
+                        if (!locationIsSuccess)
+                          getLocation({
+                            UserId: userId,
+                          });
+                      }}
                       onChange={(_, value) => onChange(value)}
-                      getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
-                      isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
+                      getOptionLabel={(option) => `${option.locationCode} - ${option.locationName}`}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
                       sx={{
-                        flex: 2,
+                        flex: 1,
                       }}
                       fullWidth
-                      disabled
-                      disablePortal
-                      disableClearable
-                      componentsProps={{
-                        popper: {
-                          sx: {
-                            "& .MuiAutocomplete-listbox": {
-                              fontSize: "13px",
-                            },
-                          },
-                        },
-                      }}
+                      // componentsProps={{
+                      //   popper: {
+                      //     sx: {
+                      //       "& .MuiAutocomplete-listbox": {
+                      //         fontSize: "13px",
+                      //       },
+                      //     },
+                      //   },
+                      // }}
                     />
                   );
                 }}
-              /> */}
+              />
             </Stack>
           </Stack>
 

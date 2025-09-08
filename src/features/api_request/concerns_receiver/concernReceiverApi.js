@@ -43,7 +43,32 @@ export const concernReceiverApi = api.enhanceEndpoints({ addTagTypes: tags }).in
       }),
       providesTags: tags,
     }),
+
+    getFilteredDepartment: builder.query({
+      query: (params) => ({
+        url: `GetOneCharging/cherrypick_department?UserType=Receiver`,
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
+    getFilteredLocation: builder.query({
+      query: (params) => ({
+        url: `GetOneCharging/cherrypick_location?UserType=Receiver`,
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
   }),
 });
 
-export const { useGetReceiverConcernsQuery, useCreateEditReceiverConcernMutation, useLazyGetReceiverAttachmentQuery, useApproveReceiverConcernMutation } = concernReceiverApi;
+export const {
+  useGetReceiverConcernsQuery,
+  useCreateEditReceiverConcernMutation,
+  useLazyGetReceiverAttachmentQuery,
+  useApproveReceiverConcernMutation,
+  useLazyGetFilteredDepartmentQuery,
+  useLazyGetFilteredLocationQuery,
+} = concernReceiverApi;
