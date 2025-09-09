@@ -101,6 +101,7 @@ const CategoryConcern = () => {
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
+        allowOutsideClick: false,
         customClass: {
           container: "custom-container",
           title: "custom-title",
@@ -109,23 +110,40 @@ const CategoryConcern = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveCategory(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Category archived successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
-          archiveCategory(data.id)
-            .unwrap()
-            .then(() => {
-              console.log("Data: ", data);
-              toast.success("Success!", {
-                description: "Category archived successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     } else {
@@ -139,6 +157,7 @@ const CategoryConcern = () => {
         confirmButtonColor: "#9e77ed",
         cancelButtonColor: "#1C2536",
         heightAuto: false,
+        allowOutsideClick: false,
         width: "30em",
         customClass: {
           container: "custom-container",
@@ -148,20 +167,40 @@ const CategoryConcern = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Archiving...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveCategory(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Category restored successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveCategory(data.id)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Category restored successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     }

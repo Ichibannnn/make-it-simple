@@ -50,7 +50,7 @@ const Roles = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRolesQuery(
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetRolesQuery(
     {
       Status: status,
       Search: search,
@@ -103,6 +103,7 @@ const Roles = () => {
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
+        allwoOutsideClick: false,
         customClass: {
           container: "custom-container",
           title: "custom-title",
@@ -111,23 +112,41 @@ const Roles = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Archiving...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveRole(data)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Role archived successfully!",
+                });
+              })
+              .catch((error) => {
+                console.log("Error: ", error);
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
-          archiveRole(data)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Role archived successfully!",
-              });
-            })
-            .catch((error) => {
-              console.log("Error: ", error);
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     } else {
@@ -150,23 +169,41 @@ const Roles = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveRole(data)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Role restored successfully!",
+                });
+              })
+              .catch((error) => {
+                console.log("Error: ", error);
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
-          archiveRole(data)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Role restored successfully!",
-              });
-            })
-            .catch((error) => {
-              console.log("Error: ", error);
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     }

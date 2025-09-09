@@ -104,23 +104,39 @@ const ServiceProvider = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Archiving...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveServiceProvider(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Service provider archived successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
-          archiveServiceProvider(data.id)
-            .unwrap()
-            .then(() => {
-              console.log("Data: ", data);
-              toast.success("Success!", {
-                description: "Service provider archived successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     } else {
@@ -135,6 +151,7 @@ const ServiceProvider = () => {
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
+        allowOutsideClick: false,
         customClass: {
           container: "custom-container",
           title: "custom-title",
@@ -143,20 +160,40 @@ const ServiceProvider = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+              <div class="mui-btn-content">
+                <span class="mui-spinner"></span>
+                <span class="mui-label">Restoring...</span>
+              </div>
+              `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveServiceProvider(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Service provider restored successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveServiceProvider(data.id)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Service provider restored successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     }
@@ -276,47 +313,50 @@ const ServiceProvider = () => {
         {isSmallScreen ? (
           // Card-Based Layout for Small Screens
           <Stack spacing={2}>
-            {data?.value?.serviceProvider?.map((item, index) => (
-              <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
-                <CardContent>
-                  <Stack spacing={1}>
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography variant="body2" color="text.secondary">
-                        LINE NO. {index + 1}
-                      </Typography>
+            {isSuccess &&
+              !isLoading &&
+              !isFetching &&
+              data?.value?.serviceProvider?.map((item, index) => (
+                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                  <CardContent>
+                    <Stack spacing={1}>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography variant="body2" color="text.secondary">
+                          LINE NO. {index + 1}
+                        </Typography>
 
-                      <Chip
-                        label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                        size="small"
-                        sx={{
-                          fontSize: "10px",
-                          backgroundColor: item.isActive ? "#112C32" : "#2D2823",
-                          borderRadius: "none",
-                          color: item.isActive ? "#10B981" : "#D27D0E",
-                        }}
-                      />
-                    </Stack>
+                        <Chip
+                          label={item.isActive ? "ACTIVE" : "INACTIVE"}
+                          size="small"
+                          sx={{
+                            fontSize: "10px",
+                            backgroundColor: item.isActive ? "#112C32" : "#2D2823",
+                            borderRadius: "none",
+                            color: item.isActive ? "#10B981" : "#D27D0E",
+                          }}
+                        />
+                      </Stack>
 
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SERVICE PROVIDER:</Typography>
-                      <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                        {item.serviceProviderName ? item.serviceProviderName : "-"}
-                      </Typography>
-                    </Stack>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SERVICE PROVIDER:</Typography>
+                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                          {item.serviceProviderName ? item.serviceProviderName : "-"}
+                        </Typography>
+                      </Stack>
 
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNELS:</Typography>
-                      <ListOfChannels serviceProvider={item.serviceProvider} />
-                    </Stack>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNELS:</Typography>
+                        <ListOfChannels serviceProvider={item.serviceProvider} />
+                      </Stack>
 
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
-                      <ServiceProviderActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                        <ServiceProviderActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
 
             {isError && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
@@ -336,7 +376,7 @@ const ServiceProvider = () => {
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.category?.length && (
+            {isSuccess && !data?.value?.category?.length && !isLoading && !isFetching && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -422,72 +462,75 @@ const ServiceProvider = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data?.value?.serviceProvider?.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        {item.id}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.serviceProviderName ? item.serviceProviderName : "-"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        <ListOfChannels serviceChannel={item.serviceChannel} />
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        <Chip
-                          variant="filled"
-                          size="30px"
+                  {isSuccess &&
+                    !isLoading &&
+                    !isFetching &&
+                    data?.value?.serviceProvider?.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell
                           sx={{
-                            fontSize: "13px",
-                            backgroundColor: item.isActive ? "#112C32" : "#2D2823",
-                            color: item.isActive ? "#10B981" : "#D27D0E",
-                            fontWeight: 800,
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
                           }}
-                          label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                        />
-                      </TableCell>
+                          align="center"
+                        >
+                          {item.id}
+                        </TableCell>
 
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
-                        <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} onArchive={onArchiveAction} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.serviceProviderName ? item.serviceProviderName : "-"}
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <ListOfChannels serviceChannel={item.serviceChannel} />
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            sx={{
+                              fontSize: "13px",
+                              backgroundColor: item.isActive ? "#112C32" : "#2D2823",
+                              color: item.isActive ? "#10B981" : "#D27D0E",
+                              fontWeight: 800,
+                            }}
+                            label={item.isActive ? "ACTIVE" : "INACTIVE"}
+                          />
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                          align="center"
+                        >
+                          <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} onArchive={onArchiveAction} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
                   {isError && (
                     <TableRow>

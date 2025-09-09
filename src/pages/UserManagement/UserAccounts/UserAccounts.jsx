@@ -97,6 +97,7 @@ const UserAccounts = () => {
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
+        allowOutsideClick: false,
         customClass: {
           container: "custom-container",
           title: "custom-title",
@@ -105,31 +106,49 @@ const UserAccounts = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+                    <div class="mui-btn-content">
+                      <span class="mui-spinner"></span>
+                      <span class="mui-label">Archiving...</span>
+                    </div>
+                  `;
+            Swal.getConfirmButton().disabled = true;
+
+            if (userId === data?.id) {
+              toast.error("Archive Error!", {
+                description: "The logged-in user cannot be archived.",
+                duration: 1500,
+              });
+            } else {
+              await archiveUser(data)
+                .unwrap()
+                .then(() => {
+                  toast.success("Success!", {
+                    description: "Archive successfully.",
+                    duration: 1500,
+                  });
+                })
+                .catch((error) => {
+                  toast.error("Error!", {
+                    description: error.data.error.message,
+                    duration: 1500,
+                  });
+                });
+            }
+
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data?.id);
-
-          if (userId === data?.id) {
-            toast.error("Archive Error!", {
-              description: "The logged-in user cannot be archived.",
-              duration: 1500,
-            });
-          } else {
-            archiveUser(data)
-              .unwrap()
-              .then(() => {
-                toast.success("Success!", {
-                  description: "Archive successfully.",
-                  duration: 1500,
-                });
-              })
-              .catch((error) => {
-                toast.error("Error!", {
-                  description: error.data.error.message,
-                  duration: 1500,
-                });
-              });
-          }
+          Swal.close();
         }
       });
     } else {
@@ -144,6 +163,7 @@ const UserAccounts = () => {
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
+        allowOutsideClick: false,
         customClass: {
           container: "custom-container",
           title: "custom-title",
@@ -152,22 +172,49 @@ const UserAccounts = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+                    <div class="mui-btn-content">
+                      <span class="mui-spinner"></span>
+                      <span class="mui-label">Restoring...</span>
+                    </div>
+                  `;
+            Swal.getConfirmButton().disabled = true;
+
+            if (userId === data?.id) {
+              toast.error("Archive Error!", {
+                description: "The logged-in user cannot be archived.",
+                duration: 1500,
+              });
+            } else {
+              await archiveUser(data)
+                .unwrap()
+                .then(() => {
+                  toast.success("Success!", {
+                    description: "Restore successfully.",
+                    duration: 1500,
+                  });
+                })
+                .catch((error) => {
+                  toast.error("Error!", {
+                    description: error.data.error.message,
+                    duration: 1500,
+                  });
+                });
+            }
+
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveUser(data)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Restore successfully.",
-                duration: 1500,
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-                duration: 1500,
-              });
-            });
+          Swal.close();
         }
       });
     }
@@ -187,6 +234,7 @@ const UserAccounts = () => {
       cancelButtonColor: "#1C2536",
       heightAuto: false,
       width: "30em",
+      allowOutsideClick: false,
       customClass: {
         container: "custom-container",
         title: "custom-title",
@@ -195,22 +243,41 @@ const UserAccounts = () => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
+      preConfirm: async () => {
+        try {
+          Swal.getConfirmButton().innerHTML = `
+              <div class="mui-btn-content">
+                <span class="mui-spinner"></span>
+                <span class="mui-label">Resetting...</span>
+              </div>
+            `;
+          Swal.getConfirmButton().disabled = true;
+          resetUser(data)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "Reset password successfully.",
+                duration: 1500,
+              });
+            })
+            .catch((error) => {
+              toast.error("Error!", {
+                description: error.data.error.message,
+                duration: 1500,
+              });
+            });
+
+          return true; // resolves success
+        } catch (err) {
+          console.log("Error", err);
+          Swal.hideLoading();
+          Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+          return false; // keeps modal open
+        }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        resetUser(data)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "Reset password successfully.",
-              duration: 1500,
-            });
-          })
-          .catch((error) => {
-            toast.error("Error!", {
-              description: error.data.error.message,
-              duration: 1500,
-            });
-          });
+        Swal.close(); // close once API success
       }
     });
   };

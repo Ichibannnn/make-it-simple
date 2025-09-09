@@ -92,6 +92,7 @@ const Category = () => {
         confirmButtonColor: "#9e77ed",
         cancelButtonColor: "#1C2536",
         heightAuto: false,
+        allowOutsideClick: false,
         width: "30em",
         customClass: {
           container: "custom-container",
@@ -101,23 +102,40 @@ const Category = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+             <span class="mui-spinner"></span>
+             <span class="mui-label">Archiving...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveSubCategory(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Sub Category archived successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
-          archiveSubCategory(data.id)
-            .unwrap()
-            .then(() => {
-              console.log("Data: ", data);
-              toast.success("Success!", {
-                description: "Sub Category archived successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     } else {
@@ -131,6 +149,7 @@ const Category = () => {
         confirmButtonColor: "#9e77ed",
         cancelButtonColor: "#1C2536",
         heightAuto: false,
+        allowOutsideClick: false,
         width: "30em",
         customClass: {
           container: "custom-container",
@@ -140,23 +159,40 @@ const Category = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveSubCategory(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Sub Category restored successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Data: ", data);
-
-          archiveSubCategory(data.id)
-            .unwrap()
-            .then(() => {
-              console.log("Data: ", data);
-              toast.success("Success!", {
-                description: "Sub Category restored successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     }

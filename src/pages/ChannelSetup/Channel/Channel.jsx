@@ -86,7 +86,7 @@ const Channel = () => {
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",
-        text: "This will move the receiver to the archived tab.",
+        text: "This will move the channel to the archived tab.",
         icon: "warning",
         color: "white",
         showCancelButton: true,
@@ -103,27 +103,47 @@ const Channel = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveChannel(data.id)
+              .unwrap()
+              .then(() => {
+                console.log("Data: ", data);
+                toast.success("Success!", {
+                  description: "Channel archived successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          archiveChannel(data.id)
-            .unwrap()
-            .then(() => {
-              console.log("Data: ", data);
-              toast.success("Success!", {
-                description: "Channel archived successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     } else {
       Swal.fire({
         title: "Are you sure?",
-        text: "This will move the receiver to the active tab.",
+        text: "This will move the channel to the active tab.",
         icon: "warning",
         color: "white",
         showCancelButton: true,
@@ -132,6 +152,7 @@ const Channel = () => {
         cancelButtonColor: "#1C2536",
         heightAuto: false,
         width: "30em",
+        allowOutsideClick: false,
         customClass: {
           container: "custom-container",
           title: "custom-title",
@@ -140,23 +161,40 @@ const Channel = () => {
           confirmButton: "custom-confirm-btn",
           cancelButton: "custom-cancel-btn",
         },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveChannel(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Channel restored successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          // console.log("Data: ", data);
-
-          archiveChannel(data.id)
-            .unwrap()
-            .then(() => {
-              console.log("Data: ", data);
-              toast.success("Success!", {
-                description: "Channel restored successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
+          Swal.close();
         }
       });
     }
