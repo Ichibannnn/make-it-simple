@@ -108,7 +108,7 @@ const Channel = () => {
             Swal.getConfirmButton().innerHTML = `
             <div class="mui-btn-content">
               <span class="mui-spinner"></span>
-              <span class="mui-label">Restoring...</span>
+              <span class="mui-label">Archiving...</span>
             </div>
             `;
             Swal.getConfirmButton().disabled = true;

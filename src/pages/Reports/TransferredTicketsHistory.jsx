@@ -101,8 +101,8 @@ const TransferredTicketsHistory = ({
       </Stack>
 
       <TableContainer>
-        <Table stickyHeader sx={{ borderBottom: "none" }}>
-          <TableHead>
+        <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
+          <TableHead sx={{ whiteSpace: "nowrap" }}>
             <TableRow>
               <TableCell
                 sx={{

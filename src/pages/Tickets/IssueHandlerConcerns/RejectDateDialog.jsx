@@ -234,12 +234,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
     payload.append("UserId", data?.requestor_By);
     payload.append("Contact_Number", data?.contact_Number === null ? "" : data?.contact_Number);
 
-    payload.append("CompanyId", data?.companyId);
-    payload.append("BusinessUnitId", data?.businessUnitId);
-    payload.append("DepartmentId", data?.departmentId);
-    payload.append("UnitId", data?.unitId);
-    payload.append("SubUnitId", data?.subUnitId);
-    payload.append("Location_Code", data?.locationId);
     payload.append("ServiceProviderId", data?.serviceProviderId);
     payload.append("DateNeeded", data.date_Needed ? moment(data.date_Needed).format("YYYY-MM-DD") : "");
     payload.append("Notes", data?.notes === null ? "" : data?.notes);

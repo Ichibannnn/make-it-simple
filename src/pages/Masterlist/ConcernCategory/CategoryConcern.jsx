@@ -87,8 +87,6 @@ const CategoryConcern = () => {
   };
 
   const onArchiveAction = (data) => {
-    console.log("Data to be archived: ", data);
-
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",
@@ -115,7 +113,7 @@ const CategoryConcern = () => {
             Swal.getConfirmButton().innerHTML = `
             <div class="mui-btn-content">
               <span class="mui-spinner"></span>
-              <span class="mui-label">Restoring...</span>
+              <span class="mui-label">Archiving...</span>
             </div>
             `;
             Swal.getConfirmButton().disabled = true;
@@ -172,7 +170,7 @@ const CategoryConcern = () => {
             Swal.getConfirmButton().innerHTML = `
             <div class="mui-btn-content">
               <span class="mui-spinner"></span>
-              <span class="mui-label">Archiving...</span>
+              <span class="mui-label">Restoring...</span>
             </div>
             `;
             Swal.getConfirmButton().disabled = true;

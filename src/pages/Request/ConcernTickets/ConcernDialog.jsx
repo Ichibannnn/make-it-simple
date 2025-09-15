@@ -47,7 +47,7 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
-import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { useLazyGetServiceProviderQuery, useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import Swal from "sweetalert2";
 import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
@@ -112,7 +112,7 @@ const ConcernDialog = ({ open, onClose }) => {
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
 
-  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderWithParamsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
@@ -285,7 +285,7 @@ const ConcernDialog = ({ open, onClose }) => {
             if (result.isConfirmed) {
               console.log("result: ", result);
 
-              const ticketMessage = `Thank you for submitting your concern. A service ticket #${res?.value} has been created.`;
+              const ticketMessage = `Fresh Morning, [Requestor Name], [Department Name]. Your request has been successfully created under Service Ticket #${res?.value} and forwarded to our Support Team for review. A member of the Support Team will contact you shortly to provide further assistance.`;
 
               navigator.clipboard.writeText(ticketMessage).then(() => {
                 Swal.fire({
@@ -483,8 +483,6 @@ const ConcernDialog = ({ open, onClose }) => {
       setValue("ChannelId", null);
     }
   }, [watch("IssueHandler")]);
-
-  // console.log("Watch: ", watch("Concern"));
 
   return (
     <>
@@ -1216,7 +1214,11 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Channel */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Channel</Typography>
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                        <Typography sx={{ fontSize: "13px" }}>Channel</Typography>
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                      </Stack>
+
                       <Controller
                         control={control}
                         name="ChannelId"
@@ -1259,7 +1261,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack direction="row" display="none" sx={{ width: "100%", mt: 1 }}>
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
@@ -1729,6 +1731,7 @@ const ConcernDialog = ({ open, onClose }) => {
               loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
               disabled={
                 !watch("ServiceProvider") ||
+                !watch("ChannelId") ||
                 watch("Concern")?.length === 0 ||
                 !watch("Request_Type") ||
                 !watch("Severity") ||

@@ -492,7 +492,7 @@ const ConcernTickets = () => {
                 <Tab
                   value="Done"
                   className="tabs-styling"
-                  label="Done"
+                  label="Helpdesk Closed"
                   icon={
                     <Badge
                       badgeContent={notificationBadge?.value?.doneNotif}
@@ -701,11 +701,12 @@ const ConcernTickets = () => {
               <>
                 {/* Table */}
                 <TableContainer>
-                  <Table stickyHeader sx={{ borderBottom: "none" }}>
+                  <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
                         <TableCell
                           sx={{
+                            width: 100,
                             background: "#1C2536",
                             color: "#D65DB1",
                             fontWeight: 700,

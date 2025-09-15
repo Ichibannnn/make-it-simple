@@ -32,6 +32,8 @@ const ChannelDialog = ({ data, open, onClose }) => {
   const [members, setMembers] = useState([]);
   const [disabled, setDisabled] = useState(false);
 
+  const [requestCheckbox, setRequestCheckbox] = useState(false);
+
   const [createChannelValidation, { error: errorValidation, isError: errorValidationIsError }] = useCreateChannelValidationMutation();
   const [createChannel, { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching }] = useCreateChannelMutation();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
@@ -74,6 +76,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
         channelUserByIds: formData?.userId?.map((item) => ({
           userId: item.userId,
         })),
+        request: requestCheckbox,
       };
       createChannel(addPayload)
         .unwrap()
@@ -99,6 +102,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
         channelUserByIds: formData?.userId?.map((item) => ({
           userId: item.userId,
         })),
+        request: requestCheckbox,
       };
       createChannel(editPayload)
         .unwrap()
@@ -127,6 +131,12 @@ const ChannelDialog = ({ data, open, onClose }) => {
     channelFormReset();
   };
 
+  const requestCheckboxHandler = (event) => {
+    setRequestCheckbox(event.target.checked);
+  };
+
+  console.log("IsRequest: ", requestCheckbox);
+
   useEffect(() => {
     if (data) {
       channelFormSetValue("channel_Name", data.channel_Name);
@@ -145,6 +155,14 @@ const ChannelDialog = ({ data, open, onClose }) => {
       // const editDepartmentList = Object.values(departmentMap);
       // console.log("filterDepartment: ", editDepartmentList);
 
+      if (data?.request === true) {
+        setRequestCheckbox(true);
+      } else if (data?.request === false) {
+        setRequestCheckbox(false);
+      } else {
+        setRequestCheckbox(false);
+      }
+
       const editMemberList = data?.channelUsers?.map((item) => ({
         channelUserId: item.channelUserId,
         userId: item.userId,
@@ -156,8 +174,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
       channelFormSetValue("userId", editMemberList);
     }
   }, [data]);
-
-  console.log("Members data: ", memberData);
 
   return (
     <>
@@ -305,9 +321,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
                             </li>
                           );
                         }}
-                        onOpen={() => {
-                          if (!memberIsSuccess) getMembers();
-                        }}
+                        // onOpen={() => {
+                        //   if (!memberIsSuccess) getMembers();
+                        // }}
                         onChange={(_, value) => {
                           console.log("value: ", value);
                           onChange(value);
@@ -338,6 +354,22 @@ const ChannelDialog = ({ data, open, onClose }) => {
                     );
                   }}
                 />
+              </Stack>
+
+              <Stack direction="row" gap={0.5} mt={2} sx={{ width: "100%", alignItems: "right" }}>
+                <Checkbox
+                  checked={requestCheckbox || data?.is_Request === true}
+                  onChange={requestCheckboxHandler}
+                  size="small"
+                  // disabled={data ? true : false}
+                  sx={{
+                    padding: 0,
+                  }}
+                />
+
+                <Typography sx={{ fontSize: "15px", fontStyle: "italic", color: requestCheckbox ? theme.palette.text.main : theme.palette.text.secondary }}>
+                  For request concern?
+                </Typography>
               </Stack>
             </Stack>
           </Stack>

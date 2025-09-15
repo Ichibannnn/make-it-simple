@@ -1,4 +1,4 @@
-import { ArrowBackOutlined, CloseOutlined, DoneOutlined, MoreHoriz, ReplyAllOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { ArrowBackOutlined, CloseOutlined, ContentCopyOutlined, DoneOutlined, MoreHoriz, ReplyAllOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 
 import React, { useRef } from "react";
@@ -31,6 +31,17 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
     onCancel(data);
   };
 
+  // const onCopyTicket = async (data) => {
+  //   try {
+  //     await navigator.clipboard.writeText(id);
+  //     toast.success(`Ticket #${id} copied to clipboard`);
+  //   } catch (err) {
+  //     toast.error("Failed to copy Ticket #");
+  //   }
+  // };
+
+  console.log("Data: ", data);
+
   return (
     <>
       <IconButton ref={ref} onClick={onToggle}>
@@ -53,6 +64,15 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
             <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Confirm</Typography>
           </MenuItem>
         )}
+
+        <MenuItem
+        // onClick={() => onCopyTicket(data)}
+        >
+          <ListItemIcon>
+            <ContentCopyOutlined fontSize="small" />
+          </ListItemIcon>
+          Copy Ticket #
+        </MenuItem>
 
         {data?.concern_Status === "For Confirmation" && (
           <MenuItem onClick={() => onReturnAction(data)}>

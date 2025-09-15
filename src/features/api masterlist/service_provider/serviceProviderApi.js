@@ -13,6 +13,15 @@ export const serviceProviderApi = api.enhanceEndpoints({ addTagTypes: tags }).in
       providesTags: tags,
     }),
 
+    getServiceProviderWithParams: builder.query({
+      query: (params) => ({
+        url: "service-provider/page?Request=true",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     createEditServiceProvider: builder.mutation({
       query: (body) => ({
         url: "service-provider/addNewServiceProvider",
@@ -44,6 +53,7 @@ export const serviceProviderApi = api.enhanceEndpoints({ addTagTypes: tags }).in
 export const {
   useGetServiceProviderQuery,
   useLazyGetServiceProviderQuery,
+  useLazyGetServiceProviderWithParamsQuery,
   useCreateEditServiceProviderMutation,
   useServiceProviderValidationMutation,
   useArchiveServiceProviderMutation,

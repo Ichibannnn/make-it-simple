@@ -103,7 +103,7 @@ const OpenTicketsHistory = ({
       <Paper sx={{ width: "100%", overflow: "auto" }}>
         <TableContainer>
           <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
-            <TableHead>
+            <TableHead sx={{ whiteSpace: "nowrap" }}>
               <TableRow>
                 <TableCell
                   sx={{

@@ -106,7 +106,7 @@ const AllTicketsHistory = ({
         <Paper sx={{ width: "100%", overflow: "auto" }}>
           <TableContainer>
             <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
-              <TableHead>
+              <TableHead sx={{ whiteSpace: "nowrap" }}>
                 <TableRow>
                   <TableCell
                     sx={{
@@ -205,6 +205,17 @@ const AllTicketsHistory = ({
                     }}
                   >
                     TARGET DATE
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    FOR CLOSING DATE
                   </TableCell>
 
                   <TableCell
@@ -318,6 +329,7 @@ const AllTicketsHistory = ({
                           color: "#EDF2F7",
                           fontSize: "12px",
                           fontWeight: 500,
+                          backgroundColor: theme.palette.bgForm.black3,
                           "&:hover": {
                             background: "",
                             color: "#EDF2F7",
@@ -447,6 +459,20 @@ const AllTicketsHistory = ({
                         }}
                       >
                         {moment(item.target_Date).format("LL")}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item?.forClosedDate ? moment(item.forClosedDate).format("LL hh:mma") : "--"}
                       </TableCell>
 
                       <TableCell
@@ -622,7 +648,7 @@ const AllTicketsHistory = ({
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={17} align="center">
+                    <TableCell colSpan={18} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -633,7 +659,7 @@ const AllTicketsHistory = ({
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={17} align="center">
+                    <TableCell colSpan={18} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -644,7 +670,7 @@ const AllTicketsHistory = ({
 
                 {isSuccess && !data?.value?.reports.length && !isLoading & !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={17} align="center">
+                    <TableCell colSpan={18} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.

@@ -2073,15 +2073,13 @@ const IssueHandlerConcerns = () => {
 
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
 
-        {rejectDateOpen && (
-          <RejectDateDialog
-            data={rejectDateData}
-            open={rejectDateOpen}
-            onClose={() => {
-              rejectDateOnClose(setRejectDateData(null));
-            }}
-          />
-        )}
+        <RejectDateDialog
+          data={rejectDateData}
+          open={rejectDateOpen}
+          onClose={() => {
+            rejectDateOnClose(setRejectDateData(null));
+          }}
+        />
 
         <ManageTicketDialog
           data={closeTicketData}

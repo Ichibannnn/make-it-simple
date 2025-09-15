@@ -104,7 +104,7 @@ const ServiceLevelAgreement = ({
 
       <TableContainer>
         <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
-          <TableHead>
+          <TableHead sx={{ whiteSpace: "nowrap" }}>
             <TableRow>
               <TableCell
                 sx={{

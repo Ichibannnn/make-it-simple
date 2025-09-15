@@ -110,7 +110,7 @@ const SidebarHeader = () => {
           variant="h6"
           className="logo-title"
         >
-          Make It Simple
+          MIS-Helpdesk
         </Typography>
         <Typography
           sx={{

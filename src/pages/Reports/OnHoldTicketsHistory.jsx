@@ -87,7 +87,7 @@ const OnHoldTicketsHistory = ({
 
       <TableContainer>
         <Table stickyHeader sx={{ borderBottom: "none" }}>
-          <TableHead>
+          <TableHead sx={{ whiteSpace: "nowrap" }}>
             <TableRow>
               <TableCell
                 sx={{
