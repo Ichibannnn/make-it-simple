@@ -333,8 +333,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  console.log("Data: ", data);
-
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
     const selectedSubCategories = watch("SubCategoryId");

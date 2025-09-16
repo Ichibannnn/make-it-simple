@@ -262,8 +262,12 @@ const ConcernDialog = ({ open, onClose }) => {
 
           Swal.fire({
             title: "Success!",
-            html: `Thank you for submitting your concern.<br><br>
-               A service ticket <strong>#${res?.value}</strong> has been created.`,
+            html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
+              <span style="color: gray; font-size: 13px;">
+                Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} 
+                and forwarded to our Support Team for review. A member of the Support Team will contact you 
+                shortly to provide further assistance.
+              </span>`,
             icon: "success",
             color: "white",
             showCancelButton: true,
@@ -272,6 +276,7 @@ const ConcernDialog = ({ open, onClose }) => {
             confirmButtonText: `Copy`,
             cancelButtonText: "Close",
             cancelButtonColor: "#1C2536",
+            allowOutsideClick: false,
             heightAuto: false,
             width: "30em",
             customClass: {
@@ -285,7 +290,7 @@ const ConcernDialog = ({ open, onClose }) => {
             if (result.isConfirmed) {
               console.log("result: ", result);
 
-              const ticketMessage = `Fresh Morning, [Requestor Name], [Department Name]. Your request has been successfully created under Service Ticket #${res?.value} and forwarded to our Support Team for review. A member of the Support Team will contact you shortly to provide further assistance.`;
+              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}. Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} and forwarded to our Support Team for review. A member of the Support Team will contact you shortly to provide further assistance.`;
 
               navigator.clipboard.writeText(ticketMessage).then(() => {
                 Swal.fire({

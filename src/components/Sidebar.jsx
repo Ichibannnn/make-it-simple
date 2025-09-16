@@ -9,6 +9,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
 import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
 import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
+import helpDeskNameLogo from "../assets/images/helpdesk-icon-name.png";
+import helpDeskLogo from "../assets/images/helpdesk_icon.png";
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
@@ -81,48 +83,36 @@ const SidebarHeader = () => {
   return (
     <Stack
       sx={{
-        display: "flex",
-        flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
-        padding: "24px",
+        padding: "24px 24px 10px 24px",
         marginTop: 3,
         gap: "5px",
       }}
     >
-      <img src="/images/dotek-login.png" alt="misLogo" width="56" height="38" className="logo-sidebar" />
-
-      <Stack
-        sx={{
-          display: "flex",
-          justifyContent: "start",
-          flexDirection: "column",
-          flexGrow: 1,
-        }}
-      >
+      <img src={helpDeskLogo} alt="dotek-icon" width="74" height="50" className="logo-sidebar" />
+      <Stack direction="row" gap={0.5} mt={0.5}>
         <Typography
           sx={{
-            margin: "0",
-            fontSize: "1rem",
+            fontSize: ".9rem",
             fontWeight: "700",
             color: "#EDF2F7",
             lineHeight: "1.2",
+            letterSpacing: 1,
           }}
-          variant="h6"
-          className="logo-title"
         >
-          MIS-Helpdesk
+          MIS
         </Typography>
         <Typography
           sx={{
-            margin: "0",
-            fontSize: "12px",
-            fontWeight: "450",
-            color: "#A0AEC0",
+            fontSize: ".9rem",
+            fontWeight: "400",
+            color: "#EDF2F7",
             lineHeight: "1.2",
+            letterSpacing: 1,
           }}
-          variant="h1"
         >
-          Production
+          HELPDESK
         </Typography>
       </Stack>
     </Stack>

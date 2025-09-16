@@ -121,6 +121,11 @@ const theme = createTheme({
             color: "#EDF2F7",
           },
           "& input::-ms-reveal, & input::-ms-clear": { display: "none" },
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: "0 0 0 1000px #0f172a inset", // match dark bg
+            WebkitTextFillColor: "#fff", // force white text
+            caretColor: "#fff",
+          },
         },
       },
     },

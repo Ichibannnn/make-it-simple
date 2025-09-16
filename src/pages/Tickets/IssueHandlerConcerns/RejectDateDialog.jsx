@@ -456,8 +456,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
     }
   }, [subCategoryData]);
 
-  console.log("RejectedData: ", data);
-
   return (
     <>
       <Dialog

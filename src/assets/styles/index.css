@@ -65,7 +65,7 @@ body {
 }
 
 .login-icon {
-  width: 170px;
+  width: 65px;
   object-fit: fill;
   z-index: -1;
   top: 0;
@@ -184,6 +184,11 @@ body {
 }
 
 /* Sweet Alert Toast */
+.ticket-message {
+  color: gray;
+  font-size: "12px";
+}
+
 .toast-container {
   margin-bottom: 0 !important;
 }
@@ -352,6 +357,15 @@ body {
   background: #6e53a5;
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important; /* background */
+  -webkit-text-fill-color: #ffffff !important; /* force white text */
+  caret-color: #ffffff !important; /* cursor color */
+}
+
 /* Scrollbar buttons (up/down arrows) */
 /* ::-webkit-scrollbar-button {
   display: block;
@@ -417,65 +431,3 @@ body {
 :root {
   --swiper-navigation-size: 37px;
 }
-
-/* .swiper {
-  width: 100%;
-  height: 100%;
-}
-
-.swiper-slide {
-  font-size: 18px;
-  background: transparent;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.swiper-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.swiper-pagination {
-  position: relative;
-  text-align: center;
-  transition: 300ms opacity;
-  transform: translate3d(0, 0, 0);
-  z-index: 10;
-}
-
-.swiper-pagination-bullet-active {
-  background: #6e53a5;
-}
-
-.swiper-pagination-bullet {
-  display: inline;
-} */
-
-/* table,
-td,
-th {
-  border: 1px solid;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-} */
-
-/* li {
-  position: relative;
-  font-weight: lighter;
-  color: #a0aec0;
-  margin-top: 10px;
-  border-bottom: #1976d2;
-} */
-
-/* .dropzone-delete {
-  width: 7px;
-  height: 7px;
-  border:
-} */

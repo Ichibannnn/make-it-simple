@@ -3,6 +3,7 @@ import {
   Badge,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   Divider,
@@ -25,12 +26,14 @@ import {
 import {
   AddOutlined,
   CalendarMonthOutlined,
+  Check,
   ChecklistRtlOutlined,
   ClearAllOutlined,
   FiberManualRecord,
   HowToRegOutlined,
   KeyboardDoubleArrowDown,
   KeyboardDoubleArrowUp,
+  LocalOffer,
   PendingActionsOutlined,
   RotateRightOutlined,
   Search,
@@ -63,6 +66,9 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
 import { setSearchValue, setStatus, setAscending, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import ConcernTicketFiltering from "./ConcernTicketFiltering";
 
 const ConcernTickets = () => {
   const status = useSelector((state) => state.root.status);
@@ -76,6 +82,10 @@ const ConcernTickets = () => {
   const [editData, setEditData] = useState(null);
   const [viewHistoryData, setViewHistoryData] = useState(null);
   const [returnData, setReturnData] = useState(null);
+  const [selectedTickets, setSelectedTickets] = useState([]);
+
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
 
   // useSignalRConnection();
   const dispatch = useDispatch();
@@ -91,11 +101,13 @@ const ConcernTickets = () => {
     Concern_Status: status,
     Search: search,
     Ascending: ascending,
+    DateFrom: dateFrom || "",
+    DateTo: dateTo || "",
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
 
-  const [confirmConcern] = useConfirmConcernMutation();
+  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] = useConfirmConcernMutation();
   const [cancelConcern] = useCancelConcernMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -125,7 +137,11 @@ const ConcernTickets = () => {
 
   const onConfirmAction = (data) => {
     const payload = {
-      requestConcernId: data?.requestConcernId,
+      confirmTicketRequests: [
+        {
+          requestConcernId: data?.requestConcernId,
+        },
+      ],
     };
 
     Swal.fire({
@@ -141,6 +157,7 @@ const ConcernTickets = () => {
       cancelButtonColor: "#1C2536",
       heightAuto: false,
       width: "30em",
+      allowOutsideClick: false,
       customClass: {
         container: "custom-container",
         title: "custom-title",
@@ -149,18 +166,89 @@ const ConcernTickets = () => {
         confirmButton: "mui-loading-btn",
         cancelButton: "custom-cancel-btn",
       },
+      preConfirm: async () => {
+        try {
+          Swal.getConfirmButton().innerHTML = `
+        <div class="mui-btn-content">
+          <span class="mui-spinner"></span>
+          <span class="mui-label">Confirming...</span>
+        </div>
+      `;
+          Swal.getConfirmButton().disabled = true;
+          await confirmConcern(payload)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "Confirm concern successfully!",
+                duration: 1500,
+              });
+
+              dispatch(notificationApi.util.resetApiState());
+              dispatch(notificationMessageApi.util.resetApiState());
+            })
+            .catch((err) => {
+              console.log("Error", err);
+              toast.error("Error!", {
+                description: err.data.error.message,
+                duration: 1500,
+              });
+            });
+          return true; // resolves success
+        } catch (err) {
+          console.log("Error", err);
+          Swal.hideLoading();
+          Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+          return false; // keeps modal open
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.close();
+      }
+    });
+  };
+
+  const onSelectedConfirmAction = () => {
+    const payload = {
+      confirmTicketRequests: selectedTickets.map((item) => ({
+        requestConcernId: item,
+      })),
+    };
+
+    Swal.fire({
+      title: "Confirmation",
+      text: "Confirm this ticket?",
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         confirmConcern(payload)
           .unwrap()
           .then(() => {
             toast.success("Success!", {
-              description: "Confirm concern successfully!",
+              description: "Confirm ticket successfully!",
               duration: 1500,
             });
 
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
+            setSelectedTickets([]);
           })
           .catch((err) => {
             console.log("Error", err);
@@ -232,57 +320,7 @@ const ConcernTickets = () => {
     });
   };
 
-  // const onCancelAction = (data) => {
-  //   const payload = {
-  //     requestConcernId: data?.requestConcernId,
-  //   };
-
-  //   Swal.fire({
-  //     title: "Confirmation",
-  //     text: "Cancel this request?",
-  //     icon: "info",
-  //     color: "white",
-  //     showCancelButton: true,
-  //     background: "#111927",
-  //     confirmButtonColor: "#9e77ed",
-  //     confirmButtonText: "Yes",
-  //     cancelButtonText: "No",
-  //     cancelButtonColor: "#1C2536",
-  //     heightAuto: false,
-  //     width: "30em",
-  //     allowOutsideClick: false,
-  //     customClass: {
-  //       container: "custom-container",
-  //       title: "custom-title",
-  //       htmlContainer: "custom-text",
-  //       icon: "custom-icon",
-  //       confirmButton: "custom-confirm-btn",
-  //       cancelButton: "custom-cancel-btn",
-  //     },
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       cancelConcern(payload)
-  //         .unwrap()
-  //         .then(() => {
-  //           dispatch(notificationApi.util.resetApiState());
-  //           toast.success("Success!", {
-  //             description: "Cancelled request successfully!",
-  //             duration: 1500,
-  //           });
-  //         })
-  //         .catch((err) => {
-  //           console.log("Error", err);
-  //           toast.error("Error!", {
-  //             description: err.data.error.message,
-  //             duration: 1500,
-  //           });
-  //         });
-  //     }
-  //   });
-  // };
-
   const onReturnAction = (data) => {
-    // console.log("Return: ", data);
     returnOnToggle();
     setReturnData(data);
   };
@@ -290,6 +328,19 @@ const ConcernTickets = () => {
   const onViewHistoryAction = (data) => {
     viewHistoryOnToggle();
     setViewHistoryData(data);
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      const allTicketIds = data?.value?.requestConcern.map((item) => item.requestConcernId) || [];
+      setSelectedTickets(allTicketIds);
+    } else {
+      setSelectedTickets([]);
+    }
+  };
+
+  const handleSelectTicket = (item) => {
+    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
   };
 
   useEffect(() => {
@@ -303,6 +354,15 @@ const ConcernTickets = () => {
       dispatch(setPageNumber(1));
     }
   }, [searchValue]);
+
+  // Clear selected tickets if not "For Closing Ticket"
+  useEffect(() => {
+    if (status !== "For Confirmation") {
+      setSelectedTickets([]);
+    }
+  }, [status]);
+
+  console.log("Selected:", selectedTickets);
 
   return (
     <Stack
@@ -335,6 +395,42 @@ const ConcernTickets = () => {
             </LoadingButton>
           </Stack>
         </Stack>
+
+        {selectedTickets.length > 0 && (
+          <Stack
+            direction={isScreenSmall ? "column" : "row"}
+            alignItems={isScreenSmall ? "left" : "center"}
+            justifyContent="space-between"
+            gap={0.5}
+            sx={{
+              padding: "10px 20px",
+              backgroundColor: theme.palette.bgForm.black2,
+              borderRadius: "20px",
+              marginBottom: 0.5,
+              marginTop: 0.5,
+            }}
+          >
+            <Stack direction="row" gap={0.5}>
+              <LocalOffer />
+              <Typography>
+                {selectedTickets.length} {""}
+                {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
+              </Typography>
+            </Stack>
+
+            <Stack direction="row" gap={0.5}>
+              <LoadingButton
+                variant="contained"
+                color="success"
+                onClick={onSelectedConfirmAction}
+                loading={confirmConcernIsLoading || confirmConcernIsFetching}
+                startIcon={<Check />}
+              >
+                Confirm
+              </LoadingButton>
+            </Stack>
+          </Stack>
+        )}
 
         <Stack direction="row" width="100%" justifyContent="space-between">
           {/* MAIN */}
@@ -520,6 +616,62 @@ const ConcernTickets = () => {
                   }}
                 />
               </Tabs>
+
+              {/* <Stack direction="row" gap={0.5}>
+                <Stack>
+                  <Typography sx={{ fontSize: "13px" }}>Date From:</Typography>
+                  <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <DatePicker
+                      value={dateFrom}
+                      maxDate={dateTo}
+                      onChange={(newValue) => setDateFrom(newValue)}
+                      slotProps={{
+                        textField: {
+                          variant: "outlined",
+                          sx: {
+                            "& .MuiInputBase-input": {
+                              padding: "8.5px 14px",
+                            },
+                            "& .MuiOutlinedInput-root": {
+                              fontSize: "13px",
+                            },
+                            width: "100%",
+                          },
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Stack>
+
+                <Stack>
+                  <Typography sx={{ fontSize: "13px" }}>Date To:</Typography>
+                  <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <DatePicker
+                      value={dateTo}
+                      minDate={dateFrom}
+                      onChange={(newValue) => setDateTo(newValue)}
+                      slotProps={{
+                        textField: {
+                          variant: "outlined",
+                          sx: {
+                            "& .MuiInputBase-input": {
+                              padding: "8.5px 14px",
+                            },
+                            "& .MuiOutlinedInput-root": {
+                              fontSize: "13px",
+                            },
+                            width: "100%",
+                          },
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Stack>
+              </Stack> */}
+
+              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center" }}>
+                <ConcernTicketFiltering setDateFrom={setDateFrom} setDateTo={setDateTo} />
+              </Stack>
             </Stack>
 
             <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
@@ -548,155 +700,187 @@ const ConcernTickets = () => {
 
             {isScreenSmall ? (
               // Card
-              <Stack spacing={2}>
-                {isSuccess &&
-                  !isLoading &&
-                  !isFetching &&
-                  data?.value?.requestConcern?.map((item, index) => (
-                    <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
-                      <CardContent
-                        sx={{
-                          cursor: "pointer",
-                          "&:hover": {
-                            backgroundColor: "#1A222F",
-                            color: "#9e77ed",
-                          },
-                        }}
-                      >
-                        <Stack spacing={1}>
-                          <Stack spacing={1} onClick={() => onViewHistoryAction(item)}>
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                {item.ticketRequestConcerns?.[0]?.ticketConcernId}
-                              </Typography>
-                            </Stack>
+              <>
+                {status === "For Confirmation" && (
+                  <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
+                    <Checkbox
+                      indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.requestConcern?.length || 0)}
+                      checked={(data?.value?.requestConcern?.length || 0) > 0 && selectedTickets.length === (data?.value?.requestConcern?.length || 0)}
+                      onChange={handleSelectAll}
+                      inputProps={{ "aria-label": "select all tickets" }}
+                    />
+                    <Typography>Select All</Typography>
+                  </Stack>
+                )}
 
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
-                              <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                {item.concern.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                              </Typography>
-                            </Stack>
-
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
-                              <Chip
-                                variant="filled"
-                                size="30px"
-                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: "#1D1F3B",
-                                  color: theme.palette.primary.main,
-                                  fontWeight: 800,
-                                }}
-                                label={moment(item.created_At).format("LL")}
-                              />
-                            </Stack>
-
-                            {item?.concern_Status === "" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
-                                <Chip
-                                  variant="filled"
-                                  size="30px"
-                                  icon={
-                                    item.concern_Status === "For Approval" ? (
-                                      <FiberManualRecord fontSize="small" color="info" />
-                                    ) : item.concern_Status === "Ongoing" ? (
-                                      <FiberManualRecord fontSize="small" color="warning" />
-                                    ) : item.concern_Status === "For Confirmation" ? (
-                                      <FiberManualRecord
-                                        fontSize="small"
-                                        sx={{
-                                          "&.MuiSvgIcon-root": {
-                                            color: "#009688",
-                                          },
-                                        }}
-                                      />
-                                    ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                      <FiberManualRecord fontSize="small" color="warning" />
-                                    ) : (
-                                      <FiberManualRecord fontSize="small" color="success" />
-                                    )
-                                  }
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: theme.palette.bgForm.black1,
-                                    color: theme.palette.text.main,
-                                    fontWeight: 800,
+                <Stack spacing={2}>
+                  {isSuccess &&
+                    !isLoading &&
+                    !isFetching &&
+                    data?.value?.requestConcern?.map((item, index) => (
+                      <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                        <CardContent
+                          sx={{
+                            cursor: "pointer",
+                            "&:hover": {
+                              backgroundColor: "#1A222F",
+                              color: "#9e77ed",
+                            },
+                          }}
+                        >
+                          <Stack
+                            spacing={1}
+                            direction="row"
+                            sx={{
+                              alignItems: "center",
+                            }}
+                          >
+                            {status === "For Confirmation" && (
+                              <Stack>
+                                <Checkbox
+                                  checked={selectedTickets.includes(item.requestConcernId)}
+                                  onChange={() => handleSelectTicket(item.requestConcernId)}
+                                  inputProps={{
+                                    "aria-label": `select ticket ${item.requestConcernId}`,
                                   }}
-                                  label={
-                                    item.concern_Status === "For Approval"
-                                      ? "Verification"
-                                      : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                      ? "Ongoing/On Hold"
-                                      : item.concern_Status === "Ongoing"
-                                      ? "Ongoing"
-                                      : item.concern_Status === "For Confirmation"
-                                      ? "For Confirmation"
-                                      : item.concern_Status === "Done"
-                                      ? "Done"
-                                      : ""
-                                  }
                                 />
                               </Stack>
                             )}
+
+                            <Stack spacing={1}>
+                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item.concern.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                  sx={{
+                                    fontSize: "12px",
+                                    backgroundColor: "#1D1F3B",
+                                    color: theme.palette.primary.main,
+                                    fontWeight: 800,
+                                  }}
+                                  label={moment(item.created_At).format("LL")}
+                                />
+                              </Stack>
+
+                              {item?.concern_Status === "" && (
+                                <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
+                                  <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
+                                  <Chip
+                                    variant="filled"
+                                    size="30px"
+                                    icon={
+                                      item.concern_Status === "For Approval" ? (
+                                        <FiberManualRecord fontSize="small" color="info" />
+                                      ) : item.concern_Status === "Ongoing" ? (
+                                        <FiberManualRecord fontSize="small" color="warning" />
+                                      ) : item.concern_Status === "For Confirmation" ? (
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          sx={{
+                                            "&.MuiSvgIcon-root": {
+                                              color: "#009688",
+                                            },
+                                          }}
+                                        />
+                                      ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                        <FiberManualRecord fontSize="small" color="warning" />
+                                      ) : (
+                                        <FiberManualRecord fontSize="small" color="success" />
+                                      )
+                                    }
+                                    sx={{
+                                      fontSize: "12px",
+                                      backgroundColor: theme.palette.bgForm.black1,
+                                      color: theme.palette.text.main,
+                                      fontWeight: 800,
+                                    }}
+                                    label={
+                                      item.concern_Status === "For Approval"
+                                        ? "Verification"
+                                        : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                        ? "Ongoing/On Hold"
+                                        : item.concern_Status === "Ongoing"
+                                        ? "Ongoing"
+                                        : item.concern_Status === "For Confirmation"
+                                        ? "For Confirmation"
+                                        : item.concern_Status === "Done"
+                                        ? "Done"
+                                        : ""
+                                    }
+                                  />
+                                </Stack>
+                              )}
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                                <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                              </Stack>
+                            </Stack>
                           </Stack>
+                        </CardContent>
+                      </Card>
+                    ))}
 
-                          <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
-                            <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
-                          </Stack>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {isError && (
+                    <Stack justifyContent="center" alignItems="center" padding={4}>
+                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                      <Typography variant="h6" color="error" align="center">
+                        Something went wrong.
+                      </Typography>
+                    </Stack>
+                  )}
 
-                {isError && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                    <Typography variant="h6" color="error" align="center">
-                      Something went wrong.
-                    </Typography>
-                  </Stack>
-                )}
+                  {(isLoading || isFetching) && (
+                    <Stack justifyContent="center" alignItems="center" padding={4}>
+                      <CircularProgress />
+                      <Typography variant="h5" color="#EDF2F7">
+                        Please wait...
+                      </Typography>
+                    </Stack>
+                  )}
 
-                {(isLoading || isFetching) && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <CircularProgress />
-                    <Typography variant="h5" color="#EDF2F7">
-                      Please wait...
-                    </Typography>
-                  </Stack>
-                )}
+                  {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
+                    <Stack justifyContent="center" alignItems="center" padding={4}>
+                      <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                      <Typography variant="h6" align="center">
+                        No records found.
+                      </Typography>
+                    </Stack>
+                  )}
 
-                {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                    <Typography variant="h6" align="center">
-                      No records found.
-                    </Typography>
-                  </Stack>
-                )}
-
-                <TablePagination
-                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-                  rowsPerPageOptions={[100, 300, 500]}
-                  component="div"
-                  count={data?.value?.totalCount || 0}
-                  rowsPerPage={data?.value?.pageSize || 100}
-                  page={data?.value?.currentPage - 1 || 0}
-                  onPageChange={onPageNumberChange}
-                  onRowsPerPageChange={onPageSizeChange}
-                />
-              </Stack>
+                  <TablePagination
+                    sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                    rowsPerPageOptions={[100, 300, 500]}
+                    component="div"
+                    count={data?.value?.totalCount || 0}
+                    rowsPerPage={data?.value?.pageSize || 100}
+                    page={data?.value?.currentPage - 1 || 0}
+                    onPageChange={onPageNumberChange}
+                    onRowsPerPageChange={onPageSizeChange}
+                  />
+                </Stack>
+              </>
             ) : (
               <>
                 {/* Table */}
@@ -704,6 +888,26 @@ const ConcernTickets = () => {
                   <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
                     <TableHead>
                       <TableRow>
+                        {status === "For Confirmation" && (
+                          <TableCell
+                            padding="checkbox"
+                            sx={{
+                              background: "#1C2536",
+                              color: "#D65DB1",
+                              fontWeight: 700,
+                              fontSize: "12px",
+                            }}
+                            align="center"
+                          >
+                            <Checkbox
+                              indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectedTickets.length}
+                              checked={selectedTickets.length > 0 && selectedTickets.length === selectedTickets.length}
+                              onChange={handleSelectAll}
+                              inputProps={{ "aria-label": "select all tickets" }}
+                            />
+                          </TableCell>
+                        )}
+
                         <TableCell
                           sx={{
                             width: 100,
@@ -782,146 +986,183 @@ const ConcernTickets = () => {
                       {isSuccess &&
                         !isLoading &&
                         !isFetching &&
-                        data?.value?.requestConcern?.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                              }}
-                              align="center"
-                              onClick={() => onViewHistoryAction(item)}
-                            >
-                              {item.ticketRequestConcerns?.[0]?.ticketConcernId}
-                            </TableCell>
+                        data?.value?.requestConcern?.map((item, index) => {
+                          const isSelected = selectedTickets.includes(item.requestConcernId);
 
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                maxWidth: "500px",
-                              }}
-                              onClick={() => onViewHistoryAction(item)}
-                            >
-                              {item.concern.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-                            </TableCell>
-
-                            <TableCell
-                              className="ellipsis-styling"
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                maxWidth: "500px",
-                              }}
-                              onClick={() => onViewHistoryAction(item)}
-                            >
-                              <Tooltip title={item.resolution} placement="bottom-start">
-                                {item.resolution?.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                              </Tooltip>
-                            </TableCell>
-
-                            <TableCell
-                              sx={{
-                                fontSize: "14px",
-                                fontWeight: 500,
-                              }}
-                              align="center"
-                              onClick={() => onViewHistoryAction(item)}
-                            >
-                              <Chip
-                                variant="filled"
-                                size="30px"
-                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow
+                                key={index}
                                 sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: "#1D1F3B",
-                                  color: theme.palette.primary.main,
-                                  fontWeight: 800,
+                                  backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
+                                  "&:hover": {
+                                    background: "",
+                                    color: "#EDF2F7",
+                                  },
                                 }}
-                                label={moment(item.created_At).format("LL")}
-                              />
-                            </TableCell>
-
-                            {status === "" && (
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                                onClick={() => onViewHistoryAction(item)}
                               >
-                                <Chip
-                                  variant="filled"
-                                  size="30px"
-                                  icon={
-                                    item.concern_Status === "For Approval" ? (
-                                      <FiberManualRecord fontSize="small" color="info" />
-                                    ) : item.concern_Status === "Ongoing" ? (
-                                      <FiberManualRecord fontSize="small" color="warning" />
-                                    ) : item.concern_Status === "For Confirmation" ? (
-                                      <FiberManualRecord
-                                        fontSize="small"
-                                        sx={{
-                                          "&.MuiSvgIcon-root": {
-                                            color: "#009688",
-                                          },
-                                        }}
-                                      />
-                                    ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                      <FiberManualRecord fontSize="small" color="warning" />
-                                    ) : (
-                                      <FiberManualRecord fontSize="small" color="success" />
-                                    )
-                                  }
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: theme.palette.bgForm.black1,
-                                    color: theme.palette.text.main,
-                                    fontWeight: 800,
-                                  }}
-                                  label={
-                                    item.concern_Status === "For Approval"
-                                      ? "Verification"
-                                      : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                      ? "Ongoing/On Hold"
-                                      : item.concern_Status === "Ongoing"
-                                      ? "Ongoing"
-                                      : item.concern_Status === "For Confirmation"
-                                      ? "For Confirmation"
-                                      : item.concern_Status === "Done"
-                                      ? "Done"
-                                      : ""
-                                  }
-                                />
-                              </TableCell>
-                            )}
+                                {status === "For Confirmation" && (
+                                  <TableCell
+                                    padding="checkbox"
+                                    sx={{
+                                      color: "#EDF2F7",
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                    }}
+                                    align="center"
+                                  >
+                                    <Checkbox
+                                      checked={selectedTickets.includes(item.requestConcernId)}
+                                      onChange={() => handleSelectTicket(item.requestConcernId)}
+                                      inputProps={{
+                                        "aria-label": `select ticket ${item.requestConcernId}`,
+                                      }}
+                                    />
+                                  </TableCell>
+                                )}
 
-                            <TableCell
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "14px",
-                                fontWeight: 500,
-                              }}
-                              align="center"
-                            >
-                              <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                                <TableCell
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                  }}
+                                  align="center"
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
+                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                </TableCell>
+
+                                <TableCell
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    maxWidth: "500px",
+                                  }}
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
+                                  {item.concern.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
+                                </TableCell>
+
+                                <TableCell
+                                  className="ellipsis-styling"
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    maxWidth: "500px",
+                                  }}
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
+                                  <Tooltip key={index} title={item.resolution} placement="bottom-start">
+                                    {item.resolution
+                                      ? item.resolution?.split("\r\n").map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
+                                      : "--"}
+                                  </Tooltip>
+                                </TableCell>
+
+                                <TableCell
+                                  sx={{
+                                    fontSize: "14px",
+                                    fontWeight: 500,
+                                  }}
+                                  align="center"
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
+                                  <Chip
+                                    variant="filled"
+                                    size="30px"
+                                    icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                    sx={{
+                                      fontSize: "12px",
+                                      backgroundColor: "#1D1F3B",
+                                      color: theme.palette.primary.main,
+                                      fontWeight: 800,
+                                    }}
+                                    label={moment(item.created_At).format("LL")}
+                                  />
+                                </TableCell>
+
+                                {status === "" && (
+                                  <TableCell
+                                    sx={{
+                                      color: "#EDF2F7",
+                                      fontSize: "14px",
+                                      fontWeight: 500,
+                                    }}
+                                    onClick={() => onViewHistoryAction(item)}
+                                  >
+                                    <Chip
+                                      variant="filled"
+                                      size="30px"
+                                      icon={
+                                        item.concern_Status === "For Approval" ? (
+                                          <FiberManualRecord fontSize="small" color="info" />
+                                        ) : item.concern_Status === "Ongoing" ? (
+                                          <FiberManualRecord fontSize="small" color="warning" />
+                                        ) : item.concern_Status === "For Confirmation" ? (
+                                          <FiberManualRecord
+                                            fontSize="small"
+                                            sx={{
+                                              "&.MuiSvgIcon-root": {
+                                                color: "#009688",
+                                              },
+                                            }}
+                                          />
+                                        ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
+                                          <FiberManualRecord fontSize="small" color="warning" />
+                                        ) : (
+                                          <FiberManualRecord fontSize="small" color="success" />
+                                        )
+                                      }
+                                      sx={{
+                                        fontSize: "12px",
+                                        backgroundColor: theme.palette.bgForm.black1,
+                                        color: theme.palette.text.main,
+                                        fontWeight: 800,
+                                      }}
+                                      label={
+                                        item.concern_Status === "For Approval"
+                                          ? "Verification"
+                                          : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                          ? "Ongoing/On Hold"
+                                          : item.concern_Status === "Ongoing"
+                                          ? "Ongoing"
+                                          : item.concern_Status === "For Confirmation"
+                                          ? "For Confirmation"
+                                          : item.concern_Status === "Done"
+                                          ? "Done"
+                                          : ""
+                                      }
+                                    />
+                                  </TableCell>
+                                )}
+
+                                <TableCell
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "14px",
+                                    fontWeight: 500,
+                                  }}
+                                  align="center"
+                                >
+                                  <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        })}
 
                       {isError && (
                         <TableRow>

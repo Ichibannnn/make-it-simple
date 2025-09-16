@@ -9,7 +9,7 @@ import { LoadingButton } from "@mui/lab";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import logo from "../../assets/svg/dotek-login.svg";
+import helpDeskLogo from "../../assets/images/helpdesk_icon.png";
 import misLogo from "../../assets/images/misLogo.png";
 import background from "../../assets/svg/dotek-login-illustration4.svg";
 
@@ -80,8 +80,8 @@ const Login = () => {
           }}
         >
           <Stack spacing={0} direction="column" sx={{ width: "100%" }} textAlign="center">
-            <Box p={0} zIndex="100">
-              <img src={logo} alt="dotek-icon" className="login-icon" />
+            <Box p={0} zIndex="100" mt={5}>
+              <img src={helpDeskLogo} alt="dotek-icon" className="login-icon" />
             </Box>
             <Typography color="white" fontWeight="bold" variant="h5">
               Sign in your Account
@@ -215,7 +215,7 @@ const LoginForm = () => {
     <>
       <Container maxWidth="xs">
         <form onSubmit={handleSubmit(loginHandler)}>
-          <Grid container spacing={2} mt={3}>
+          <Grid container spacing={2} mt={0.5}>
             <Grid item xs={12}>
               <TextField
                 {...register("usernameOrEmail")}

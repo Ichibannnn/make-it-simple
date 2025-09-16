@@ -5,6 +5,7 @@ import React, { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
+import { toast } from "sonner";
 
 const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status }) => {
   const ref = useRef(null);
@@ -31,16 +32,17 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
     onCancel(data);
   };
 
-  // const onCopyTicket = async (data) => {
-  //   try {
-  //     await navigator.clipboard.writeText(id);
-  //     toast.success(`Ticket #${id} copied to clipboard`);
-  //   } catch (err) {
-  //     toast.error("Failed to copy Ticket #");
-  //   }
-  // };
-
-  console.log("Data: ", data);
+  const onCopyTicket = async (id) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      toast.success(`Ticket #${id} copied to clipboard`, {
+        duration: 1500,
+      });
+    } catch (err) {
+      toast.error("Failed to copy Ticket #");
+    }
+    onToggle();
+  };
 
   return (
     <>
@@ -65,9 +67,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
           </MenuItem>
         )}
 
-        <MenuItem
-        // onClick={() => onCopyTicket(data)}
-        >
+        <MenuItem onClick={() => onCopyTicket(data?.ticketRequestConcerns?.[0]?.ticketConcernId)}>
           <ListItemIcon>
             <ContentCopyOutlined fontSize="small" />
           </ListItemIcon>
@@ -82,13 +82,6 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
             <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Return</Typography>
           </MenuItem>
         )}
-
-        {/* <MenuItem>
-          <ListItemIcon>
-            <ReplyAllOutlined fontSize="small" />
-          </ListItemIcon>
-          Reply
-        </MenuItem> */}
 
         {(data?.concern_Status === "" || data?.concern_Status === "For Approval") && (
           <MenuItem onClick={() => onCancelAction(data)}>

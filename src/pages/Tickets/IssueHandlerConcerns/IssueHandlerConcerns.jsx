@@ -951,7 +951,6 @@ const IssueHandlerConcerns = () => {
 
           {isScreenSmall ? (
             // Card
-
             <>
               {ticketStatus === "For Confirmation" && (
                 <Stack
