@@ -362,8 +362,6 @@ const ConcernTickets = () => {
     }
   }, [status]);
 
-  console.log("Selected:", selectedTickets);
-
   return (
     <Stack
       sx={{
@@ -1060,15 +1058,17 @@ const ConcernTickets = () => {
                                   }}
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  <Tooltip key={index} title={item.resolution} placement="bottom-start">
-                                    {item.resolution
-                                      ? item.resolution?.split("\r\n").map((line, index) => (
-                                          <span key={index}>
-                                            {line}
-                                            <br />
-                                          </span>
-                                        ))
-                                      : "--"}
+                                  <Tooltip key={index} title={item.resolution || "--"} placement="bottom-start">
+                                    <>
+                                      {item.resolution
+                                        ? item.resolution?.split("\r\n").map((line, index) => (
+                                            <span key={index}>
+                                              {line}
+                                              <br />
+                                            </span>
+                                          ))
+                                        : "--"}
+                                    </>
                                   </Tooltip>
                                 </TableCell>
 

@@ -4,11 +4,13 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   Divider,
   FormControlLabel,
+  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -47,9 +49,8 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import ConcernMenuActions from "./ConcernMenuActions";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
-import { useLazyGetServiceProviderQuery, useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import Swal from "sweetalert2";
-import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -93,6 +94,7 @@ const ConcernDialog = ({ open, onClose }) => {
     TargetDate: yup.date().notRequired(),
     IssueHandler: yup.string().notRequired(),
 
+    AssetTag: yup.string().notRequired(),
     Notes: yup.string().notRequired(),
   });
 
@@ -153,6 +155,7 @@ const ConcernDialog = ({ open, onClose }) => {
       TargetDate: null,
       IssueHandler: "",
 
+      AssetTag: "",
       Notes: "",
     },
   });
@@ -489,6 +492,102 @@ const ConcernDialog = ({ open, onClose }) => {
     }
   }, [watch("IssueHandler")]);
 
+  if (!watch("UserId")) {
+    return (
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAction();
+        }}
+        disableEscapeKeyDown={false}
+        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
+        <DialogContent sx={{ paddingBottom: 8 }}>
+          <Stack direction="column" spacing={3} sx={{ padding: 2, minHeight: "700px" }}>
+            {/* Title */}
+            <Skeleton variant="text" width={200} height={30} />
+
+            {/* First row: Request Type & Severity */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+            </Grid>
+
+            {/* Section: Requestor Details */}
+            <Skeleton variant="text" width={160} height={25} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+            </Grid>
+
+            {/* Section: Concern Details */}
+            <Skeleton variant="text" width={160} height={25} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+            </Grid>
+
+            {/* Date + Asset Tag */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton height={50} />
+              </Grid>
+            </Grid>
+
+            {/* Concern Details (Textarea) */}
+            <Skeleton height={120} />
+
+            {/* Actions */}
+            <Stack direction="row" justifyContent="flex-end" spacing={2} mt={2}>
+              <Skeleton width={100} height={40} />
+              <Skeleton width={100} height={40} />
+            </Stack>
+          </Stack>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <>
       <Dialog
@@ -731,90 +830,6 @@ const ConcernDialog = ({ open, onClose }) => {
                           );
                         }}
                       />
-
-                      {/* {watch("UserId") ? (
-                        <Controller
-                          control={control}
-                          name="UserId"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <Autocomplete
-                                ref={ref}
-                                size="small"
-                                value={value}
-                                options={
-                                  userDetails?.userRoleName === "Helpdesk Associate"
-                                    ? userData?.value?.users || []
-                                    : userData?.value?.users?.filter((item) => item?.departmentId === watch("DepartmentId")?.id) || []
-                                }
-                                loading={userIsLoading}
-                                renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                                onOpen={() => {
-                                  if (!userIsSuccess)
-                                    getUser({
-                                      Status: true,
-                                    });
-                                }}
-                                onChange={(_, value) => {
-                                  setValue("ChargingCode", {
-                                    code: value?.oneChargingCode,
-                                    name: value?.oneChargingName,
-                                  });
-                                  setValue("CompanyId", {
-                                    id: value?.companyId,
-                                    company_Code: value?.company_Code,
-                                    company_Name: value?.company_Name,
-                                  });
-                                  setValue("BusinessUnitId", {
-                                    id: value?.businessUnitId,
-                                    business_Code: value?.businessUnit_Code,
-                                    business_Name: value?.businessUnit_Name,
-                                  });
-                                  setValue("DepartmentId", {
-                                    id: value?.departmentId,
-                                    department_Code: value?.department_Code,
-                                    department_Name: value?.department_Name,
-                                  });
-                                  setValue("UnitId", {
-                                    id: value?.unitId,
-                                    unit_Code: value?.unit_Code,
-                                    unit_Name: value?.unit_Name,
-                                  });
-                                  setValue("SubUnitId", {
-                                    id: value?.subUnitId,
-                                    subUnit_Code: value?.subUnit_Code,
-                                    subUnit_Name: value?.subUnit_Name,
-                                  });
-                                  setValue("LocationId", {
-                                    location_Code: value?.location_Code,
-                                    location_Name: value?.location_Name,
-                                  });
-
-                                  onChange(value);
-                                }}
-                                getOptionLabel={(option) => option?.fullname}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                fullWidth
-                                disablePortal
-                                disableClearable
-                                componentsProps={{
-                                  popper: {
-                                    sx: {
-                                      "& .MuiAutocomplete-listbox": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                              />
-                            );
-                          }}
-                        />
-                      ) : (
-                        <Stack sx={{ width: "100%", padding: 0, mb: 4 }}>
-                          <Skeleton height={50} />
-                        </Stack>
-                      )} */}
                     </Stack>
 
                     {/* Conctact Number */}
@@ -1454,6 +1469,90 @@ const ConcernDialog = ({ open, onClose }) => {
                         />
                         {errors.TargetDate && <Typography>{errors.TargetDate.message}</Typography>}
                       </LocalizationProvider>
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    {/*  Asset Tag*/}
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px" }}>Asset Tag</Typography>
+                      <Controller
+                        control={control}
+                        name="AssetTag"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="small"
+                              value={value}
+                              placeholder="Enter Asset Tag"
+                              onChange={onChange}
+                              error={!!errors.AssetTag}
+                              sx={{
+                                width: "100%",
+                              }}
+                              InputProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              autoComplete="off"
+                            />
+                          );
+                        }}
+                      />
+                      {errors.AssetTag && (
+                        <Typography color="error" sx={{ fontSize: "12px" }}>
+                          {errors.AssetTag.message}
+                        </Typography>
+                      )}
+                    </Stack>
+
+                    {/* Ongoing 1 */}
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px" }}>Asset Tag</Typography>
+                      <Controller
+                        control={control}
+                        name=""
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="small"
+                              value={value}
+                              placeholder="Ongoing Update"
+                              onChange={onChange}
+                              // error={!!errors.AssetTag}
+                              sx={{
+                                width: "100%",
+                              }}
+                              InputProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              autoComplete="off"
+                            />
+                          );
+                        }}
+                      />
+                      {/* {errors.AssetTag && (
+                        <Typography color="error" sx={{ fontSize: "12px" }}>
+                          {errors.AssetTag.message}
+                        </Typography>
+                      )} */}
                     </Stack>
                   </Stack>
                 </Stack>

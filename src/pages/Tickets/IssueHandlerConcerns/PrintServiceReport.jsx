@@ -1,3 +1,78 @@
+// import React from "react";
+// import { Button, Dialog, DialogActions, DialogContent } from "@mui/material";
+// import { LocalPrintshopOutlined } from "@mui/icons-material";
+// import { PDFDocument, rgb } from "pdf-lib";
+// import fontkit from "@pdf-lib/fontkit";
+// import { saveAs } from "file-saver";
+
+// const PrintServiceReport = ({ data, open, onClose }) => {
+//   const handleGeneratePdf = async () => {
+//     try {
+//       // 1. Load your base PDF template
+//       const existingPdfBytes = await fetch("/pdf/MIS_ServiceReport.pdf").then((res) => res.arrayBuffer());
+
+//       const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+//       // 2. Register fontkit to allow custom fonts
+//       pdfDoc.registerFontkit(fontkit);
+
+//       // 3. Load Calibri fonts from public/fonts
+//       const calibriBytes = await fetch("/fonts/Calibri.ttf").then((res) => res.arrayBuffer());
+
+//       const calibriFont = await pdfDoc.embedFont(calibriBytes);
+
+//       // 4. Get first page
+//       const firstPage = pdfDoc.getPages()[0];
+
+//       // 5. Extract API data
+//       const issueDescription = data?.concern_Description.replace(/\r\n/g, " - ") || "N/A";
+//       const resolution = data?.getForClosingTickets?.[0]?.resolution || "N/A";
+
+//       console.log("Data:", data);
+//       console.log("Description:", issueDescription);
+
+//       // 6. Inject text at chosen coordinates
+//       // NOTE: adjust x/y until aligned perfectly
+//       firstPage.drawText(issueDescription, {
+//         x: 100,
+//         y: 200, // move up/down until inside "ISSUE DESCRIPTION"
+//         size: 9,
+//         font: calibriFont,
+//         color: rgb(0, 0, 0),
+//       });
+
+//       // firstPage.drawText(resolution, {
+//       //   x: 120,
+//       //   y: 200, // move up/down until inside "RESOLUTION / REMARKS"
+//       //   size: 11,
+//       //   font: calibriFont,
+//       //   color: rgb(0, 0, 0),
+//       // });
+
+//       // 7. Save & download
+//       const pdfBytes = await pdfDoc.save();
+//       saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "MIS_ServiceReport.pdf");
+//     } catch (err) {
+//       console.error("Error generating PDF:", err);
+//     }
+//   };
+
+//   return (
+//     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+//       <DialogContent>Generate Service Report PDF?</DialogContent>
+//       <DialogActions>
+//         <Button variant="contained" color="success" startIcon={<LocalPrintshopOutlined />} onClick={handleGeneratePdf}>
+//           Generate PDF
+//         </Button>
+//         <Button onClick={onClose}>Close</Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
+
+// export default PrintServiceReport;
+
+// OLD CODES
 import React, { useRef } from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { AttachFileOutlined, CheckOutlined, FiberManualRecord } from "@mui/icons-material";
 
@@ -311,8 +311,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   const getAttachmentData = async (id) => {
     try {
       const res = await getRequestorAttachment({ Id: id }).unwrap();
-
-      // console.log("res", res);
 
       setAttachments(
         res?.value?.[0]?.attachments?.map((item) => ({
