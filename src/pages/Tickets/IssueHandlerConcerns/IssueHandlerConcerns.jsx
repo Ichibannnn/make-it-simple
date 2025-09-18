@@ -84,6 +84,9 @@ import { useConfirmConcernMutation } from "../../../features/api_request/concern
 import { LoadingButton } from "@mui/lab";
 import RejectDateDialog from "./RejectDateDialog";
 
+import srReport from "../../../pdf/MIS_ServiceReport.pdf";
+import { PDFDocument } from "pdf-lib";
+
 const IssueHandlerConcerns = () => {
   const theming = useTheme();
   const isMobile = useMediaQuery(theming.breakpoints.down("sm"));
@@ -207,9 +210,128 @@ const IssueHandlerConcerns = () => {
     setTransferTicketData(data);
   };
 
-  const onPrintTicketAction = (data) => {
-    printTicketOnToggle();
-    setPrintData(data);
+  const onPrintTicketAction = async (data) => {
+    console.log("Data: ", data);
+
+    const formPdfBytes = await fetch(srReport).then((res) => res.arrayBuffer());
+    const pdfDoc = await PDFDocument.load(formPdfBytes);
+    const form = pdfDoc.getForm();
+
+    try {
+      const site_office = form.getCheckBox("site_office");
+      const site_store = form.getCheckBox("site_store");
+      const site_farm = form.getCheckBox("site_farm");
+      const site_depot = form.getCheckBox("site_depot");
+
+      const location = form.getTextField("location");
+      const requestor_name = form.getTextField("requestor_name");
+      const contact_no = form.getTextField("contact_no");
+
+      const type_new = form.getCheckBox("type_new");
+      const type_backjob = form.getCheckBox("type_backjob");
+      const date_started = form.getTextField("date_started");
+      const date_finished = form.getTextField("date_finished");
+
+      const urgency_normal = form.getCheckBox("urgency_normal");
+      const urgency_low = form.getCheckBox("urgency_low");
+      const urgency_high = form.getCheckBox("urgency_high");
+      const urgency_urgent = form.getCheckBox("urgency_urgent");
+
+      const category = form.getTextField("category");
+      const sub_category = form.getTextField("sub_category");
+
+      const status_open = form.getCheckBox("status_open");
+      const status_close = form.getCheckBox("status_close");
+      const status_onHold = form.getCheckBox("status_onHold");
+
+      const sys_cat_process = form.getCheckBox("sys_cat_process");
+      const sys_cat_user = form.getCheckBox("sys_cat_user");
+      const sys_cat_system = form.getCheckBox("sys_cat_system");
+      const sys_cat_network = form.getCheckBox("sys_cat_network");
+
+      const description = form.getTextField("description");
+      const resolution = form.getTextField("resolution");
+
+      const support_tech_one = form.getTextField("support_tech_one");
+      const support_tech_two = form.getTextField("support_tech_two");
+      const support_tech_three = form.getTextField("support_tech_three");
+
+      const issue_handler = form.getTextField("issue_handler");
+      const ticket_number = form.getTextField("ticket_number");
+
+      const technicianArray = data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.map((item) => item);
+
+      console.log("technicianArray", technicianArray);
+
+      // Site
+      location.setText(`${data?.location_Code} - ${data?.location_Name}`);
+      requestor_name.setText(data?.requestor_Name);
+      contact_no.setText(data?.contact_Number ? data?.contact_Number : "N/A");
+      date_started.setText(moment(data?.created_At).format("MM/DD/YYYY hh:mma"));
+      date_finished.setText(moment(data?.close_At).format("MM/DD/YYYY hh:mma"));
+      description.setText(data?.concern_Description.replace(/\r\n/g, " - "));
+      resolution.setText(data?.getForClosingTickets?.[0]?.resolution);
+      issue_handler.setText(data?.issue_Handler);
+      ticket_number.setText(data?.ticketConcernId.toString());
+      category.setText("Test Category");
+      sub_category.setText("Test Sub Category");
+      status_close.check();
+
+      // Type of Request
+      if (data?.requestor_Type === "New Request") {
+        type_new.check();
+      } else {
+        type_backjob.check();
+      }
+
+      // Urgency
+      if (data?.severity === "Normal") {
+        urgency_normal.check();
+      } else if (data?.severity === "Low") {
+        urgency_low.check();
+      } else if (data?.severity === "High") {
+        urgency_high.check();
+      } else {
+        urgency_urgent.check();
+      }
+
+      // Concern Category
+      if (data?.getForClosingTickets?.[0]?.categoryConcernName === "Process") {
+        sys_cat_process.check();
+      } else if (data?.getForClosingTickets?.[0]?.categoryConcernName === "User Error") {
+        sys_cat_user.check();
+      } else if (data?.getForClosingTickets?.[0]?.categoryConcernName === "System Error") {
+        sys_cat_system.check();
+      } else if (data?.getForClosingTickets?.[0]?.categoryConcernName === "Network Error") {
+        sys_cat_network.check();
+      }
+    } catch (e) {
+      console.log("Error", e);
+
+      console.warn("No field named 'Name' found in PDF");
+    }
+
+    const updatedPdfBytes = await pdfDoc.save();
+
+    const blob = new Blob([updatedPdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "absolute";
+    iframe.style.width = "0px";
+    iframe.style.height = "0px";
+    iframe.style.border = "none";
+    iframe.src = url;
+
+    document.body.appendChild(iframe);
+
+    iframe.onload = () => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    };
+
+    // printTicketOnToggle();
+    // setPrintData(data);
   };
 
   const onRejectDateAction = (data) => {
@@ -1058,7 +1180,7 @@ const IssueHandlerConcerns = () => {
                                   color: theme.palette.text.main,
                                 }}
                               >
-                                {item.concern_Description.split("\r\n").map((line, index) => (
+                                {item?.concern_Description?.split("\r\n")?.map((line, index) => (
                                   <span key={index}>
                                     {line}
                                     <br />
