@@ -263,7 +263,6 @@ const IssueHandlerConcerns = () => {
 
       console.log("technicianArray", technicianArray);
 
-      // Site
       location.setText(`${data?.location_Code} - ${data?.location_Name}`);
       requestor_name.setText(data?.requestor_Name);
       contact_no.setText(data?.contact_Number ? data?.contact_Number : "N/A");
@@ -276,6 +275,13 @@ const IssueHandlerConcerns = () => {
       category.setText("Test Category");
       sub_category.setText("Test Sub Category");
       status_close.check();
+
+      // Site
+      if (data?.isStore === true) {
+        site_store.check();
+      } else {
+        site_office.check();
+      }
 
       // Type of Request
       if (data?.requestor_Type === "New Request") {
