@@ -71,14 +71,22 @@ import { toast } from "sonner";
 
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import {
+  notificationApi,
+  useGetNotificationQuery,
+} from "../../../features/api_notification/notificationApi";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ApproveTransferTicket from "./ApproveTransferTicket";
 import RejectTransfer from "./RejectTransfer";
-import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
+import {
+  setAscending,
+  setPageNumber,
+  setPageSize,
+  setSearchValue,
+} from "../../../features/global/rootSlice";
 import AddTicketDialog from "./AddTicketDialog";
 import { useConfirmConcernMutation } from "../../../features/api_request/concerns/concernApi";
 import { LoadingButton } from "@mui/lab";
@@ -115,20 +123,74 @@ const IssueHandlerConcerns = () => {
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
   const [resumeIssueHandlerTickets] = useResumeIssueHandlerTicketsMutation();
   const [cancelClosingTickets] = useCancelClosingIssueHandlerTicketsMutation();
-  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] = useConfirmConcernMutation();
+  const [
+    confirmConcern,
+    {
+      isLoading: confirmConcernIsLoading,
+      isFetching: confirmConcernIsFetching,
+    },
+  ] = useConfirmConcernMutation();
 
-  const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
-  const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
-  const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
-  const { open: manageHoldTicketOpen, onToggle: manageHoldTicketOnToggle, onClose: manageHoldTicketOnClose } = useDisclosure();
-  const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
-  const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
-  const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
-  const { open: rejectTransferOpen, onToggle: rejectTransferOnToggle, onClose: rejectTransferOnClose } = useDisclosure();
-  const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
-  const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
-  const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
-  const { open: rejectDateOpen, onToggle: rejectDateOnToggle, onClose: rejectDateOnClose } = useDisclosure();
+  const {
+    open: viewOpen,
+    onToggle: viewOnToggle,
+    onClose: viewOnClose,
+  } = useDisclosure();
+  const {
+    open: addTicketOpen,
+    onToggle: addTicketOnToggle,
+    onClose: addTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: holdTicketOpen,
+    onToggle: holdTicketOnToggle,
+    onClose: holdTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: manageHoldTicketOpen,
+    onToggle: manageHoldTicketOnToggle,
+    onClose: manageHoldTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: closeTicketOpen,
+    onToggle: closeTicketOnToggle,
+    onClose: closeTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: manageTicketOpen,
+    onToggle: manageTicketOnToggle,
+    onClose: manageTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: transferTicketOpen,
+    onToggle: transferTicketOnToggle,
+    onClose: transferTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: rejectTransferOpen,
+    onToggle: rejectTransferOnToggle,
+    onClose: rejectTransferOnClose,
+  } = useDisclosure();
+  const {
+    open: manageTransferOpen,
+    onToggle: manageTransferOnToggle,
+    onClose: manageTransferOnClose,
+  } = useDisclosure();
+  const {
+    open: approveTransferOpen,
+    onToggle: approveTransferOnToggle,
+    onClose: approveTransferOnClose,
+  } = useDisclosure();
+  const {
+    open: printTicketOpen,
+    onToggle: printTicketOnToggle,
+    onClose: printTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: rejectDateOpen,
+    onToggle: rejectDateOnToggle,
+    onClose: rejectDateOnClose,
+  } = useDisclosure();
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -136,17 +198,18 @@ const IssueHandlerConcerns = () => {
 
   const { data: notificationBadge } = useGetNotificationQuery();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
-    Concern_Status: ticketStatus,
-    Search: search,
-    History_Status: filterStatus || "",
-    Date_From: dateFrom || "",
-    Date_To: dateTo || "",
-    Ascending: ascending,
-    AscendingDate: ascendingDate,
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } =
+    useGetIssueHandlerConcernsQuery({
+      Concern_Status: ticketStatus,
+      Search: search,
+      History_Status: filterStatus || "",
+      Date_From: dateFrom || "",
+      Date_To: dateTo || "",
+      Ascending: ascending,
+      AscendingDate: ascendingDate,
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    });
 
   const onPageNumberChange = (_, page) => {
     dispatch(setPageNumber(page + 1));
@@ -252,28 +315,26 @@ const IssueHandlerConcerns = () => {
       const description = form.getTextField("description");
       const resolution = form.getTextField("resolution");
 
-      const support_tech_one = form.getTextField("support_tech_one");
-      const support_tech_two = form.getTextField("support_tech_two");
-      const support_tech_three = form.getTextField("support_tech_three");
+      const supportTechFields = [
+        form.getTextField("support_tech_one"),
+        form.getTextField("support_tech_two"),
+        form.getTextField("support_tech_three"),
+      ];
 
       const issue_handler = form.getTextField("issue_handler");
       const ticket_number = form.getTextField("ticket_number");
 
-      const technicianArray = data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.map((item) => item);
-
-      console.log("technicianArray", technicianArray);
-
       location.setText(`${data?.location_Code} - ${data?.location_Name}`);
       requestor_name.setText(data?.requestor_Name);
       contact_no.setText(data?.contact_Number ? data?.contact_Number : "N/A");
-      date_started.setText(moment(data?.created_At).format("MM/DD/YYYY hh:mma"));
+      date_started.setText(
+        moment(data?.created_At).format("MM/DD/YYYY hh:mma")
+      );
       date_finished.setText(moment(data?.close_At).format("MM/DD/YYYY hh:mma"));
       description.setText(data?.concern_Description.replace(/\r\n/g, " - "));
       resolution.setText(data?.getForClosingTickets?.[0]?.resolution);
       issue_handler.setText(data?.issue_Handler);
       ticket_number.setText(data?.ticketConcernId.toString());
-      category.setText("Test Category");
-      sub_category.setText("Test Sub Category");
       status_close.check();
 
       // Site
@@ -301,16 +362,64 @@ const IssueHandlerConcerns = () => {
         urgency_urgent.check();
       }
 
+      // Handle categories (join into comma-separated string)
+      const categoryArray = data?.getOpenTicketCategories || [];
+
+      if (categoryArray.length > 0) {
+        const categoryText = categoryArray
+          .map((cat) => (cat.category_Description || "").trim()) // remove extra spaces
+          .filter((desc) => desc !== "") // avoid empty values
+          .join(", "); // join with commas
+
+        category.setText(categoryText);
+      } else {
+        category.setText("N/A");
+      }
+
+      // Handle categories (join into comma-separated string)
+      const subCategoryArray = data?.getOpenTicketSubCategories || [];
+
+      if (subCategoryArray.length > 0) {
+        const subCategoryText = subCategoryArray
+          .map((subCat) => (subCat.subCategory_Description || "").trim()) // remove extra spaces
+          .filter((desc) => desc !== "") // avoid empty values
+          .join(", "); // join with commas
+
+        sub_category.setText(subCategoryText);
+      } else {
+        sub_category.setText("N/A");
+      }
+
       // Concern Category
       if (data?.getForClosingTickets?.[0]?.categoryConcernName === "Process") {
         sys_cat_process.check();
-      } else if (data?.getForClosingTickets?.[0]?.categoryConcernName === "User Error") {
+      } else if (
+        data?.getForClosingTickets?.[0]?.categoryConcernName === "User Error"
+      ) {
         sys_cat_user.check();
-      } else if (data?.getForClosingTickets?.[0]?.categoryConcernName === "System Error") {
+      } else if (
+        data?.getForClosingTickets?.[0]?.categoryConcernName === "System Error"
+      ) {
         sys_cat_system.check();
-      } else if (data?.getForClosingTickets?.[0]?.categoryConcernName === "Network Error") {
+      } else if (
+        data?.getForClosingTickets?.[0]?.categoryConcernName === "Network Error"
+      ) {
         sys_cat_network.check();
       }
+
+      // Get technician array (safe default to empty)
+      const technicianArray =
+        data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians || [];
+
+      // Clear all fields first
+      supportTechFields.forEach((field) => field.setText(""));
+
+      // Fill fields based on array length (max 3)
+      technicianArray.forEach((tech, index) => {
+        if (index < supportTechFields.length) {
+          supportTechFields[index].setText(tech.fullname || "");
+        }
+      });
     } catch (e) {
       console.log("Error", e);
 
@@ -397,7 +506,8 @@ const IssueHandlerConcerns = () => {
 
   const onCancelTransferAction = (data) => {
     const payload = {
-      transferTicketId: data?.getForTransferTickets?.[0]?.transferTicketConcernId,
+      transferTicketId:
+        data?.getForTransferTickets?.[0]?.transferTicketConcernId,
     };
 
     Swal.fire({
@@ -601,19 +711,29 @@ const IssueHandlerConcerns = () => {
   };
 
   const selectableTickets = useMemo(() => {
-    return data?.value?.openTicket?.filter((item) => item.requestor_Name === userDetails?.fullname) || [];
+    return (
+      data?.value?.openTicket?.filter(
+        (item) => item.requestor_Name === userDetails?.fullname
+      ) || []
+    );
   }, [data?.value?.openTicket, userDetails?.fullname]);
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      setSelectedTickets(selectableTickets.map((item) => item.requestConcernId));
+      setSelectedTickets(
+        selectableTickets.map((item) => item.requestConcernId)
+      );
     } else {
       setSelectedTickets([]);
     }
   };
 
   const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+    setSelectedTickets((prevSelected) =>
+      prevSelected.includes(item)
+        ? prevSelected.filter((id) => id !== item)
+        : [...prevSelected, item]
+    );
   };
 
   const onDialogClose = () => {
@@ -658,7 +778,9 @@ const IssueHandlerConcerns = () => {
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack justifyItems="left">
-            <Typography variant={isScreenSmall ? "h5" : "h4"}>Tickets</Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>
+              Tickets
+            </Typography>
           </Stack>
           <Stack justifyItems="space-between" direction="row">
             <Stack justifyItems="space-between" direction="row" marginTop={1}>
@@ -694,7 +816,9 @@ const IssueHandlerConcerns = () => {
               <LocalOffer />
               <Typography>
                 {selectedTickets.length} {""}
-                {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
+                {selectedTickets.length > 1
+                  ? "Tickets selected"
+                  : "Ticket selected"}
               </Typography>
             </Stack>
 
@@ -720,7 +844,12 @@ const IssueHandlerConcerns = () => {
             width: "100%",
           }}
         >
-          <Stack direction="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            paddingLeft={1}
+            paddingRight={1}
+          >
             <Tabs
               value={ticketStatus}
               onChange={onStatusChange}
@@ -952,7 +1081,9 @@ const IssueHandlerConcerns = () => {
                 label="For Confirmation"
                 icon={
                   <Badge
-                    badgeContent={notificationBadge?.value?.notConfirmCloseNotif}
+                    badgeContent={
+                      notificationBadge?.value?.notConfirmCloseNotif
+                    }
                     max={100000}
                     anchorOrigin={{
                       vertical: "top",
@@ -1039,7 +1170,10 @@ const IssueHandlerConcerns = () => {
               />
             </Tabs>
 
-            <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center" }}>
+            <Stack
+              direction="row"
+              sx={{ alignItems: "center", justifyContent: "center" }}
+            >
               {ticketStatus === "" && (
                 <TicketFiltering
                   filterStatus={filterStatus}
@@ -1065,7 +1199,9 @@ const IssueHandlerConcerns = () => {
           <Stack sx={{ width: "100%", padding: 1 }}>
             <OutlinedInput
               placeholder="Search"
-              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+              startAdornment={
+                <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
+              }
               value={searchValue}
               onChange={(e) => dispatch(setSearchValue(e.target.value))}
               sx={{
@@ -1092,8 +1228,14 @@ const IssueHandlerConcerns = () => {
                   }}
                 >
                   <Checkbox
-                    indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length}
-                    checked={selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length}
+                    indeterminate={
+                      selectedTickets.length > 0 &&
+                      selectedTickets.length < selectableTickets.length
+                    }
+                    checked={
+                      selectableTickets.length > 0 &&
+                      selectedTickets.length === selectableTickets.length
+                    }
                     onChange={handleSelectAll}
                     inputProps={{ "aria-label": "select all tickets" }}
                   />
@@ -1133,18 +1275,28 @@ const IssueHandlerConcerns = () => {
                           {ticketStatus === "For Confirmation" && (
                             <Stack>
                               <Checkbox
-                                checked={selectedTickets.includes(item.requestConcernId)}
-                                onChange={() => handleSelectTicket(item.requestConcernId)}
+                                checked={selectedTickets.includes(
+                                  item.requestConcernId
+                                )}
+                                onChange={() =>
+                                  handleSelectTicket(item.requestConcernId)
+                                }
                                 inputProps={{
                                   "aria-label": `select ticket ${item.ticketConcernId}`,
                                 }}
-                                disabled={item?.requestor_Name !== userDetails?.fullname}
+                                disabled={
+                                  item?.requestor_Name !== userDetails?.fullname
+                                }
                               />
                             </Stack>
                           )}
 
                           <Stack spacing={1} onClick={() => onViewAction(item)}>
-                            <Stack direction="row" gap={0.5} alignItems="center">
+                            <Stack
+                              direction="row"
+                              gap={0.5}
+                              alignItems="center"
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: 700,
@@ -1167,7 +1319,12 @@ const IssueHandlerConcerns = () => {
                               </Typography>
                             </Stack>
 
-                            <Stack direction="row" gap={0.5} alignItems="center" sx={{ maxWidth: "700px" }}>
+                            <Stack
+                              direction="row"
+                              gap={0.5}
+                              alignItems="center"
+                              sx={{ maxWidth: "700px" }}
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: 700,
@@ -1186,17 +1343,23 @@ const IssueHandlerConcerns = () => {
                                   color: theme.palette.text.main,
                                 }}
                               >
-                                {item?.concern_Description?.split("\r\n")?.map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
+                                {item?.concern_Description
+                                  ?.split("\r\n")
+                                  ?.map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
                               </Typography>
                             </Stack>
 
                             {ticketStatus !== "For Approval" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
                                 <Typography
                                   sx={{
                                     fontWeight: 700,
@@ -1210,7 +1373,12 @@ const IssueHandlerConcerns = () => {
                                 <Chip
                                   variant="filled"
                                   size="small"
-                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                  icon={
+                                    <CalendarMonthOutlined
+                                      fontSize="small"
+                                      color="primary"
+                                    />
+                                  }
                                   label={moment(item?.created_At).format("LL")}
                                   sx={{
                                     fontSize: "12px",
@@ -1222,7 +1390,11 @@ const IssueHandlerConcerns = () => {
                               </Stack>
                             )}
 
-                            <Stack direction="row" gap={0.5} alignItems="center">
+                            <Stack
+                              direction="row"
+                              gap={0.5}
+                              alignItems="center"
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: 700,
@@ -1236,7 +1408,12 @@ const IssueHandlerConcerns = () => {
                               <Chip
                                 variant="filled"
                                 size="small"
-                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                icon={
+                                  <CalendarMonthOutlined
+                                    fontSize="small"
+                                    color="primary"
+                                  />
+                                }
                                 sx={{
                                   fontSize: "12px",
                                   backgroundColor: "#1D1F3B",
@@ -1247,8 +1424,13 @@ const IssueHandlerConcerns = () => {
                               />
                             </Stack>
 
-                            {(ticketStatus === "Closed" || ticketStatus === "") && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
+                            {(ticketStatus === "Closed" ||
+                              ticketStatus === "") && (
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
                                 <Typography
                                   sx={{
                                     fontWeight: 700,
@@ -1262,11 +1444,27 @@ const IssueHandlerConcerns = () => {
                                 <Chip
                                   variant="filled"
                                   size="small"
-                                  icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
-                                  label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
+                                  icon={
+                                    item?.closed_At !== null ? (
+                                      <CalendarMonthOutlined
+                                        fontSize="small"
+                                        color="primary"
+                                      />
+                                    ) : (
+                                      ""
+                                    )
+                                  }
+                                  label={
+                                    item?.closed_At !== null
+                                      ? moment(item?.closed_At).format("LL")
+                                      : ""
+                                  }
                                   sx={{
                                     fontSize: "12px",
-                                    backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
+                                    backgroundColor:
+                                      item?.closed_At !== null
+                                        ? "#1D1F3B"
+                                        : "transparent",
                                     color: theme.palette.primary.main,
                                     fontWeight: 800,
                                   }}
@@ -1275,7 +1473,11 @@ const IssueHandlerConcerns = () => {
                             )}
 
                             {ticketStatus === "Closed" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
                                 <Typography
                                   sx={{
                                     fontWeight: 700,
@@ -1299,7 +1501,11 @@ const IssueHandlerConcerns = () => {
                               </Stack>
                             )}
 
-                            <Stack direction="row" gap={0.5} alignItems="center">
+                            <Stack
+                              direction="row"
+                              gap={0.5}
+                              alignItems="center"
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: 700,
@@ -1311,13 +1517,21 @@ const IssueHandlerConcerns = () => {
                                 REMARKS:{" "}
                               </Typography>
                               <Box sx={{ maxWidth: "20px" }}>
-                                <Tooltip title={item.remarks} placement="bottom-start">
+                                <Tooltip
+                                  title={item.remarks}
+                                  placement="bottom-start"
+                                >
                                   <Chip
                                     variant="filled"
                                     size="small"
                                     label={item.remarks ? item.remarks : ""}
                                     sx={{
-                                      backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                      backgroundColor:
+                                        item.remarks === null
+                                          ? "transparent"
+                                          : item.remarks === "Ticket Closed"
+                                          ? "#00913c"
+                                          : theme.palette.error.main,
                                       color: "#ffffff",
                                       borderRadius: "none",
                                       maxWidth: "300px",
@@ -1329,7 +1543,11 @@ const IssueHandlerConcerns = () => {
                             </Stack>
 
                             {ticketStatus === "" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
                                 <Typography
                                   sx={{
                                     fontWeight: 700,
@@ -1354,9 +1572,11 @@ const IssueHandlerConcerns = () => {
                                       ? "Hold Approval"
                                       : item.ticket_Status === "On-Hold"
                                       ? "On-Hold"
-                                      : item.ticket_Status === "For Closing Ticket"
+                                      : item.ticket_Status ===
+                                        "For Closing Ticket"
                                       ? "For Closing"
-                                      : item.ticket_Status === "For Confirmation"
+                                      : item.ticket_Status ===
+                                        "For Confirmation"
                                       ? "For Confirmation"
                                       : item.ticket_Status === "Closed"
                                       ? "Closed"
@@ -1374,9 +1594,11 @@ const IssueHandlerConcerns = () => {
                                         ? "#ffb74d"
                                         : item.ticket_Status === "On-Hold"
                                         ? "#ff6d00"
-                                        : item.ticket_Status === "For Closing Ticket"
+                                        : item.ticket_Status ===
+                                          "For Closing Ticket"
                                         ? "#3A96FA"
-                                        : item.ticket_Status === "For Confirmation"
+                                        : item.ticket_Status ===
+                                          "For Confirmation"
                                         ? "#009688"
                                         : item.ticket_Status === "Closed"
                                         ? "#00913c"
@@ -1388,8 +1610,13 @@ const IssueHandlerConcerns = () => {
                               </Stack>
                             )}
 
-                            {(ticketStatus === "Closed" || ticketStatus === "") && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
+                            {(ticketStatus === "Closed" ||
+                              ticketStatus === "") && (
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
                                 <Typography
                                   sx={{
                                     fontWeight: 700,
@@ -1405,16 +1632,26 @@ const IssueHandlerConcerns = () => {
                                   size="small"
                                   icon={
                                     item?.closed_Status === "On-Time" ? (
-                                      <FiberManualRecord fontSize="small" color="success" />
+                                      <FiberManualRecord
+                                        fontSize="small"
+                                        color="success"
+                                      />
                                     ) : item?.closed_Status === "Delay" ? (
-                                      <FiberManualRecord fontSize="small" color="error" />
+                                      <FiberManualRecord
+                                        fontSize="small"
+                                        color="error"
+                                      />
                                     ) : (
                                       ""
                                     )
                                   }
                                   sx={{
                                     fontSize: "12px",
-                                    backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
+                                    backgroundColor:
+                                      item?.closed_Status === "On-Time" ||
+                                      item?.closed_Status === "Delay"
+                                        ? theme.palette.bgForm.black1
+                                        : "transparent",
                                     color: theme.palette.text.main,
                                     fontWeight: 800,
                                   }}
@@ -1454,7 +1691,11 @@ const IssueHandlerConcerns = () => {
                             )}
 
                             {ticketStatus !== "For Approval" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
                                 <Typography
                                   sx={{
                                     fontWeight: 700,
@@ -1475,7 +1716,9 @@ const IssueHandlerConcerns = () => {
                                   onCancelCloseTicket={onCancelCloseAction}
                                   onManageTicket={onManageTicketAction}
                                   onTransferTicket={onTransferTicketAction}
-                                  onRejectTransferTicket={onRejectTransferTicketAction}
+                                  onRejectTransferTicket={
+                                    onRejectTransferTicketAction
+                                  }
                                   onManageTransfer={onManageTransferAction}
                                   onApproveTransfer={onApproveTransferAction}
                                   onCancelTransfer={onCancelTransferAction}
@@ -1492,8 +1735,16 @@ const IssueHandlerConcerns = () => {
                   ))}
 
                 {isError && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                  <Stack
+                    justifyContent="center"
+                    alignItems="center"
+                    padding={4}
+                  >
+                    <img
+                      src={somethingWentWrong}
+                      alt="Something Went Wrong"
+                      className="something-went-wrong-table"
+                    />
                     <Typography variant="h6" color="error" align="center">
                       Something went wrong.
                     </Typography>
@@ -1501,7 +1752,12 @@ const IssueHandlerConcerns = () => {
                 )}
 
                 {(isLoading || isFetching) && (
-                  <Stack justifyContent="center" alignItems="center" padding={4} sx={{ maxHeight: 300 }}>
+                  <Stack
+                    justifyContent="center"
+                    alignItems="center"
+                    padding={4}
+                    sx={{ maxHeight: 300 }}
+                  >
                     <CircularProgress />
                     <Typography variant="h5" color="#EDF2F7">
                       Please wait...
@@ -1509,14 +1765,25 @@ const IssueHandlerConcerns = () => {
                   </Stack>
                 )}
 
-                {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                    <Typography variant="h6" align="center">
-                      No records found.
-                    </Typography>
-                  </Stack>
-                )}
+                {isSuccess &&
+                  !data?.value?.openTicket.length &&
+                  !isLoading &&
+                  !isFetching && (
+                    <Stack
+                      justifyContent="center"
+                      alignItems="center"
+                      padding={4}
+                    >
+                      <img
+                        src={noRecordsFound}
+                        alt="No Records Found"
+                        className="norecords-found-table"
+                      />
+                      <Typography variant="h6" align="center">
+                        No records found.
+                      </Typography>
+                    </Stack>
+                  )}
 
                 <TablePagination
                   sx={{
@@ -1557,8 +1824,15 @@ const IssueHandlerConcerns = () => {
                           align="center"
                         >
                           <Checkbox
-                            indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length}
-                            checked={selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length}
+                            indeterminate={
+                              selectedTickets.length > 0 &&
+                              selectedTickets.length < selectableTickets.length
+                            }
+                            checked={
+                              selectableTickets.length > 0 &&
+                              selectedTickets.length ===
+                                selectableTickets.length
+                            }
                             onChange={handleSelectAll}
                             inputProps={{ "aria-label": "select all tickets" }}
                           />
@@ -1581,7 +1855,15 @@ const IssueHandlerConcerns = () => {
                             // setAscendingDate(!ascendingDate);
                           }}
                         >
-                          {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                          {ascending === true ? (
+                            <ArrowUpward
+                              sx={{ color: "#D65DB1", fontSize: "20px" }}
+                            />
+                          ) : (
+                            <ArrowDownward
+                              sx={{ color: "#D65DB1", fontSize: "20px" }}
+                            />
+                          )}
                         </IconButton>
                       </TableCell>
 
@@ -1637,7 +1919,15 @@ const IssueHandlerConcerns = () => {
                             refetch();
                           }}
                         >
-                          {ascendingDate === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                          {ascendingDate === true ? (
+                            <ArrowUpward
+                              sx={{ color: "#D65DB1", fontSize: "20px" }}
+                            />
+                          ) : (
+                            <ArrowDownward
+                              sx={{ color: "#D65DB1", fontSize: "20px" }}
+                            />
+                          )}
                         </IconButton>
                       </TableCell>
 
@@ -1725,14 +2015,18 @@ const IssueHandlerConcerns = () => {
                       !isLoading &&
                       !isFetching &&
                       data?.value?.openTicket?.map((item) => {
-                        const isSelected = selectedTickets.includes(item.ticketConcernId);
+                        const isSelected = selectedTickets.includes(
+                          item.ticketConcernId
+                        );
 
                         return (
                           <React.Fragment key={item.ticketConcernId}>
                             <TableRow
                               key={item.ticketConcernId}
                               sx={{
-                                backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
+                                backgroundColor: isSelected
+                                  ? "#1E2034"
+                                  : theme.palette.bgForm.black3,
                                 "&:hover": {
                                   background: "",
                                   color: "#EDF2F7",
@@ -1750,12 +2044,19 @@ const IssueHandlerConcerns = () => {
                                   align="center"
                                 >
                                   <Checkbox
-                                    checked={selectedTickets.includes(item.requestConcernId)}
-                                    onChange={() => handleSelectTicket(item.requestConcernId)}
+                                    checked={selectedTickets.includes(
+                                      item.requestConcernId
+                                    )}
+                                    onChange={() =>
+                                      handleSelectTicket(item.requestConcernId)
+                                    }
                                     inputProps={{
                                       "aria-label": `select ticket ${item.ticketConcernId}`,
                                     }}
-                                    disabled={item?.requestor_Name !== userDetails?.fullname}
+                                    disabled={
+                                      item?.requestor_Name !==
+                                      userDetails?.fullname
+                                    }
                                   />
                                 </TableCell>
                               )}
@@ -1808,12 +2109,14 @@ const IssueHandlerConcerns = () => {
                               </TableCell>
 
                               <Tooltip
-                                title={item.concern_Description.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
+                                title={item.concern_Description
+                                  .split("\r\n")
+                                  .map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
                                 placement="bottom-start"
                               >
                                 <TableCell
@@ -1830,12 +2133,14 @@ const IssueHandlerConcerns = () => {
                                   }}
                                   onClick={() => onViewAction(item)}
                                 >
-                                  {item.concern_Description?.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
+                                  {item.concern_Description
+                                    ?.split("\r\n")
+                                    .map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))}
                                 </TableCell>
                               </Tooltip>
 
@@ -1852,8 +2157,15 @@ const IssueHandlerConcerns = () => {
                                     <Chip
                                       variant="filled"
                                       size="small"
-                                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                      label={moment(item?.created_At).format("LL")}
+                                      icon={
+                                        <CalendarMonthOutlined
+                                          fontSize="small"
+                                          color="primary"
+                                        />
+                                      }
+                                      label={moment(item?.created_At).format(
+                                        "LL"
+                                      )}
                                       sx={{
                                         fontSize: "12px",
                                         backgroundColor: "#1D1F3B",
@@ -1883,14 +2195,21 @@ const IssueHandlerConcerns = () => {
                                     <Chip
                                       variant="filled"
                                       size="small"
-                                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                      icon={
+                                        <CalendarMonthOutlined
+                                          fontSize="small"
+                                          color="primary"
+                                        />
+                                      }
                                       sx={{
                                         fontSize: "12px",
                                         backgroundColor: "#1D1F3B",
                                         color: theme.palette.primary.main,
                                         fontWeight: 800,
                                       }}
-                                      label={moment(item.target_Date).format("LL")}
+                                      label={moment(item.target_Date).format(
+                                        "LL"
+                                      )}
                                     />
                                   </>
                                 ) : (
@@ -1898,7 +2217,8 @@ const IssueHandlerConcerns = () => {
                                 )}
                               </TableCell>
 
-                              {(ticketStatus === "Closed" || ticketStatus === "") && (
+                              {(ticketStatus === "Closed" ||
+                                ticketStatus === "") && (
                                 <TableCell
                                   sx={{
                                     color: "#EDF2F7",
@@ -1912,8 +2232,15 @@ const IssueHandlerConcerns = () => {
                                       <Chip
                                         variant="filled"
                                         size="small"
-                                        icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                        label={moment(item?.closed_At).format("LL")}
+                                        icon={
+                                          <CalendarMonthOutlined
+                                            fontSize="small"
+                                            color="primary"
+                                          />
+                                        }
+                                        label={moment(item?.closed_At).format(
+                                          "LL"
+                                        )}
                                         sx={{
                                           fontSize: "12px",
                                           backgroundColor: "#1D1F3B",
@@ -1943,7 +2270,9 @@ const IssueHandlerConcerns = () => {
                                     align="center"
                                     onClick={() => onViewAction(item)}
                                   >
-                                    {item.aging_Days !== null ? `${item.aging_Days} day(s)` : ""}
+                                    {item.aging_Days !== null
+                                      ? `${item.aging_Days} day(s)`
+                                      : ""}
                                   </TableCell>
                                 ))}
 
@@ -1958,13 +2287,21 @@ const IssueHandlerConcerns = () => {
                                 onClick={() => onViewAction(item)}
                               >
                                 <Box>
-                                  <Tooltip title={item.remarks} placement="bottom-start">
+                                  <Tooltip
+                                    title={item.remarks}
+                                    placement="bottom-start"
+                                  >
                                     <Chip
                                       variant="filled"
                                       size="small"
                                       label={item.remarks ? item.remarks : ""}
                                       sx={{
-                                        backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                        backgroundColor:
+                                          item.remarks === null
+                                            ? "transparent"
+                                            : item.remarks === "Ticket Closed"
+                                            ? "#00913c"
+                                            : theme.palette.error.main,
                                         color: "#ffffff",
                                         borderRadius: "none",
                                         maxWidth: "300px",
@@ -1982,7 +2319,11 @@ const IssueHandlerConcerns = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                     "&:hover": {
-                                      background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
+                                      background:
+                                        ticketStatus === "Closed" &&
+                                        item?.closed_Status === "On-Time"
+                                          ? ""
+                                          : "",
                                       color: "#EDF2F7",
                                     },
                                   }}
@@ -2002,9 +2343,11 @@ const IssueHandlerConcerns = () => {
                                         ? "Hold Approval"
                                         : item.ticket_Status === "On-Hold"
                                         ? "On-Hold"
-                                        : item.ticket_Status === "For Closing Ticket"
+                                        : item.ticket_Status ===
+                                          "For Closing Ticket"
                                         ? "For Closing"
-                                        : item.ticket_Status === "For Confirmation"
+                                        : item.ticket_Status ===
+                                          "For Confirmation"
                                         ? "For Confirmation"
                                         : item.ticket_Status === "Closed"
                                         ? "Closed"
@@ -2016,15 +2359,18 @@ const IssueHandlerConcerns = () => {
                                           ? "#F58900"
                                           : item.ticket_Status === "Open Ticket"
                                           ? "#ec9d29"
-                                          : item.ticket_Status === "For Transfer"
+                                          : item.ticket_Status ===
+                                            "For Transfer"
                                           ? "#ff7043"
                                           : item.ticket_Status === "For On-Hold"
                                           ? "#ffb74d"
                                           : item.ticket_Status === "On-Hold"
                                           ? "#ff6d00"
-                                          : item.ticket_Status === "For Closing Ticket"
+                                          : item.ticket_Status ===
+                                            "For Closing Ticket"
                                           ? "#3A96FA"
-                                          : item.ticket_Status === "For Confirmation"
+                                          : item.ticket_Status ===
+                                            "For Confirmation"
                                           ? "#009688"
                                           : item.ticket_Status === "Closed"
                                           ? "#00913c"
@@ -2036,7 +2382,8 @@ const IssueHandlerConcerns = () => {
                                 </TableCell>
                               )}
 
-                              {(ticketStatus === "Closed" || ticketStatus === "") && (
+                              {(ticketStatus === "Closed" ||
+                                ticketStatus === "") && (
                                 <TableCell
                                   sx={{
                                     color: "#EDF2F7",
@@ -2048,16 +2395,26 @@ const IssueHandlerConcerns = () => {
                                     size="small"
                                     icon={
                                       item?.closed_Status === "On-Time" ? (
-                                        <FiberManualRecord fontSize="small" color="success" />
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          color="success"
+                                        />
                                       ) : item?.closed_Status === "Delay" ? (
-                                        <FiberManualRecord fontSize="small" color="error" />
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          color="error"
+                                        />
                                       ) : (
                                         ""
                                       )
                                     }
                                     sx={{
                                       fontSize: "12px",
-                                      backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
+                                      backgroundColor:
+                                        item?.closed_Status === "On-Time" ||
+                                        item?.closed_Status === "Delay"
+                                          ? theme.palette.bgForm.black1
+                                          : "transparent",
                                       color: theme.palette.text.main,
                                       fontWeight: 800,
                                     }}
@@ -2108,12 +2465,16 @@ const IssueHandlerConcerns = () => {
                                     data={item}
                                     onHoldTicket={onHoldTicketAction}
                                     onResumeTicket={onResumeTicketAction}
-                                    onHoldManageTicket={onHoldManageTicketAction}
+                                    onHoldManageTicket={
+                                      onHoldManageTicketAction
+                                    }
                                     onCloseTicket={onCloseTicketAction}
                                     onCancelCloseTicket={onCancelCloseAction}
                                     onManageTicket={onManageTicketAction}
                                     onTransferTicket={onTransferTicketAction}
-                                    onRejectTransferTicket={onRejectTransferTicketAction}
+                                    onRejectTransferTicket={
+                                      onRejectTransferTicketAction
+                                    }
                                     onManageTransfer={onManageTransferAction}
                                     onApproveTransfer={onApproveTransferAction}
                                     onCancelTransfer={onCancelTransferAction}
@@ -2131,8 +2492,16 @@ const IssueHandlerConcerns = () => {
                     {isError && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                          <img
+                            src={somethingWentWrong}
+                            alt="Something Went Wrong"
+                            className="something-went-wrong-table"
+                          />
+                          <Typography
+                            variant="h5"
+                            color="#EDF2F7"
+                            marginLeft={2}
+                          >
                             Something went wrong.
                           </Typography>
                         </TableCell>
@@ -2150,16 +2519,27 @@ const IssueHandlerConcerns = () => {
                       </TableRow>
                     )}
 
-                    {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching && (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                            No records found.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
+                    {isSuccess &&
+                      !data?.value?.openTicket.length &&
+                      !isLoading &&
+                      !isFetching && (
+                        <TableRow>
+                          <TableCell colSpan={12} align="center">
+                            <img
+                              src={noRecordsFound}
+                              alt="No Records Found"
+                              className="norecords-found-table"
+                            />
+                            <Typography
+                              variant="h5"
+                              color="#EDF2F7"
+                              marginLeft={2}
+                            >
+                              No records found.
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -2196,9 +2576,16 @@ const IssueHandlerConcerns = () => {
             onHold={onHoldTicketAction}
           />
         )}
-        {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
+        {addTicketOpen && (
+          <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />
+        )}
 
-        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
+        <IssueHandlerClosingDialog
+          data={closeTicketData}
+          open={closeTicketOpen}
+          onClose={onDialogClose}
+          viewOnClose={viewOnClose}
+        />
 
         <RejectDateDialog
           data={rejectDateData}
@@ -2245,7 +2632,13 @@ const IssueHandlerConcerns = () => {
           />
         )}
 
-        {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
+        {rejectTransferOpen && (
+          <RejectTransfer
+            data={transferTicketData}
+            open={rejectTransferOpen}
+            onClose={rejectTransferOnClose}
+          />
+        )}
 
         {holdTicketOpen && (
           <IssueHandlerHoldDialog
