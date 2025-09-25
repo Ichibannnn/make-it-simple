@@ -62,7 +62,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: "Approve this request?",
+      text: "Approve request ticket?",
       icon: "info",
       color: "white",
       showCancelButton: true,

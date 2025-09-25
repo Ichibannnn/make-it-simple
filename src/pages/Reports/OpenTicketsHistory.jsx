@@ -256,7 +256,7 @@ const OpenTicketsHistory = ({
                         },
                       }}
                     >
-                      {item.category_Description}
+                      {item.category_Description ? item.category_Description : "--"}
                     </TableCell>
 
                     <TableCell
@@ -270,7 +270,7 @@ const OpenTicketsHistory = ({
                         },
                       }}
                     >
-                      {item.subCategory_Description}
+                      {item.subCategory_Description ? item.subCategory_Description : "--"}
                     </TableCell>
 
                     <TableCell

@@ -307,6 +307,17 @@ const AllTicketsHistory = ({
                   >
                     RESOLUTION
                   </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    NOTES
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
@@ -643,12 +654,33 @@ const AllTicketsHistory = ({
                             ))
                           : "--"}
                       </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          "&:hover": {
+                            background: "",
+                            color: "#EDF2F7",
+                          },
+                        }}
+                      >
+                        {item.notes
+                          ? item.notes?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </TableCell>
                     </TableRow>
                   ))}
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={18} align="center">
+                    <TableCell colSpan={19} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -659,7 +691,7 @@ const AllTicketsHistory = ({
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={18} align="center">
+                    <TableCell colSpan={19} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -670,7 +702,7 @@ const AllTicketsHistory = ({
 
                 {isSuccess && !data?.value?.reports.length && !isLoading & !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={18} align="center">
+                    <TableCell colSpan={19} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.

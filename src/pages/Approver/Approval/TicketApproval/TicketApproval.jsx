@@ -240,6 +240,57 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.channel_Name}</Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CATEGORY:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {" "}
+                              {item.getClosingTicketCategories?.map((item) => item.category_Description).join(", ")}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB CATEGORY:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {item.getClosingTicketSubCategories?.map((item) => item.subCategory_Description).join(", ")}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN CATEGORY:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.concernCategory}</Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>RESOLUTION:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {item.resolution?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>NOTES:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {item.notes
+                                ? item.notes?.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))
+                                : "--"}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE:</Typography>
                             <Chip
                               variant="filled"
@@ -303,8 +354,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
       ) : (
         <>
           <TableContainer>
-            <Table sx={{ borderBottom: "none" }}>
-              <TableHead>
+            <Table size="small" sx={{ borderBottom: "none" }}>
+              <TableHead sx={{ whiteSpace: "nowrap" }}>
                 <TableRow>
                   <TableCell
                     padding="checkbox"
@@ -356,6 +407,72 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     }}
                   >
                     TICKET DESCRIPTION
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CHANNEL
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CATEGORY
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    SUB CATEGORY
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    CONCERN CATEGORY
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    RESOLUTION
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    NOTES
                   </TableCell>
 
                   <TableCell
@@ -419,6 +536,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                             color: "#EDF2F7",
                             fontSize: "14px",
                             fontWeight: 500,
+                            width: "300px",
                           }}
                         >
                           {item.fullname}
@@ -445,12 +563,12 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                       <Tooltip title={item?.concern_Details} placement="bottom-start">
                         <TableCell
-                          // className="ellipsis-styling"
+                          className="ellipsis-styling"
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
-                            maxWidth: "300px",
+                            width: "500px",
                           }}
                           onClick={() => onViewAction(item)}
                         >
@@ -460,6 +578,94 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                               <br />
                             </span>
                           ))}
+                        </TableCell>
+                      </Tooltip>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => onViewAction(item)}
+                      >
+                        {item.channel_Name}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => onViewAction(item)}
+                      >
+                        {item.getClosingTicketCategories?.map((item) => item.category_Description).join(", ")}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => onViewAction(item)}
+                      >
+                        {item.getClosingTicketSubCategories?.map((item) => item.subCategory_Description).join(", ")}
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          color: "#EDF2F7",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => onViewAction(item)}
+                      >
+                        {item.concernCategory}
+                      </TableCell>
+
+                      <Tooltip title={item?.resolution} placement="bottom-start">
+                        <TableCell
+                          className="ellipsis-styling"
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            width: "500px",
+                            wordWrap: "break-word",
+                          }}
+                          onClick={() => onViewAction(item)}
+                        >
+                          {item.resolution?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </TableCell>
+                      </Tooltip>
+
+                      <Tooltip title={item?.notes} placement="bottom-start">
+                        <TableCell
+                          className="ellipsis-styling"
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            width: "200px",
+                            wordWrap: "break-word",
+                          }}
+                          onClick={() => onViewAction(item)}
+                        >
+                          {item.notes
+                            ? item.notes?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))
+                            : "--"}
                         </TableCell>
                       </Tooltip>
 
@@ -490,7 +696,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
+                    <TableCell colSpan={13} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -501,7 +707,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
+                    <TableCell colSpan={13} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -512,7 +718,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                 {isSuccess && !data?.value?.closingTicket?.length && !isLoading && !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
+                    <TableCell colSpan={13} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.

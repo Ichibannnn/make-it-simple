@@ -667,7 +667,7 @@ const ConcernTickets = () => {
                 </Stack>
               </Stack> */}
 
-              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center" }}>
+              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center", padding: 2 }}>
                 <ConcernTicketFiltering setDateFrom={setDateFrom} setDateTo={setDateTo} />
               </Stack>
             </Stack>
@@ -679,7 +679,7 @@ const ConcernTickets = () => {
                 placeholder="Search Request no.: eg 00001"
                 startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => dispatch(setSearchValue(e.target.value))}
                 sx={{
                   flex: 1,
                   borderRadius: "15px",

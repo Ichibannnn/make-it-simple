@@ -1285,7 +1285,10 @@ const ConcernDialog = ({ open, onClose }) => {
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Category */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Category</Typography>
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                        <Typography sx={{ fontSize: "13px" }}>Category</Typography>
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                      </Stack>
                       <Controller
                         control={control}
                         name="CategoryId"
@@ -1517,7 +1520,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                     {/* Ongoing 1 */}
                     <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Asset Tag</Typography>
+                      <Typography sx={{ fontSize: "13px" }}>Ongoing Update</Typography>
                       <Controller
                         control={control}
                         name=""
@@ -1544,6 +1547,93 @@ const ConcernDialog = ({ open, onClose }) => {
                                 },
                               }}
                               autoComplete="off"
+                              disabled
+                            />
+                          );
+                        }}
+                      />
+                      {/* {errors.AssetTag && (
+                        <Typography color="error" sx={{ fontSize: "12px" }}>
+                          {errors.AssetTag.message}
+                        </Typography>
+                      )} */}
+                    </Stack>
+                  </Stack>
+                </Stack>
+
+                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
+                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
+                    {/*  Ongoing 2*/}
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px" }}>Ongoing Update</Typography>
+                      <Controller
+                        control={control}
+                        name="AssetTag"
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="small"
+                              value={value}
+                              placeholder="Ongoing Update"
+                              onChange={onChange}
+                              error={!!errors.AssetTag}
+                              sx={{
+                                width: "100%",
+                              }}
+                              InputProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              autoComplete="off"
+                              disabled
+                            />
+                          );
+                        }}
+                      />
+                      {/* {errors.AssetTag && (
+                        <Typography color="error" sx={{ fontSize: "12px" }}>
+                          {errors.AssetTag.message}
+                        </Typography>
+                      )} */}
+                    </Stack>
+
+                    {/* Ongoing 3 */}
+                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                      <Typography sx={{ fontSize: "13px" }}>Ongoing Update</Typography>
+                      <Controller
+                        control={control}
+                        name=""
+                        render={({ field: { ref, value, onChange } }) => {
+                          return (
+                            <TextField
+                              inputRef={ref}
+                              size="small"
+                              value={value}
+                              placeholder="Ongoing Update"
+                              onChange={onChange}
+                              // error={!!errors.AssetTag}
+                              sx={{
+                                width: "100%",
+                              }}
+                              InputProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              InputLabelProps={{
+                                style: {
+                                  fontSize: "13px",
+                                },
+                              }}
+                              autoComplete="off"
+                              disabled
                             />
                           );
                         }}
@@ -1836,6 +1926,7 @@ const ConcernDialog = ({ open, onClose }) => {
               disabled={
                 !watch("ServiceProvider") ||
                 !watch("ChannelId") ||
+                watch("CategoryId")?.length === 0 ||
                 watch("Concern")?.length === 0 ||
                 !watch("Request_Type") ||
                 !watch("Severity") ||

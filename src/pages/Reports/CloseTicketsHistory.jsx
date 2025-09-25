@@ -201,19 +201,6 @@ const CloseTicketsHistory = ({
                 </Stack>
               </TableCell>
 
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  AGING DAYS
-                </Stack>
-              </TableCell> */}
-
               <TableCell
                 sx={{
                   background: "#1C2536",
@@ -278,6 +265,17 @@ const CloseTicketsHistory = ({
                 }}
               >
                 CATEGORY CONCERN
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                NOTES
               </TableCell>
             </TableRow>
           </TableHead>
@@ -451,31 +449,6 @@ const CloseTicketsHistory = ({
                     />
                   </TableCell>
 
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<History fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={`${item.aging_Days} Day(s)`}
-                    />
-                  </TableCell> */}
-
                   <TableCell
                     sx={{
                       color: "#EDF2F7",
@@ -596,14 +569,36 @@ const CloseTicketsHistory = ({
                     }}
                     align="center"
                   >
-                    {item.categoryConcern}
+                    {item.categoryConcern ? item.categoryConcern : "--"}
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      maxWidth: "400px",
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
+                  >
+                    {item.notes
+                      ? item.notes?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))
+                      : "--"}
                   </TableCell>
                 </TableRow>
               ))}
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={15} align="center">
+                <TableCell colSpan={16} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -614,7 +609,7 @@ const CloseTicketsHistory = ({
 
             {(isLoading || isFetching) && (
               <TableRow>
-                <TableCell colSpan={15} align="center">
+                <TableCell colSpan={16} align="center">
                   <CircularProgress />
                   <Typography variant="h5" color="#EDF2F7">
                     Please wait...
@@ -625,7 +620,7 @@ const CloseTicketsHistory = ({
 
             {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
               <TableRow>
-                <TableCell colSpan={15} align="center">
+                <TableCell colSpan={16} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

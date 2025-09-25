@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, FormHelperText, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
 import { useEffect, useRef, useState } from "react";
@@ -267,6 +267,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
+      // console.log("Data: ", data);
+
       setValue("ticketConcernId", data?.ticketConcernId);
       setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
       setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
@@ -309,7 +311,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         categoryConcern: data?.getForClosingTickets?.[0]?.categoryConcernName,
       });
 
-      setValue("Notes", data?.notes);
+      setValue("Notes", data?.getForClosingTickets?.[0]?.notes);
 
       const manageTicketArray = data?.getForClosingTickets?.map((item) =>
         item?.getAttachmentForClosingTickets?.map((subItem) => {
@@ -333,19 +335,19 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  useEffect(() => {
-    const selectedCategories = watch("CategoryId");
-    const selectedSubCategories = watch("SubCategoryId");
+  // useEffect(() => {
+  //   const selectedCategories = watch("CategoryId");
+  //   const selectedSubCategories = watch("SubCategoryId");
 
-    if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
-      );
-      setValue("SubCategoryId", filteredSubCategories);
-    } else {
-      setValue("SubCategoryId", []);
-    }
-  }, [subCategoryData]);
+  //   if (selectedCategories.length > 0) {
+  //     const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+  //       selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+  //     );
+  //     setValue("SubCategoryId", filteredSubCategories);
+  //   } else {
+  //     setValue("SubCategoryId", []);
+  //   }
+  // }, [subCategoryData]);
 
   // Function to open image view dialog
   const handleViewImage = async (file) => {
@@ -410,6 +412,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
+
+  // console.log("SubCategory: ", subCategoryData);
 
   return (
     <>
@@ -752,8 +756,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                           <Controller
                             control={control}
                             name="Technicians"
-                            render={({ field: { ref, value, onChange } }) => {
-                              return (
+                            render={({ field: { ref, value, onChange } }) => (
+                              <Stack spacing={0.5} sx={{ flex: 2 }}>
                                 <Autocomplete
                                   multiple
                                   ref={ref}
@@ -761,21 +765,29 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   value={value}
                                   options={technicianData?.value || []}
                                   loading={technicianIsLoading}
-                                  renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      placeholder="Add Technicians"
+                                      sx={{
+                                        "& .MuiInputBase-input": {
+                                          fontSize: "13px",
+                                        },
+                                      }}
+                                    />
+                                  )}
                                   onOpen={() => {
                                     if (!technicianIsSuccess) getTechnicians();
                                   }}
-                                  onChange={(_, value) => {
-                                    onChange(value);
+                                  onChange={(_, newValue) => {
+                                    if (newValue.length <= 3) {
+                                      onChange(newValue);
+                                    }
                                   }}
                                   getOptionLabel={(option) => option.technician_Name || ""}
-                                  isOptionEqualToValue={(option, value) => option.technicianId === value.technicianId}
-                                  getOptionDisabled={(option) => watch("Technicians")?.some((item) => item.technicianId === option.technicianId)}
-                                  sx={{
-                                    flex: 2,
-                                  }}
+                                  isOptionEqualToValue={(option, val) => option.technicianId === val.technicianId}
+                                  getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
                                   fullWidth
-                                  disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                   disablePortal
                                   disableClearable
                                   componentsProps={{
@@ -788,8 +800,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     },
                                   }}
                                 />
-                              );
-                            }}
+
+                                {value.length >= 3 && <FormHelperText sx={{ color: theme.palette.warning.main }}>You can only select up to 3 technicians.</FormHelperText>}
+                              </Stack>
+                            )}
                           />
                         </Stack>
                       </Stack>

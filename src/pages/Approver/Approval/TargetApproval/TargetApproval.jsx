@@ -91,7 +91,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
     Swal.fire({
       title: "Confirmation",
-      text: "Close selected tickets?",
+      text: "Approve selected request tickets?",
       icon: "info",
       color: "white",
       showCancelButton: true,

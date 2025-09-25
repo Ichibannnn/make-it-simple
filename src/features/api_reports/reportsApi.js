@@ -58,6 +58,24 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getMisClosedTickets: builder.query({
+      query: (params) => ({
+        url: "reports/finance-report",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
+    getSadSlaTickets: builder.query({
+      query: (params) => ({
+        url: "reports/sad-sla-report",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     getDownloadAllTickets: builder.query({
       query: (params) => ({
         url: `export/all-ticket-export`,
@@ -117,6 +135,26 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       }),
       providesTags: tags,
     }),
+
+    getDownloadMisClosedTickets: builder.query({
+      query: (params) => ({
+        url: `export/finance-report-export`,
+        method: "GET",
+        params: params,
+        responseHandler: (response) => response.blob(),
+      }),
+      providesTags: tags,
+    }),
+
+    getDownloadSadSlaTickets: builder.query({
+      query: (params) => ({
+        url: `export/sad-sla-export`,
+        method: "GET",
+        params: params,
+        responseHandler: (response) => response.blob(),
+      }),
+      providesTags: tags,
+    }),
   }),
 });
 
@@ -127,6 +165,8 @@ export const {
   useGetTransferredTicketsQuery,
   useGetOnHoldTicketsQuery,
   useGetSlaTicketsQuery,
+  useGetMisClosedTicketsQuery,
+  useGetSadSlaTicketsQuery,
 
   useLazyGetDownloadAllTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
@@ -134,4 +174,6 @@ export const {
   useLazyGetDownloadTransferredTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadSlaTicketsQuery,
+  useLazyGetDownloadMisClosedTicketsQuery,
+  useLazyGetDownloadSadSlaTicketsQuery,
 } = reportsApi;

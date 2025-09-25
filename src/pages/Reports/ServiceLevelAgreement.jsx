@@ -203,6 +203,17 @@ const ServiceLevelAgreement = ({
                   fontSize: "12px",
                 }}
               >
+                FOR CLOSING DATE
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 CLOSED DATE
               </TableCell>
 
@@ -354,7 +365,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.assign}
                   </TableCell>
@@ -369,7 +379,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.store}
                   </TableCell>
@@ -384,7 +393,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.description?.split("\r\n").map((line, index) => (
                       <span key={index}>
@@ -404,9 +412,8 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
-                    {moment(item.openDate).format("LL")}
+                    {moment(item.openDate).format("LL hh:mma")}
                   </TableCell>
 
                   <TableCell
@@ -419,7 +426,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.targetDate ? moment(item.targetDate).format("LL") : "--"}
                   </TableCell>
@@ -434,9 +440,8 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
-                    {item.closedDate ? moment(item.closedDate).format("LL") : "--"}
+                    {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}
                   </TableCell>
 
                   <TableCell
@@ -449,7 +454,20 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
+                  >
+                    {item.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
+                    }}
                   >
                     {item.solution ? item.solution : "--"}
                   </TableCell>
@@ -464,7 +482,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.requestType}
                   </TableCell>
@@ -479,7 +496,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.status}
                   </TableCell>
@@ -494,7 +510,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.rating}
                   </TableCell>
@@ -509,7 +524,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.category}
                   </TableCell>
@@ -524,7 +538,6 @@ const ServiceLevelAgreement = ({
                         color: "#EDF2F7",
                       },
                     }}
-                    align="center"
                   >
                     {item.subCategory}
                   </TableCell>
@@ -543,50 +556,12 @@ const ServiceLevelAgreement = ({
                   >
                     --
                   </TableCell>
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                    }}
-                    align="center"
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={
-                        item?.remarks === "On-Time" ? (
-                          <FiberManualRecord fontSize="small" color="success" />
-                        ) : item?.remarks === "Delay" ? (
-                          <FiberManualRecord fontSize="small" color="error" />
-                        ) : (
-                          ""
-                        )
-                      }
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: item?.remarks === "On-Time" || item?.remarks === "Delay" ? theme.palette.bgForm.black1 : "transparent",
-                        color: theme.palette.text.main,
-                        fontWeight: 800,
-                      }}
-                      label={
-                        item?.remarks === "On-Time" ? (
-                          <Typography sx={{ color: theme.palette.success.main, fontSize: "13px", fontWeight: 800 }}>On-Time</Typography>
-                        ) : item?.remarks === "Delay" ? (
-                          <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}>Delayed</Typography>
-                        ) : (
-                          <Typography sx={{ color: theme.palette.error.main, fontSize: "13px", fontWeight: 800 }}></Typography>
-                        )
-                      }
-                    />
-                  </TableCell> */}
                 </TableRow>
               ))}
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={16} align="center">
+                <TableCell colSpan={17} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -597,7 +572,7 @@ const ServiceLevelAgreement = ({
 
             {(isLoading || isFetching) && (
               <TableRow>
-                <TableCell colSpan={16} align="center">
+                <TableCell colSpan={17} align="center">
                   <CircularProgress />
                   <Typography variant="h5" color="#EDF2F7">
                     Please wait...
@@ -608,7 +583,7 @@ const ServiceLevelAgreement = ({
 
             {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
               <TableRow>
-                <TableCell colSpan={16} align="center">
+                <TableCell colSpan={17} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

@@ -115,6 +115,7 @@ const schema = yup.object().shape({
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [changePasswordDetails, setChangePasswordDetails] = useState([]);
+  const [getPassword, setGetPassword] = useState(null);
 
   const auth = useSelector((state) => state?.auth);
 
@@ -156,6 +157,7 @@ const LoginForm = () => {
       const { token, ...user } = res.value;
 
       if (res?.value?.isPasswordChanged === null) {
+        setGetPassword(watch("password"));
         setChangePasswordDetails(res);
         onToggle();
         reset();
@@ -180,10 +182,6 @@ const LoginForm = () => {
         });
         setShowAlert(true);
         navigate("/");
-
-        // setTimeout(() => {
-        //   console.log("Checked");
-        // }, 300);
       }
     } catch (error) {
       console.log("Error", error);
@@ -198,6 +196,8 @@ const LoginForm = () => {
       }
     }
   };
+
+  // console.log("getPassword", getPassword);
 
   const showPasswordHandler = () => {
     setShowPassword(!showPassword);
@@ -276,13 +276,13 @@ const LoginForm = () => {
           />
         )}
 
-        <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} />
+        <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} getPassword={getPassword} />
       </Container>
     </>
   );
 };
 
-export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
+export const ChangePassword = ({ changePasswordDetails, open, onClose, getPassword }) => {
   // console.log("User Name: ", changePasswordDetails.value.username);
 
   const [changeUserPassword, { isSuccess: isPostSuccess }] = useChangeUserPasswordMutation();
@@ -330,25 +330,34 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
 
     dispatch(setUserDetails(user));
 
-    changeUserPassword(payload)
-      .unwrap()
-      .then(() => {
-        navigate("/", { replace: true });
-        setTimeout(
-          () =>
-            toast.success("Success!", {
-              description: "Password has been changed!",
-              duration: 1500,
-            }),
-          300
-        );
-      })
-      .catch((error) => {
-        toast.error("Error!", {
-          description: error.data.error.message,
-          duration: 1500,
+    try {
+      changeUserPassword(payload)
+        .unwrap()
+        .then(() => {
+          navigate("/", { replace: true });
+          setTimeout(
+            () =>
+              toast.success("Success!", {
+                description: "Password has been changed!",
+                duration: 1500,
+              }),
+            300
+          );
+        })
+        .catch((error) => {
+          toast.error("Error!", {
+            description: error.data.error.message,
+            duration: 1500,
+          });
         });
+    } catch (error) {
+      console.log("ErrorToast", error);
+
+      toast.error("Error!", {
+        description: error.data.error.message,
+        duration: 1500,
       });
+    }
   };
 
   const onCloseAction = () => {
@@ -362,7 +371,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
     }
   }, [changePasswordDetails]);
 
-  // useEffect(() => {}, [input]);
+  console.log("watch", watch("current_Password"));
 
   return (
     <div>
@@ -488,12 +497,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose }) => {
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={
-                  changePasswordDetails?.value?.username !== watch("current_Password") ||
-                  !watch("new_Password") ||
-                  !watch("confirm_Password") ||
-                  watch("new_Password") !== watch("confirm_Password")
-                }
+                disabled={watch("current_Password") !== getPassword || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

@@ -20,7 +20,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search } from "@mui/icons-material";
+import { CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search } from "@mui/icons-material";
 
 import { useState } from "react";
 import moment from "moment";
@@ -33,6 +33,7 @@ import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import {
   useGetReceiverConcernsQuery,
   useLazyGetFilteredDepartmentQuery,
@@ -49,31 +50,27 @@ import { useSelector } from "react-redux";
 
 const NewReceiverConcern = () => {
   const schema = yup.object().shape({
+    CategoryId: yup.object().notRequired(),
     DepartmentId: yup.object().notRequired(),
     LocationId: yup.object().notRequired(),
   });
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, watch } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
     defaultValues: {
+      CategoryId: null,
       DepartmentId: null,
       LocationId: null,
     },
   });
 
-  const [approveStatus, setApproveStatus] = useState("false");
   const [concernDetails, setConcernDetails] = useState(null);
-  const userId = useSelector((state) => state?.user?.id);
-
   const [selectedIds, setSelectedIds] = useState([]);
+  const userId = useSelector((state) => state?.user?.id);
+  const userChannelId = useSelector((state) => state?.user?.channels?.[0]?.channelId);
+
+  console.log("ChannelUserId: ", userChannelId);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -84,16 +81,17 @@ const NewReceiverConcern = () => {
   // useSignalRConnection();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { data: notificationBadge } = useGetNotificationQuery();
   const { data, isLoading, isFetching, isSuccess, isError } = useGetReceiverConcernsQuery({
-    is_Approve: approveStatus,
+    is_Approve: false,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
+    CategoryId: watch("CategoryId")?.id,
     DepartmentId: watch("DepartmentId")?.id,
     LocationId: watch("LocationId")?.id,
   });
 
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetFilteredDepartmentQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetFilteredLocationQuery();
 
@@ -131,11 +129,6 @@ const NewReceiverConcern = () => {
       }
     });
   };
-
-  // console.log("SelectedData:", selectedIds);
-  // console.log("DepartmentData:", departmentData);
-  // console.log("UserId:", userId);
-  console.log("WatchData:", watch("DepartmentId")?.id);
 
   const takeTicketHandler = () => {
     takeTicketOnToggle();
@@ -197,20 +190,49 @@ const NewReceiverConcern = () => {
           )}
 
           <Stack sx={{ width: "100%", padding: 3, gap: 1 }}>
-            <OutlinedInput
-              placeholder="Search"
-              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              sx={{
-                // borderRadius: "15px",
-                fontSize: "small",
-                fontWeight: 400,
-                lineHeight: "1.4375rem",
-              }}
-            />
-
             <Stack gap={1} sx={{ flexDirection: "row", width: "100%" }}>
+              <OutlinedInput
+                placeholder="Search"
+                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                sx={{
+                  "& .MuiInputBase-input": { fontSize: "15px" },
+                }}
+                fullWidth
+              />
+            </Stack>
+
+            <Stack gap={1} sx={{ flexDirection: isScreenSmall ? "column" : "row", width: "100%" }}>
+              <Controller
+                control={control}
+                name="CategoryId"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <Autocomplete
+                      ref={ref}
+                      value={value}
+                      options={categoryData?.value?.category?.filter((item) => item.channelId === userChannelId) || []}
+                      loading={categoryIsLoading}
+                      renderInput={(params) => <TextField {...params} label="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      onOpen={() => {
+                        if (!categoryIsSuccess)
+                          getCategory({
+                            Status: true,
+                          });
+                      }}
+                      onChange={(_, value) => onChange(value)}
+                      getOptionLabel={(option) => `${option.category_Description}`}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      sx={{
+                        flex: 1,
+                      }}
+                      fullWidth
+                    />
+                  );
+                }}
+              />
+
               <Controller
                 control={control}
                 name="DepartmentId"
@@ -235,15 +257,6 @@ const NewReceiverConcern = () => {
                         flex: 1,
                       }}
                       fullWidth
-                      // componentsProps={{
-                      //   popper: {
-                      //     sx: {
-                      //       "& .MuiAutocomplete-listbox": {
-                      //         fontSize: "13px",
-                      //       },
-                      //     },
-                      //   },
-                      // }}
                     />
                   );
                 }}
@@ -273,15 +286,6 @@ const NewReceiverConcern = () => {
                         flex: 1,
                       }}
                       fullWidth
-                      // componentsProps={{
-                      //   popper: {
-                      //     sx: {
-                      //       "& .MuiAutocomplete-listbox": {
-                      //         fontSize: "13px",
-                      //       },
-                      //     },
-                      //   },
-                      // }}
                     />
                   );
                 }}
@@ -371,6 +375,13 @@ const NewReceiverConcern = () => {
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL:</Typography>
                                 <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
                                   {item.channel_Name ? item.channel_Name : "--"}
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CATEGORY:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                  {item?.getRequestTicketCategories?.length !== 0 ? item.getRequestTicketCategories?.map((item) => item.category_Description).join(", ") : "--"}
                                 </Typography>
                               </Stack>
 
@@ -511,6 +522,17 @@ const NewReceiverConcern = () => {
                         }}
                       >
                         CHANNEL
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                        }}
+                      >
+                        CATEGORY
                       </TableCell>
 
                       <TableCell
@@ -686,6 +708,21 @@ const NewReceiverConcern = () => {
                               }}
                               onClick={() => onViewAction(item)}
                             >
+                              {item?.getRequestTicketCategories?.length !== 0 ? item.getRequestTicketCategories?.map((item) => item.category_Description).join(", ") : "--"}
+                            </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
                               {moment(item.created_At).format("LL")}
                             </TableCell>
 
@@ -709,7 +746,7 @@ const NewReceiverConcern = () => {
 
                     {isError && (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={11} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
@@ -720,7 +757,7 @@ const NewReceiverConcern = () => {
 
                     {(isLoading || isFetching) && (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={11} align="center">
                           <CircularProgress />
                           <Typography variant="h5" color="#EDF2F7">
                             Please wait...

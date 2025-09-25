@@ -1,12 +1,4 @@
-import {
-  Autocomplete,
-  Divider,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Autocomplete, Divider, Grid, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import useDebounce from "../../hooks/useDebounce";
@@ -21,9 +13,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-
 import AllTicketsHistory from "./AllTicketsHistory";
 import OpenTicketsHistory from "./OpenTicketsHistory";
 import CloseTicketsHistory from "./CloseTicketsHistory";
@@ -32,17 +21,20 @@ import TransferredTicketsHistory from "./TransferredTicketsHistory";
 import ServiceLevelAgreement from "./ServiceLevelAgreement";
 
 import {
-  useGetAllTicketsQuery,
   useLazyGetDownloadAllTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
+  useLazyGetDownloadMisClosedTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
+  useLazyGetDownloadSadSlaTicketsQuery,
   useLazyGetDownloadSlaTicketsQuery,
   useLazyGetDownloadTransferredTicketsQuery,
 } from "../../features/api_reports/reportsApi";
 import { useLazyGetServiceProviderQuery } from "../../features/api masterlist/service_provider/serviceProviderApi";
 import { useSelector } from "react-redux";
 import { useLazyGetChannelsQuery } from "../../features/api_channel_setup/channel/channelApi";
+import MisClosedTickets from "./MisClosedTickets";
+import SadSlaReport from "./SadSlaReport";
 
 const schema = yup.object().shape({
   ServiceProvider: yup.object().nullable(),
@@ -77,33 +69,25 @@ const ReportsPage = () => {
     "Transferred Tickets",
     "On-Hold Tickets",
     "Service Level Agreement",
+    "Service Level Agreement (SAD)",
+    "MIS Closed Tickets",
   ];
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
-  const [
-    getServiceProvider,
-    {
-      data: serviceProviderData,
-      isLoading: serviceProviderIsLoading,
-      isSuccess: serviceProviderIsSuccess,
-    },
-  ] = useLazyGetServiceProviderQuery();
-  const [
-    getUser,
-    { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess },
-  ] = useLazyGetChannelsQuery();
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetChannelsQuery();
 
   const [getDownloadAllTickets] = useLazyGetDownloadAllTicketsQuery();
   const [getDownloadOpenTickets] = useLazyGetDownloadOpenTicketsQuery();
   const [getDownloadClosedTickets] = useLazyGetDownloadClosedTicketsQuery();
-  const [getDownloadTransferredTickets] =
-    useLazyGetDownloadTransferredTicketsQuery();
+  const [getDownloadTransferredTickets] = useLazyGetDownloadTransferredTicketsQuery();
   const [getDownloadOnHoldTickets] = useLazyGetDownloadOnHoldTicketsQuery();
   const [getDownloadSlaTickets] = useLazyGetDownloadSlaTicketsQuery();
+  const [getDownloadMisClosedTickets] = useLazyGetDownloadMisClosedTicketsQuery();
+  const [getDownloadSadSlaTickets] = useLazyGetDownloadSadSlaTicketsQuery();
 
   const { control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
@@ -127,9 +111,9 @@ const ReportsPage = () => {
           Date_To: moment(dateTo).format("YYYY-MM-DD"),
         }).unwrap();
 
-        const url = window.URL.createObjectURL(new Blob([response]), {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        console.log("Response: ", response);
+
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "Open_Tickets_Report.xlsx");
@@ -155,9 +139,7 @@ const ReportsPage = () => {
 
         console.log("Response: ", response);
 
-        const url = window.URL.createObjectURL(new Blob([response]), {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "Closed_Tickets_Report.xlsx");
@@ -182,9 +164,7 @@ const ReportsPage = () => {
 
         console.log("Response: ", response);
 
-        const url = window.URL.createObjectURL(new Blob([response]), {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "Transferred_Tickets_Report.xlsx");
@@ -209,9 +189,7 @@ const ReportsPage = () => {
 
         console.log("Response: ", response);
 
-        const url = window.URL.createObjectURL(new Blob([response]), {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "OnHold_Tickets_Report.xlsx");
@@ -236,9 +214,7 @@ const ReportsPage = () => {
 
         console.log("Response: ", response);
 
-        const url = window.URL.createObjectURL(new Blob([response]), {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "SLA_Tickets_Report.xlsx");
@@ -263,12 +239,56 @@ const ReportsPage = () => {
 
         console.log("Response: ", response);
 
-        const url = window.URL.createObjectURL(new Blob([response]), {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "All_Tickets_Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    } else if (reportNavigation === "MIS Closed Tickets") {
+      setIsLoading(true);
+      try {
+        const response = await getDownloadMisClosedTickets({
+          Search: search,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
+          UserId: user,
+          Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+          Date_To: moment(dateTo).format("YYYY-MM-DD"),
+        }).unwrap();
+
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "MIS_ClosedTickets_Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    } else if (reportNavigation === "Service Level Agreement (SAD)") {
+      setIsLoading(true);
+      try {
+        const response = await getDownloadSadSlaTickets({
+          Search: search,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
+          UserId: user,
+          Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+          Date_To: moment(dateTo).format("YYYY-MM-DD"),
+        }).unwrap();
+
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "SAD_SLA_Tickets_Report.xlsx");
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -347,8 +367,7 @@ const ReportsPage = () => {
     if (userDetails) {
       setValue("ServiceProvider", {
         id: userDetails?.serviceProviders?.[0]?.id,
-        serviceProviderName:
-          userDetails?.serviceProviders?.[0]?.serviceProviderName,
+        serviceProviderName: userDetails?.serviceProviders?.[0]?.serviceProviderName,
       });
 
       setValue("Channel", {
@@ -376,15 +395,10 @@ const ReportsPage = () => {
       }}
     >
       <Stack>
-        <Stack
-          direction="row"
-          sx={{ width: "100%", justifyContent: "space-between" }}
-        >
+        <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
           <Stack direction="row" gap={0.5}>
             <Stack>
-              <Typography variant={isScreenSmall ? "h5" : "h4"}>
-                Reports
-              </Typography>
+              <Typography variant={isScreenSmall ? "h5" : "h4"}>Reports</Typography>
             </Stack>
           </Stack>
 
@@ -406,14 +420,7 @@ const ReportsPage = () => {
           </LoadingButton>
         </Stack>
 
-        <Stack
-          sx={{
-            borderRadius: "20px",
-            backgroundColor: theme.palette.bgForm.black3,
-            marginTop: "5px",
-            minHeight: "730px",
-          }}
-        >
+        <Stack sx={{ borderRadius: "20px", backgroundColor: theme.palette.bgForm.black3, marginTop: "5px", minHeight: "730px" }}>
           <Grid container spacing={2} padding={2}>
             {/* Report Details */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -422,13 +429,7 @@ const ReportsPage = () => {
                 size="small"
                 value={reportNavigation}
                 options={categoryOptions || []}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Report Name"
-                    sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                  />
-                )}
+                renderInput={(params) => <TextField {...params} placeholder="Report Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                 onChange={(_, newValue) => setReportNavigation(newValue)}
                 disableClearable
                 sx={{ width: "100%" }}
@@ -446,9 +447,7 @@ const ReportsPage = () => {
 
             {/* Service Provider */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Typography sx={{ fontSize: "13px" }}>
-                Service Provider:
-              </Typography>
+              <Typography sx={{ fontSize: "13px" }}>Service Provider:</Typography>
               <Controller
                 control={control}
                 name="ServiceProvider"
@@ -457,19 +456,9 @@ const ReportsPage = () => {
                     ref={ref}
                     size="small"
                     value={value || null}
-                    options={
-                      userDetails
-                        ? userDetails?.serviceProviders
-                        : serviceProviderData?.value?.serviceProvider || []
-                    }
+                    options={userDetails ? userDetails?.serviceProviders : serviceProviderData?.value?.serviceProvider || []}
                     loading={serviceProviderIsLoading}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="Service Provider"
-                        sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                      />
-                    )}
+                    renderInput={(params) => <TextField {...params} placeholder="Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onOpen={() => {
                       if (!serviceProviderIsSuccess)
                         getServiceProvider({
@@ -483,9 +472,7 @@ const ReportsPage = () => {
                       setValue("UserId", null);
                     }}
                     getOptionLabel={(option) => option.serviceProviderName}
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{ width: "100%" }}
                     fullWidth
                     disablePortal
@@ -514,18 +501,8 @@ const ReportsPage = () => {
                     ref={ref}
                     size="small"
                     value={value || null}
-                    options={
-                      userDetails
-                        ? userDetails?.channels
-                        : watch("ServiceProvider")?.serviceChannel || []
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="Select Channel"
-                        sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                      />
-                    )}
+                    options={userDetails ? userDetails?.channels : watch("ServiceProvider")?.serviceChannel || []}
+                    renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onChange={(_, value) => {
                       onChange(value);
 
@@ -533,9 +510,7 @@ const ReportsPage = () => {
                       setValue("UserId", null);
                     }}
                     getOptionLabel={(option) => option.channelName}
-                    isOptionEqualToValue={(option, value) =>
-                      option.channelId === value.channelId
-                    }
+                    isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                     sx={{ width: "100%" }}
                     fullWidth
                     disablePortal
@@ -564,19 +539,9 @@ const ReportsPage = () => {
                     ref={ref}
                     size="small"
                     value={value || null}
-                    options={
-                      userData?.value?.channel.find(
-                        (item) => item.id === watch("Channel")?.channelId
-                      )?.channelUsers || []
-                    }
+                    options={userData?.value?.channel.find((item) => item.id === watch("Channel")?.channelId)?.channelUsers || []}
                     loading={userIsLoading}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="Employee (Please select Channel)"
-                        sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                      />
-                    )}
+                    renderInput={(params) => <TextField {...params} placeholder="Employee (Please select Channel)" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                     onOpen={() => {
                       if (!userIsSuccess) getUser();
                     }}
@@ -585,9 +550,7 @@ const ReportsPage = () => {
                       setUser(value?.userId);
                     }}
                     getOptionLabel={(option) => `${option.fullname}`}
-                    isOptionEqualToValue={(option, value) =>
-                      option.userId === value.userId
-                    }
+                    isOptionEqualToValue={(option, value) => option.userId === value.userId}
                     sx={{ width: "100%" }}
                     fullWidth
                     disabled={!watch("Channel")}
@@ -615,13 +578,7 @@ const ReportsPage = () => {
                   value={remarks}
                   onChange={(_, newValue) => setRemarks(newValue)}
                   options={remarksOptions}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder="Select Remarks"
-                      sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                    />
-                  )}
+                  renderInput={(params) => <TextField {...params} placeholder="Select Remarks" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                   disableClearable
                   sx={{ width: "100%" }}
                   componentsProps={{
@@ -692,10 +649,7 @@ const ReportsPage = () => {
             </Grid>
           </Grid>
 
-          <Divider
-            variant="fullWidth"
-            sx={{ background: "#2D3748", marginTop: "1px" }}
-          />
+          <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
           <Stack>
             {reportNavigation === "All Tickets" ? (
@@ -783,6 +737,40 @@ const ReportsPage = () => {
               />
             ) : reportNavigation === "Service Level Agreement" ? (
               <ServiceLevelAgreement
+                search={search}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                serviceProvider={serviceProvider}
+                channel={channel}
+                user={user}
+                remarks={remarks}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                setSheetData={setSheetData}
+              />
+            ) : reportNavigation === "Service Level Agreement (SAD)" ? (
+              <SadSlaReport
+                search={search}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                serviceProvider={serviceProvider}
+                channel={channel}
+                user={user}
+                remarks={remarks}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                setSheetData={setSheetData}
+              />
+            ) : reportNavigation === "MIS Closed Tickets" ? (
+              <MisClosedTickets
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
