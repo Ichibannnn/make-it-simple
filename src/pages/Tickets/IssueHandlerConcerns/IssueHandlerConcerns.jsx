@@ -84,7 +84,7 @@ import { useConfirmConcernMutation } from "../../../features/api_request/concern
 import { LoadingButton } from "@mui/lab";
 import RejectDateDialog from "./RejectDateDialog";
 
-import srReport from "../../../pdf/MIS_SRFinal_v3.pdf";
+import srReport from "../../../pdf/MIS_SRFinal_v2.pdf";
 import { PDFDocument } from "pdf-lib";
 
 const IssueHandlerConcerns = () => {
@@ -164,8 +164,6 @@ const IssueHandlerConcerns = () => {
   };
 
   const onViewAction = (data) => {
-    // console.log("data: ", data);
-
     viewOnToggle();
     setViewData(data);
   };

@@ -372,7 +372,7 @@ const MisClosedTickets = ({
                       },
                     }}
                   >
-                    {moment(item.open_Date).format("LL hh:mma")}
+                    {moment(item.open_Date).format("LL")}
                   </TableCell>
 
                   <TableCell
@@ -400,7 +400,7 @@ const MisClosedTickets = ({
                       },
                     }}
                   >
-                    {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}
+                    {item.forClosingDate ? moment(item.forClosingDate).format("LL") : "--"}
                   </TableCell>
 
                   <TableCell
@@ -414,7 +414,7 @@ const MisClosedTickets = ({
                       },
                     }}
                   >
-                    {item.closingDate ? moment(item.closingDate).format("LL hh:mma") : "--"}
+                    {item.closingDate ? moment(item.closingDate).format("LL") : "--"}
                   </TableCell>
 
                   <TableCell

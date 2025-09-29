@@ -12,6 +12,16 @@ export const departmentApi = api.enhanceEndpoints({ addTagTypes: tags }).injectE
       }),
       providesTags: tags,
     }),
+
+    getOneChargingDepartment: builder.query({
+      query: (params) => ({
+        url: "GetOneCharging/page_department?Status=true",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     syncDepartment: builder.mutation({
       query: (body) => ({
         url: "department",
@@ -23,4 +33,4 @@ export const departmentApi = api.enhanceEndpoints({ addTagTypes: tags }).injectE
   }),
 });
 
-export const { useGetDepartmentQuery, useLazyGetDepartmentQuery, useSyncDepartmentMutation } = departmentApi;
+export const { useGetDepartmentQuery, useLazyGetDepartmentQuery, useLazyGetOneChargingDepartmentQuery, useSyncDepartmentMutation } = departmentApi;

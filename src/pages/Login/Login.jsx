@@ -371,8 +371,6 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
     }
   }, [changePasswordDetails]);
 
-  console.log("watch", watch("current_Password"));
-
   return (
     <div>
       <Dialog fullWidth maxWidth="xs" open={open}>

@@ -1,25 +1,16 @@
 import { Autocomplete, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, Stack, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
-import { DeleteOutlineOutlined, Save } from "@mui/icons-material";
+import { Save } from "@mui/icons-material";
 
-import {
-  useCreateChannelMemberMutation,
-  useCreateChannelMutation,
-  useCreateChannelValidationMutation,
-  useLazyGetChannelMembersQuery,
-  useUpdateChannelMutation,
-} from "../../../features/api_channel_setup/channel/channelApi";
-import styled from "@emotion/styled";
-import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
-import MultiSelect from "../../../components/MultiSelect/MultiSelect";
+import { useCreateChannelMutation, useCreateChannelValidationMutation, useLazyGetChannelMembersQuery } from "../../../features/api_channel_setup/channel/channelApi";
+import { useLazyGetOneChargingDepartmentQuery } from "../../../features/api masterlist/department/departmentApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -29,14 +20,11 @@ const schema = yup.object().shape({
 });
 
 const ChannelDialog = ({ data, open, onClose }) => {
-  const [members, setMembers] = useState([]);
-  const [disabled, setDisabled] = useState(false);
-
   const [requestCheckbox, setRequestCheckbox] = useState(false);
 
   const [createChannelValidation, { error: errorValidation, isError: errorValidationIsError }] = useCreateChannelValidationMutation();
   const [createChannel, { isLoading: createChannelIsLoading, isFetching: createChannelIsFetching }] = useCreateChannelMutation();
-  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetOneChargingDepartmentQuery();
   const [getMembers, { data: memberData, isLoading: memberIsLoading, isSuccess: memberIsSuccess }] = useLazyGetChannelMembersQuery();
 
   const {
@@ -45,7 +33,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
     setValue: channelFormSetValue,
     watch: channelFormWatch,
     reset: channelFormReset,
-    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -67,9 +54,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
   };
 
   const onChannelFormSubmit = (formData) => {
-    console.log("FormData: ", formData);
-    // console.log("Watch Members: ", memberFormWatch("userId"));
-
     if (!data) {
       const addPayload = {
         channel_Name: formData.channel_Name,
@@ -85,7 +69,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
             description: "Channel added successfully!",
             duration: 1500,
           });
-          setMembers([]);
           channelFormReset();
           onClose();
         })
@@ -111,7 +94,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
             description: "Updated successfully!",
             duration: 1500,
           });
-          setMembers([]);
           channelFormReset();
           onClose();
         })
@@ -126,8 +108,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
 
   const onCloseAction = () => {
     onClose();
-    setDisabled(false);
-    setMembers([]);
     channelFormReset();
   };
 
@@ -135,25 +115,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
     setRequestCheckbox(event.target.checked);
   };
 
-  console.log("IsRequest: ", requestCheckbox);
-
   useEffect(() => {
     if (data) {
       channelFormSetValue("channel_Name", data.channel_Name);
-
-      // const departmentMap = data?.channelUsers?.reduce((dept, item) => {
-      //   if (!dept[item.department_Code]) {
-      //     dept[item.department_Code] = {
-      //       id: item.id,
-      //       department_Code: item.department_Code,
-      //       department_Name: item.department_Name,
-      //     };
-      //   }
-
-      //   return dept;
-      // }, {});
-      // const editDepartmentList = Object.values(departmentMap);
-      // console.log("filterDepartment: ", editDepartmentList);
 
       if (data?.request === true) {
         setRequestCheckbox(true);
@@ -170,7 +134,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
         userRole: item.userRole,
       }));
 
-      // channelFormSetValue("deparmentId", editDepartmentList);
       channelFormSetValue("userId", editMemberList);
     }
   }, [data]);
@@ -218,7 +181,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       onBlur={onValidateChannelName}
                       error={errorValidationIsError}
                       helperText={errorValidation?.data?.error?.message}
-                      // disabled={data ? true : false}
                       sx={{
                         flex: 2,
                       }}
@@ -239,20 +201,16 @@ const ChannelDialog = ({ data, open, onClose }) => {
                       ref={ref}
                       size="small"
                       value={value}
-                      options={departmentData?.value?.department || []}
+                      options={departmentData?.value?.onecharging || []}
                       loading={departmentIsLoading}
                       renderInput={(params) => <TextField {...params} label="Department" size="small" />}
                       onOpen={() => {
                         if (!departmentIsSuccess) getDepartment();
                       }}
                       onChange={(_, value) => {
-                        console.log("Value: ", value);
                         onChange(value);
 
-                        const departmentIdParams = value?.map((department) => department?.id);
-
-                        console.log("departmentIdParams", departmentIdParams);
-
+                        const departmentIdParams = value?.map((department) => department?.departmentId);
                         if (channelFormWatch("deparmentId").length === 0) {
                           channelFormSetValue("userId", []);
                         }
@@ -261,9 +219,9 @@ const ChannelDialog = ({ data, open, onClose }) => {
                           DepartmentId: departmentIdParams,
                         });
                       }}
-                      getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      getOptionDisabled={(option) => channelFormWatch("deparmentId")?.some((item) => item.id === option.id)}
+                      getOptionLabel={(option) => `${option.departmentCode} - ${option.departmentName}`}
+                      isOptionEqualToValue={(option, value) => option.departmentId === value.departmentId}
+                      getOptionDisabled={(option) => channelFormWatch("deparmentId")?.some((item) => item.departmentId === option.departmentId)}
                       sx={{
                         flex: 2,
                       }}
@@ -321,9 +279,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                             </li>
                           );
                         }}
-                        // onOpen={() => {
-                        //   if (!memberIsSuccess) getMembers();
-                        // }}
                         onChange={(_, value) => {
                           console.log("value: ", value);
                           onChange(value);
@@ -361,7 +316,6 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   checked={requestCheckbox || data?.is_Request === true}
                   onChange={requestCheckboxHandler}
                   size="small"
-                  // disabled={data ? true : false}
                   sx={{
                     padding: 0,
                   }}

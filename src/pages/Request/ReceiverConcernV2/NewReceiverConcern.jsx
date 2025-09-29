@@ -70,8 +70,6 @@ const NewReceiverConcern = () => {
   const userId = useSelector((state) => state?.user?.id);
   const userChannelId = useSelector((state) => state?.user?.channels?.[0]?.channelId);
 
-  console.log("ChannelUserId: ", userChannelId);
-
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
