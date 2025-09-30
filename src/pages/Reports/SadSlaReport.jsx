@@ -158,6 +158,17 @@ const SadSlaReport = ({
                   fontSize: "12px",
                 }}
               >
+                DATE
+              </TableCell>
+
+              {/* <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 OPEN DATE
               </TableCell>
 
@@ -181,7 +192,7 @@ const SadSlaReport = ({
                 }}
               >
                 ACTUAL
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -286,6 +297,31 @@ const SadSlaReport = ({
                   </TableCell>
 
                   <TableCell
+                    className="ellipsis-styling"
+                    sx={{
+                      color: "#EDF2F7",
+                      width: "500px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Open Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {moment(item.openDate).format("LL hh:mma")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.targetDate ? moment(item.targetDate).format("LL") : "--"}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Actual:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.actualDate ? moment(item.actualDate).format("LL hh:mma") : "--"}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -325,7 +361,7 @@ const SadSlaReport = ({
                     }}
                   >
                     {item.actualDate ? moment(item.actualDate).format("LL hh:mma") : "--"}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -367,7 +403,7 @@ const SadSlaReport = ({
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={7} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -378,7 +414,7 @@ const SadSlaReport = ({
 
             {(isLoading || isFetching) && (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={7} align="center">
                   <CircularProgress />
                   <Typography variant="h5" color="#EDF2F7">
                     Please wait...
@@ -389,7 +425,7 @@ const SadSlaReport = ({
 
             {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={7} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.

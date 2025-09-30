@@ -14,6 +14,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -136,29 +137,18 @@ const OpenTicketsHistory = ({
                     fontSize: "12px",
                   }}
                 >
-                  CATEGORY
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  SUB CATEGORY
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
                   CHANNEL
+                </TableCell>
+
+                <TableCell
+                  sx={{
+                    background: "#1C2536",
+                    color: "#D65DB1",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
+                  CATEGORY
                 </TableCell>
 
                 <TableCell
@@ -180,18 +170,7 @@ const OpenTicketsHistory = ({
                     fontSize: "12px",
                   }}
                 >
-                  REQUESTOR
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    background: "#1C2536",
-                    color: "#D65DB1",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  ISSUE HANDLER
+                  PERSONNEL
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -225,63 +204,30 @@ const OpenTicketsHistory = ({
                       {item.ticketConcernId}
                     </TableCell>
 
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        maxWidth: "600px",
-                        "&:hover": {
-                          background: "",
+                    <Tooltip title={item?.concern_Description} placement="bottom-start">
+                      <TableCell
+                        className="ellipsis-styling"
+                        sx={{
                           color: "#EDF2F7",
-                        },
-                      }}
-                    >
-                      {item.concern_Description?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </TableCell>
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          width: "200px",
+                        }}
+                      >
+                        {item.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </TableCell>
+                    </Tooltip>
 
                     <TableCell
                       sx={{
                         color: "#EDF2F7",
                         fontSize: "12px",
                         fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
-                      }}
-                    >
-                      {item.category_Description ? item.category_Description : "--"}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
-                      }}
-                    >
-                      {item.subCategory_Description ? item.subCategory_Description : "--"}
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
                       }}
                     >
                       {item.channel_Name}
@@ -290,12 +236,28 @@ const OpenTicketsHistory = ({
                     <TableCell
                       sx={{
                         color: "#EDF2F7",
+                        width: "300px",
+                        wordWrap: "break-word",
+                      }}
+                    >
+                      <Stack gap={0.5} sx={{ whiteSpace: "normal", overflowWrap: "break-word" }}>
+                        <Stack>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.category_Description ? item.category_Description : "--"}</Typography>
+                        </Stack>
+
+                        <Stack>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.subCategory_Description ? item.subCategory_Description : "--"}</Typography>
+                        </Stack>
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        color: "#EDF2F7",
                         fontSize: "12px",
                         fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
                       }}
                     >
                       <Chip
@@ -313,38 +275,30 @@ const OpenTicketsHistory = ({
                     </TableCell>
 
                     <TableCell
+                      className="ellipsis-styling"
                       sx={{
                         color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
+                        width: "500px",
                       }}
                     >
-                      {item.requestor_Name}
-                    </TableCell>
+                      <Stack gap={0.5}>
+                        <Stack>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Requestor:</Typography>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.requestor_Name}</Typography>
+                        </Stack>
 
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
-                      }}
-                    >
-                      {item.issue_Handler}
+                        <Stack>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Issue Handler:</Typography>
+                          <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.issue_Handler}</Typography>
+                        </Stack>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 ))}
 
               {isError && (
                 <TableRow>
-                  <TableCell colSpan={9} align="center">
+                  <TableCell colSpan={6} align="center">
                     <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       Something went wrong.
@@ -355,7 +309,7 @@ const OpenTicketsHistory = ({
 
               {(isLoading || isFetching) && (
                 <TableRow>
-                  <TableCell colSpan={9} align="center">
+                  <TableCell colSpan={6} align="center">
                     <CircularProgress />
                     <Typography variant="h5" color="#EDF2F7">
                       Please wait...
@@ -366,7 +320,7 @@ const OpenTicketsHistory = ({
 
               {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
                 <TableRow>
-                  <TableCell colSpan={9} align="center">
+                  <TableCell colSpan={6} align="center">
                     <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                       No records found.

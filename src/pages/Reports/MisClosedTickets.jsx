@@ -125,6 +125,17 @@ const MisClosedTickets = ({
                   fontSize: "12px",
                 }}
               >
+                PERSONNEL
+              </TableCell>
+
+              {/* <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 ISSUE HANDLER
               </TableCell>
 
@@ -137,7 +148,7 @@ const MisClosedTickets = ({
                 }}
               >
                 REQUESTOR
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -151,6 +162,17 @@ const MisClosedTickets = ({
               </TableCell>
 
               <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                DATE
+              </TableCell>
+
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -192,7 +214,7 @@ const MisClosedTickets = ({
                 }}
               >
                 APPROVER DATE
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -206,6 +228,17 @@ const MisClosedTickets = ({
               </TableCell>
 
               <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                CHARGING
+              </TableCell>
+
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -269,7 +302,7 @@ const MisClosedTickets = ({
                 }}
               >
                 LOCATION
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -315,6 +348,25 @@ const MisClosedTickets = ({
 
                   <TableCell
                     sx={{
+                      color: "#EDF2F7",
+                      width: "250px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Issue Handler:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.assignTo}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Requestor:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.requestor}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+                  {/* 
+                  <TableCell
+                    sx={{
                       color: "#22B4BF",
                       fontSize: "12px",
                       fontWeight: 800,
@@ -339,7 +391,7 @@ const MisClosedTickets = ({
                     }}
                   >
                     {item.requestor}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -362,6 +414,36 @@ const MisClosedTickets = ({
                   </TableCell>
 
                   <TableCell
+                    // className="ellipsis-styling"
+                    sx={{
+                      color: "#EDF2F7",
+                      width: "250px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Open Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.open_Date).format("LL")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.target_Date ? moment(item.target_Date).format("LL") : "--"}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Closed Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.forClosingDate ? moment(item.forClosingDate).format("LL") : "--"}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Approver Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.closingDate ? moment(item.closingDate).format("LL") : "--"}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -415,7 +497,7 @@ const MisClosedTickets = ({
                     }}
                   >
                     {item.closingDate ? moment(item.closingDate).format("LL") : "--"}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -432,6 +514,60 @@ const MisClosedTickets = ({
                   </TableCell>
 
                   <TableCell
+                    className="ellipsis-styling"
+                    sx={{
+                      color: "#EDF2F7",
+                      width: "400px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Company:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                          {item.companyCode} - {item.companyName}
+                        </Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Business Unit:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                          {item.businessUnitCode} - {item.businessUnitName}
+                        </Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Department:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                          {item.departmentCode} - {item.departmentName}
+                        </Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Unit:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                          {" "}
+                          {item.unitCode} - {item.unitName}
+                        </Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Sub Unit:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                          {" "}
+                          {item.subUnitCode} - {item.subUnitName}
+                        </Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Location:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                          {item.locationCode} - {item.locationName}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -514,7 +650,7 @@ const MisClosedTickets = ({
                     align="center"
                   >
                     {item.locationCode} - {item.locationName}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{

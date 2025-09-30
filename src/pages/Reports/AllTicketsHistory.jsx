@@ -138,39 +138,6 @@ const AllTicketsHistory = ({
                       fontSize: "12px",
                     }}
                   >
-                    CATEGORY
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    SUB CATEGORY
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    CONCERN CATEGORY
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
                     SERVICE PROVIDER
                   </TableCell>
 
@@ -193,7 +160,7 @@ const AllTicketsHistory = ({
                       fontSize: "12px",
                     }}
                   >
-                    START DATE
+                    CATEGORY
                   </TableCell>
 
                   <TableCell
@@ -204,7 +171,7 @@ const AllTicketsHistory = ({
                       fontSize: "12px",
                     }}
                   >
-                    TARGET DATE
+                    DATE
                   </TableCell>
 
                   <TableCell
@@ -215,7 +182,7 @@ const AllTicketsHistory = ({
                       fontSize: "12px",
                     }}
                   >
-                    FOR CLOSING DATE
+                    AGING DAYS
                   </TableCell>
 
                   <TableCell
@@ -226,53 +193,7 @@ const AllTicketsHistory = ({
                       fontSize: "12px",
                     }}
                   >
-                    CLOSED DATE
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      AGING DAYS
-                    </Stack>
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    REQUESTOR
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    ISSUE HANDLER
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    TECHNICIANS
+                    PERSONNEL
                   </TableCell>
 
                   <TableCell
@@ -284,17 +205,6 @@ const AllTicketsHistory = ({
                     }}
                   >
                     STATUS
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    CLOSING STATUS
                   </TableCell>
 
                   <TableCell
@@ -337,14 +247,9 @@ const AllTicketsHistory = ({
                     >
                       <TableCell
                         sx={{
-                          color: "#EDF2F7",
+                          color: "#22B4BF",
                           fontSize: "12px",
-                          fontWeight: 500,
-                          backgroundColor: theme.palette.bgForm.black3,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
+                          fontWeight: 800,
                         }}
                         align="center"
                       >
@@ -359,10 +264,6 @@ const AllTicketsHistory = ({
                             fontSize: "12px",
                             fontWeight: 500,
                             width: "100px",
-                            "&:hover": {
-                              background: "",
-                              color: "#EDF2F7",
-                            },
                           }}
                         >
                           {item.concerns?.split("\r\n").map((line, index) => (
@@ -379,52 +280,6 @@ const AllTicketsHistory = ({
                           color: "#EDF2F7",
                           fontSize: "12px",
                           fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item.ticketCategoryDescriptions ? item.ticketCategoryDescriptions : "--"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item.ticketSubCategoryDescriptions ? item.ticketSubCategoryDescriptions : "--"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item.categoryConcern ? item.categoryConcern : "--"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
                         }}
                       >
                         {item.serviceProviderName}
@@ -435,27 +290,64 @@ const AllTicketsHistory = ({
                           color: "#EDF2F7",
                           fontSize: "12px",
                           fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
                         }}
                       >
                         {item.channel_Name}
                       </TableCell>
 
                       <TableCell
+                        className="ellipsis-styling"
                         sx={{
                           color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
+                          width: "500px",
                         }}
                       >
-                        {moment(item.startDate).format("LL hh:mma")}
+                        <Stack gap={0.5}>
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.ticketCategoryDescriptions ? item.ticketCategoryDescriptions : "--"}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.ticketSubCategoryDescriptions ? item.ticketSubCategoryDescriptions : "--"}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Concern Category:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.categoryConcern ? item.categoryConcern : "--"}</Typography>
+                          </Stack>
+                        </Stack>
+                      </TableCell>
+
+                      <TableCell
+                        className="ellipsis-styling"
+                        sx={{
+                          color: "#EDF2F7",
+                          width: "500px",
+                        }}
+                      >
+                        <Stack gap={0.5}>
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Start Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.startDate).format("LL hh:mma")}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.target_Date).format("LL")}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>For Closing Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.forClosedDate ? moment(item.forClosedDate).format("LL hh:mma") : "--"}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Closed Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}</Typography>
+                          </Stack>
+                        </Stack>
                       </TableCell>
 
                       <TableCell
@@ -463,52 +355,6 @@ const AllTicketsHistory = ({
                           color: "#EDF2F7",
                           fontSize: "12px",
                           fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {moment(item.target_Date).format("LL")}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item?.forClosedDate ? moment(item.forClosedDate).format("LL hh:mma") : "--"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
                         }}
                         align="center"
                       >
@@ -516,17 +362,96 @@ const AllTicketsHistory = ({
                       </TableCell>
 
                       <TableCell
+                        className="ellipsis-styling"
                         sx={{
                           color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
+                          width: "500px",
                         }}
                       >
-                        {item.requestor_Name}
+                        <Stack gap={0.5}>
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Requestor:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.requestor_Name}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Issue Handler:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.personnel}</Typography>
+                          </Stack>
+
+                          <Stack>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Technicians:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.technicians ? item.technicians : "--"}</Typography>
+                          </Stack>
+                        </Stack>
+                      </TableCell>
+
+                      <TableCell
+                        className="ellipsis-styling"
+                        sx={{
+                          color: "#EDF2F7",
+                          width: "500px",
+                        }}
+                      >
+                        <Stack gap={0.5}>
+                          <Stack>
+                            <Chip
+                              size="small"
+                              label={
+                                item.ticket_Status === "Open"
+                                  ? "Open"
+                                  : item.ticket_Status === "Transfer"
+                                  ? "Transfer"
+                                  : item.ticket_Status === "For On-Hold"
+                                  ? "Hold Approval"
+                                  : item.ticket_Status === "On-Hold"
+                                  ? "On-Hold"
+                                  : item.ticket_Status === "For Closing Ticket"
+                                  ? "For Closing"
+                                  : item.ticket_Status === "Confirmation"
+                                  ? "For Confirmation"
+                                  : item.ticket_Status === "Closed"
+                                  ? "Closed"
+                                  : "--"
+                              }
+                              sx={{
+                                backgroundColor:
+                                  item.ticket_Status === "Open"
+                                    ? "#ec9d29"
+                                    : item.ticket_Status === "Transfer"
+                                    ? "#ff7043"
+                                    : item.ticket_Status === "For On-Hold"
+                                    ? "#ffb74d"
+                                    : item.ticket_Status === "On-Hold"
+                                    ? "#ff6d00"
+                                    : item.ticket_Status === "For Closing Ticket"
+                                    ? "#3A96FA"
+                                    : item.ticket_Status === "For Confirmation"
+                                    ? "#009688"
+                                    : item.ticket_Status === "Closed"
+                                    ? "#00913c"
+                                    : "transparent",
+                                color: "#ffffffde",
+                                borderRadius: "20px",
+                                fontSize: "12px",
+                              }}
+                            />
+                          </Stack>
+
+                          <Stack>
+                            <Chip
+                              variant="filled"
+                              size="small"
+                              label={item.closingStatus === "On-Time" ? "On-Time" : item.closingStatus === "Delayed" ? "Delayed" : "--"}
+                              sx={{
+                                backgroundColor: item.closingStatus === "Delayed" ? "#ff7043" : item.closingStatus === "On-Time" ? "#00913c" : "transparent",
+                                color: "#ffffffde",
+                                borderRadius: "20px",
+                                fontSize: "12px",
+                              }}
+                            />
+                          </Stack>
+                        </Stack>
                       </TableCell>
 
                       <TableCell
@@ -534,115 +459,6 @@ const AllTicketsHistory = ({
                           color: "#EDF2F7",
                           fontSize: "12px",
                           fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item.personnel}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        {item.technicians ? item.technicians : "--"}
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          label={
-                            item.ticket_Status === "Open"
-                              ? "Open"
-                              : item.ticket_Status === "Transfer"
-                              ? "Transfer"
-                              : item.ticket_Status === "For On-Hold"
-                              ? "Hold Approval"
-                              : item.ticket_Status === "On-Hold"
-                              ? "On-Hold"
-                              : item.ticket_Status === "For Closing Ticket"
-                              ? "For Closing"
-                              : item.ticket_Status === "Confirmation"
-                              ? "For Confirmation"
-                              : item.ticket_Status === "Closed"
-                              ? "Closed"
-                              : ""
-                          }
-                          sx={{
-                            backgroundColor:
-                              item.ticket_Status === "Open"
-                                ? "#ec9d29"
-                                : item.ticket_Status === "Transfer"
-                                ? "#ff7043"
-                                : item.ticket_Status === "For On-Hold"
-                                ? "#ffb74d"
-                                : item.ticket_Status === "On-Hold"
-                                ? "#ff6d00"
-                                : item.ticket_Status === "For Closing Ticket"
-                                ? "#3A96FA"
-                                : item.ticket_Status === "For Confirmation"
-                                ? "#009688"
-                                : item.ticket_Status === "Closed"
-                                ? "#00913c"
-                                : "transparent",
-                            color: "#ffffffde",
-                            borderRadius: "20px",
-                          }}
-                        />
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
-                        }}
-                      >
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          label={item.closingStatus === "On-Time" ? "On-Time" : item.closingStatus === "Delayed" ? "Delayed" : "--"}
-                          sx={{
-                            backgroundColor: item.closingStatus === "Delayed" ? "#ff7043" : item.closingStatus === "On-Time" ? "#00913c" : "transparent",
-                            color: "#ffffffde",
-                            borderRadius: "20px",
-                          }}
-                        />
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
                         }}
                       >
                         {item.resolution
@@ -660,10 +476,6 @@ const AllTicketsHistory = ({
                           color: "#EDF2F7",
                           fontSize: "12px",
                           fontWeight: 500,
-                          "&:hover": {
-                            background: "",
-                            color: "#EDF2F7",
-                          },
                         }}
                       >
                         {item.notes
@@ -680,7 +492,7 @@ const AllTicketsHistory = ({
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={19} align="center">
+                    <TableCell colSpan={11} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -691,7 +503,7 @@ const AllTicketsHistory = ({
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={19} align="center">
+                    <TableCell colSpan={11} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -700,9 +512,9 @@ const AllTicketsHistory = ({
                   </TableRow>
                 )}
 
-                {isSuccess && !data?.value?.reports.length && !isLoading & !isFetching && (
+                {isSuccess && !data?.value?.reports?.length && !isLoading && !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={19} align="center">
+                    <TableCell colSpan={11} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.

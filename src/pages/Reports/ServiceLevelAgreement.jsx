@@ -181,6 +181,17 @@ const ServiceLevelAgreement = ({
                   fontSize: "12px",
                 }}
               >
+                DATE
+              </TableCell>
+
+              {/* <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 OPEN DATE
               </TableCell>
 
@@ -215,7 +226,7 @@ const ServiceLevelAgreement = ({
                 }}
               >
                 CLOSED DATE
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -272,7 +283,7 @@ const ServiceLevelAgreement = ({
                 CATEGORY
               </TableCell>
 
-              <TableCell
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -281,7 +292,7 @@ const ServiceLevelAgreement = ({
                 }}
               >
                 SUB CATEGORY
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -403,6 +414,36 @@ const ServiceLevelAgreement = ({
                   </TableCell>
 
                   <TableCell
+                    className="ellipsis-styling"
+                    sx={{
+                      color: "#EDF2F7",
+                      width: "500px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Open Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {moment(item.openDate).format("LL hh:mma")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.targetDate ? moment(item.targetDate).format("LL") : "--"}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>For Closing Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Closed Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -456,7 +497,7 @@ const ServiceLevelAgreement = ({
                     }}
                   >
                     {item.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -515,6 +556,26 @@ const ServiceLevelAgreement = ({
                   </TableCell>
 
                   <TableCell
+                    className="ellipsis-styling"
+                    sx={{
+                      color: "#EDF2F7",
+                      width: "500px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.category ? item.category : "--"}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.subCategory ? item.subCategory : "--"}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -540,7 +601,7 @@ const ServiceLevelAgreement = ({
                     }}
                   >
                     {item.subCategory}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{

@@ -1935,7 +1935,6 @@ const IssueHandlerConcerns = () => {
                                 }}
                                 onClick={() => onViewAction(item)}
                               >
-                                {" "}
                                 {item.target_Date ? (
                                   <>
                                     <Chip
@@ -1952,7 +1951,7 @@ const IssueHandlerConcerns = () => {
                                     />
                                   </>
                                 ) : (
-                                  "-"
+                                  "--"
                                 )}
                               </TableCell>
 

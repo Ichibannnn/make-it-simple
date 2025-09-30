@@ -60,11 +60,10 @@ const Login = () => {
         >
           <Box sx={{ height: "full", width: "100%", padding: 4 }} textAlign="center">
             <Typography mt={5} color="white" fontWeight="bold" variant="h3">
-              {" "}
               WELCOME!
             </Typography>
             <Typography color="white" fontSize="sm">
-              One TEAM One RDF
+              MIS - HELPDESK
             </Typography>
             <img src={background} alt="background" className="svg-styling" />
           </Box>

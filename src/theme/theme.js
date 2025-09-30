@@ -285,7 +285,6 @@ const theme = createTheme({
           borderBottom: "1px solid #2D3748",
           "&:hover": {
             backgroundColor: "#1A222F",
-            color: "#9e77ed",
           },
         },
       },
@@ -296,7 +295,6 @@ const theme = createTheme({
         root: {
           "&:hover": {
             backgroundColor: "#1A222F",
-            color: "#9e77ed",
           },
         },
       },

@@ -13,6 +13,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -129,7 +130,7 @@ const CloseTicketsHistory = ({
                 MONTH
               </TableCell>
 
-              <TableCell
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -153,7 +154,7 @@ const CloseTicketsHistory = ({
                 <Stack direction="row" alignItems="center" gap={0.5}>
                   END DATE
                 </Stack>
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -196,6 +197,17 @@ const CloseTicketsHistory = ({
                   fontSize: "12px",
                 }}
               >
+                DATE
+              </TableCell>
+
+              {/* <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 <Stack direction="row" alignItems="center" gap={0.5}>
                   TARGET DATE
                 </Stack>
@@ -210,7 +222,7 @@ const CloseTicketsHistory = ({
                 }}
               >
                 ACTUAL
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -256,7 +268,7 @@ const CloseTicketsHistory = ({
                 CATEGORY
               </TableCell>
 
-              <TableCell
+              {/* <TableCell
                 sx={{
                   background: "#1C2536",
                   color: "#D65DB1",
@@ -265,7 +277,7 @@ const CloseTicketsHistory = ({
                 }}
               >
                 CATEGORY CONCERN
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -299,10 +311,6 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
@@ -314,25 +322,18 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
                     {item.month}
                   </TableCell>
 
-                  <TableCell
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     <Chip
@@ -354,10 +355,7 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     <Chip
@@ -372,19 +370,14 @@ const CloseTicketsHistory = ({
                       }}
                       label={moment(item.end_Date).format("LL")}
                     />
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
-                    align="center"
                   >
                     {item.personnel}
                   </TableCell>
@@ -394,45 +387,68 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
                     {item.ticket_Number}
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "400px",
-                      "&:hover": {
-                        background: "",
+                  <Tooltip title={item?.description} placement="bottom-start">
+                    <TableCell
+                      className="ellipsis-styling"
+                      sx={{
                         color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.description?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                  </TableCell>
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        width: "100px",
+                      }}
+                    >
+                      {item.description?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </TableCell>
+                  </Tooltip>
 
                   <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+                      width: "300px",
+                    }}
+                  >
+                    <Stack>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Start Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.start_Date).format("LL")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>End Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.end_Date).format("LL")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.target_Date).format("LL")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Actual:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.actual).format("LL")}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+
                     }}
                   >
                     <Chip
@@ -454,10 +470,7 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     <Chip
@@ -472,17 +485,13 @@ const CloseTicketsHistory = ({
                       }}
                       label={moment(item.actual).format("LL")}
                     />
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
@@ -494,10 +503,6 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
@@ -547,10 +552,27 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+                      width: "300px",
+                    }}
+                  >
+                    <Stack>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.category}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Concern Category:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.categoryConcern ? item.categoryConcern : "--"}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
                     }}
                     align="center"
                   >
@@ -562,15 +584,11 @@ const CloseTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
                     {item.categoryConcern ? item.categoryConcern : "--"}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -578,10 +596,6 @@ const CloseTicketsHistory = ({
                       fontSize: "12px",
                       fontWeight: 500,
                       maxWidth: "400px",
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.notes
@@ -598,7 +612,7 @@ const CloseTicketsHistory = ({
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={16} align="center">
+                <TableCell colSpan={11} align="center">
                   <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
@@ -609,7 +623,7 @@ const CloseTicketsHistory = ({
 
             {(isLoading || isFetching) && (
               <TableRow>
-                <TableCell colSpan={16} align="center">
+                <TableCell colSpan={11} align="center">
                   <CircularProgress />
                   <Typography variant="h5" color="#EDF2F7">
                     Please wait...
@@ -620,7 +634,7 @@ const CloseTicketsHistory = ({
 
             {isSuccess && !data?.value?.reports.length && !isLoading && !isFetching && (
               <TableRow>
-                <TableCell colSpan={16} align="center">
+                <TableCell colSpan={11} align="center">
                   <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     No records found.
