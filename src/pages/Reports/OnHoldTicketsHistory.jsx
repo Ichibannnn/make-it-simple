@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useGetOnHoldTicketsQuery } from "../../features/api_reports/reportsApi";
 import { CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
+import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
@@ -199,45 +199,43 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
                     {item.ticketConcernId}
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "400px",
-                      "&:hover": {
-                        background: "",
+                  <Tooltip title={item?.concerns} placement="bottom-start">
+                    <TableCell
+                      sx={{
                         color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.concerns?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                  </TableCell>
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        width: "400px",
+                        overflowWrap: "break-word",
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      {item.concerns?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </TableCell>
+                  </Tooltip>
 
                   <TableCell
+                    // className="ellipsis-styling"
                     sx={{
                       color: theme.palette.warning.main,
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+                      width: "300px",
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                      whiteSpace: "normal",
                     }}
                   >
                     {item.reason}
@@ -248,10 +246,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.added_By}
@@ -262,10 +256,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     <Chip
@@ -287,10 +277,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.approvedBy !== null ? item.approvedBy : `---`}
@@ -301,10 +287,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.approvedDate !== null ? (
@@ -330,10 +312,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item?.resume_At ? (

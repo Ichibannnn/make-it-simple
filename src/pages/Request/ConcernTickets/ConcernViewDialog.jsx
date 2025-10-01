@@ -579,7 +579,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       color: "#48BB78",
                     }}
                   >
-                    {!editData ? "New Incident" : "View Incident"}
+                    {!editData ? "New Request" : "View Request"}
                   </Typography>
                 </Stack>
               </Stack>

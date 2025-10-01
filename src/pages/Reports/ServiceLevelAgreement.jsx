@@ -148,6 +148,17 @@ const ServiceLevelAgreement = ({
                   fontSize: "12px",
                 }}
               >
+                PERSONNEL
+              </TableCell>
+
+              {/* <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
                 ASSIGN
               </TableCell>
 
@@ -160,7 +171,7 @@ const ServiceLevelAgreement = ({
                 }}
               >
                 STORE
-              </TableCell>
+              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -326,10 +337,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
@@ -341,10 +348,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
@@ -356,10 +359,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
@@ -367,14 +366,31 @@ const ServiceLevelAgreement = ({
                   </TableCell>
 
                   <TableCell
+                    className="ellipsis-styling"
+                    sx={{
+                      color: "#EDF2F7",
+                      width: "500px",
+                    }}
+                  >
+                    <Stack gap={0.5}>
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Assign:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.assign}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Store:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.store}</Typography>
+                      </Stack>
+                    </Stack>
+                  </TableCell>
+
+                  {/* <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.assign}
@@ -385,24 +401,17 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.store}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.description?.split("\r\n").map((line, index) => (
@@ -414,10 +423,9 @@ const ServiceLevelAgreement = ({
                   </TableCell>
 
                   <TableCell
-                    className="ellipsis-styling"
                     sx={{
                       color: "#EDF2F7",
-                      width: "500px",
+                      width: "400px",
                     }}
                   >
                     <Stack gap={0.5}>
@@ -448,10 +456,7 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {moment(item.openDate).format("LL hh:mma")}
@@ -462,10 +467,7 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.targetDate ? moment(item.targetDate).format("LL") : "--"}
@@ -476,10 +478,7 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}
@@ -490,10 +489,7 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
@@ -504,10 +500,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.solution ? item.solution : "--"}
@@ -518,10 +510,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.requestType}
@@ -532,10 +520,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.status}
@@ -546,10 +530,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.rating}
@@ -580,10 +560,7 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.category}
@@ -594,10 +571,7 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+
                     }}
                   >
                     {item.subCategory}
@@ -608,10 +582,6 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                     align="center"
                   >
