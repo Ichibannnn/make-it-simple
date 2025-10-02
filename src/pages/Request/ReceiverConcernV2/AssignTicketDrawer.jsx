@@ -19,6 +19,7 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+
 import { useSelector } from "react-redux";
 import { useTakeCherryPickTicketMutation } from "../../../features/api_request/concerns/concernApi";
 import Swal from "sweetalert2";
@@ -30,10 +31,12 @@ const schema = yup.object().shape({
   ChannelId: yup.object().notRequired(),
   TargetDate: yup.date().notRequired(),
   IssueHandler: yup.object().nullable(),
+  Reason: yup.string().notRequired(),
 });
 
-const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }) => {
+const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
   const [formClosed, setFormClosed] = useState(false);
+  const [showReason, setShowReason] = useState(false);
 
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
@@ -61,6 +64,7 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
       ChannelId: null,
       TargetDate: null,
       IssueHandler: null,
+      Reason: "",
     },
   });
 
@@ -161,7 +165,19 @@ const AssignTicketDrawer = ({ data, open, onClose, selectedIds, setSelectedIds }
     });
   }, [userDetails]);
 
-  console.log("errors: ", errors);
+  useEffect(() => {
+    if (!watch("TargetDate")) {
+      setShowReason(false);
+      return;
+    }
+
+    const today = moment().format("YYYY-MM-DD");
+    const diff = moment(watch("TargetDate")).diff(today, "days");
+
+    setShowReason(diff > 2);
+  }, [watch("TargetDate")]);
+
+  console.log("ShowReason??? ", showReason);
 
   return (
     <>
