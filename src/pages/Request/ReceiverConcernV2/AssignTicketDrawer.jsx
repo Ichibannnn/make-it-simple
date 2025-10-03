@@ -1,5 +1,5 @@
 import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { FiberManualRecord } from "@mui/icons-material";
+import { FiberManualRecord, Warning } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -81,6 +81,7 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
       ticketConcernIdCherryLists: selectedIds?.map((item) => item),
       targetDate: moment(formData?.TargetDate).format("YYYY-MM-DD"),
       assignTo: userDetails?.userRoleName?.includes("Approver") ? formData?.IssueHandler?.userId : userId,
+      // reason: formData?.Reason,
     };
 
     console.log("Payload: ", payload);
@@ -176,8 +177,6 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
 
     setShowReason(diff > 2);
   }, [watch("TargetDate")]);
-
-  console.log("ShowReason??? ", showReason);
 
   return (
     <>
@@ -364,6 +363,58 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
                     {errors.TargetDate && <Typography>{errors.TargetDate.message}</Typography>}
                   </LocalizationProvider>
                 </Stack>
+
+                {/* Reason */}
+                {showReason && (
+                  <Stack>
+                    <Typography
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      Reason
+                    </Typography>
+
+                    <Controller
+                      control={control}
+                      name="Reason"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <TextField
+                            inputRef={ref}
+                            size="medium"
+                            value={value}
+                            placeholder="Enter reason"
+                            onChange={onChange}
+                            sx={{
+                              width: "100%",
+                            }}
+                            InputProps={{
+                              style: {
+                                fontSize: "13px",
+                              },
+                            }}
+                            InputLabelProps={{
+                              style: {
+                                fontSize: "13px",
+                              },
+                            }}
+                            autoComplete="off"
+                            rows={4}
+                            multiline
+                          />
+                        );
+                      }}
+                    />
+
+                    <Stack alignItems="center" direction="row" gap={0.5} mt={1}>
+                      <Warning color="warning" sx={{ fontSize: "15px" }} />
+                      <Typography sx={{ fontSize: "12px", color: theme.palette.warning.main, fontStyle: "italic" }}>
+                        Note: Please input a reason if the target date is more than 2 days from today.
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                )}
               </Stack>
             </DialogContent>
 
@@ -376,7 +427,13 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
                 type="submit"
                 variant="contained"
                 loading={takeTicketIsLoading || takeTicketIsFetching}
-                disabled={!watch("ChannelId") || !watch("TargetDate") || (userDetails?.userRoleName?.includes("Approver") && !watch("IssueHandler")) || selectedIds?.length === 0}
+                disabled={
+                  !watch("ChannelId") ||
+                  !watch("TargetDate") ||
+                  (userDetails?.userRoleName?.includes("Approver") && !watch("IssueHandler")) ||
+                  (showReason === true && !watch("Reason")) ||
+                  selectedIds?.length === 0
+                }
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

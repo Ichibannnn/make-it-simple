@@ -53,6 +53,7 @@ const NewReceiverConcern = () => {
     CategoryId: yup.object().notRequired(),
     DepartmentId: yup.object().notRequired(),
     LocationId: yup.object().notRequired(),
+    // Reason: yup.string().notRequired(),
   });
 
   const { control, watch } = useForm({
@@ -62,6 +63,7 @@ const NewReceiverConcern = () => {
       CategoryId: null,
       DepartmentId: null,
       LocationId: null,
+      // Reason: "",
     },
   });
 
