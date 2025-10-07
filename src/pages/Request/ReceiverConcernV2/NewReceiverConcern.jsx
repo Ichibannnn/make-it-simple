@@ -6,6 +6,7 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
+  IconButton,
   OutlinedInput,
   Stack,
   Table,
@@ -20,7 +21,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search } from "@mui/icons-material";
+import { CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search, SwapVertOutlined } from "@mui/icons-material";
 
 import { useState } from "react";
 import moment from "moment";
@@ -53,7 +54,6 @@ const NewReceiverConcern = () => {
     CategoryId: yup.object().notRequired(),
     DepartmentId: yup.object().notRequired(),
     LocationId: yup.object().notRequired(),
-    // Reason: yup.string().notRequired(),
   });
 
   const { control, watch } = useForm({
@@ -63,12 +63,12 @@ const NewReceiverConcern = () => {
       CategoryId: null,
       DepartmentId: null,
       LocationId: null,
-      // Reason: "",
     },
   });
 
   const [concernDetails, setConcernDetails] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [ascending, setAscending] = useState(true);
   const userId = useSelector((state) => state?.user?.id);
   const userChannelId = useSelector((state) => state?.user?.channels?.[0]?.channelId);
 
@@ -89,6 +89,7 @@ const NewReceiverConcern = () => {
     CategoryId: watch("CategoryId")?.id,
     DepartmentId: watch("DepartmentId")?.id,
     LocationId: watch("LocationId")?.id,
+    Ascending: ascending,
   });
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
@@ -478,6 +479,14 @@ const NewReceiverConcern = () => {
                         align="center"
                       >
                         TICKET NO.
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setAscending(!ascending);
+                          }}
+                        >
+                          <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
+                        </IconButton>
                       </TableCell>
 
                       <TableCell

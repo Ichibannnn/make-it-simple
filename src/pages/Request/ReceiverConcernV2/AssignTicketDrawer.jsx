@@ -81,7 +81,7 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
       ticketConcernIdCherryLists: selectedIds?.map((item) => item),
       targetDate: moment(formData?.TargetDate).format("YYYY-MM-DD"),
       assignTo: userDetails?.userRoleName?.includes("Approver") ? formData?.IssueHandler?.userId : userId,
-      // reason: formData?.Reason,
+      reason: formData?.Reason,
     };
 
     console.log("Payload: ", payload);
@@ -125,6 +125,7 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
 
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
+            setShowReason(false);
             setSelectedIds([]);
             reset();
             onClose();

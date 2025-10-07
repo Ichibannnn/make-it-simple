@@ -231,7 +231,7 @@ const ConcernDialog = ({ open, onClose }) => {
     // console.log("Payload Entries: ", [...payload.entries()]);
 
     if (formData?.Concern.length > 1) {
-      // Without Notification Box
+      // Without Message Box
       createEditRequestorConcern(payload)
         .unwrap()
         .then(() => {
@@ -257,7 +257,7 @@ const ConcernDialog = ({ open, onClose }) => {
           });
         });
     } else {
-      // With Notification Box
+      // With Message Box
       createEditRequestorConcern(payload)
         .unwrap()
         .then((res) => {
