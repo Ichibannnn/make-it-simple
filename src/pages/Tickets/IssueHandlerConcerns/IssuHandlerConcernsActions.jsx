@@ -2,6 +2,7 @@ import {
   ArrowForwardOutlined,
   ChecklistRtlOutlined,
   CloseOutlined,
+  ContentCopyOutlined,
   DoneOutlined,
   KeyboardBackspaceOutlined,
   LocalPrintshopOutlined,
@@ -17,6 +18,7 @@ import React, { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const IssueHandlerConcernsActions = ({
   data,
@@ -110,6 +112,34 @@ const IssueHandlerConcernsActions = ({
     onRejectDate(data);
   };
 
+  const onCopyOpenTicket = async (data) => {
+    const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your request has been successfully received under Service Ticket #${data?.ticketConcernId}. Will review your concern, and you will be updated once action has been taken. Thank you!`;
+
+    try {
+      await navigator.clipboard.writeText(message);
+      toast.success(`Ticket details copied to clipboard`, {
+        duration: 1500,
+      });
+    } catch (err) {
+      toast.error("Failed to copy Ticket details");
+    }
+    onToggle();
+  };
+
+  const onCopyConfirmTicket = async (data) => {
+    const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your concern under Service Ticket #${data?.ticketConcernId} has been resolved and is now marked as For Confirmation. Kindly review the resolution provided. If no confirmation is received within 24 hours, the system will automatically close the ticket. If the problem is still not fixed, you may return the ticket for further assistance before the auto-closure deadline. Thank you!`;
+
+    try {
+      await navigator.clipboard.writeText(message);
+      toast.success(`Ticket details copied to clipboard`, {
+        duration: 1500,
+      });
+    } catch (err) {
+      toast.error("Failed to copy Ticket details");
+    }
+    onToggle();
+  };
+
   const menuItems = [];
 
   if (data?.ticket_Status === "Open Ticket") {
@@ -131,6 +161,12 @@ const IssueHandlerConcernsActions = ({
           <PendingOutlined fontSize="small" />
         </ListItemIcon>
         Hold
+      </MenuItem>,
+      <MenuItem key="hold" onClick={() => onCopyOpenTicket(data)}>
+        <ListItemIcon>
+          <ContentCopyOutlined fontSize="small" />
+        </ListItemIcon>
+        Copy Ticket Details
       </MenuItem>
     );
   } else {
@@ -148,7 +184,7 @@ const IssueHandlerConcernsActions = ({
           <ListItemIcon>
             <ArrowForwardOutlined fontSize="small" color="error" />
           </ListItemIcon>
-          <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Cancel Ticket</Typography>
+          <Typography sx={{ color: theme.palette.error.main }}>Cancel Ticket</Typography>
         </MenuItem>
       );
     }
@@ -160,13 +196,13 @@ const IssueHandlerConcernsActions = ({
         <ListItemIcon>
           <ArrowForwardOutlined fontSize="small" color="success" />
         </ListItemIcon>
-        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Approve</Typography>
+        <Typography sx={{ color: theme.palette.success.main }}>Approve</Typography>
       </MenuItem>,
       <MenuItem key="reject-transfer" onClick={() => onRejectTransferAction(data)}>
         <ListItemIcon>
           <KeyboardBackspaceOutlined fontSize="small" color="error" />
         </ListItemIcon>
-        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Return</Typography>
+        <Typography sx={{ color: theme.palette.error.main }}>Return</Typography>
       </MenuItem>
     );
   }
@@ -188,7 +224,7 @@ const IssueHandlerConcernsActions = ({
         <ListItemIcon>
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
-        <Typography sx={{ fontSize: "17px", fontWeight: 500 }}>Manage Ticket</Typography>
+        <Typography>Manage Ticket</Typography>
       </MenuItem>
     );
   }
@@ -199,7 +235,7 @@ const IssueHandlerConcernsActions = ({
         <ListItemIcon>
           <ArrowForwardOutlined fontSize="small" color="warning" />
         </ListItemIcon>
-        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.warning.main }}>Resume</Typography>
+        <Typography sx={{ color: theme.palette.warning.main }}>Resume</Typography>
       </MenuItem>
     );
   }
@@ -217,13 +253,24 @@ const IssueHandlerConcernsActions = ({
     );
   }
 
+  if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && data?.ticket_Status !== "Closed") {
+    menuItems.push(
+      <MenuItem onClick={() => onCopyConfirmTicket(data)}>
+        <ListItemIcon>
+          <ContentCopyOutlined fontSize="small" />
+        </ListItemIcon>
+        <Typography>Copy Ticket Details</Typography>
+      </MenuItem>
+    );
+  }
+
   if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && userDetails?.id === data?.requestor_By && data?.ticket_Status !== "Closed") {
     menuItems.push(
       <MenuItem onClick={() => onConfirmAction(data)}>
         <ListItemIcon>
           <DoneOutlined fontSize="small" color="success" />
         </ListItemIcon>
-        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Confirm</Typography>
+        <Typography sx={{ color: theme.palette.success.main }}>Confirm</Typography>
       </MenuItem>
     );
   }
@@ -235,7 +282,7 @@ const IssueHandlerConcernsActions = ({
           <ListItemIcon>
             <LocalPrintshopOutlined fontSize="small" color="success" />
           </ListItemIcon>
-          <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Print</Typography>
+          <Typography sx={{ color: theme.palette.success.main }}>Print</Typography>
         </Stack>
       </MenuItem>
     );
@@ -254,7 +301,7 @@ const IssueHandlerConcernsActions = ({
         <ListItemIcon>
           <CloseOutlined fontSize="small" color="error" />
         </ListItemIcon>
-        <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Cancel</Typography>
+        <Typography sx={{ color: theme.palette.error.main }}>Cancel</Typography>
       </MenuItem>
     );
   }
