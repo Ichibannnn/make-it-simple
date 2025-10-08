@@ -257,15 +257,16 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REASON:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.warning.main }}>For checking....</Typography>
-                            {/* <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                              {item.concern_Details?.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-                            </Typography> */}
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {item.reason
+                                ? item.reason?.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))
+                                : "--"}
+                            </Typography>
                           </Stack>
                         </Stack>
                       </Stack>
@@ -509,24 +510,24 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                         />
                       </TableCell>
 
-                      <Tooltip title={item?.concern_Details} placement="bottom-start">
+                      <Tooltip title={item?.reason} placement="bottom-start">
                         <TableCell
-                          // className="ellipsis-styling"
                           sx={{
-                            color: theme.palette.warning.main,
+                            color: theme.palette.text.main,
                             fontSize: "12px",
                             fontWeight: 500,
                             maxWidth: "300px",
                           }}
                           onClick={() => onViewAction(item)}
                         >
-                          For checking....
-                          {/* {item.concern_Details?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))} */}
+                          {item.reason
+                            ? item.reason?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))
+                            : "--"}
                         </TableCell>
                       </Tooltip>
                     </TableRow>

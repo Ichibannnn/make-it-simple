@@ -131,9 +131,13 @@ const NewReceiverConcern = () => {
     });
   };
 
+  const isSelected = (item) => selectedIds.some((id) => id.ticketConcernId === item?.ticketRequestConcerns[0]?.ticketConcernId && id.requestConcernId === item?.requestConcernId);
+
   const takeTicketHandler = () => {
     takeTicketOnToggle();
   };
+
+  console.log("Selected Ids: ", selectedIds);
 
   return (
     <Stack
@@ -596,7 +600,7 @@ const NewReceiverConcern = () => {
                               <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
                                 <Stack>
                                   <Checkbox
-                                    // checked={selectedIds.includes(item.requestConcernId)}
+                                    checked={isSelected(item)}
                                     onChange={() => handleSelectTicket(item)}
                                     inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                                   />

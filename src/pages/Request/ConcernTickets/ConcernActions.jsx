@@ -33,7 +33,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
   };
 
   const onCopyTicket = async (data) => {
-    const message = `Fresh Morning, ${data?.fullName}, ${data?.department_Name}. Your request has been successfully created under Service Ticket #${data?.ticketRequestConcerns?.[0]?.ticketConcernId} and forwarded to our ${data?.channel_Name} for review. A member of the Support Team will contact you shortly to provide further assistance.`;
+    const message = `Fresh Morning, ${data?.fullName}, ${data?.department_Name}. Your request has been successfully created under Service Ticket #${data?.ticketRequestConcerns?.[0]?.ticketConcernId} and forwarded to our ${data?.channel_Name} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${data?.concern}`;
 
     try {
       await navigator.clipboard.writeText(message);
