@@ -26,8 +26,6 @@ import {
   useTheme,
 } from "@mui/material";
 import {
-  ArrowDownward,
-  ArrowUpward,
   CalendarMonthOutlined,
   Check,
   DiscountOutlined,
@@ -39,6 +37,7 @@ import {
   PendingActionsOutlined,
   PendingOutlined,
   Search,
+  SwapVertOutlined,
   ThumbDownOffAlt,
 } from "@mui/icons-material";
 
@@ -1639,7 +1638,7 @@ const IssueHandlerConcerns = () => {
                             // setAscendingDate(!ascendingDate);
                           }}
                         >
-                          {ascending === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                          <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
                         </IconButton>
                       </TableCell>
 
@@ -1695,7 +1694,7 @@ const IssueHandlerConcerns = () => {
                             refetch();
                           }}
                         >
-                          {ascendingDate === true ? <ArrowUpward sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownward sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                          <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
                         </IconButton>
                       </TableCell>
 

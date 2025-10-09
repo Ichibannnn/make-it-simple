@@ -231,7 +231,7 @@ const ConcernDialog = ({ open, onClose }) => {
     // console.log("Payload Entries: ", [...payload.entries()]);
 
     if (formData?.Concern.length > 1) {
-      // Without Notification Box
+      // Without Message Box
       createEditRequestorConcern(payload)
         .unwrap()
         .then(() => {
@@ -257,7 +257,7 @@ const ConcernDialog = ({ open, onClose }) => {
           });
         });
     } else {
-      // With Notification Box
+      // With Message Box
       createEditRequestorConcern(payload)
         .unwrap()
         .then((res) => {
@@ -268,9 +268,14 @@ const ConcernDialog = ({ open, onClose }) => {
             html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
               <span style="color: gray; font-size: 13px;">
                 Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} 
-                and forwarded to our Support Team for review. A member of the Support Team will contact you 
+                and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you 
                 shortly to provide further assistance.
-              </span>`,
+              </span>
+              <br><br>
+              <span style="color: gray; font-size: 13px;">
+                Concern: ${res?.value?.concern}
+              </span>
+              `,
             icon: "success",
             color: "white",
             showCancelButton: true,
@@ -293,7 +298,7 @@ const ConcernDialog = ({ open, onClose }) => {
             if (result.isConfirmed) {
               console.log("result: ", result);
 
-              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}. Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} and forwarded to our Support Team for review. A member of the Support Team will contact you shortly to provide further assistance.`;
+              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}. Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${res?.value?.concern}`;
 
               navigator.clipboard.writeText(ticketMessage).then(() => {
                 Swal.fire({

@@ -6,6 +6,7 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
+  IconButton,
   OutlinedInput,
   Stack,
   Table,
@@ -20,7 +21,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search } from "@mui/icons-material";
+import { CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search, SwapVertOutlined } from "@mui/icons-material";
 
 import { useState } from "react";
 import moment from "moment";
@@ -67,6 +68,7 @@ const NewReceiverConcern = () => {
 
   const [concernDetails, setConcernDetails] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [ascending, setAscending] = useState(true);
   const userId = useSelector((state) => state?.user?.id);
   const userChannelId = useSelector((state) => state?.user?.channels?.[0]?.channelId);
 
@@ -87,6 +89,7 @@ const NewReceiverConcern = () => {
     CategoryId: watch("CategoryId")?.id,
     DepartmentId: watch("DepartmentId")?.id,
     LocationId: watch("LocationId")?.id,
+    Ascending: ascending,
   });
 
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
@@ -128,9 +131,13 @@ const NewReceiverConcern = () => {
     });
   };
 
+  const isSelected = (item) => selectedIds.some((id) => id.ticketConcernId === item?.ticketRequestConcerns[0]?.ticketConcernId && id.requestConcernId === item?.requestConcernId);
+
   const takeTicketHandler = () => {
     takeTicketOnToggle();
   };
+
+  console.log("Selected Ids: ", selectedIds);
 
   return (
     <Stack
@@ -299,8 +306,6 @@ const NewReceiverConcern = () => {
                   !isLoading &&
                   !isFetching &&
                   data?.value?.requestConcern?.map((item, index) => {
-                    const isSelected = selectedIds.includes(item.ticketConcernId);
-
                     return (
                       <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                         <CardContent
@@ -323,7 +328,7 @@ const NewReceiverConcern = () => {
                           >
                             <Stack>
                               <Checkbox
-                                // checked={selectedIds.includes(item.requestConcernId)}
+                                checked={isSelected(item)}
                                 onChange={() => handleSelectTicket(item)}
                                 inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                               />
@@ -476,6 +481,14 @@ const NewReceiverConcern = () => {
                         align="center"
                       >
                         TICKET NO.
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setAscending(!ascending);
+                          }}
+                        >
+                          <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
+                        </IconButton>
                       </TableCell>
 
                       <TableCell
@@ -580,12 +593,11 @@ const NewReceiverConcern = () => {
                                 },
                               }}
                               align="center"
-                              // onClick={() => onViewAction(item)}
                             >
                               <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
                                 <Stack>
                                   <Checkbox
-                                    // checked={selectedIds.includes(item.requestConcernId)}
+                                    checked={isSelected(item)}
                                     onChange={() => handleSelectTicket(item)}
                                     inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                                   />

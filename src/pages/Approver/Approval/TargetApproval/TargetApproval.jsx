@@ -254,6 +254,20 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                               label={moment(item.target_Date).format("LL")}
                             />
                           </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REASON:</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {item.reason
+                                ? item.reason?.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))
+                                : "--"}
+                            </Typography>
+                          </Stack>
                         </Stack>
                       </Stack>
                     </CardContent>
@@ -371,6 +385,17 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                       TARGET DATE
                     </Stack>
                   </TableCell>
+
+                  <TableCell
+                    sx={{
+                      background: "#1C2536",
+                      color: "#D65DB1",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                    }}
+                  >
+                    REASON
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
@@ -484,6 +509,27 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           label={moment(item.target_Date).format("LL")}
                         />
                       </TableCell>
+
+                      <Tooltip title={item?.reason} placement="bottom-start">
+                        <TableCell
+                          sx={{
+                            color: theme.palette.text.main,
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            maxWidth: "300px",
+                          }}
+                          onClick={() => onViewAction(item)}
+                        >
+                          {item.reason
+                            ? item.reason?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))
+                            : "--"}
+                        </TableCell>
+                      </Tooltip>
                     </TableRow>
                   );
                 })}
