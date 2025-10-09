@@ -306,8 +306,6 @@ const NewReceiverConcern = () => {
                   !isLoading &&
                   !isFetching &&
                   data?.value?.requestConcern?.map((item, index) => {
-                    const isSelected = selectedIds.includes(item.ticketConcernId);
-
                     return (
                       <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                         <CardContent
@@ -330,7 +328,7 @@ const NewReceiverConcern = () => {
                           >
                             <Stack>
                               <Checkbox
-                                // checked={selectedIds.includes(item.requestConcernId)}
+                                checked={isSelected(item)}
                                 onChange={() => handleSelectTicket(item)}
                                 inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
                               />
@@ -595,7 +593,6 @@ const NewReceiverConcern = () => {
                                 },
                               }}
                               align="center"
-                              // onClick={() => onViewAction(item)}
                             >
                               <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
                                 <Stack>
