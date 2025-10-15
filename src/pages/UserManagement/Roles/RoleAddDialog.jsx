@@ -219,7 +219,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             marginBlockEnd: "5.28px",
           }}
         >
-          {data ? "Edit Role" : "Add Rolessada"}
+          {data ? "Edit Role" : "Add Role"}
         </DialogTitle>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>

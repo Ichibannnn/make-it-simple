@@ -6,10 +6,15 @@ import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
 
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
-import { useGetViewDelayedTicketsApproverQuery, useGetViewOpenTicketsApproverQuery } from "../../../features/api_ticketing/approver/viewTIcketApproverApi";
+import {
+  useGetViewDelayedTicketsApproverQuery,
+  useGetViewHoldTicketsApproverQuery,
+  useGetViewOpenTicketsApproverQuery,
+} from "../../../features/api_ticketing/approver/viewTIcketApproverApi";
 
 import ApproverOpenTicket from "./ApproverOpenTicket/ApproverOpenTicket";
 import ApproverCloseTicket from "./ApproverClosedTicket/ApproverCloseTicket";
+import ApproverHoldTicket from "./ApproverHoldTicket/ApproverHoldTicket";
 
 const ViewTicketsPage = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -41,6 +46,18 @@ const ViewTicketsPage = () => {
     isSuccess: viewDelayedTicketApproverIsSuccess,
     isError: viewDelayedTicketApproverIsError,
   } = useGetViewDelayedTicketsApproverQuery({
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
+
+  const {
+    data: viewOnHoldTicketApproverData,
+    isLoading: viewOnHoldTicketApproverIsLoading,
+    isFetching: viewOnHoldTicketApproverIsFetching,
+    isSuccess: viewOnHoldTicketApproverIsSuccess,
+    isError: viewOnHoldTicketApproverIsError,
+  } = useGetViewHoldTicketsApproverQuery({
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
@@ -172,6 +189,39 @@ const ViewTicketsPage = () => {
                 },
               }}
             />
+
+            <Tab
+              value="3"
+              className="tabs-styling"
+              label="Hold Tickets"
+              icon={
+                <Badge
+                  // badgeContent={notificationBadge?.value?.forApprovalClosingNotif}
+                  max={100000}
+                  color="warning"
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    ".MuiBadge-badge": {
+                      fontSize: "0.55rem",
+                      fontWeight: 400,
+                    },
+                  }}
+                >
+                  <DiscountOutlined />
+                </Badge>
+              }
+              iconPosition="start"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+                ".MuiBadge-badge": {
+                  color: "#ffff",
+                },
+              }}
+            />
           </Tabs>
         </Stack>
 
@@ -205,7 +255,7 @@ const ViewTicketsPage = () => {
                 setPageSize={setPageSize}
               />
             </>
-          ) : (
+          ) : tabNavigation === "2" ? (
             <>
               <ApproverCloseTicket
                 data={viewDelayedTicketApproverData}
@@ -213,6 +263,18 @@ const ViewTicketsPage = () => {
                 isFetching={viewDelayedTicketApproverIsFetching}
                 isSuccess={viewDelayedTicketApproverIsSuccess}
                 isError={viewDelayedTicketApproverIsError}
+                setPageNumber={setPageNumber}
+                setPageSize={setPageSize}
+              />
+            </>
+          ) : (
+            <>
+              <ApproverHoldTicket
+                data={viewOnHoldTicketApproverData}
+                isLoading={viewOnHoldTicketApproverIsLoading}
+                isFetching={viewOnHoldTicketApproverIsFetching}
+                isSuccess={viewOnHoldTicketApproverIsSuccess}
+                isError={viewOnHoldTicketApproverIsError}
                 setPageNumber={setPageNumber}
                 setPageSize={setPageSize}
               />

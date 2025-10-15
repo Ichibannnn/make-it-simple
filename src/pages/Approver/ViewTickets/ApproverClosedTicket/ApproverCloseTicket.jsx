@@ -104,7 +104,7 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE:</Typography>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>START DATE:</Typography>
                             <Chip
                               variant="filled"
                               size="30px"
@@ -188,8 +188,8 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
       ) : (
         <>
           <TableContainer>
-            <Table sx={{ borderBottom: "none" }}>
-              <TableHead>
+            <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
+              <TableHead sx={{ whiteSpace: "nowrap" }}>
                 <TableRow>
                   <TableCell
                     sx={{

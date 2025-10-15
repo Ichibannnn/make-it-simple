@@ -23,7 +23,17 @@ export const viewTIcketApproverApi = api.enhanceEndpoints({ addTagTypes: tags })
       }),
       providesTags: tags,
     }),
+
+    // View Hold Tickets
+    getViewHoldTicketsApprover: builder.query({
+      query: (params) => ({
+        url: "on-hold/page_on_hold?UserType=Approver",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
   }),
 });
 
-export const { useGetViewOpenTicketsApproverQuery, useGetViewDelayedTicketsApproverQuery } = viewTIcketApproverApi;
+export const { useGetViewOpenTicketsApproverQuery, useGetViewDelayedTicketsApproverQuery, useGetViewHoldTicketsApproverQuery } = viewTIcketApproverApi;

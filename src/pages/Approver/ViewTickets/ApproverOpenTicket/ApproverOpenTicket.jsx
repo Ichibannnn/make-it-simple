@@ -29,8 +29,6 @@ import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 
 const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
-  const [viewOpenTicketData, setViewOpenTicketData] = useState(null);
-
   const { open, onToggle, onClose } = useDisclosure();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
@@ -46,7 +44,6 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
   const onViewAction = (data) => {
     onToggle();
-    setViewOpenTicketData(data);
   };
 
   return (
@@ -120,7 +117,7 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}> STATUS:</Typography>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
                             <Chip
                               variant="filled"
                               size="small"
@@ -229,8 +226,8 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
       ) : (
         <>
           <TableContainer>
-            <Table sx={{ borderBottom: "none" }}>
-              <TableHead>
+            <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
+              <TableHead sx={{ whiteSpace: "nowrap" }}>
                 <TableRow>
                   <TableCell
                     sx={{
