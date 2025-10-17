@@ -332,7 +332,7 @@ const AllTicketsHistory = ({
                         <Stack gap={0.5}>
                           <Stack>
                             <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Start Date:</Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.startDate).format("LL hh:mma")}</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.startDate).format("MMMM D, YYYY HH:mm")}</Typography>
                           </Stack>
 
                           <Stack>
@@ -342,12 +342,14 @@ const AllTicketsHistory = ({
 
                           <Stack>
                             <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>For Closing Date:</Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.forClosedDate ? moment(item.forClosedDate).format("LL hh:mma") : "--"}</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                              {item?.forClosedDate ? moment(item.forClosedDate).format("MMMM D, YYYY HH:mm") : "--"}
+                            </Typography>
                           </Stack>
 
                           <Stack>
                             <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Closed Date:</Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.closedDate ? moment(item.closedDate).format("MMMM D, YYYY HH:mm") : "--"}</Typography>
                           </Stack>
                         </Stack>
                       </TableCell>

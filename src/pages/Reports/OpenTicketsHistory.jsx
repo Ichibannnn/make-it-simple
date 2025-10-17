@@ -45,8 +45,10 @@ const OpenTicketsHistory = ({
     ServiceProvider: serviceProvider,
     Channel: channel,
     UserId: user,
-    Date_From: moment(dateFrom).format("YYYY-MM-DD"),
-    Date_To: moment(dateTo).format("YYYY-MM-DD"),
+    // Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+    // Date_To: moment(dateTo).format("YYYY-MM-DD"),
+    // Date_From: "",
+    // Date_To: "",
     PageNumber: pageNumber,
     PageSize: pageSize,
   });

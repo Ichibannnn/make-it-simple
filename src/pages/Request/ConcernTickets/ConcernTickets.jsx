@@ -615,58 +615,6 @@ const ConcernTickets = () => {
                 />
               </Tabs>
 
-              {/* <Stack direction="row" gap={0.5}>
-                <Stack>
-                  <Typography sx={{ fontSize: "13px" }}>Date From:</Typography>
-                  <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DatePicker
-                      value={dateFrom}
-                      maxDate={dateTo}
-                      onChange={(newValue) => setDateFrom(newValue)}
-                      slotProps={{
-                        textField: {
-                          variant: "outlined",
-                          sx: {
-                            "& .MuiInputBase-input": {
-                              padding: "8.5px 14px",
-                            },
-                            "& .MuiOutlinedInput-root": {
-                              fontSize: "13px",
-                            },
-                            width: "100%",
-                          },
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Stack>
-
-                <Stack>
-                  <Typography sx={{ fontSize: "13px" }}>Date To:</Typography>
-                  <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DatePicker
-                      value={dateTo}
-                      minDate={dateFrom}
-                      onChange={(newValue) => setDateTo(newValue)}
-                      slotProps={{
-                        textField: {
-                          variant: "outlined",
-                          sx: {
-                            "& .MuiInputBase-input": {
-                              padding: "8.5px 14px",
-                            },
-                            "& .MuiOutlinedInput-root": {
-                              fontSize: "13px",
-                            },
-                            width: "100%",
-                          },
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Stack>
-              </Stack> */}
-
               <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center", padding: 2 }}>
                 <ConcernTicketFiltering setDateFrom={setDateFrom} setDateTo={setDateTo} />
               </Stack>
@@ -688,12 +636,6 @@ const ConcernTickets = () => {
                   lineHeight: "1.4375rem",
                 }}
               />
-
-              {isScreenSmall && (
-                <IconButton size="small" onClick={() => setAscending(!ascending)}>
-                  {ascending === true ? <KeyboardDoubleArrowUp sx={{ fontSize: "25px" }} /> : <KeyboardDoubleArrowDown sx={{ fontSize: "25px" }} />}
-                </IconButton>
-              )}
             </Stack>
 
             {isScreenSmall ? (

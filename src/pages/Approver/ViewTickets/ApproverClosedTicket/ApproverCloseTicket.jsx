@@ -4,6 +4,7 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
+  IconButton,
   Stack,
   Table,
   TableBody,
@@ -17,7 +18,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
-import { AccessTimeOutlined, CalendarMonthOutlined } from "@mui/icons-material";
+import { AccessTimeOutlined, CalendarMonthOutlined, SwapVertOutlined } from "@mui/icons-material";
 
 import moment from "moment";
 import { theme } from "../../../../theme/theme";
@@ -28,7 +29,7 @@ import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
 
-const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
+const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize, ascendingDate, setAscendingDate, refetch }) => {
   const [viewDelayedTicketData, setViewDelayedTIcketData] = useState(null);
 
   const { open, onToggle, onClose } = useDisclosure();
@@ -104,7 +105,7 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE:</Typography>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>START DATE:</Typography>
                             <Chip
                               variant="filled"
                               size="30px"
@@ -188,8 +189,8 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
       ) : (
         <>
           <TableContainer>
-            <Table sx={{ borderBottom: "none" }}>
-              <TableHead>
+            <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
+              <TableHead sx={{ whiteSpace: "nowrap" }}>
                 <TableRow>
                   <TableCell
                     sx={{
@@ -233,10 +234,7 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
                       fontSize: "12px",
                     }}
                   >
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                      START DATE
-                    </Stack>
+                    START DATE
                   </TableCell>
 
                   <TableCell
@@ -247,10 +245,16 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
                       fontSize: "12px",
                     }}
                   >
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      <AccessTimeOutlined sx={{ fontSize: "16px" }} />
-                      TARGET DATE
-                    </Stack>
+                    TARGET DATE
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setAscendingDate(!ascendingDate);
+                        refetch();
+                      }}
+                    >
+                      <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
+                    </IconButton>
                   </TableCell>
 
                   <TableCell
@@ -268,134 +272,137 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
               </TableHead>
 
               <TableBody>
-                {data?.value?.closingTicket?.map((item, index) => {
-                  return (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        backgroundColor: theme.palette.bgForm.black3,
-                      }}
-                    >
-                      <TableCell
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.closingTicket?.map((item, index) => {
+                    return (
+                      <TableRow
+                        key={index}
                         sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
+                          backgroundColor: theme.palette.bgForm.black3,
                         }}
-                        align="center"
-                        onClick={() => onViewAction(item)}
                       >
-                        {item.ticketConcernId}
-                      </TableCell>
-
-                      <TableCell onClick={() => onViewAction(item)}>
-                        <Typography
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.fullname}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "12px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.department_Name}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "12px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.channel_Name}
-                        </Typography>
-                      </TableCell>
-
-                      <Tooltip title={item?.concern_Details} placement="bottom-start">
                         <TableCell
-                          // className="ellipsis-styling"
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
-                            maxWidth: "300px",
+                          }}
+                          align="center"
+                          onClick={() => onViewAction(item)}
+                        >
+                          {item.ticketConcernId}
+                        </TableCell>
+
+                        <TableCell onClick={() => onViewAction(item)}>
+                          <Typography
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "14px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.fullname}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.department_Name}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.channel_Name}
+                          </Typography>
+                        </TableCell>
+
+                        <Tooltip title={item?.concern_Details} placement="bottom-start">
+                          <TableCell
+                            // className="ellipsis-styling"
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "12px",
+                              fontWeight: 500,
+                              maxWidth: "300px",
+                            }}
+                            onClick={() => onViewAction(item)}
+                          >
+                            {item.concern_Details?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))}
+                          </TableCell>
+                        </Tooltip>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
                           }}
                           onClick={() => onViewAction(item)}
                         >
-                          {item.concern_Details?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                            sx={{
+                              fontSize: "12px",
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
+                              fontWeight: 800,
+                            }}
+                            label={moment(item.start_Date).format("LL")}
+                          />
                         </TableCell>
-                      </Tooltip>
 
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                        onClick={() => onViewAction(item)}
-                      >
-                        <Chip
-                          variant="filled"
-                          size="30px"
-                          icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                        <TableCell
                           sx={{
+                            color: "#EDF2F7",
                             fontSize: "12px",
-                            backgroundColor: "#1D1F3B",
-                            color: theme.palette.primary.main,
-                            fontWeight: 800,
+                            fontWeight: 500,
                           }}
-                          label={moment(item.start_Date).format("LL")}
-                        />
-                      </TableCell>
+                          onClick={() => onViewAction(item)}
+                        >
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                            sx={{
+                              fontSize: "12px",
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
+                              fontWeight: 800,
+                            }}
+                            label={moment(item.target_Date).format("LL")}
+                          />
+                        </TableCell>
 
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                        onClick={() => onViewAction(item)}
-                      >
-                        <Chip
-                          variant="filled"
-                          size="30px"
-                          icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                        <TableCell
                           sx={{
+                            color: theme.palette.text.main,
                             fontSize: "12px",
-                            backgroundColor: "#1D1F3B",
-                            color: theme.palette.primary.main,
-                            fontWeight: 800,
+                            fontWeight: 500,
                           }}
-                          label={moment(item.target_Date).format("LL")}
-                        />
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.main,
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                        onClick={() => onViewAction(item)}
-                      >
-                        {item.delay_Days}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          align="center"
+                          onClick={() => onViewAction(item)}
+                        >
+                          {item.delay_Days}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
 
                 {isError && (
                   <TableRow>
