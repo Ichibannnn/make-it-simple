@@ -101,7 +101,7 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                             {item.getOnHoldApproverCategories?.length > 0 ? (
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                {item.getOnHoldApproverCategories?.[0]?.category_Description}
+                                {item.getOnHoldApproverCategories?.map((item) => item.category_Description).join(", ")}
                               </Typography>
                             ) : (
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}> -- </Typography>
@@ -113,7 +113,7 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                             {item.getOnHoldApproverSubCategories?.length > 0 ? (
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                {item.getOnHoldApproverSubCategories?.[0]?.subCategory_Description}
+                                {item.getOnHoldApproverSubCategories?.map((item) => item.subCategory_Description).join(", ")}
                               </Typography>
                             ) : (
                               <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}> -- </Typography>
@@ -395,7 +395,9 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                           <Stack>
                             <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
                             {item.getOnHoldApproverCategories?.length > 0 ? (
-                              <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.getOnHoldApproverCategories?.[0]?.category_Description}</Typography>
+                              <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                                {item.getOnHoldApproverCategories?.map((item) => item.category_Description).join(", ")}
+                              </Typography>
                             ) : (
                               <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>--</Typography>
                             )}
@@ -404,7 +406,9 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                           <Stack>
                             <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
                             {item.getOnHoldApproverSubCategories?.length > 0 ? (
-                              <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.getOnHoldApproverSubCategories?.[0]?.subCategory_Description}</Typography>
+                              <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
+                                {item.getOnHoldApproverSubCategories?.map((item) => item.subCategory_Description).join(", ")}
+                              </Typography>
                             ) : (
                               <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>--</Typography>
                             )}
@@ -466,7 +470,7 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={6} align="center">
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -477,7 +481,7 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={6} align="center">
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -488,7 +492,7 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                 {isSuccess && !data?.value?.onholdTicket?.length && !isLoading && !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={6} align="center">
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.

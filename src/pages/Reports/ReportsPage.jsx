@@ -385,6 +385,19 @@ const ReportsPage = () => {
     }
   }, [userDetails]);
 
+  // useEffect(() => {
+  //   if (reportNavigation === "Open Tickets") {
+  //     setDateFrom("");
+  //     setDateTo("");
+  //   } else {
+  //     setDateFrom(new moment());
+  //     setDateTo(new moment());
+  //   }
+  // }, [reportNavigation]);
+
+  console.log("DateFrom: ", dateFrom);
+  console.log("DateTo: ", dateTo);
+
   return (
     <Stack
       sx={{
@@ -594,59 +607,63 @@ const ReportsPage = () => {
               </Grid>
             )}
 
-            {/* Date From */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Typography sx={{ fontSize: "13px" }}>Date From:</Typography>
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  value={dateFrom}
-                  maxDate={dateTo}
-                  onChange={(newValue) => setDateFrom(newValue)}
-                  sx={{ width: "100%" }}
-                  slotProps={{
-                    textField: {
-                      variant: "outlined",
-                      sx: {
-                        "& .MuiInputBase-input": {
-                          padding: "8.5px 14px",
+            {reportNavigation !== "Open Tickets" && (
+              <>
+                {/* Date From */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Typography sx={{ fontSize: "13px" }}>Date From:</Typography>
+                  <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <DatePicker
+                      value={dateFrom}
+                      maxDate={dateTo}
+                      onChange={(newValue) => setDateFrom(newValue)}
+                      sx={{ width: "100%" }}
+                      slotProps={{
+                        textField: {
+                          variant: "outlined",
+                          sx: {
+                            "& .MuiInputBase-input": {
+                              padding: "8.5px 14px",
+                            },
+                            "& .MuiOutlinedInput-root": {
+                              fontSize: "13px",
+                            },
+                            width: "100%",
+                          },
                         },
-                        "& .MuiOutlinedInput-root": {
-                          fontSize: "13px",
-                        },
-                        width: "100%",
-                      },
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
 
-            {/* Date To */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Typography sx={{ fontSize: "13px" }}>Date To:</Typography>
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  value={dateTo}
-                  minDate={dateFrom}
-                  onChange={(newValue) => setDateTo(newValue)}
-                  sx={{ width: "100%" }}
-                  slotProps={{
-                    textField: {
-                      variant: "outlined",
-                      sx: {
-                        "& .MuiInputBase-input": {
-                          padding: "8.5px 14px",
+                {/* Date To */}
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Typography sx={{ fontSize: "13px" }}>Date To:</Typography>
+                  <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <DatePicker
+                      value={dateTo}
+                      minDate={dateFrom}
+                      onChange={(newValue) => setDateTo(newValue)}
+                      sx={{ width: "100%" }}
+                      slotProps={{
+                        textField: {
+                          variant: "outlined",
+                          sx: {
+                            "& .MuiInputBase-input": {
+                              padding: "8.5px 14px",
+                            },
+                            "& .MuiOutlinedInput-root": {
+                              fontSize: "13px",
+                            },
+                            width: "100%",
+                          },
                         },
-                        "& .MuiOutlinedInput-root": {
-                          fontSize: "13px",
-                        },
-                        width: "100%",
-                      },
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+              </>
+            )}
           </Grid>
 
           <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />

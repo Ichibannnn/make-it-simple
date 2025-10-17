@@ -1,5 +1,5 @@
-import { Badge, Divider, OutlinedInput, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
-import { DiscountOutlined, PendingOutlined, Search, WifiProtectedSetupOutlined } from "@mui/icons-material";
+import { Badge, Divider, IconButton, OutlinedInput, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { DiscountOutlined, PendingOutlined, Search, SwapVertOutlined, WifiProtectedSetupOutlined } from "@mui/icons-material";
 
 import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
@@ -20,6 +20,7 @@ const ViewTicketsPage = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(100);
+  const [ascendingDate, setAscendingDate] = useState(true);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -33,10 +34,12 @@ const ViewTicketsPage = () => {
     isFetching: viewOpenTicketApproverIsFetching,
     isSuccess: viewOpenTicketApproverIsSuccess,
     isError: viewOpenTicketApproverIsError,
+    refetch,
   } = useGetViewOpenTicketsApproverQuery({
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
+    AscendingDate: ascendingDate,
   });
 
   const {
@@ -45,10 +48,12 @@ const ViewTicketsPage = () => {
     isFetching: viewDelayedTicketApproverIsFetching,
     isSuccess: viewDelayedTicketApproverIsSuccess,
     isError: viewDelayedTicketApproverIsError,
+    refetch: refetchDelayed,
   } = useGetViewDelayedTicketsApproverQuery({
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
+    AscendingDate: ascendingDate,
   });
 
   const {
@@ -227,7 +232,7 @@ const ViewTicketsPage = () => {
 
         <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack sx={{ width: "100%", padding: 1 }}>
+        <Stack direction="row" sx={{ width: "100%", padding: 1 }}>
           <OutlinedInput
             placeholder="Search"
             startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
@@ -238,8 +243,15 @@ const ViewTicketsPage = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
+              flex: 1,
             }}
           />
+
+          {isScreenSmall && (
+            <IconButton size="small" onClick={() => setAscendingDate(!ascendingDate)}>
+              <SwapVertOutlined sx={{ fontSize: "25px" }} />
+            </IconButton>
+          )}
         </Stack>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -253,6 +265,9 @@ const ViewTicketsPage = () => {
                 isError={viewOpenTicketApproverIsError}
                 setPageNumber={setPageNumber}
                 setPageSize={setPageSize}
+                ascendingDate={ascendingDate}
+                setAscendingDate={setAscendingDate}
+                refetch={refetch}
               />
             </>
           ) : tabNavigation === "2" ? (
@@ -265,6 +280,9 @@ const ViewTicketsPage = () => {
                 isError={viewDelayedTicketApproverIsError}
                 setPageNumber={setPageNumber}
                 setPageSize={setPageSize}
+                ascendingDate={ascendingDate}
+                setAscendingDate={setAscendingDate}
+                refetch={refetchDelayed}
               />
             </>
           ) : (
