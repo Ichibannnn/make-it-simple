@@ -17,8 +17,6 @@ const ConcernHistory = ({ data, open, onClose }) => {
     onClose();
   };
 
-  console.log("dATA: ", data);
-
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} onClose={onCloseHandler} disableEscapeKeyDown={false} sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}>

@@ -40,16 +40,20 @@ import {
   SwapVertOutlined,
   ThumbDownOffAlt,
 } from "@mui/icons-material";
-
 import React, { useEffect, useMemo, useState } from "react";
-import moment from "moment";
-import { theme } from "../../../theme/theme";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
+import moment from "moment";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
 
 import {
   useCancelClosingIssueHandlerTicketsMutation,
@@ -57,6 +61,10 @@ import {
   useGetIssueHandlerConcernsQuery,
   useResumeIssueHandlerTicketsMutation,
 } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
+import { useConfirmConcernMutation } from "../../../features/api_request/concerns/concernApi";
 
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
@@ -65,22 +73,12 @@ import ManageTicketDialog from "./ManageTicketDialog";
 import TicketFiltering from "./TicketFiltering";
 import TicketForTransferDialog from "./TicketForTransferDialog";
 import ManageTransferDialog from "./ManageTransferDialog";
-import Swal from "sweetalert2";
-import { toast } from "sonner";
-
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ApproveTransferTicket from "./ApproveTransferTicket";
-import RejectTransfer from "./RejectTransfer";
-import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
 import AddTicketDialog from "./AddTicketDialog";
-import { useConfirmConcernMutation } from "../../../features/api_request/concerns/concernApi";
-import { LoadingButton } from "@mui/lab";
+import RejectTransfer from "./RejectTransfer";
 import RejectDateDialog from "./RejectDateDialog";
 
 import srReport from "../../../pdf/MIS_SRFinal_v2.pdf";
@@ -126,7 +124,7 @@ const IssueHandlerConcerns = () => {
   const { open: rejectTransferOpen, onToggle: rejectTransferOnToggle, onClose: rejectTransferOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
   const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
-  const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
+  const { open: printTicketOpen, onClose: printTicketOnClose } = useDisclosure();
   const { open: rejectDateOpen, onToggle: rejectDateOnToggle, onClose: rejectDateOnClose } = useDisclosure();
 
   const dispatch = useDispatch();
@@ -134,7 +132,6 @@ const IssueHandlerConcerns = () => {
   // useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
-
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
@@ -2038,7 +2035,7 @@ const IssueHandlerConcerns = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                     "&:hover": {
-                                      background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
+                                      background: ticketStatus === "Closed" && item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? "" : "",
                                       color: "#EDF2F7",
                                     },
                                   }}
@@ -2103,9 +2100,9 @@ const IssueHandlerConcerns = () => {
                                     variant="filled"
                                     size="small"
                                     icon={
-                                      item?.closed_Status === "On-Time" ? (
+                                      item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? (
                                         <FiberManualRecord fontSize="small" color="success" />
-                                      ) : item?.closed_Status === "Delay" ? (
+                                      ) : item?.getForClosingTickets?.[0]?.closed_Status === "Delay" ? (
                                         <FiberManualRecord fontSize="small" color="error" />
                                       ) : (
                                         ""
@@ -2113,12 +2110,15 @@ const IssueHandlerConcerns = () => {
                                     }
                                     sx={{
                                       fontSize: "12px",
-                                      backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
+                                      backgroundColor:
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" || item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
+                                          ? theme.palette.bgForm.black1
+                                          : "transparent",
                                       color: theme.palette.text.main,
                                       fontWeight: 800,
                                     }}
                                     label={
-                                      item?.closed_Status === "On-Time" ? (
+                                      item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? (
                                         <Typography
                                           sx={{
                                             color: theme.palette.success.main,
@@ -2128,7 +2128,7 @@ const IssueHandlerConcerns = () => {
                                         >
                                           On-Time
                                         </Typography>
-                                      ) : item?.closed_Status === "Delay" ? (
+                                      ) : item?.getForClosingTickets?.[0]?.closed_Status === "Delay" ? (
                                         <Typography
                                           sx={{
                                             color: theme.palette.error.main,
@@ -2253,9 +2253,7 @@ const IssueHandlerConcerns = () => {
           />
         )}
         {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
-
         <RejectDateDialog
           data={rejectDateData}
           open={rejectDateOpen}
@@ -2263,7 +2261,6 @@ const IssueHandlerConcerns = () => {
             rejectDateOnClose(setRejectDateData(null));
           }}
         />
-
         <ManageTicketDialog
           data={closeTicketData}
           open={manageTicketOpen}
@@ -2271,7 +2268,6 @@ const IssueHandlerConcerns = () => {
             manageTicketOnClose(setCloseTicketData(null));
           }}
         />
-
         {transferTicketOpen && (
           <TicketForTransferDialog
             data={transferTicketData}
@@ -2282,7 +2278,6 @@ const IssueHandlerConcerns = () => {
             viewOnClose={viewOnClose}
           />
         )}
-
         <ManageTransferDialog
           data={transferTicketData}
           open={manageTransferOpen}
@@ -2290,7 +2285,6 @@ const IssueHandlerConcerns = () => {
             manageTransferOnClose(setTransferTicketData(null));
           }}
         />
-
         {approveTransferOpen && (
           <ApproveTransferTicket
             data={transferTicketData}
@@ -2300,9 +2294,7 @@ const IssueHandlerConcerns = () => {
             }}
           />
         )}
-
         {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
-
         {holdTicketOpen && (
           <IssueHandlerHoldDialog
             data={holdTicketData}

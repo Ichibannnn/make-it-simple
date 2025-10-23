@@ -15,7 +15,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { theme } from "../../../theme/theme";
 import { ExpandMore, GppBadOutlined, SyncOutlined } from "@mui/icons-material";
 import { useSyncSubUnitMutation } from "../../../features/api masterlist/sub-unit/subUnitApi";
@@ -24,7 +24,6 @@ import { toast } from "sonner";
 import Swal from "sweetalert2";
 
 export const SubUnitErrorDialog = ({ errorData, open, onClose }) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [syncSubUnits, { isLoading: isSubUnitSyncLoading, isFetching: isSubUnitSyncFetching }] = useSyncSubUnitMutation();
 
   const availableSyncData = errorData?.data?.value?.availableSync?.map((item) => {
@@ -240,7 +239,7 @@ export const SubUnitErrorDialog = ({ errorData, open, onClose }) => {
                         startIcon={<SyncOutlined />}
                         loadingPosition="start"
                         onClick={() => availableSyncHandler()}
-                        loading={isLoading || isSubUnitSyncLoading || isSubUnitSyncFetching}
+                        loading={isSubUnitSyncLoading || isSubUnitSyncFetching}
                         sx={{
                           ":disabled": {
                             backgroundColor: theme.palette.primary.main,

@@ -13,7 +13,7 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
-import React, { useRef } from "react";
+import { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 import { theme } from "../../../theme/theme";

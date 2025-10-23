@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
+import { useDispatch } from "react-redux";
+import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
@@ -8,14 +10,12 @@ import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
 import useDisclosure from "../../../../hooks/useDisclosure";
-import { useDispatch } from "react-redux";
-import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
-import DisapprovedDialog from "./DisapprovedDialog";
 import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+
+import DisapprovedDialog from "./DisapprovedDialog";
 import TicketApprovalMenuActions from "./MenuActions/TicketApprovalMenuActions";
 
 const TicketApprovalDialog = ({ data, open, onClose }) => {
@@ -128,6 +128,11 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
       }
     } catch (error) {
       console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewLoading(false);
     }
   };
 
@@ -150,11 +155,14 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
         link.click();
         document.body.removeChild(link); // Clean up after download
         setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log("error: ", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadLoading(false);
     }
   };
 
@@ -409,16 +417,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                 </>
               )}
 
-              {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                <Box sx={{ width: "15%", ml: 2 }}>
-                  <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Technicians:</Typography>
-                </Box>
-                <Box sx={{ width: "10%" }} />
-                <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.subCategoryDescription}</Typography>
-                </Box>
-              </Stack> */}
-
               {/* ATTACHMENTS */}
               <Stack
                 marginTop={3}
@@ -457,7 +455,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                           display: "flex",
                           width: "100%",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -490,33 +487,14 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <TicketApprovalMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
-                            {/* <>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="View">
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </>
-
-                            {downloadLoading ? (
-                              <CircularProgress size={14} />
-                            ) : (
-                              <Tooltip title="Download">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDownloadAttachment(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <FileDownloadOutlined />
-                                </IconButton>
-                              </Tooltip>
-                            )} */}
+                            <TicketApprovalMenuActions
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                              viewIsLoading={viewLoading}
+                              downloadIsLoading={downloadLoading}
+                            />
                           </Box>
                         </Box>
                       </Box>

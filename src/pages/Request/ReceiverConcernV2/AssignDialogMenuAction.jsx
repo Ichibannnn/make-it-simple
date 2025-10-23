@@ -1,7 +1,7 @@
 import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 const AssignDialogMenuAction = ({ fileName, onView, onViewWithoutId, onDelete, onDownload, isImageFile }) => {
@@ -15,8 +15,6 @@ const AssignDialogMenuAction = ({ fileName, onView, onViewWithoutId, onDelete, o
   };
 
   const onViewWithoutIdAction = (fileName) => {
-    console.log("File", fileName);
-
     onToggle();
     onViewWithoutId(fileName);
   };

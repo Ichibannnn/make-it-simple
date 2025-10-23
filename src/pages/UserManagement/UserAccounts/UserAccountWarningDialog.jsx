@@ -1,17 +1,16 @@
 import { Warning } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
+
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
+
 import { useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
 
 const UserAccountWarningDialog = ({ data, payload, open, onClose, userOnClose }) => {
   const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
 
   const onSubmitAction = () => {
-    // console.log("Data: ", data);
-    // console.log("Payload", payload);
-
     const submitUpdateUser = {
       id: data.id,
       userRoleId: payload.userRoleId,
@@ -25,8 +24,6 @@ const UserAccountWarningDialog = ({ data, payload, open, onClose, userOnClose })
       oneChargingCode: payload.oneChargingCode,
       oneChargingName: payload.oneChargingName,
     };
-
-    console.log("submitUpdateUser", submitUpdateUser);
 
     updateUser(submitUpdateUser)
       .unwrap()

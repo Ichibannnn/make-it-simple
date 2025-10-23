@@ -1,25 +1,9 @@
 import { LanOutlined } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Badge,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, Badge, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField } from "@mui/material";
 
-import React, { useRef } from "react";
-import useDisclosure from "../../../hooks/useDisclosure";
+import { useRef } from "react";
 import { LoadingButton } from "@mui/lab";
-import { theme } from "../../../theme/theme";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 const UserAccountPermissions = ({ permissions }) => {
   const ref = useRef();
@@ -36,28 +20,6 @@ const UserAccountPermissions = ({ permissions }) => {
           <LanOutlined />
         </Badge>
       </IconButton>
-
-      {/* <Menu
-        anchorEl={ref.current}
-        open={open}
-        onClose={onToggle}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <List dense>
-          {permissions?.map((item, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={item} />
-            </ListItem>
-          ))}
-        </List>
-      </Menu> */}
 
       <Dialog fullWidth maxWidth="xs" open={open}>
         <DialogTitle
@@ -82,9 +44,7 @@ const UserAccountPermissions = ({ permissions }) => {
               options={permissions?.map((option) => option)}
               defaultValue={permissions?.map((option) => option)}
               readOnly
-              renderInput={(params) => (
-                <TextField {...params} label="Permissions" />
-              )}
+              renderInput={(params) => <TextField {...params} label="Permissions" />}
             />
           </Stack>
         </DialogContent>

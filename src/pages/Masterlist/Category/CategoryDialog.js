@@ -1,16 +1,16 @@
 import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Stack, TextField } from "@mui/material";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { Save } from "@mui/icons-material";
 
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
-import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import { LoadingButton } from "@mui/lab";
+
 import { useCreateEditCategoryMutation } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
-import { Save } from "@mui/icons-material";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),

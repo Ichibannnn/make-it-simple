@@ -1,5 +1,4 @@
 import { createTheme } from "@mui/material";
-import { purple, red } from "@mui/material/colors";
 
 const black = {
   100: "#d1d2d5",
@@ -209,12 +208,6 @@ const theme = createTheme({
       },
     },
 
-    MuiListItemButton: {
-      defaultProps: {
-        disableTouchRipple: true,
-      },
-    },
-
     MuiIconButton: {
       styleOverrides: {
         root: {
@@ -252,6 +245,9 @@ const theme = createTheme({
           },
           fontSize: "15px",
         },
+      },
+      defaultProps: {
+        disableTouchRipple: true,
       },
     },
 

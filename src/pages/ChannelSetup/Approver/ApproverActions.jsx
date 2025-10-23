@@ -1,11 +1,5 @@
-import React, { useRef } from "react";
-import {
-  ArchiveOutlined,
-  EditOutlined,
-  MoreHoriz,
-  RefreshOutlined,
-  RestoreOutlined,
-} from "@mui/icons-material";
+import { useRef } from "react";
+import { ArchiveOutlined, EditOutlined, MoreHoriz, RestoreOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -16,8 +10,6 @@ const ApproverActions = ({ data, onArchive, onUpdate }) => {
   const { open, onToggle } = useDisclosure();
 
   const onArchiveAction = (data) => {
-    // console.log("data: ", data);
-
     onToggle();
     onArchive({
       subUnitId: data.subUnitId,
@@ -47,13 +39,7 @@ const ApproverActions = ({ data, onArchive, onUpdate }) => {
         )}
 
         <MenuItem onClick={() => onArchiveAction(data)}>
-          <ListItemIcon>
-            {data?.is_Active ? (
-              <ArchiveOutlined fontSize="small" />
-            ) : (
-              <RestoreOutlined fontSize="small" />
-            )}
-          </ListItemIcon>
+          <ListItemIcon>{data?.is_Active ? <ArchiveOutlined fontSize="small" /> : <RestoreOutlined fontSize="small" />}</ListItemIcon>
 
           {data?.is_Active ? "Archive" : "Restore"}
         </MenuItem>

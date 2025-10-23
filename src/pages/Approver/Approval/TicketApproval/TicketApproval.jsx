@@ -16,25 +16,26 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
+import { CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
 import { useState } from "react";
 
 import moment from "moment";
-import { theme } from "../../../../theme/theme";
+import Swal from "sweetalert2";
 import useDisclosure from "../../../../hooks/useDisclosure";
-
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import TicketApprovalDialog from "./TicketApprovalDialog";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
-import { LoadingButton } from "@mui/lab";
-import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+
 import { toast } from "sonner";
-import { DisapproveSelectedDialog } from "./DisapprovedDialog";
-import Swal from "sweetalert2";
+import { theme } from "../../../../theme/theme";
+import { useDispatch } from "react-redux";
+import { LoadingButton } from "@mui/lab";
+
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import { useDispatch } from "react-redux";
+import { useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+
+import { DisapproveSelectedDialog } from "./DisapprovedDialog";
+import TicketApprovalDialog from "./TicketApprovalDialog";
 
 const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const dispatch = useDispatch();
@@ -431,17 +432,6 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     OTHER INFORMATION
                   </TableCell>
 
-                  {/* <TableCell
-                    sx={{
-                      background: "#1C2536",
-                      color: "#D65DB1",
-                      fontWeight: 700,
-                      fontSize: "12px",
-                    }}
-                  >
-                    NOTES
-                  </TableCell> */}
-
                   <TableCell
                     sx={{
                       background: "#1C2536",
@@ -621,50 +611,6 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           </Tooltip>
                         </Stack>
                       </TableCell>
-
-                      {/* <Tooltip title={item?.resolution} placement="bottom-start">
-                        <TableCell
-                          className="ellipsis-styling"
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            width: "500px",
-                            wordWrap: "break-word",
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
-                          {item.resolution?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
-                        </TableCell>
-                      </Tooltip> */}
-
-                      {/* <Tooltip title={item?.notes} placement="bottom-start">
-                        <TableCell
-                          className="ellipsis-styling"
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            width: "200px",
-                            wordWrap: "break-word",
-                          }}
-                          onClick={() => onViewAction(item)}
-                        >
-                          {item.notes
-                            ? item.notes?.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))
-                            : "--"}
-                        </TableCell>
-                      </Tooltip> */}
 
                       <TableCell
                         sx={{

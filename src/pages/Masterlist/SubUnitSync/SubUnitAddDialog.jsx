@@ -1,6 +1,6 @@
 import { Autocomplete, Dialog, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { CloseOutlined, Save, SyncOutlined } from "@mui/icons-material";
+import { useEffect } from "react";
+import { CloseOutlined, Save } from "@mui/icons-material";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,20 +24,10 @@ const schema = yup.object().shape({
 
 const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   const [createEditSubUnit, { isLoading: isSubUnitLoading, isFetching: isSubUnitFetching }] = useCreateEditSubUnitMutation();
-
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
-
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationQuery();
 
-  const {
-    control,
-    handleSubmit,
-    register,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, watch, setValue, reset } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       subUnitId: null,
@@ -49,7 +39,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
   });
 
   const onSubmitSubUnitForm = (formData) => {
-    console.log("Formdata:", formData);
     if (!data) {
       const addPayload = {
         unitCode: formData.unitId.unit_Code,
@@ -57,8 +46,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
         subUnit_Name: formData.subUnit_Name,
         location_Code: formData?.locations?.location_Code,
       };
-
-      console.log("addPayload: ", addPayload);
 
       createEditSubUnit(addPayload)
         .unwrap()
@@ -83,8 +70,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
         subUnit_Code: formData.subUnit_Code,
         subUnit_Name: formData.subUnit_Name,
       };
-
-      console.log("Edit Payload: ", editPayload);
 
       createEditSubUnit(editPayload)
         .unwrap()
@@ -125,15 +110,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
       setValue("subUnit_Name", data?.subUnit_Name);
     }
   }, [data]);
-
-  //   console.log("Unit: ", unitData);
-  //   console.log("Unit: ", watch("unitId"));
-  //   console.log("Sub Code: ", watch("subUnit_Code"));
-  //   console.log("Sub Unit Name: ", watch("subUnit_Name"));
-  // console.log("Location: ", watch("locations"));
-
-  // console.log("Validation Error: ", errors);
-  // console.log("Data: ", data);
 
   return (
     <div>
@@ -222,7 +198,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                       render={({ field: { ref, value, onChange } }) => {
                         return (
                           <Autocomplete
-                            // multiple
                             ref={ref}
                             size="small"
                             value={value}
@@ -242,7 +217,6 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                             }}
                             fullWidth
                             disablePortal
-                            //   disableClearable
                           />
                         );
                       }}

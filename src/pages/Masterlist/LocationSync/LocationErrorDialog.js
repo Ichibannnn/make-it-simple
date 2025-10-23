@@ -22,17 +22,14 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
-import { theme } from "../../../theme/theme";
 import { ExpandMore, GppBadOutlined, LanOutlined, SyncOutlined } from "@mui/icons-material";
-import useDisclosure from "../../../hooks/useDisclosure";
-import { useSyncLocationMutation } from "../../../features/api masterlist/location/locationApi";
+
 import { LoadingButton } from "@mui/lab";
+import { useRef } from "react";
+import { theme } from "../../../theme/theme";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 export const LocationErrorDialog = ({ errorData, open, onClose }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [syncLocations, { isLoading: isLocationSyncLoading, isFetching: isLocationSyncFetching }] = useSyncLocationMutation();
-
   const availableSyncData = errorData?.data?.value?.availableSync?.map((item) => {
     return {
       location_No: item.location_No,
@@ -51,8 +48,6 @@ export const LocationErrorDialog = ({ errorData, open, onClose }) => {
   const onCloseAction = () => {
     onClose();
   };
-
-  console.log("ErrorData: ", errorData);
 
   return (
     <>
@@ -201,7 +196,7 @@ export const LocationErrorDialog = ({ errorData, open, onClose }) => {
                         startIcon={<SyncOutlined />}
                         loadingPosition="start"
                         onClick={() => availableSyncHandler()}
-                        loading={isLoading || isLocationSyncLoading || isLocationSyncFetching}
+                        loading={isLocationSyncLoading || isLocationSyncFetching}
                         sx={{
                           ":disabled": {
                             backgroundColor: theme.palette.primary.main,
@@ -221,117 +216,6 @@ export const LocationErrorDialog = ({ errorData, open, onClose }) => {
                 </Accordion>
               )}
             </Stack>
-
-            {/* UNIT DOES NOT EXIST */}
-            {/* <Stack>
-              {unitNotExistData?.length > 0 && (
-                <Accordion sx={{ background: "#1A222F" }}>
-                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
-                    <Stack direction="row" gap={0.5} sx={{ width: "100%", alignItems: "center" }}>
-                      <Typography sx={{ fontSize: "14px", fontWeight: 500 }}>Duplicated list: </Typography>
-                    </Stack>
-                  </AccordionSummary>
-
-                  <AccordionDetails>
-                    <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black3 }}>
-                      <TableContainer>
-                        <Table size="small" sx={{ borderBottom: "none" }}>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell
-                                sx={{
-                                  background: "#1C2536",
-                                  color: theme.palette.text.secondary,
-                                  fontWeight: 600,
-                                  fontSize: "10px",
-                                }}
-                                align="center"
-                              >
-                                LINE NO.
-                              </TableCell>
-                              <TableCell
-                                sx={{
-                                  background: "#1C2536",
-                                  color: theme.palette.text.secondary,
-                                  fontWeight: 700,
-                                  fontSize: "10px",
-                                }}
-                              >
-                                SUB UNIT CODE
-                              </TableCell>
-                              <TableCell
-                                sx={{
-                                  background: "#1C2536",
-                                  color: theme.palette.text.secondary,
-                                  fontWeight: 700,
-                                  fontSize: "10px",
-                                }}
-                              >
-                                SUB UNIT NAME
-                              </TableCell>
-
-                              <TableCell
-                                sx={{
-                                  background: "#1C2536",
-                                  color: theme.palette.text.secondary,
-                                  fontWeight: 700,
-                                  fontSize: "10px",
-                                }}
-                              >
-                                UNIT NAME
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-
-                          <TableBody>
-                            {unitNotExistData?.map((item, index) => (
-                              <TableRow key={index}>
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                  }}
-                                  align="center"
-                                >
-                                  {index + 1}
-                                </TableCell>
-
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                  }}
-                                >
-                                  {item.subUnit_Code}
-                                </TableCell>
-
-                                <TableCell
-                                  sx={{
-                                    color: theme.palette.error.main,
-                                    fontSize: "12px",
-                                  }}
-                                >
-                                  {item.subUnit_Name}
-                                </TableCell>
-
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                  }}
-                                >
-                                  {item.unit_Name}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </Stack>
-                  </AccordionDetails>
-                </Accordion>
-              )}
-            </Stack> */}
 
             <Stack sx={{ paddingTop: 5 }}>
               <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>Sub Unit information does not exist: </Typography>

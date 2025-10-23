@@ -1,40 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Tab, Tabs, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import {
-  AccountCircleRounded,
-  AttachFileOutlined,
-  ChecklistRtlOutlined,
-  Close,
-  GetAppOutlined,
-  LocalPrintshopOutlined,
-  MoveDownOutlined,
-  PendingOutlined,
-} from "@mui/icons-material";
+import { AccountCircleRounded, AttachFileOutlined, ChecklistRtlOutlined, Close, GetAppOutlined, MoveDownOutlined, PendingOutlined } from "@mui/icons-material";
 
 import { theme } from "../../../theme/theme";
+import moment from "moment";
+
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
-import moment from "moment";
-import { useReactToPrint } from "react-to-print";
 import TicketHistory from "./TicketHistory";
 import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
 import IssueHandlerClosingDialog from "./IssueHandlerClosingDialog";
 import TicketForTransferDialog from "./TicketForTransferDialog";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
+import { toast } from "sonner";
 
-const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
+const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
   const [attachments, setAttachments] = useState([]);
   const [navigation, setNavigation] = useState("1");
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
-  const [viewLoading, setViewLoading] = useState(false);
-  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [viewIsLoading, setViewIsLoading] = useState(false);
+  const [downloadIsLoading, setDownloadIsLoading] = useState(false);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [getRequestorAttachment, { data: attachmentData }] = useLazyGetRequestorAttachmentQuery();
+  const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
@@ -73,7 +65,7 @@ const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTr
 
   // Function to open image view dialog
   const handleViewImage = async (file) => {
-    setViewLoading(true);
+    setViewIsLoading(true);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
@@ -81,10 +73,14 @@ const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTr
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
-        setViewLoading(false);
       }
+      setViewIsLoading(false);
     } catch (error) {
-      console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
     }
   };
 
@@ -93,7 +89,7 @@ const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTr
   };
 
   const handleDownloadAttachment = async (file) => {
-    setDownloadLoading(true);
+    setDownloadIsLoading(true);
     try {
       const response = await getDownloadAttachment(file?.ticketAttachmentId);
 
@@ -106,12 +102,15 @@ const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTr
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link); // Clean up after download
-        setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
+        setDownloadIsLoading(false);
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log("error: ", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadIsLoading(false);
     }
   };
 
@@ -121,12 +120,6 @@ const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTr
   };
 
   const componentRef = useRef();
-
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
-
-  // console.log("View Data: ", data);
 
   return (
     <>
@@ -812,37 +805,14 @@ const IssueViewDialog = ({ data, setData, viewOpen, viewOnClose, onClosing, onTr
                           </Box>
 
                           <Box>
-                            <ViewTicketMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
-
-                            {/* <>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="View">
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </>
-
-                            {downloadLoading ? (
-                              <CircularProgress size={14} />
-                            ) : (
-                              <Tooltip title="Download">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  // onClick={() => {
-                                  //   window.location = fileName.link;
-                                  // }}
-                                  onClick={() => handleDownloadAttachment(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <FileDownloadOutlined />
-                                </IconButton>
-                              </Tooltip>
-                            )} */}
+                            <ViewTicketMenuActions
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                              viewIsLoading={viewIsLoading}
+                              downloadIsLoading={downloadIsLoading}
+                            />
                           </Box>
                         </Box>
                       </Box>

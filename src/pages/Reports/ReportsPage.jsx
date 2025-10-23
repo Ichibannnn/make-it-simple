@@ -395,9 +395,6 @@ const ReportsPage = () => {
   //   }
   // }, [reportNavigation]);
 
-  console.log("DateFrom: ", dateFrom);
-  console.log("DateTo: ", dateTo);
-
   return (
     <Stack
       sx={{

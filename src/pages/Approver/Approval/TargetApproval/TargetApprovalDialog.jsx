@@ -1,31 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
-import {
-  AccountCircleRounded,
-  AttachFileOutlined,
-  CalendarMonthOutlined,
-  Check,
-  Close,
-  FiberManualRecord,
-  FileDownloadOutlined,
-  GetAppOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { AccountCircleRounded, AttachFileOutlined, CalendarMonthOutlined, Check, Close, GetAppOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
+import moment from "moment";
 import useDisclosure from "../../../../hooks/useDisclosure";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import { useApproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import moment from "moment";
+
 import TargetApprovalMenuActions from "./MenuActions/TargetApprovalMenuActions";
 import { DisapproveTargetDialog } from "./DisapprovedSelectedTargetDialog";
 
@@ -36,8 +26,8 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
 
-  const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -57,8 +47,6 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
         },
       ],
     };
-
-    console.log("Payload: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -236,15 +224,6 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                     </Box>
                   </Stack>
 
-                  {/* <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Service Provider:</Typography>
-                    </Box>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack> */}
-
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
@@ -374,16 +353,6 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                       <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
                     </Box>
                   </Stack>
-
-                  {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Service Provider:</Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack> */}
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
@@ -551,7 +520,6 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                           display: "flex",
                           width: "100%",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -584,33 +552,14 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                           </Box>
 
                           <Box>
-                            <TargetApprovalMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
-                            {/* <>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="View">
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </>
-
-                            {downloadLoading ? (
-                              <CircularProgress size={14} />
-                            ) : (
-                              <Tooltip title="Download">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDownloadAttachment(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <FileDownloadOutlined />
-                                </IconButton>
-                              </Tooltip>
-                            )} */}
+                            <TargetApprovalMenuActions
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                              viewIsLoading={viewLoading}
+                              downloadIsLoading={downloadLoading}
+                            />
                           </Box>
                         </Box>
                       </Box>

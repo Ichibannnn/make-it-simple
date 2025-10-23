@@ -18,34 +18,26 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useContext } from "react";
-import { theme } from "../theme/theme";
-
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import {
-  AccountCircleRounded,
-  CheckCircle,
-  Close,
-  CloseOutlined,
-  NotificationsNoneOutlined,
-  NotificationsOffOutlined,
-  NotificationsRounded,
-  Password,
-  PersonOutlineOutlined,
-} from "@mui/icons-material";
+import { CheckCircle, CloseOutlined, NotificationsNoneOutlined, NotificationsOffOutlined, Password } from "@mui/icons-material";
 
+import { theme } from "../theme/theme";
+import React, { useContext } from "react";
 import { useState } from "react";
+import { useEffect } from "react";
+
+import * as yup from "yup";
+import moment from "moment";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUserDetails } from "../features/user_management_api/user/userSlice";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
-
-import ReusableAlert from "../hooks/ReusableAlert";
 import useDisclosure from "../hooks/useDisclosure";
 
+import useSignalRConnection from "../hooks/useSignalRConnection";
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
@@ -53,15 +45,12 @@ import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketAppr
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../features/api_notification/notificationApi";
 import { notificationMessageApi, useGetNotificationMessageQuery, useGetNotificationNavMutation } from "../features/api_notification_message/notificationMessageApi";
-import useSignalRConnection from "../hooks/useSignalRConnection";
-import moment from "moment";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { ParameterContext } from "../context/ParameterContext";
-import { Controller, useForm } from "react-hook-form";
-import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
+
 import { LoadingButton } from "@mui/lab";
 import { signOut } from "../features/auth/authSlice";
+import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
+import { Controller, useForm } from "react-hook-form";
+import { ParameterContext } from "../context/ParameterContext";
 
 const Header = () => {
   const hideMenu = useMediaQuery("(max-width: 1639px)");
@@ -69,28 +58,19 @@ const Header = () => {
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const notificationOpen = Boolean(notificationAnchor);
-  const { parameter, setParameter } = useContext(ParameterContext);
 
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const fullName = useSelector((state) => state?.user?.fullname);
-  const userName = useSelector((state) => state?.user?.username);
   const userRole = useSelector((state) => state?.user?.userRoleName);
+  const [showBadge, setShowBadge] = useState(false);
 
   const [notificationNav] = useGetNotificationNavMutation();
 
   const { data: notificationMessage } = useGetNotificationMessageQuery();
   const { open: openChangePassword, onToggle: changePasswordOnToggle, onClose: changePasswordOnClose } = useDisclosure();
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    severity: "",
-    title: "",
-    description: "",
-  });
-  const [showBadge, setShowBadge] = useState(false);
 
   const notificationHandler = (event) => {
     setNotificationAnchor(event.currentTarget);
@@ -101,10 +81,6 @@ const Header = () => {
   };
 
   const closeHandler = () => {
-    setAnchorEl(null);
-  };
-
-  const closeNotificationHandler = () => {
     setAnchorEl(null);
   };
 
@@ -138,19 +114,10 @@ const Header = () => {
       dispatch(signOut());
       dispatch(clearUserDetails());
       navigate("/login");
-    } catch (error) {
-      setAlertData({
-        severity: "error",
-        title: "Error!",
-        description: `Something went wrong.`,
-      });
-      setShowAlert(true);
-    }
+    } catch (error) {}
   };
 
   const onNavigateAction = (data) => {
-    // console.log("Data: ", data);
-
     const navigationId = {
       id: data?.id,
     };
@@ -175,8 +142,6 @@ const Header = () => {
           dispatch(clearUserDetails());
           navigate("/login");
         } else {
-          // console.log("Parameter: ", data?.modules_Parameter);
-          setParameter(data?.modules_Parameter);
           navigate(data?.modules);
         }
       })
@@ -185,10 +150,6 @@ const Header = () => {
           description: "Something went wrong",
         });
       });
-  };
-
-  const handleAlertClose = () => {
-    setShowAlert(false);
   };
 
   const toggleSidebarHandler = () => {
@@ -361,12 +322,7 @@ const ChangePassword = ({ open, onClose }) => {
 
   const [changePassword] = useChangeUserPasswordMutation();
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, watch } = useForm({
     resolver: yupResolver(changePasswordSchema),
     defaultValues: {
       id: null,
@@ -526,10 +482,7 @@ const ChangePassword = ({ open, onClose }) => {
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={
-                  // watch("new_Password") !== watch("current_Password") ||
-                  !watch("current_Password") || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")
-                }
+                disabled={!watch("current_Password") || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

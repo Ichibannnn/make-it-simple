@@ -1,22 +1,7 @@
 import { LanOutlined } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Badge,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { Autocomplete, Badge, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, ListItemText, Menu, Stack, TextField, Tooltip } from "@mui/material";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 import { LoadingButton } from "@mui/lab";
 
@@ -63,9 +48,7 @@ export const CategorySubCat = ({ subCategories }) => {
                 defaultValue={subCategories}
                 getOptionLabel={(option) => option.subCategory_Description}
                 readOnly
-                renderInput={(params) => (
-                  <TextField {...params} label="Sub Category" />
-                )}
+                renderInput={(params) => <TextField {...params} label="Sub Category" />}
               />
             </Stack>
           </DialogContent>

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Button,
   Card,
   CardContent,
   CircularProgress,
@@ -16,7 +15,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { FileUploadOutlined, FileDownloadOutlined, Search, SyncOutlined } from "@mui/icons-material";
+import { Search, SyncOutlined } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
@@ -36,7 +35,6 @@ import LocationSubUnit from "./LocationSubUnit";
 import { LocationErrorDialog } from "./LocationErrorDialog";
 
 const Location = () => {
-  const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -47,14 +45,13 @@ const Location = () => {
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetLocationQuery({
-    Status: status,
+    Status: true,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
 
   const [getLocations, { isLoading: isLocationLoading, isFetching: isLocationFetching }] = useLazyGetLocationsQuery();
-
   const [syncLocations, { error: errorData, isLoading: isLocationSyncLoading, isFetching: isLocationSyncFetching }] = useSyncLocationMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -180,7 +177,6 @@ const Location = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>

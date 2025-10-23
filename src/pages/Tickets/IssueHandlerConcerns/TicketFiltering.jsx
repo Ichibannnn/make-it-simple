@@ -58,7 +58,6 @@ const TicketFiltering = ({ setFilterStatus, setDateFrom, setDateTo }) => {
                 setTempFilterStatus(newValue);
               }}
               options={options}
-              // sx={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="Status" />}
               disableClearable
             />

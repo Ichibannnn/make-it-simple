@@ -1,23 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  IconButton,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
@@ -27,21 +9,21 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import Swal from "sweetalert2";
+import useDisclosure from "../../../../hooks/useDisclosure";
+
 import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
-import useDisclosure from "../../../../hooks/useDisclosure";
-import { useApproveTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import TransferDisapproveDialog from "./TransferDisapproveDialog";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
-import ForTransferDialogMenuActions from "./MenuActions/ForTransferDialogMenuActions";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { ThemeContext } from "@emotion/react";
+import { useApproveTransferMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useLazyGetChannelsQuery } from "../../../../features/api_channel_setup/channel/channelApi";
+
+import TransferDisapproveDialog from "./TransferDisapproveDialog";
+import ForTransferDialogMenuActions from "./MenuActions/ForTransferDialogMenuActions";
 
 const schema = yup.object().shape({
   // transferTicketId: yup.string().nullable(),
@@ -71,10 +53,8 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
   const {
     control,
-    handleSubmit,
     setValue,
     watch,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -84,16 +64,12 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
     },
   });
 
-  const onApproveAction = (formData) => {
-    // console.log("FormData: ", formData);`
-
+  const onApproveAction = () => {
     const approvePayload = {
       transferTicketId: data?.transferTicketId,
       target_Date: data?.approver_Level === 1 ? watch("targetDate") : moment(watch("targetDate")).format("YYYY-MM-DD"),
       transfer_To: watch("transfer_To")?.userId,
     };
-
-    console.log("approvePayload: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -187,6 +163,11 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
       }
     } catch (error) {
       console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewLoading(false);
     }
   };
 
@@ -214,6 +195,11 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
       }
     } catch (error) {
       console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadLoading(false);
     }
   };
 
@@ -418,16 +404,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                   </Stack>
 
-                  {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Service Provider:</Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack> */}
-
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
                       <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
@@ -563,33 +539,14 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <ForTransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
-                            {/* <>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="View">
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </>
-
-                            {downloadLoading ? (
-                              <CircularProgress size={14} />
-                            ) : (
-                              <Tooltip title="Download">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDownloadAttachment(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <FileDownloadOutlined />
-                                </IconButton>
-                              </Tooltip>
-                            )} */}
+                            <ForTransferDialogMenuActions
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                              viewIsLoading={viewLoading}
+                              downloadIsLoading={downloadLoading}
+                            />
                           </Box>
                         </Box>
                       </Box>
@@ -678,7 +635,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                             const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
                             field.onChange(formattedValue);
                           }}
-                          // label="Select Target Date"
                           slotProps={{
                             textField: {
                               variant: "outlined",

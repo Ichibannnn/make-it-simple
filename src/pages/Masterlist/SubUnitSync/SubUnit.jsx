@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -43,15 +43,12 @@ const SubUnit = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-
+  const [editData, setEditData] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [editData, setEditData] = useState(null);
-
   const { open, onToggle, onClose } = useDisclosure();
-
   const { open: addSubUnitOpen, onToggle: addSubUnitOnToggle, onClose: addSubUnitOnClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSubUnitQuery({

@@ -32,9 +32,10 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
+
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
@@ -534,7 +535,6 @@ const AddTicketDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* REQUESTOR DETAILS */}
-                {/* <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Requestor Details</Typography> */}
                 <Stack direction="row" sx={{ width: "100%", display: "none" }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Requestor Name */}
@@ -838,26 +838,12 @@ const AddTicketDialog = ({ open, onClose }) => {
                               getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                               sx={{
                                 flex: 2,
-                                // "& .MuiButtonBase-root-MuiChip-root": {
-                                //   fontSize: "11px",
-                                // },
-                                // "& .MuiAutocomplete-root .MuiOutlinedInput-root.MuiInputBase-sizeSmall": {
-                                //   paddingTop: "3px",
-                                //   paddingBottom: "3px",
-                                //   paddingLeft: "3px",
-                                // },
                               }}
                               fullWidth
                               disabled={!watch("ChannelId")}
                               disablePortal
                               disableClearable
                               componentsProps={{
-                                // tag: {
-                                //   sx: {
-                                //     fontSize: "11px",
-                                //     height: 24, // optional: adjust height for compact look
-                                //   },
-                                // },
                                 popper: {
                                   sx: {
                                     "& .MuiAutocomplete-listbox": {
@@ -891,9 +877,6 @@ const AddTicketDialog = ({ open, onClose }) => {
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
-                              // onOpen={() => {
-                              //   if (!subCategoryIsSuccess) getSubCategory();
-                              // }}
                               onChange={(_, value) => {
                                 onChange(value || []);
                               }}
@@ -1041,7 +1024,6 @@ const AddTicketDialog = ({ open, onClose }) => {
                       variant="contained"
                       onClick={() => append("")}
                       startIcon={<AddOutlined />}
-                      // disabled={!watch("Concern")}
                       sx={{
                         borderRadius: "0%",
                         ":disabled": {

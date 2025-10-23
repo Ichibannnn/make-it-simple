@@ -17,24 +17,24 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import moment from "moment";
-import { theme } from "../../../../theme/theme";
+import Swal from "sweetalert2";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
-import OnHoldApprovalDialog from "./OnHoldApprovalDialog";
-import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+import { theme } from "../../../../theme/theme";
+import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { DisapproveSelectedDialog } from "./DisapprovedOnHoldDialog";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import { useDispatch } from "react-redux";
-import Swal from "sweetalert2";
-import { toast } from "sonner";
+import OnHoldApprovalDialog from "./OnHoldApprovalDialog";
 
 const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewOnHoldData, setViewOnHoldData] = useState(null);
@@ -86,8 +86,6 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         onHoldTicketId: item,
       })),
     };
-
-    console.log("payload:", payload);
 
     Swal.fire({
       title: "Confirmation",
@@ -459,7 +457,6 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                         <Tooltip title={item?.concern_Details} placement="bottom-start">
                           <TableCell
-                            // className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",

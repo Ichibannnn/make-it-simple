@@ -105,17 +105,6 @@ const TransferredTicketsHistory = ({
         <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
           <TableHead sx={{ whiteSpace: "nowrap" }}>
             <TableRow>
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TRANSFERRED BY
-              </TableCell> */}
-
               <TableCell
                 sx={{
                   background: "#1C2536",
@@ -137,39 +126,6 @@ const TransferredTicketsHistory = ({
               >
                 TICKET DESCRIPTION
               </TableCell>
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TARGET DATE
-              </TableCell> */}
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                APPROVED BY
-              </TableCell> */}
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                APPROVED DATE
-              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -231,20 +187,6 @@ const TransferredTicketsHistory = ({
                     },
                   }}
                 >
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.transfered_By}
-                  </TableCell> */}
-
                   <TableCell
                     sx={{
                       color: "#EDF2F7",
@@ -281,71 +223,6 @@ const TransferredTicketsHistory = ({
                       ))}
                     </TableCell>
                   </Tooltip>
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={moment(item.target_Date).format("LL")}
-                    />
-                  </TableCell> */}
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "400px",
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.approvedBy !== null ? item.approvedBy : "---"}
-                  </TableCell> */}
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={`${moment(item.approved_At).format("MMMM D, YYYY HH:mm")}`}
-                    />
-                  </TableCell> */}
 
                   <TableCell
                     sx={{

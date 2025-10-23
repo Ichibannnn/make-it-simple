@@ -5,8 +5,8 @@ import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord } from
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
+import * as yup from "yup";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
@@ -17,6 +17,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
+
 import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
 
 const schema = yup.object().shape({
@@ -40,8 +41,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
-  const [downloadLoading, setDownloadLoading] = useState(false);
-  const [viewLoading, setViewLoading] = useState(false);
+
+  const [viewIsLoading, setViewIsLoading] = useState(false);
+  const [downloadIsLoading, setDownloadIsLoading] = useState(false);
 
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -83,7 +85,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   });
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -148,13 +149,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
-
-    // console.log("Attachments: ", attachments)
   };
 
   const onSubmitAction = (formData) => {
-    console.log("Form Data: ", formData);
-
     Swal.fire({
       title: "Confirmation",
       text: `Edit this ticket number ${data?.ticketConcernId}?`,
@@ -232,7 +229,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
           payload.append(`AddClosingAttachments[0].attachment`, "");
         }
 
-        console.log("Payload Entries: ", [...payload.entries()]);
+        // console.log("Payload Entries: ", [...payload.entries()]);
 
         closeIssueHandlerTickets(payload)
           .unwrap()
@@ -267,8 +264,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      // console.log("Data: ", data);
-
       setValue("ticketConcernId", data?.ticketConcernId);
       setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
       setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
@@ -335,23 +330,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   const selectedCategories = watch("CategoryId");
-  //   const selectedSubCategories = watch("SubCategoryId");
-
-  //   if (selectedCategories.length > 0) {
-  //     const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-  //       selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
-  //     );
-  //     setValue("SubCategoryId", filteredSubCategories);
-  //   } else {
-  //     setValue("SubCategoryId", []);
-  //   }
-  // }, [subCategoryData]);
-
   // Function to open image view dialog
   const handleViewImage = async (file) => {
-    setViewLoading(true);
+    setViewIsLoading(true);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
@@ -359,15 +340,18 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
-        setViewLoading(false);
       }
+      setViewIsLoading(false);
     } catch (error) {
-      console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
     }
   };
 
   const handleViewImageWithoutId = (file) => {
-    setViewLoading(true);
     try {
       const reader = new FileReader();
 
@@ -382,7 +366,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   };
 
   const handleDownloadAttachment = async (file) => {
-    setDownloadLoading(true);
+    setDownloadIsLoading(true);
     try {
       const response = await getDownloadAttachment(file?.ticketAttachmentId);
 
@@ -395,12 +379,14 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link); // Clean up after download
-        setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
+        setDownloadIsLoading(false);
       }
     } catch (error) {
-      console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadIsLoading(false);
     }
   };
 
@@ -412,8 +398,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
-
-  // console.log("SubCategory: ", subCategoryData);
 
   return (
     <>
@@ -953,69 +937,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   onDelete={handleDeleteFile}
                                   onDownload={handleDownloadAttachment}
                                   isImageFile={isImageFile}
+                                  viewIsLoading={viewIsLoading}
+                                  downloadIsLoading={downloadIsLoading}
                                 />
-
-                                {/* {!!fileName.ticketAttachmentId ? (
-                                  <>
-                                    {isImageFile(fileName.name) && (
-                                      <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => handleViewImage(fileName)} // View image in dialog
-                                        style={{ background: "none" }}
-                                      >
-                                        {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                      </IconButton>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    {isImageFile(fileName.name) && (
-                                      <IconButton
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => handleViewImageWithoutId(fileName.file)} // View image in dialog
-                                        style={{ background: "none" }}
-                                      >
-                                        <VisibilityOutlined />
-                                      </IconButton>
-                                    )}
-                                  </>
-                                )}
-
-                                {data?.getForClosingTickets?.[0]?.isApprove === false && (
-                                  <Tooltip title="Remove">
-                                    <IconButton
-                                      size="small"
-                                      color="error"
-                                      onClick={() => handleDeleteFile(fileName)}
-                                      style={{
-                                        background: "none",
-                                      }}
-                                    >
-                                      <RemoveCircleOutline />
-                                    </IconButton>
-                                  </Tooltip>
-                                )}
-
-                                {!!fileName.ticketAttachmentId && (
-                                  <Tooltip title="Download">
-                                    {downloadLoading ? (
-                                      <CircularProgress size={14} />
-                                    ) : (
-                                      <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() => handleDownloadAttachment(fileName)}
-                                        style={{
-                                          background: "none",
-                                        }}
-                                      >
-                                        <FileDownloadOutlined />
-                                      </IconButton>
-                                    )}
-                                  </Tooltip>
-                                )} */}
                               </Box>
                             </Box>
                           ))}

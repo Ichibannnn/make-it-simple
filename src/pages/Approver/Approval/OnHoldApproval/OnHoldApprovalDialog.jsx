@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, GetAppOutlined } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
-import { theme } from "../../../../theme/theme";
 import { toast } from "sonner";
-import useDisclosure from "../../../../hooks/useDisclosure";
-import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+import { theme } from "../../../../theme/theme";
+import { useEffect, useState } from "react";
+import { LoadingButton } from "@mui/lab";
 import { useDispatch } from "react-redux";
+import useDisclosure from "../../../../hooks/useDisclosure";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
+
+import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+
 import OnHoldApprovalMenuActions from "./MenuActions/OnHoldApprovalMenuActions";
 import DisapprovedOnHoldDialog from "./DisapprovedOnHoldDialog";
 
@@ -43,8 +44,6 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
         },
       ],
     };
-
-    console.log("Payload for approval:", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -125,8 +124,14 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
         setIsViewDialogOpen(true);
         setViewLoading(false);
       }
+      setViewLoading(false);
     } catch (error) {
       console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewLoading(false);
     }
   };
 
@@ -154,6 +159,11 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
       }
     } catch (error) {
       console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadLoading(false);
     }
   };
 
@@ -211,7 +221,6 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               {/* CONCERN DETAILS */}
-
               {isScreenSmall ? (
                 <>
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
@@ -461,7 +470,6 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                           display: "flex",
                           width: "100%",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -494,34 +502,14 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                           </Box>
 
                           <Box>
-                            <OnHoldApprovalMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
-                            {/* <>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="View">
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </>
-
-                            {downloadLoading ? (
-                              <CircularProgress size={14} />
-                            ) : (
-                              <Tooltip title="Download">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-
-                                  onClick={() => handleDownloadAttachment(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <FileDownloadOutlined />
-                                </IconButton>
-                              </Tooltip>
-                            )} */}
+                            <OnHoldApprovalMenuActions
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                              viewIsLoading={viewLoading}
+                              downloadIsLoading={downloadLoading}
+                            />
                           </Box>
                         </Box>
                       </Box>

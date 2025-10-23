@@ -17,24 +17,25 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
-import { useState } from "react";
 
 import moment from "moment";
+import { useState } from "react";
 import { theme } from "../../../../theme/theme";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
-import { LoadingButton } from "@mui/lab";
-import { useApproveTargetMutation, useApproveTicketMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+
 import { toast } from "sonner";
 import Swal from "sweetalert2";
-import TargetApprovalDialog from "./TargetApprovalDialog";
-import DisapprovedSelectedTargetDialog from "./DisapprovedSelectedTargetDialog";
+import { LoadingButton } from "@mui/lab";
+import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import { useDispatch } from "react-redux";
+import { useApproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+
+import TargetApprovalDialog from "./TargetApprovalDialog";
+import DisapprovedSelectedTargetDialog from "./DisapprovedSelectedTargetDialog";
 
 const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewApprovalData, setViewApprovalData] = useState(null);
@@ -86,8 +87,6 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         approvalDateTicketId: item,
       })),
     };
-
-    console.log("payload:", payload);
 
     Swal.fire({
       title: "Confirmation",

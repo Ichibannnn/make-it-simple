@@ -33,7 +33,6 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import {
   useGetReceiverConcernsQuery,
@@ -97,7 +96,7 @@ const NewReceiverConcern = () => {
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetFilteredLocationQuery();
 
   const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
-  const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
+  const { open: addTicketOpen, onClose: addTicketOnClose } = useDisclosure();
   const { open: takeTicketOpen, onToggle: takeTicketOnToggle, onClose: takeTicketOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
@@ -136,8 +135,6 @@ const NewReceiverConcern = () => {
   const takeTicketHandler = () => {
     takeTicketOnToggle();
   };
-
-  console.log("Selected Ids: ", selectedIds);
 
   return (
     <Stack

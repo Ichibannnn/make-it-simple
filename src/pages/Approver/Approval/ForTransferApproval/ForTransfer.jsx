@@ -1,5 +1,4 @@
 import {
-  Box,
   Card,
   CardContent,
   Checkbox,
@@ -13,25 +12,23 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, Close, LocalOffer } from "@mui/icons-material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import moment from "moment";
 import { theme } from "../../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import TransferApprovalDialog from "./TransferApprovalDialog";
-import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+
 import { DisapproveSelectedDialog } from "./TransferDisapproveDialog";
-import { LoadingButton } from "@mui/lab";
+import TransferApprovalDialog from "./TransferApprovalDialog";
 
 const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewTransferData, setViewTransferData] = useState(null);
@@ -387,7 +384,6 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
 
                         <Tooltip title={item?.concern_Details} placement="bottom-start">
                           <TableCell
-                            // className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",

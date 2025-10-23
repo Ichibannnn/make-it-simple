@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,18 +15,13 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { Search, SyncOutlined } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 
-import Swal from "sweetalert2";
-import { LoadingButton } from "@mui/lab";
 import { theme } from "../../../theme/theme";
-import { toast } from "sonner";
-
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import useDebounce from "../../../hooks/useDebounce";
-import useDisclosure from "../../../hooks/useDisclosure";
 
 import { useGetBusinessUnitQuery } from "../../../features/api masterlist/business-unit/businessUnitApi";
 
@@ -38,8 +33,6 @@ const Business = () => {
   const search = useDebounce(searchValue, 500);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { open, onToggle, onClose } = useDisclosure();
-
   const { data, isLoading, isFetching, isSuccess, isError } = useGetBusinessUnitQuery({
     Search: search,
     PageNumber: pageNumber,
@@ -101,7 +94,6 @@ const Business = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>

@@ -2,19 +2,14 @@ import { LoadingButton } from "@mui/lab";
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { Add, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
-import Swal from "sweetalert2";
 
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { useDispatch } from "react-redux";
-import { notificationApi } from "../../../features/api_notification/notificationApi";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
@@ -28,14 +23,12 @@ const schema = yup.object().shape({
 
 const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   const [addAttachments, setAddAttachments] = useState([]);
-  const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
-  const dispatch = useDispatch();
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
@@ -92,9 +85,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
           duration: 1500,
         });
 
-        // dispatch(notificationApi.util.resetApiState());
-        // dispatch(notificationMessageApi.util.resetApiState());
-
         setAddAttachments([]);
         reset();
         onClose();
@@ -109,7 +99,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -128,7 +117,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    console.log("File name: ", fileNameToDelete);
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -265,8 +253,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
         })
       );
 
-      console.log("manageTicketArray: ", manageTicketArray);
-
       setAddAttachments(
         manageTicketArray?.[0]?.map((item) => ({
           ticketAttachmentId: item.ticketAttachmentId,
@@ -317,7 +303,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
@@ -443,7 +428,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                           width: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -548,9 +532,6 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                                     <IconButton
                                       size="small"
                                       color="error"
-                                      // onClick={() => {
-                                      //   window.location = fileName.link;
-                                      // }}
                                       onClick={() => handleDownloadAttachment(fileName)}
                                       style={{
                                         background: "none",
@@ -586,7 +567,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                             fileInputRef.current.value = "";
                           }}
                           hidden
-                          multiple={!!ticketAttachmentId}
+                          multiple
                         />
                       )}
                     />

@@ -20,7 +20,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
@@ -72,7 +72,6 @@ const Channel = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -81,8 +80,6 @@ const Channel = () => {
   };
 
   const onArchiveAction = (data) => {
-    console.log("Data: ", data);
-
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",
@@ -211,6 +208,12 @@ const Channel = () => {
     }
   }, [searchValue]);
 
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
+
   return (
     <Stack
       sx={{
@@ -289,7 +292,6 @@ const Channel = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>
@@ -382,18 +384,6 @@ const Channel = () => {
               <Table sx={{ borderBottom: "none" }}>
                 <TableHead>
                   <TableRow>
-                    {/* <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      LINE NO.
-                    </TableCell> */}
-
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -448,17 +438,6 @@ const Channel = () => {
                     !isFetching &&
                     data?.value?.channel?.map((item, index) => (
                       <TableRow key={item.id}>
-                        {/* <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          {index + 1}
-                        </TableCell> */}
-
                         <TableCell
                           sx={{
                             color: "#EDF2F7",

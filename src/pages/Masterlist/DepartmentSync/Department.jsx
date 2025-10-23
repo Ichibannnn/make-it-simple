@@ -45,7 +45,7 @@ const Department = () => {
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetDepartmentQuery({
-    Status: status,
+    Status: true,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,

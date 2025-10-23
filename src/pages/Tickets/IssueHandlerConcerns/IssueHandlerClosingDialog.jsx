@@ -95,8 +95,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    console.log("FormData: ", formData);
-
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
@@ -151,7 +149,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       payload.append(`AddClosingAttachments[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     // 4pm Cut-off Warning
     // const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
@@ -344,9 +342,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  // console.log("Category: ", categoryData);
-  // console.log("ChannelId", watch("ChannelId"));
 
   return (
     <>
@@ -628,7 +623,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                   flex: 2,
                                 }}
                                 fullWidth
-                                // disablePortal
                                 disableClearable
                                 componentsProps={{
                                   popper: {
@@ -840,7 +834,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                               inputRef={ref}
                               size="medium"
                               value={value}
-                              // placeholder="Enter resolution"
                               onChange={onChange}
                               autoComplete="off"
                               rows={4}
@@ -975,6 +968,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             </Stack>
           </Stack>
         </DialogContent>
+
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
             <LoadingButton
@@ -988,6 +982,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             </LoadingButton>
           </Stack>
         </DialogActions>
+
         {/* Dialog to view image */}
         <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
           <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>

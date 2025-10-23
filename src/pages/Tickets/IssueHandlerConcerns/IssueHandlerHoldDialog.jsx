@@ -1,8 +1,8 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Add, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
@@ -128,7 +127,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -147,8 +145,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -200,8 +196,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
   // Function to open image view dialog
   const handleViewImage = (file) => {
-    console.log("File: ", file);
-
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
@@ -264,7 +258,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
               </Stack>
             </Stack>
 
-            {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
@@ -390,7 +383,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                           width: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -447,32 +439,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
                             <Box>
                               <OnHoldMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-
-                              {/* {isImageFile(fileName.name) && (
-                                <Tooltip title="Remove">
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handleViewImage(fileName.file)} // View image in dialog
-                                    style={{ background: "none" }}
-                                  >
-                                    <VisibilityOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip> */}
                             </Box>
                           </Box>
                         ))}
@@ -508,6 +474,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
             </Stack>
           </Stack>
         </DialogContent>
+
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
             <LoadingButton

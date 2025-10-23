@@ -2,21 +2,19 @@ import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { Add, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
-import Swal from "sweetalert2";
-import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetForTransferUsersQuery, useTransferIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useSelector } from "react-redux";
 import TransferDialogMenuActions from "./MenuActions/TransferDialogMenuActions";
 
@@ -30,7 +28,6 @@ const schema = yup.object().shape({
 
 const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
-  const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
@@ -43,7 +40,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
-  // const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [transferTicket, { isLoading: transferTicketIsLoading, isFetching: transferTicketIsFetching }] = useTransferIssueHandlerTicketsMutation();
 
   const {
@@ -574,7 +570,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                         fileInputRef.current.value = "";
                       }}
                       hidden
-                      multiple={!!ticketAttachmentId}
                     />
                   )}
                 />

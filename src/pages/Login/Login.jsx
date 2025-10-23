@@ -33,7 +33,6 @@ import { concernReceiverApi } from "../../features/api_request/concerns_receiver
 import { useSelector } from "react-redux";
 
 const Login = () => {
-  // const hideLoginForm = useMediaQuery("(max-width: 958px)");
   const hideLoginForm = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
@@ -92,6 +91,7 @@ const Login = () => {
           </Stack>
         </Paper>
       </Stack>
+
       <Box zIndex="1" borderRadius="10px 0 0 10px" mt={6} flexDirection="column" display="flex" justifyContent="center">
         <Box justifyContent="center" display="flex">
           <img src={misLogo} alt="logo" loading="lazy" style={{ width: "10%", height: "100%" }} />
@@ -196,8 +196,6 @@ const LoginForm = () => {
     }
   };
 
-  // console.log("getPassword", getPassword);
-
   const showPasswordHandler = () => {
     setShowPassword(!showPassword);
   };
@@ -282,9 +280,7 @@ const LoginForm = () => {
 };
 
 export const ChangePassword = ({ changePasswordDetails, open, onClose, getPassword }) => {
-  // console.log("User Name: ", changePasswordDetails.value.username);
-
-  const [changeUserPassword, { isSuccess: isPostSuccess }] = useChangeUserPasswordMutation();
+  const [changeUserPassword] = useChangeUserPasswordMutation();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -296,15 +292,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
     confirm_Password: yup.string().required().label("Confirm Password"),
   });
 
-  const {
-    control,
-    handleSubmit,
-    register,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, watch, setValue, reset } = useForm({
     resolver: yupResolver(changePasswordSchema),
     defaultValues: {
       id: null,

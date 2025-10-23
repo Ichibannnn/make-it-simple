@@ -1,16 +1,16 @@
 import { Autocomplete, Box, Divider, Drawer, FormLabel, Stack, TextField, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import { Save } from "@mui/icons-material";
+import { useEffect } from "react";
 
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { theme } from "../../../theme/theme";
-import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import { LoadingButton } from "@mui/lab";
 
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useCreateEditSubCategoryMutation } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { Save } from "@mui/icons-material";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -56,8 +56,6 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = (formData) => {
-    console.log("FormData: ", formData);
-
     if (formData.id) {
       createEditSubCategory({
         id: formData.id,
@@ -103,10 +101,6 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
         });
     }
   };
-
-  // console.log("Category Data: ", categoryData);
-
-  console.log("Data: ", data);
 
   return (
     <>

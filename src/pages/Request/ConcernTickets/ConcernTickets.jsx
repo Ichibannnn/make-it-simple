@@ -7,7 +7,6 @@ import {
   Chip,
   CircularProgress,
   Divider,
-  IconButton,
   OutlinedInput,
   Stack,
   Tab,
@@ -31,8 +30,6 @@ import {
   ClearAllOutlined,
   FiberManualRecord,
   HowToRegOutlined,
-  KeyboardDoubleArrowDown,
-  KeyboardDoubleArrowUp,
   LocalOffer,
   PendingActionsOutlined,
   RotateRightOutlined,
@@ -65,9 +62,7 @@ import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorCon
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
-import { setSearchValue, setStatus, setAscending, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { setSearchValue, setStatus, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
 import ConcernTicketFiltering from "./ConcernTicketFiltering";
 
 const ConcernTickets = () => {

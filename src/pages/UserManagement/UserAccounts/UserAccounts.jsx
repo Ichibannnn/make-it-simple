@@ -20,17 +20,18 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import { AddOutlined, Search } from "@mui/icons-material";
+
 import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 
-import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
-import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
-
 import Swal from "sweetalert2";
+import { toast } from "sonner";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-import { toast } from "sonner";
-import { AddOutlined, Search } from "@mui/icons-material";
+
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import UserAccountAction from "./UserAccountAction";
 import UserAccountPermissions from "./UserAccountPermissions";
@@ -50,7 +51,7 @@ const UserAccounts = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetUsersQuery({
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetUsersQuery({
     Status: status,
     Search: search,
     PageNumber: pageNumber,

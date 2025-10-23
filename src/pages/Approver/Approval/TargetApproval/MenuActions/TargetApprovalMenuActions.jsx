@@ -1,23 +1,45 @@
-import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { FileDownloadOutlined, MoreHoriz, VisibilityOutlined } from "@mui/icons-material";
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import useDisclosure from "../../../../../hooks/useDisclosure";
 
-const TargetApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile }) => {
+const TargetApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
 
   const onViewAction = (fileName) => {
-    onToggle();
     onView(fileName);
   };
 
   const onDownloadAction = (fileName) => {
-    onToggle();
     onDownload(fileName);
   };
+
+  const handleMenuViewClick = (event, action) => {
+    if (viewIsLoading) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    action();
+  };
+
+  const handleMenuDownloadClick = (event, action) => {
+    if (downloadIsLoading) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    action();
+  };
+
+  useEffect(() => {
+    if (!viewIsLoading && !downloadIsLoading) {
+      onToggle();
+    }
+  }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>

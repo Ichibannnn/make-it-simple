@@ -4,9 +4,8 @@ import { useEffect } from "react";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme } from "../../../theme/theme";
+import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
@@ -80,7 +79,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         if (data) {
-          // ROLE API
+          // Role API
           if (formData.user_Role_Name !== data.user_Role_Name) {
             updateRoleName({
               id: data.id,
@@ -100,12 +99,9 @@ const RoleAddDialog = ({ data, open, onClose }) => {
               });
           }
 
-          // ROLE PERMISSION API
+          // Role Permission API
           const isPermissionMatch = formData.permissions.every((item) => data.permissions.includes(item)) && formData.permissions.length === data.permissions.length;
-
           if (!isPermissionMatch) {
-            console.log("isPermissionMatch: ", isPermissionMatch);
-            console.log("Data: ", data);
             updateRolePermission({
               id: data.id,
               permissions: formData.permissions,
@@ -240,7 +236,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack direction="column">
-              {/* PERMISSIONS */}
+              {/* Permissions */}
               <FormControl
                 component="fieldset"
                 variant="standard"
@@ -298,7 +294,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormGroup>
               </FormControl>
 
-              {/* USER MANAGEMENT */}
+              {/* User Management */}
               {watch("permissions")?.includes("User Management") && (
                 <FormControl
                   component="fieldset"
@@ -357,7 +353,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* MASTERLIST */}
+              {/* Masterlist */}
               {watch("permissions")?.includes("Masterlist") && (
                 <FormControl
                   component="fieldset"
@@ -416,7 +412,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* REQUESTOR */}
+              {/* Requestor */}
               {watch("permissions")?.includes("Requestor") && (
                 <FormControl
                   component="fieldset"
@@ -475,7 +471,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* RECEIVER */}
+              {/* Receiver */}
               {watch("permissions")?.includes("Receiver") && (
                 <FormControl
                   component="fieldset"
@@ -534,7 +530,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* APPROVER */}
+              {/* Approver */}
               {watch("permissions")?.includes("Approver") && (
                 <FormControl
                   component="fieldset"
@@ -593,7 +589,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* TICKETING */}
+              {/* Ticketing */}
               {watch("permissions")?.includes("Ticketing") && (
                 <FormControl
                   component="fieldset"

@@ -21,10 +21,10 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { useEffect, useState } from "react";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
@@ -72,7 +72,6 @@ const Category = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -210,6 +209,12 @@ const Category = () => {
     }
   }, [searchValue]);
 
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
+
   return (
     <Stack
       sx={{
@@ -288,7 +293,6 @@ const Category = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>
@@ -442,6 +446,7 @@ const Category = () => {
                     </TableCell>
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
                   {isSuccess &&
                     !isLoading &&

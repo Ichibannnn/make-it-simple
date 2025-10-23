@@ -20,7 +20,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
@@ -73,7 +73,6 @@ const Receiver = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -82,8 +81,6 @@ const Receiver = () => {
   };
 
   const onArchiveAction = (data) => {
-    console.log("Data: ", data);
-
     if (data.isActive === true) {
       Swal.fire({
         title: "Are you sure?",
@@ -175,6 +172,12 @@ const Receiver = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   return (
     <Stack

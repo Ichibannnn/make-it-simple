@@ -1,15 +1,16 @@
 import { Badge, Box, Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
-import React, { Fragment, useEffect, useState } from "react";
-import { theme } from "../theme/theme";
-import { useDispatch, useSelector } from "react-redux";
+import { Fragment, useEffect, useState } from "react";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
+import { theme } from "../theme/theme";
+import { getMenuIcon } from "./GetIcon";
+import { useDispatch, useSelector } from "react-redux";
 import { setSidebar } from "../features/sidebar/sidebarSlice";
+
 import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
-import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
 import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
-import helpDeskNameLogo from "../assets/images/helpdesk-icon-name.png";
+
 import helpDeskLogo from "../assets/images/helpdesk_icon.png";
 
 const Sidebar = () => {
@@ -91,6 +92,7 @@ const SidebarHeader = () => {
       }}
     >
       <img src={helpDeskLogo} alt="dotek-icon" width="74" height="50" className="logo-sidebar" />
+
       <Stack direction="row" gap={0.5} mt={0.5}>
         <Typography
           sx={{
@@ -103,6 +105,7 @@ const SidebarHeader = () => {
         >
           MIS
         </Typography>
+
         <Typography
           sx={{
             fontSize: ".9rem",
@@ -152,7 +155,6 @@ const SidebarList = () => {
         userManagementOnToggle();
         masterlistOnClose();
         requestOnClose();
-        // channelOnClose();
         ticketingOnClose();
         approverOnClose();
       },
@@ -183,7 +185,6 @@ const SidebarList = () => {
         masterListOnToggle();
         userManagementOnClose();
         requestOnClose();
-        // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
         approverOnClose();
@@ -336,19 +337,19 @@ const SidebarList = () => {
       ],
     },
     {
-      id: 7,
+      id: 8,
       name: "Reports",
       path: "/reports",
       icon: "AssessmentOutlined",
     },
     {
-      id: 8,
+      id: 9,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 9,
+      id: 10,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",
