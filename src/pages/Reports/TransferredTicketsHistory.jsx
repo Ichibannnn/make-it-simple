@@ -280,18 +280,28 @@ const TransferredTicketsHistory = ({
                   >
                     <Stack gap={0.5}>
                       <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Requested Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.requested_Date).format("MMMM D, YYYY HH:mm")}</Typography>
+                      </Stack>
+
+                      <Stack>
                         <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Previous Target Date:</Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.previous_Target_Date).format("LL")}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>New Target Date:</Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.new_Target_Date).format("LL")}</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Transferred Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.transferredDate).format("MMMM D, YYYY HH:mm")}</Typography>
                       </Stack>
 
                       <Stack>
                         <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Approved Date:</Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.approved_At).format("MMMM D, YYYY HH:mm")}</Typography>
+                      </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>New Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.new_Target_Date).format("LL")}</Typography>
                       </Stack>
                     </Stack>
                   </TableCell>

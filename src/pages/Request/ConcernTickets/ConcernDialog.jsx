@@ -374,12 +374,19 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const handleViewImage = (file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedImage(e.target.result);
-      setIsViewDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        setIsViewDialogOpen(true);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error("Error!", {
+        description: "Error viewing of file",
+        duration: 1500,
+      });
+    }
   };
 
   const handleDeleteFile = (fileNameToDelete) => {
