@@ -6,7 +6,7 @@
 
 ## 📖 Overview
 
-This project is a FBTI-Helpdesk designed to support real-time updates using SignalR and efficient API management via RTK Query.
+This project is a MIS-Helpdesk designed to support real-time updates using SignalR and efficient API management via RTK Query.
 
 It features:
 
@@ -37,7 +37,7 @@ It features:
 
 ```bash
 git clone https://github.com/Ichibannnn/make-it-simple.git
-cd your-project
+cd make-it-simple
 ```
 
 ## ⚙️ Setup Instructions

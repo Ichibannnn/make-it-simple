@@ -3,7 +3,6 @@ import { Save } from "@mui/icons-material";
 import { useEffect } from "react";
 
 import * as yup from "yup";
-import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -11,6 +10,7 @@ import { LoadingButton } from "@mui/lab";
 
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useCreateEditSubCategoryMutation } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { toast } from "sonner";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -60,7 +60,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
       createEditSubCategory({
         id: formData.id,
         subCategory_Description: formData.subCategory_Description,
-        categoryId: formData.categoryId.categoryId,
+        categoryId: formData.categoryId.id,
       })
         .unwrap()
         .then(() => {
