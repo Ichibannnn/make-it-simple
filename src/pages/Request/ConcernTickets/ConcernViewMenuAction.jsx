@@ -44,11 +44,11 @@ const ConcernViewMenuActions = ({ editData, fileName, onView, onViewWithoutId, o
     action();
   };
 
-  useEffect(() => {
-    if (!viewIsLoading && !downloadIsLoading) {
-      onToggle();
-    }
-  }, [viewIsLoading, downloadIsLoading]);
+  // useEffect(() => {
+  //   if (!viewIsLoading && !downloadIsLoading) {
+  //     onToggle();
+  //   }
+  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>

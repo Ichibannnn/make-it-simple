@@ -35,6 +35,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -423,6 +424,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         color: theme.palette.text.main,
                         fontWeight: "500",
                         fontSize: "14px",
+                        wordBreak: "break-word",
                       }}
                     >
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -458,32 +460,23 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Box>
                     <Box sx={{ width: "5%" }} />
 
-                    <Tooltip
-                      title={data?.concern_Description.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                      placement="bottom-start"
-                    >
-                      <Box className="ellipsis-styling-label" width={{ width: "75%", ml: 2 }}>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.main,
-                            fontWeight: "500",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {data?.concern_Description?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
-                        </Typography>
-                      </Box>
-                    </Tooltip>
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.main,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
                   </Stack>
                 )}
 
@@ -875,8 +868,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           minHeight: "195px",
                           display: "flex",
                           width: "100%",
-                          display: "flex",
                           flexDirection: "column",
+                          alignItems: "center",
                           padding: 1,
                         }}
                       >
@@ -884,56 +877,59 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           <Box
                             key={index}
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
-                              justifyContent: "space-between",
                               alignItems: "center",
-                              padding: 0.5,
+                              padding: 1,
                               borderBottom: "1px solid #2D3748",
                             }}
                           >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                              <Typography
-                                sx={{
-                                  fontSize: "12px",
-                                  color: theme.palette.text.secondary,
-                                }}
-                              >
-                                {fileName.size} Mb
-                              </Typography>
-
+                            {getAttachmentIcon(fileName)}
+                            <Stack sx={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                               <Box
                                 sx={{
                                   display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 1,
+                                  flexDirection: "column",
                                 }}
                               >
+                                <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                                 <Typography
                                   sx={{
-                                    fontSize: "14px",
-                                    fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    fontSize: "12px",
+                                    color: theme.palette.text.secondary,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  {fileName.size} Mb
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                              </Box>
-                            </Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontSize: "14px",
+                                      fontWeight: 500,
+                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    }}
+                                  >
+                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  </Typography>
 
-                            <Box>
-                              <ClosingDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                            </Box>
+                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                </Box>
+                              </Box>
+
+                              <Box>
+                                <ClosingDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                              </Box>
+                            </Stack>
                           </Box>
                         ))}
                       </Box>
@@ -946,7 +942,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept=".png,.jpg,.jpeg,.docx"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);

@@ -555,7 +555,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept=".png,.jpg,.jpeg,.docx"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);

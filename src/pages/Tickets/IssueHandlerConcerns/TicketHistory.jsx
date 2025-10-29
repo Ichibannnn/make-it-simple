@@ -2,8 +2,8 @@ import moment from "moment";
 import { theme } from "../../../theme/theme";
 
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
-import { Accordion, AccordionDetails, AccordionSummary, Stack, Typography, useMediaQuery } from "@mui/material";
-import { DiscountOutlined, ExpandMore, PersonOutlineOutlined } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Typography, useMediaQuery } from "@mui/material";
+import { DiscountOutlined, ExpandMore, History, PersonOutlineOutlined } from "@mui/icons-material";
 
 import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
@@ -39,8 +39,17 @@ const TicketHistory = ({ data }) => {
               {historyData?.value?.[0]?.upComingApprovers?.map((item, index) => (
                 <TimelineItem key={index}>
                   <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
-                    <Stack direction="row">
-                      <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                    <Stack>
+                      {item.transaction_Date ? (
+                        <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                      ) : (
+                        <Stack>
+                          <Box gap={0.3} sx={{ display: "flex", direction: "row", alignItems: "center", justifyContent: "end" }}>
+                            <History />
+                            <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>Pending...</Typography>
+                          </Box>
+                        </Stack>
+                      )}
                     </Stack>
                   </TimelineOppositeContent>
 

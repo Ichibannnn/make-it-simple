@@ -274,7 +274,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordBreak: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -290,7 +290,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Transfer Remarks:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordBreak: "break-word" }}>
                         {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -376,7 +376,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -393,7 +393,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                         {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}

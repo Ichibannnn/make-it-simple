@@ -1,10 +1,10 @@
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 
+import { Close, History, PersonOutlineOutlined } from "@mui/icons-material";
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
-import { Dialog, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Box, Dialog, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { Close, PersonOutlineOutlined } from "@mui/icons-material";
 
 const ConcernHistory = ({ data, open, onClose }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -62,8 +62,17 @@ const ConcernHistory = ({ data, open, onClose }) => {
                   {historyData?.value?.[0]?.upComingApprovers?.map((item, index) => (
                     <TimelineItem key={index}>
                       <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
-                        <Stack direction="row">
-                          <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                        <Stack>
+                          {item.transaction_Date ? (
+                            <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                          ) : (
+                            <Stack>
+                              <Box gap={0.3} sx={{ display: "flex", direction: "row", alignItems: "center", justifyContent: "end" }}>
+                                <History />
+                                <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>Pending...</Typography>
+                              </Box>
+                            </Stack>
+                          )}
                         </Stack>
                       </TimelineOppositeContent>
 

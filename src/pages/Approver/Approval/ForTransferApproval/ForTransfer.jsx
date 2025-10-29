@@ -384,6 +384,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
 
                         <Tooltip title={item?.concern_Details} placement="bottom-start">
                           <TableCell
+                            className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",

@@ -35,11 +35,11 @@ const ForTransferDialogMenuActions = ({ fileName, onView, onDownload, isImageFil
     action();
   };
 
-  useEffect(() => {
-    if (!viewIsLoading && !downloadIsLoading) {
-      onToggle();
-    }
-  }, [viewIsLoading, downloadIsLoading]);
+  // useEffect(() => {
+  //   if (!viewIsLoading && !downloadIsLoading) {
+  //     onToggle();
+  //   }
+  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>

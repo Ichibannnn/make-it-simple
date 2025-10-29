@@ -308,7 +308,7 @@ const ConcernReturn = ({ data, open, onClose }) => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".png,.jpg,.jpeg,.docx"
+                  accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                   onChange={(event) => {
                     if (ticketAttachmentId) {
                       const files = Array.from(event.target.files);

@@ -36,11 +36,11 @@ const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile, view
     action();
   };
 
-  useEffect(() => {
-    if (!viewIsLoading && !downloadIsLoading) {
-      onToggle();
-    }
-  }, [viewIsLoading, downloadIsLoading]);
+  // useEffect(() => {
+  //   if (!viewIsLoading && !downloadIsLoading) {
+  //     onToggle();
+  //   }
+  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>
@@ -48,14 +48,7 @@ const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile, view
         <MoreHoriz />
       </IconButton>
 
-      <Menu
-        anchorEl={ref.current}
-        open={open}
-        onClose={() => {
-          if (!viewIsLoading) onToggle();
-        }}
-        disableAutoFocusItem
-      >
+      <Menu anchorEl={ref.current} open={open} onClose={onToggle} disableAutoFocusItem>
         {isImageFile(fileName.name) && (
           <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
             <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>

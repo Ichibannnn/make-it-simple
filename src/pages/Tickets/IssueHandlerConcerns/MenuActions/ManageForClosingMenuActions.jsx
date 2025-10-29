@@ -45,11 +45,11 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
     action();
   };
 
-  useEffect(() => {
-    if (!viewIsLoading && !downloadIsLoading) {
-      onToggle();
-    }
-  }, [viewIsLoading, downloadIsLoading]);
+  // useEffect(() => {
+  //   if (!viewIsLoading && !downloadIsLoading) {
+  //     onToggle();
+  //   }
+  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>

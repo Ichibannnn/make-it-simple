@@ -19,6 +19,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 
 import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -873,7 +874,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                             width: "100%",
                             display: "flex",
                             flexDirection: "column",
-                            // justifyContent: "space-between",
                             padding: 1,
                           }}
                         >
@@ -881,66 +881,69 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                             <Box
                               key={index}
                               sx={{
+                                width: "100%",
                                 display: "flex",
                                 flexDirection: "row",
-                                justifyContent: "space-between",
                                 alignItems: "center",
                                 padding: 0.5,
                                 borderBottom: "1px solid #2D3748",
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                                <Typography
-                                  sx={{
-                                    fontSize: "12px",
-                                    color: theme.palette.text.secondary,
-                                  }}
-                                >
-                                  {fileName.size} Mb
-                                </Typography>
-
+                              {getAttachmentIcon(fileName)}
+                              <Stack sx={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                 <Box
                                   sx={{
                                     display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: 1,
+                                    flexDirection: "column",
                                   }}
                                 >
+                                  <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                                   <Typography
                                     sx={{
-                                      fontSize: "14px",
-                                      fontWeight: 500,
-                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                      fontSize: "12px",
+                                      color: theme.palette.text.secondary,
                                     }}
                                   >
-                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                    {fileName.size} Mb
                                   </Typography>
 
-                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                                </Box>
-                              </Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 1,
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: "14px",
+                                        fontWeight: 500,
+                                        color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                      }}
+                                    >
+                                      {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                    </Typography>
 
-                              <Box>
-                                <ManageForClosingMenuActions
-                                  data={data}
-                                  fileName={fileName}
-                                  onView={handleViewImage}
-                                  onViewWithoutId={handleViewImageWithoutId}
-                                  onDelete={handleDeleteFile}
-                                  onDownload={handleDownloadAttachment}
-                                  isImageFile={isImageFile}
-                                  viewIsLoading={viewIsLoading}
-                                  downloadIsLoading={downloadIsLoading}
-                                />
-                              </Box>
+                                    {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                  </Box>
+                                </Box>
+
+                                <Box>
+                                  <ManageForClosingMenuActions
+                                    data={data}
+                                    fileName={fileName}
+                                    onView={handleViewImage}
+                                    onViewWithoutId={handleViewImageWithoutId}
+                                    onDelete={handleDeleteFile}
+                                    onDownload={handleDownloadAttachment}
+                                    isImageFile={isImageFile}
+                                    viewIsLoading={viewIsLoading}
+                                    downloadIsLoading={downloadIsLoading}
+                                  />
+                                </Box>
+                              </Stack>
                             </Box>
                           ))}
                         </Box>
@@ -954,7 +957,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept=".png,.jpg,.jpeg,.docx"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                           onChange={(event) => {
                             if (ticketAttachmentId) {
                               const files = Array.from(event.target.files);

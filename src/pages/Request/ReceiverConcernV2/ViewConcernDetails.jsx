@@ -15,6 +15,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import AssignTicketDrawer from "./AssignTicketDrawer";
 import MenuActions from "./MenuActions";
 import { toast } from "sonner";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -919,15 +920,18 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                   <Box
                     key={index}
                     sx={{
-                      display: "flex",
                       width: "100%",
-                      flexDirection: "column",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
                       justifyContent: "space-between",
                       padding: 1,
                     }}
                   >
+                    {getAttachmentIcon(fileName)}
                     <Box
                       sx={{
+                        width: "100%",
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
@@ -977,7 +981,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".png,.jpg,.jpeg,.docx"
+                  accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                   onChange={(event) => {
                     if (ticketAttachmentId) {
                       const files = Array.from(event.target.files);

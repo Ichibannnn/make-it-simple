@@ -278,7 +278,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                   <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                     <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
 
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
                         <span key={index}>
                           {line}
@@ -294,7 +294,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Box>
                     <Box sx={{ width: "5%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                         {data?.concern_Description?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -452,7 +452,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept=".png,.jpg,.jpeg,.docx"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);

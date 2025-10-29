@@ -35,11 +35,11 @@ const TicketApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile, 
     action();
   };
 
-  useEffect(() => {
-    if (!viewIsLoading && !downloadIsLoading) {
-      onToggle();
-    }
-  }, [viewIsLoading, downloadIsLoading]);
+  // useEffect(() => {
+  //   if (!viewIsLoading && !downloadIsLoading) {
+  //     onToggle();
+  //   }
+  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>

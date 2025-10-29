@@ -37,6 +37,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -1601,7 +1602,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       padding: 1,
                     }}
                     onDragOver={handleDragOver}
-                    // onDrop={handleDrop}
                   >
                     {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
                       <Box
@@ -1650,14 +1650,17 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             sx={{
                               display: "flex",
                               width: "100%",
-                              flexDirection: "column",
+                              flexDirection: "row",
+                              alignItems: "center",
                               padding: 1,
                               maxWidth: "100%",
                               overflow: "hidden",
                             }}
                           >
+                            {getAttachmentIcon(fileName)}
                             <Box
                               sx={{
+                                width: "100%",
                                 display: "flex",
                                 flexDirection: "row",
                                 justifyContent: "space-between",
@@ -1733,7 +1736,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".png,.jpg,.jpeg,.docx"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         onChange={(event) => {
                           if (ticketAttachmentId) {
                             const files = Array.from(event.target.files);

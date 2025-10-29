@@ -51,6 +51,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import ConcernMenuActions from "./ConcernMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -1832,14 +1833,17 @@ const ConcernDialog = ({ open, onClose }) => {
                           sx={{
                             display: "flex",
                             width: "100%",
-                            flexDirection: "column",
+                            flexDirection: "row",
+                            alignItems: "center",
                             padding: 1,
                             maxWidth: "100%",
                             overflow: "hidden",
                           }}
                         >
+                          {getAttachmentIcon(fileName)}
                           <Box
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
                               justifyContent: "space-between",

@@ -42,6 +42,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import ConcernMenuActions from "../../Request/ConcernTickets/ConcernMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const AddTicketDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -1137,14 +1138,17 @@ const AddTicketDialog = ({ open, onClose }) => {
                           sx={{
                             display: "flex",
                             width: "100%",
-                            flexDirection: "column",
+                            flexDirection: "row",
+                            alignItems: "center",
                             padding: 1,
                             maxWidth: "100%",
                             overflow: "hidden",
                           }}
                         >
+                          {getAttachmentIcon(fileName)}
                           <Box
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
                               justifyContent: "space-between",
@@ -1197,7 +1201,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                     render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
-                        accept=".png,.jpg,.jpeg,.docx"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         style={{ display: "none" }}
                         multiple
                         type="file"

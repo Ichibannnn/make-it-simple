@@ -17,6 +17,7 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useSelector } from "react-redux";
 import TransferDialogMenuActions from "./MenuActions/TransferDialogMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
   TransferRemarks: yup.string().required().label("Remarks is required"),
@@ -61,8 +62,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    console.log("FormData: ", formData);
-
     const payload = new FormData();
 
     payload.append("TicketConcernId", data?.ticketConcernId);
@@ -191,8 +190,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleViewImage = (file) => {
-    console.log("File: ", file);
-
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
@@ -283,7 +280,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
               <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                 <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
 
-                <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                   {data?.concern_Description?.split("\r\n").map((line, index) => (
                     <span key={index}>
                       {line}
@@ -299,7 +296,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                 </Box>
                 <Box sx={{ width: "5%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                     {data?.concern_Description?.split("\r\n").map((line, index) => (
                       <span key={index}>
                         {line}
@@ -496,56 +493,59 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                       <Box
                         key={index}
                         sx={{
+                          width: "100%",
                           display: "flex",
                           flexDirection: "row",
-                          justifyContent: "space-between",
                           alignItems: "center",
                           padding: 0.5,
                           borderBottom: "1px solid #2D3748",
                         }}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "12px",
-                              color: theme.palette.text.secondary,
-                            }}
-                          >
-                            {fileName.size} Mb
-                          </Typography>
-
+                        {getAttachmentIcon(fileName)}
+                        <Stack sx={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                           <Box
                             sx={{
                               display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              gap: 1,
+                              flexDirection: "column",
                             }}
                           >
+                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                             <Typography
                               sx={{
-                                fontSize: "14px",
-                                fontWeight: 500,
-                                color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                fontSize: "12px",
+                                color: theme.palette.text.secondary,
                               }}
                             >
-                              {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                              {fileName.size} Mb
                             </Typography>
 
-                            {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                          </Box>
-                        </Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                  color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                }}
+                              >
+                                {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                              </Typography>
 
-                        <Box>
-                          <TransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                        </Box>
+                              {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            <TransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                          </Box>
+                        </Stack>
                       </Box>
                     ))}
                   </Box>
@@ -558,13 +558,13 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept=".png,.jpg,.jpeg,.docx"
+                      accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                       onChange={(event) => {
                         handleAttachments(event);
                         const files = Array.from(event.target.files);
                         const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
-                        console.log("Controller Files: ", files);
+                        // console.log("Controller Files: ", files);
 
                         onChange([...value, ...uniqueNewFiles]);
                         fileInputRef.current.value = "";
