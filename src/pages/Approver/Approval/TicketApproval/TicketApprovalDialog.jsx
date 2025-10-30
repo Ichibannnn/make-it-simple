@@ -17,6 +17,7 @@ import { notificationMessageApi } from "../../../../features/api_notification_me
 
 import DisapprovedDialog from "./DisapprovedDialog";
 import TicketApprovalMenuActions from "./MenuActions/TicketApprovalMenuActions";
+import { getAttachmentIcon } from "../../../../utils/getAttachmentIcon";
 
 const TicketApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -237,7 +238,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordWrap: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -253,7 +254,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Resolution:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.resolution}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordWrap: "break-word" }}>{data?.resolution}</Typography>
                     </Box>
                   </Stack>
 
@@ -332,7 +333,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordWrap: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -349,7 +350,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.resolution}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordWrap: "break-word" }}>{data?.resolution}</Typography>
                     </Box>
                   </Stack>
 
@@ -454,12 +455,15 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                         sx={{
                           display: "flex",
                           width: "100%",
-                          flexDirection: "column",
+                          flexDirection: "row",
+                          alignItems: "center",
                           padding: 1,
                         }}
                       >
+                        {getAttachmentIcon(fileName)}
                         <Box
                           sx={{
+                            width: "100%",
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "space-between",

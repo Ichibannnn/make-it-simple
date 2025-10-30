@@ -226,7 +226,7 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET DESCRIPTION:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                               {item.concern_Details?.split("\r\n").map((line, index) => (
                                 <span key={index}>
                                   {line}
@@ -457,16 +457,19 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                         <Tooltip title={item?.concern_Details} placement="bottom-start">
                           <TableCell
+                            className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",
                               fontWeight: 500,
-                              maxWidth: "300px",
                             }}
                             onClick={() => onViewAction(item)}
                           >
                             {item?.concern_Details.split("\r\n").map((line, index) => (
-                              <div key={index}>{line}</div>
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
                             ))}
                           </TableCell>
                         </Tooltip>

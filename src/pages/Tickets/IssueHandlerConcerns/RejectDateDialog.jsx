@@ -29,6 +29,7 @@ import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import AssignDialogMenuAction from "../../Request/ReceiverConcernV2/AssignDialogMenuAction";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
   Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
@@ -51,8 +52,8 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
-  const [loading, setLoading] = useState(false);
-  const [viewLoading, setViewLoading] = useState(false);
+  const [viewIsLoading, setViewIsLoading] = useState(false);
+  const [downloadIsLoading, setDownloadIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
@@ -61,7 +62,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
-  const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useEditRequestorConcernMutation();
   // const [smsNotification] = useSendSmsNotificationMutation();
 
@@ -110,8 +110,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -148,37 +146,48 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   };
 
   const handleViewImage = async (file) => {
-    console.log("File: ", file);
-    setViewLoading(true);
+    console.log("View File:", file);
+
+    setViewIsLoading(true);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
-
-      console.log("Res: ", response);
 
       if (response?.data) {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
-        setViewLoading(false);
+        setViewIsLoading(false);
       }
+      setViewIsLoading(false);
     } catch (error) {
       console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
     }
   };
 
   const handleViewImageWithoutId = (file) => {
-    console.log("File: ", file);
-    setViewLoading(true);
-    const reader = new FileReader();
+    setViewIsLoading(true);
     try {
+      const reader = new FileReader();
+
       reader.onload = (e) => {
         setSelectedImage(e.target.result);
         setIsViewDialogOpen(true);
       };
       reader.readAsDataURL(file);
-      setViewLoading(false);
+      setViewIsLoading(false);
     } catch (error) {
       console.error("Error fetching image:", error);
+
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
     }
   };
 
@@ -187,7 +196,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   };
 
   const handleDownloadAttachment = async (file) => {
-    setLoading(true);
+    setDownloadIsLoading(true);
     try {
       const response = await getDownloadAttachment(file?.ticketAttachmentId);
 
@@ -200,12 +209,17 @@ const RejectDateDialog = ({ data, open, onClose }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link); // Clean up after download
-        setLoading(false);
+        setDownloadIsLoading(false);
       } else {
         console.log("No data in the response");
       }
     } catch (error) {
       console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadIsLoading(false);
     }
   };
 
@@ -221,8 +235,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = (formData) => {
-    console.log("FormData: ", formData);
-
     const payload = new FormData();
 
     payload.append("RequestConcernId", formData?.RequestConcernId);
@@ -275,7 +287,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
       payload.append(`RequestAttachmentsFile[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     // const smsPayload = {
     //   system_name: "Make It Simple",
@@ -309,62 +321,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
         createEditReceiverConcern(payload)
           .unwrap()
           .then((response) => {
-            console.log("Response: ", response);
-            // For Assigning ticket purposes
-            // Swal.fire({
-            //   title: "Success!",
-            //   html: `Thank you for submitting your concern.<br><br>
-            //            A service ticket <strong>#${response?.value}</strong> has been created.`,
-            //   icon: "success",
-            //   color: "white",
-            //   showCancelButton: true,
-            //   background: "#111927",
-            //   confirmButtonColor: "#9e77ed",
-            //   confirmButtonText: `Copy`,
-            //   cancelButtonText: "Close",
-            //   cancelButtonColor: "#1C2536",
-            //   heightAuto: false,
-            //   width: "30em",
-            //   customClass: {
-            //     container: "custom-container",
-            //     title: "custom-title",
-            //     htmlContainer: "custom-text",
-            //     // icon: "custom-icon",
-            //     confirmButton: "custom-confirm-btn",
-            //     cancelButton: "custom-cancel-btn",
-            //   },
-            // }).then((result) => {
-            //   if (result.isConfirmed) {
-            //     const ticketMessage = `Thank you for submitting your concern. A service ticket #${response?.value} has been created.`;
-
-            //     navigator.clipboard.writeText(ticketMessage).then(() => {
-            //       Swal.fire({
-            //         title: "Copied!",
-            //         icon: "success",
-            //         color: "white",
-            //         background: "#111927",
-            //         text: `Copied to clipboard.`,
-            //         timer: 2000,
-            //         showConfirmButton: false,
-            //         heightAuto: false,
-            //         width: "30em",
-            //         customClass: {
-            //           container: "custom-container",
-            //           title: "custom-title",
-            //           htmlContainer: "custom-text",
-            //           // icon: "custom-icon",
-            //           confirmButton: "custom-confirm-btn",
-            //           cancelButton: "custom-cancel-btn",
-            //         },
-            //       });
-            //     });
-            //   } else {
-            //     const ticketMessage = `Thank you for submitting your concern. A service ticket #${response?.value} has been created.`;
-
-            //     navigator.clipboard.writeText(ticketMessage);
-            //   }
-            // });
-
             toast.success("Success!", {
               description: "Approve concern successfully!",
               duration: 1500,
@@ -434,7 +390,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
 
       //   setValue("TargetDate", data?.targetDate ? moment(data?.targetDate) : null);
 
-      getAddAttachmentData(data?.ticketRequestConcerns?.[0]?.ticketConcernId);
+      getAddAttachmentData(data?.ticketConcernId);
       getSubCategory({
         CategoryId: categoryIdParams,
       });
@@ -500,7 +456,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           fontWeight: "500",
                         }}
                       >
-                        Concern No:
+                        Ticket No:
                       </Typography>
                     </Box>
 
@@ -510,7 +466,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           fontSize: "13px",
                         }}
                       >
-                        {data?.requestConcernId}
+                        {data?.ticketConcernId}
                       </Typography>
                     </Box>
                   </Stack>
@@ -781,54 +737,6 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                   </LocalizationProvider>
                 </Stack>
 
-                {/* <Stack gap={0.5}>
-                  <Typography
-                    sx={{
-                      fontSize: "13px",
-                    }}
-                  >
-                    Assign To:
-                  </Typography>
-                  <Controller
-                    control={control}
-                    name="IssueHandler"
-                    render={({ field: { ref, value, onChange } }) => {
-                      return (
-                        <Autocomplete
-                          ref={ref}
-                          size="small"
-                          value={value}
-                          options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
-                          loading={issueHandlerIsLoading}
-                          renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
-                          onOpen={() => {
-                            if (!issueHandlerIsSuccess) getIssueHandler();
-                          }}
-                          onChange={(_, value) => {
-                            onChange(value);
-                          }}
-                          getOptionLabel={(option) => option.fullname}
-                          isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
-                          sx={{
-                            flex: 2,
-                          }}
-                          componentsProps={{
-                            popper: {
-                              sx: {
-                                "& .MuiAutocomplete-listbox": {
-                                  fontSize: "13px",
-                                },
-                              },
-                            },
-                          }}
-                          fullWidth
-                          // disablePortal
-                        />
-                      );
-                    }}
-                  />
-                </Stack> */}
-
                 <Stack gap={0.5}>
                   <Typography
                     sx={{
@@ -917,13 +825,15 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           sx={{
                             display: "flex",
                             width: "100%",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
+                            flexDirection: "row",
+                            alignItems: "center",
                             padding: 1,
                           }}
                         >
+                          {getAttachmentIcon(fileName)}
                           <Box
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
                               justifyContent: "space-between",
@@ -979,6 +889,8 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                                 onDelete={handleDeleteFile}
                                 onDownload={handleDownloadAttachment}
                                 isImageFile={isImageFile}
+                                viewIsLoading={viewIsLoading}
+                                downloadIsLoading={downloadIsLoading}
                               />
                             </Box>
                           </Box>

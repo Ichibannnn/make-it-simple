@@ -1,10 +1,10 @@
 import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 import { Box, CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-const ConcernViewMenuActions = ({ editData, fileName, onView, onViewWithoutId, onDelete, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
+const ConcernViewMenuActions = ({ editData, fileName, onView, onViewWithoutId, onDelete, onDownload, isImageFile, viewIsLoading, downloadIsLoading, deleteIsLoading }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -18,7 +18,7 @@ const ConcernViewMenuActions = ({ editData, fileName, onView, onViewWithoutId, o
   };
 
   const onDeleteAction = (fileName) => {
-    onToggle();
+    // onToggle();
     onDelete(fileName);
   };
 
@@ -37,6 +37,15 @@ const ConcernViewMenuActions = ({ editData, fileName, onView, onViewWithoutId, o
 
   const handleMenuDownloadClick = (event, action) => {
     if (downloadIsLoading) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    action();
+  };
+
+  const handleMenuDeleteClick = (event, action) => {
+    if (deleteIsLoading) {
       event.preventDefault();
       event.stopPropagation();
       return;
@@ -85,10 +94,8 @@ const ConcernViewMenuActions = ({ editData, fileName, onView, onViewWithoutId, o
         )}
 
         {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
-          <MenuItem onClick={() => onDeleteAction(fileName)}>
-            <ListItemIcon>
-              <RemoveCircleOutline fontSize="small" />
-            </ListItemIcon>
+          <MenuItem onClick={(e) => handleMenuDeleteClick(e, () => onDeleteAction(fileName))} disabled={deleteIsLoading}>
+            <ListItemIcon>{deleteIsLoading ? <CircularProgress size={18} /> : <RemoveCircleOutline fontSize="small" />}</ListItemIcon>
             Delete
           </MenuItem>
         )}

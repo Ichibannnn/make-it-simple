@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, FileDownloadOutlined, GetAppOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, GetAppOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import * as yup from "yup";
@@ -24,6 +24,7 @@ import { useLazyGetChannelsQuery } from "../../../../features/api_channel_setup/
 
 import TransferDisapproveDialog from "./TransferDisapproveDialog";
 import ForTransferDialogMenuActions from "./MenuActions/ForTransferDialogMenuActions";
+import { getAttachmentIcon } from "../../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
   // transferTicketId: yup.string().nullable(),
@@ -257,7 +258,6 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               {/* CONCERN DETAILS */}
-
               {isScreenSmall ? (
                 <>
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
@@ -505,13 +505,15 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                         sx={{
                           display: "flex",
                           width: "100%",
-                          flexDirection: "column",
-                          // justifyContent: "space-between",
+                          flexDirection: "row",
+                          alignItems: "center",
                           padding: 1,
                         }}
                       >
+                        {getAttachmentIcon(fileName)}
                         <Box
                           sx={{
+                            width: "100%",
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "space-between",

@@ -49,6 +49,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const [viewIsLoading, setViewIsLoading] = useState(false);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
+  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
 
   const dateNeededValidation = new moment();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -265,6 +266,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
+    setDeleteIsLoading(true);
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -279,6 +281,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         "RequestAttachmentsFiles",
         watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
       );
+      setDeleteIsLoading(false);
     } catch (error) {}
   };
 
@@ -1720,6 +1723,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   isImageFile={isImageFile}
                                   viewIsLoading={viewIsLoading}
                                   downloadIsLoading={downloadIsLoading}
+                                  deleteIsLoading={deleteIsLoading}
                                 />
                               </Box>
                             </Box>

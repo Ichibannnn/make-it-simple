@@ -222,13 +222,13 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN NO:</Typography>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NO:</Typography>
                             <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketConcernId}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET DESCRIPTION:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                               {item.concern_Details?.split("\r\n").map((line, index) => (
                                 <span key={index}>
                                   {line}
@@ -256,7 +256,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REASON:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                               {item.reason
                                 ? item.reason?.split("\r\n").map((line, index) => (
                                     <span key={index}>
@@ -346,7 +346,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     }}
                     align="center"
                   >
-                    CONCERN NO.
+                    TICKET NO.
                   </TableCell>
 
                   <TableCell
@@ -399,139 +399,141 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
               </TableHead>
 
               <TableBody>
-                {data?.value?.closingTicket?.map((item, index) => {
-                  const isSelected = selectedTickets.includes(item.ticketConcernId);
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.closingTicket?.map((item, index) => {
+                    const isSelected = selectedTickets.includes(item.ticketConcernId);
 
-                  return (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
-                      }}
-                    >
-                      <TableCell
-                        padding="checkbox"
+                    return (
+                      <TableRow
+                        key={index}
                         sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
+                          backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
                         }}
-                        align="center"
                       >
-                        <Checkbox
-                          checked={selectedTickets.includes(item.approverDatesId)}
-                          onChange={() => handleSelectTicket(item.approverDatesId)}
-                          inputProps={{ "aria-label": `select ticket ${item.approverDatesId}` }}
-                        />
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                        onClick={() => onViewAction(item)}
-                      >
-                        {item.ticketConcernId}
-                      </TableCell>
-
-                      <TableCell onClick={() => onViewAction(item)}>
-                        <Typography
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.fullname}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "12px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.department_Name}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "12px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.channel_Name}
-                        </Typography>
-                      </TableCell>
-
-                      <Tooltip title={item?.concern_Details} placement="bottom-start">
                         <TableCell
-                          // className="ellipsis-styling"
+                          padding="checkbox"
                           sx={{
                             color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
-                            maxWidth: "300px",
                           }}
-                          onClick={() => onViewAction(item)}
+                          align="center"
                         >
-                          {item.concern_Details?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
+                          <Checkbox
+                            checked={selectedTickets.includes(item.approverDatesId)}
+                            onChange={() => handleSelectTicket(item.approverDatesId)}
+                            inputProps={{ "aria-label": `select ticket ${item.approverDatesId}` }}
+                          />
                         </TableCell>
-                      </Tooltip>
 
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                        onClick={() => onViewAction(item)}
-                      >
-                        <Chip
-                          variant="filled"
-                          size="30px"
-                          icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                          sx={{
-                            fontSize: "12px",
-                            backgroundColor: "#1D1F3B",
-                            color: theme.palette.primary.main,
-                            fontWeight: 800,
-                          }}
-                          label={moment(item.target_Date).format("LL")}
-                        />
-                      </TableCell>
-
-                      <Tooltip title={item?.reason} placement="bottom-start">
                         <TableCell
                           sx={{
-                            color: theme.palette.text.main,
+                            color: "#EDF2F7",
                             fontSize: "12px",
                             fontWeight: 500,
-                            maxWidth: "300px",
+                          }}
+                          align="center"
+                          onClick={() => onViewAction(item)}
+                        >
+                          {item.ticketConcernId}
+                        </TableCell>
+
+                        <TableCell onClick={() => onViewAction(item)}>
+                          <Typography
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "14px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.fullname}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.department_Name}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.channel_Name}
+                          </Typography>
+                        </TableCell>
+
+                        <Tooltip title={item?.concern_Details} placement="bottom-start">
+                          <TableCell
+                            className="ellipsis-styling"
+                            sx={{
+                              color: "#EDF2F7",
+                              fontSize: "12px",
+                              fontWeight: 500,
+                            }}
+                            onClick={() => onViewAction(item)}
+                          >
+                            {item.concern_Details?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))}
+                          </TableCell>
+                        </Tooltip>
+
+                        <TableCell
+                          sx={{
+                            color: "#EDF2F7",
+                            fontSize: "12px",
+                            fontWeight: 500,
                           }}
                           onClick={() => onViewAction(item)}
                         >
-                          {item.reason
-                            ? item.reason?.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))
-                            : "--"}
+                          <Chip
+                            variant="filled"
+                            size="30px"
+                            icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                            sx={{
+                              fontSize: "12px",
+                              backgroundColor: "#1D1F3B",
+                              color: theme.palette.primary.main,
+                              fontWeight: 800,
+                            }}
+                            label={moment(item.target_Date).format("LL")}
+                          />
                         </TableCell>
-                      </Tooltip>
-                    </TableRow>
-                  );
-                })}
+
+                        <Tooltip title={item?.reason} placement="bottom-start">
+                          <TableCell
+                            sx={{
+                              color: theme.palette.text.main,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                              maxWidth: "300px",
+                            }}
+                            onClick={() => onViewAction(item)}
+                          >
+                            {item.reason
+                              ? item.reason?.split("\r\n").map((line, index) => (
+                                  <span key={index}>
+                                    {line}
+                                    <br />
+                                  </span>
+                                ))
+                              : "--"}
+                          </TableCell>
+                        </Tooltip>
+                      </TableRow>
+                    );
+                  })}
 
                 {isError && (
                   <TableRow>

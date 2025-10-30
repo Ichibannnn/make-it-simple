@@ -16,6 +16,7 @@ import { notificationMessageApi } from "../../../../features/api_notification_me
 
 import OnHoldApprovalMenuActions from "./MenuActions/OnHoldApprovalMenuActions";
 import DisapprovedOnHoldDialog from "./DisapprovedOnHoldDialog";
+import { getAttachmentIcon } from "../../../../utils/getAttachmentIcon";
 
 const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -237,7 +238,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordBreak: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -253,8 +254,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}> Reason:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
-                        {" "}
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordBreak: "break-word" }}>
                         {data?.reason?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -340,7 +340,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -357,7 +357,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                         {data?.reason?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -469,12 +469,15 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                         sx={{
                           display: "flex",
                           width: "100%",
-                          flexDirection: "column",
+                          flexDirection: "row",
+                          alignItems: "center",
                           padding: 1,
                         }}
                       >
+                        {getAttachmentIcon(fileName)}
                         <Box
                           sx={{
+                            width: "100%",
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "space-between",
@@ -489,11 +492,11 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                               flexDirection: "column",
                             }}
                           >
-                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+                            <Typography sx={{ fontSize: "14px", wordBreak: "break-word" }}>{fileName.name}</Typography>
 
                             <Typography
                               sx={{
-                                fontSize: "14px",
+                                fontSize: isScreenSmall ? "10px" : "12px",
                                 color: theme.palette.text.secondary,
                               }}
                             >

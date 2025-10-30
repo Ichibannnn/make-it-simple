@@ -1,5 +1,5 @@
 import { FileDownloadOutlined, MoreHoriz, VisibilityOutlined } from "@mui/icons-material";
-import { Box, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { Box, CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
 import React, { useEffect, useRef } from "react";
 import useDisclosure from "../../../../../hooks/useDisclosure";
@@ -47,23 +47,26 @@ const TargetApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile, 
         <MoreHoriz />
       </IconButton>
 
-      <Menu anchorEl={ref.current} open={open} onClose={onToggle} disableAutoFocusItem={true}>
+      <Menu
+        anchorEl={ref.current}
+        open={open}
+        onClose={() => {
+          if (!viewIsLoading) onToggle();
+        }}
+        disableAutoFocusItem
+      >
         <Box>
           {isImageFile(fileName.name) && (
-            <MenuItem onClick={() => onViewAction(fileName)}>
-              <ListItemIcon>
-                <VisibilityOutlined fontSize="small" />
-              </ListItemIcon>
+            <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
+              <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
               View
             </MenuItem>
           )}
         </Box>
 
         {!!fileName.ticketAttachmentId && (
-          <MenuItem onClick={() => onDownloadAction(fileName)}>
-            <ListItemIcon>
-              <FileDownloadOutlined fontSize="small" />
-            </ListItemIcon>
+          <MenuItem onClick={(e) => handleMenuDownloadClick(e, () => onDownloadAction(fileName))} disabled={downloadIsLoading}>
+            <ListItemIcon>{downloadIsLoading ? <CircularProgress size={18} /> : <FileDownloadOutlined fontSize="small" />}</ListItemIcon>
             Download
           </MenuItem>
         )}

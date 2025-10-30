@@ -973,7 +973,7 @@ const ConcernTickets = () => {
                                     color: "#EDF2F7",
                                     fontSize: "12px",
                                     fontWeight: 500,
-                                    maxWidth: "500px",
+                                    maxWidth: "400px",
                                   }}
                                   onClick={() => onViewHistoryAction(item)}
                                 >

@@ -46,8 +46,6 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
       reject_Remarks: formData?.reject_Remarks,
     };
 
-    console.log("Disapprove: ", disapprovePayload);
-
     Swal.fire({
       title: "Confirmation",
       text: `Disapprove this selected request(s)?`,
@@ -171,7 +169,7 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
 export default DisapprovedSelectedTargetDialog;
 
 // One at a timee
-export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, setSelectedTickets }) => {
+export const DisapproveTargetDialog = ({ data, open, onClose, onCloseDisapprove, approvalOnClose, setSelectedTickets }) => {
   const [disapproveTarget, { isLoading, isFetching }] = useDisapproveTargetMutation();
   const dispatch = useDispatch();
 
@@ -197,8 +195,6 @@ export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, s
       ],
       reject_Remarks: formData?.reject_Remarks,
     };
-
-    console.log("Disapprove: ", disapprovePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -234,6 +230,7 @@ export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, s
             dispatch(notificationMessageApi.util.resetApiState());
             setSelectedTickets([]);
             reset();
+            onCloseDisapprove();
             onClose();
             approvalOnClose();
           })
@@ -249,7 +246,7 @@ export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, s
 
   const onCloseAction = () => {
     reset();
-    onClose();
+    onCloseDisapprove();
   };
 
   return (
