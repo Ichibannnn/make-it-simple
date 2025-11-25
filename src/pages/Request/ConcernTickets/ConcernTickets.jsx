@@ -692,13 +692,27 @@ const ConcernTickets = () => {
 
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                                   {item.concern.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
                                       <br />
                                     </span>
                                   ))}
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>RESOLUTION:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
+                                  {item.resolution
+                                    ? item.resolution?.split("\r\n").map((line, index) => (
+                                        <span key={index}>
+                                          {line}
+                                          <br />
+                                        </span>
+                                      ))
+                                    : "--"}
                                 </Typography>
                               </Stack>
 
@@ -970,43 +984,36 @@ const ConcernTickets = () => {
 
                                 <TableCell
                                   sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                    maxWidth: "400px",
+                                    width: "400px",
                                   }}
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  {item.concern.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
+                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                    {item.concern.split("\r\n").map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))}
+                                  </Typography>
                                 </TableCell>
 
                                 <TableCell
-                                  className="ellipsis-styling"
                                   sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                    maxWidth: "500px",
+                                    width: "400px",
                                   }}
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  <Tooltip key={index} title={item.resolution || "--"} placement="bottom-start">
-                                    <>
-                                      {item.resolution
-                                        ? item.resolution?.split("\r\n").map((line, index) => (
-                                            <span key={index}>
-                                              {line}
-                                              <br />
-                                            </span>
-                                          ))
-                                        : "--"}
-                                    </>
-                                  </Tooltip>
+                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                    {item.resolution
+                                      ? item.resolution?.split("\r\n").map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
+                                      : "--"}
+                                  </Typography>
                                 </TableCell>
 
                                 <TableCell

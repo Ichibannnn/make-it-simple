@@ -776,7 +776,9 @@ const ConcernDialog = ({ open, onClose }) => {
                               size="small"
                               value={value}
                               options={
-                                userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician"
+                                userDetails?.userRoleName === "Helpdesk Associate" ||
+                                userDetails?.userRoleName === "Helpdesk Associate / Technician" ||
+                                userDetails?.userRoleName === "Technician"
                                   ? userData?.value?.users || []
                                   : userData?.value?.users?.filter((item) => item?.departmentId === watch("DepartmentId")?.id) || []
                               }

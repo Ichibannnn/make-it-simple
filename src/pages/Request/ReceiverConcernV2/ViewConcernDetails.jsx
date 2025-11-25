@@ -446,7 +446,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         </Box>
 
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px", wordBreak: "break-word" }}>
                             {data?.concern?.split("\r\n").map((line, index) => (
                               <span key={index}>
                                 {line}
@@ -463,7 +463,9 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         </Box>
 
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px", wordBreak: "break-word" }}>
+                            {data?.notes !== null ? data?.notes : "-"}
+                          </Typography>
                         </Box>
                       </Stack>
                     </Stack>
@@ -814,7 +816,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                             {data?.concern?.split("\r\n").map((line, index) => (
                               <span key={index}>
                                 {line}
@@ -833,7 +835,9 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
+                            {data?.notes !== null ? data?.notes : "-"}
+                          </Typography>
                         </Box>
                       </Stack>
                     </Stack>

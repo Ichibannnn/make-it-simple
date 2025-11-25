@@ -23,6 +23,7 @@ import ServiceLevelAgreement from "./ServiceLevelAgreement";
 import {
   useLazyGetDownloadAllTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
+  useLazyGetDownloadClosedTicketsTargetQuery,
   useLazyGetDownloadMisClosedTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
@@ -35,6 +36,7 @@ import { useSelector } from "react-redux";
 import { useLazyGetChannelsQuery } from "../../features/api_channel_setup/channel/channelApi";
 import MisClosedTickets from "./MisClosedTickets";
 import SadSlaReport from "./SadSlaReport";
+import CloseTicketTarget from "./CloseTicketTarget";
 
 const schema = yup.object().shape({
   ServiceProvider: yup.object().nullable(),
@@ -66,6 +68,7 @@ const ReportsPage = () => {
     "All Tickets",
     "Open Tickets",
     "Closed Tickets",
+    "Target Tickets Summary",
     "Transferred Tickets",
     "On-Hold Tickets",
     "Service Level Agreement",
@@ -83,6 +86,7 @@ const ReportsPage = () => {
   const [getDownloadAllTickets] = useLazyGetDownloadAllTicketsQuery();
   const [getDownloadOpenTickets] = useLazyGetDownloadOpenTicketsQuery();
   const [getDownloadClosedTickets] = useLazyGetDownloadClosedTicketsQuery();
+  const [getDownloadClosedTicketsTarget] = useLazyGetDownloadClosedTicketsTargetQuery();
   const [getDownloadTransferredTickets] = useLazyGetDownloadTransferredTicketsQuery();
   const [getDownloadOnHoldTickets] = useLazyGetDownloadOnHoldTicketsQuery();
   const [getDownloadSlaTickets] = useLazyGetDownloadSlaTicketsQuery();
@@ -143,6 +147,32 @@ const ReportsPage = () => {
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "Closed_Tickets_Report.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    } else if (reportNavigation === "Target Tickets Summary") {
+      setIsLoading(true);
+      try {
+        const response = await getDownloadClosedTicketsTarget({
+          Search: search,
+          ServiceProvider: serviceProvider,
+          Channel: channel,
+          UserId: user,
+          Remarks: remarks,
+          Date_From: moment(dateFrom).format("YYYY-MM-DD"),
+          Date_To: moment(dateTo).format("YYYY-MM-DD"),
+        }).unwrap();
+
+        console.log("Response: ", response);
+
+        const url = window.URL.createObjectURL(new Blob([response]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Target_Tickets_Summary.xlsx");
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -700,6 +730,23 @@ const ReportsPage = () => {
               />
             ) : reportNavigation === "Closed Tickets" ? (
               <CloseTicketsHistory
+                search={search}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                serviceProvider={serviceProvider}
+                channel={channel}
+                user={user}
+                remarks={remarks}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                setSheetData={setSheetData}
+              />
+            ) : reportNavigation === "Target Tickets Summary" ? (
+              <CloseTicketTarget
                 search={search}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
