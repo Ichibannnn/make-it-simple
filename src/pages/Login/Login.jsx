@@ -107,7 +107,7 @@ const Login = () => {
 export default Login;
 
 const schema = yup.object().shape({
-  usernameOrEmail: yup.string().required().label("Username"),
+  username: yup.string().required().label("Username"),
   password: yup.string().required().label("Password"),
 });
 
@@ -145,7 +145,7 @@ const LoginForm = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      usernameOrEmail: "",
+      username: "",
       password: "",
     },
   });
@@ -153,6 +153,8 @@ const LoginForm = () => {
   const loginHandler = async (data) => {
     try {
       const res = await logIn(data).unwrap();
+      console.log("Res: ", res);
+
       const { token, ...user } = res.value;
 
       if (res?.value?.isPasswordChanged === null) {
@@ -215,11 +217,11 @@ const LoginForm = () => {
           <Grid container spacing={2} mt={0.5}>
             <Grid item xs={12}>
               <TextField
-                {...register("usernameOrEmail")}
+                {...register("username")}
                 variant="outlined"
                 label="Enter your username"
-                helperText={errors?.usernameOrEmail?.message}
-                error={!!errors.usernameOrEmail}
+                helperText={errors?.username?.message}
+                error={!!errors.username}
                 sx={{ borderColor: "primary" }}
                 fullWidth
                 autoComplete="off"
