@@ -13,6 +13,15 @@ export const userApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoin
       providesTags: tags,
     }),
 
+    getPendingUsers: builder.query({
+      query: (params) => ({
+        url: "PendingRequest",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     createUser: builder.mutation({
       query: (body) => ({
         url: "User/AddNewUser",
@@ -62,6 +71,7 @@ export const userApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoin
 
 export const {
   useGetUsersQuery,
+  useGetPendingUsersQuery,
   useLazyGetUsersQuery,
   useCreateUserMutation,
   useUpdateUserMutation,

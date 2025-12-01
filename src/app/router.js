@@ -37,6 +37,7 @@ import ChangePassword from "../pages/ChangePassword/ChangePassword";
 import AuthRedirect from "./AuthRedirect";
 import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
 import NewApprover from "../pages/ChannelSetup/ApproverSetup/NewApprover";
+
 import Redirect from "../pages/Redirect";
 
 export const router = createBrowserRouter([
