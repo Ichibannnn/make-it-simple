@@ -406,7 +406,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to resume this ticket number ${data?.ticketConcernId}?`,
+      text: `Requesting to resume this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -456,7 +456,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Cancel transfer ticket number ${data?.ticketConcernId}?`,
+      text: `Cancel transfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -504,7 +504,7 @@ const IssueHandlerConcerns = () => {
     console.log("payload: ", payload);
     Swal.fire({
       title: "Confirmation",
-      text: `Cancel ticket number ${data?.ticketConcernId}?`,
+      text: `Cancel ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -1217,7 +1217,7 @@ const IssueHandlerConcerns = () => {
                                   color: theme.palette.text.main,
                                 }}
                               >
-                                {item.ticketConcernId}
+                                {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
                               </Typography>
                             </Stack>
 
@@ -1827,7 +1827,7 @@ const IssueHandlerConcerns = () => {
                                 }}
                                 onClick={() => onViewAction(item)}
                               >
-                                {item.ticketConcernId}
+                                {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
                               </TableCell>
 
                               <TableCell onClick={() => onViewAction(item)}>

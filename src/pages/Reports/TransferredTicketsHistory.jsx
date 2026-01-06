@@ -198,7 +198,7 @@ const TransferredTicketsHistory = ({
                       },
                     }}
                   >
-                    {item.ticketConcernId}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
                   <Tooltip title={item?.concern_Details} placement="bottom-start">

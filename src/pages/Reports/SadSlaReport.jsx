@@ -244,7 +244,7 @@ const SadSlaReport = ({
                     }}
                     align="center"
                   >
-                    {item.ticketNo}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketNo}`}
                   </TableCell>
 
                   <TableCell

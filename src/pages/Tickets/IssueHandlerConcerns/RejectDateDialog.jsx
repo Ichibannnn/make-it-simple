@@ -466,7 +466,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           fontSize: "13px",
                         }}
                       >
-                        {data?.ticketConcernId}
+                        {`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                       </Typography>
                     </Box>
                   </Stack>

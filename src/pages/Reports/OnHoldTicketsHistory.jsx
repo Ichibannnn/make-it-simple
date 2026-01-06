@@ -206,7 +206,7 @@ const OnHoldTicketsHistory = ({
                     }}
                     align="center"
                   >
-                    {item.ticketConcernId}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
                   <TableCell

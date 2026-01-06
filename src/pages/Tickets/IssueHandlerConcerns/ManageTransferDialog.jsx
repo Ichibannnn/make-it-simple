@@ -14,6 +14,7 @@ import { useDeleteRequestorAttachmentMutation } from "../../../features/api_requ
 import { useTransferIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
+import moment from "moment";
 
 const schema = yup.object().shape({
   TransferTicketId: yup.number(),
@@ -375,7 +376,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                         color: theme.palette.text.main,
                       }}
                     >
-                      {` Ticket Number : #${data?.ticketConcernId}`}
+                      {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                     </Typography>
                   </Stack>
                 </Stack>

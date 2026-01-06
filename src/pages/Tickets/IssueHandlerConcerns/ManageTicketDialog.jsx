@@ -20,6 +20,7 @@ import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist
 
 import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import moment from "moment";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -439,7 +440,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    {` Ticket # : ${data?.ticketConcernId}`}
+                    {` Ticket # : ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
 
                   {data?.getForClosingTickets?.[0]?.isApprove === true ? (

@@ -605,7 +605,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     fontWeight: 500,
                   }}
                 >
-                  {`Ticket Number: ${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
+                  {`Ticket Number: ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                 </Typography>
 
                 {/* REQUEST TYPE */}

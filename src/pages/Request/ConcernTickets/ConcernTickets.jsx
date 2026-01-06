@@ -686,7 +686,7 @@ const ConcernTickets = () => {
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
                                 <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                  {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                                 </Typography>
                               </Stack>
 
@@ -865,7 +865,6 @@ const ConcernTickets = () => {
                             fontWeight: 700,
                             fontSize: "12px",
                           }}
-                          align="center"
                         >
                           TICKET NO.
                         </TableCell>
@@ -976,10 +975,10 @@ const ConcernTickets = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                   }}
-                                  align="center"
+                                  // align="center"
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                  <Stack sx={{ width: "80px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Stack>
                                 </TableCell>
 
                                 <TableCell

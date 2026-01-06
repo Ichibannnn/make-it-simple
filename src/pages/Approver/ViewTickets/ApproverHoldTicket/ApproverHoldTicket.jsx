@@ -81,7 +81,9 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketConcernId}</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                              {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
+                            </Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -331,7 +333,7 @@ const ApproverHoldTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                           fontWeight: 500,
                         }}
                       >
-                        {item.ticketConcernId}
+                        {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                       </TableCell>
 
                       <TableCell>

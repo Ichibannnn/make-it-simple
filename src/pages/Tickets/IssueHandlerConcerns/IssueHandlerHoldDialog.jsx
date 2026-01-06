@@ -17,6 +17,7 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import OnHoldMenuActions from "./MenuActions/OnHoldMenuActions";
+import moment from "moment";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -77,7 +78,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to hold this ticket number ${data?.ticketConcernId}?`,
+      text: `Requesting to hold this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -270,7 +271,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    {` Ticket Number : #${data?.ticketConcernId}`}
+                    {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
 

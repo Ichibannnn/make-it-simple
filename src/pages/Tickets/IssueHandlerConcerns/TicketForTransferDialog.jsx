@@ -18,6 +18,7 @@ import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/cha
 import { useSelector } from "react-redux";
 import TransferDialogMenuActions from "./MenuActions/TransferDialogMenuActions";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import moment from "moment";
 
 const schema = yup.object().shape({
   TransferRemarks: yup.string().required().label("Remarks is required"),
@@ -271,7 +272,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                     color: theme.palette.text.main,
                   }}
                 >
-                  {` Ticket Number : #${data?.ticketConcernId}`}
+                  {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                 </Typography>
               </Stack>
             </Stack>

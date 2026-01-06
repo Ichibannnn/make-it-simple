@@ -36,6 +36,7 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import moment from "moment";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -395,7 +396,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    {` Ticket Number : #${data?.ticketConcernId}`}
+                    {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
 

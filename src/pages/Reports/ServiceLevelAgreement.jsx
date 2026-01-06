@@ -363,7 +363,7 @@ const ServiceLevelAgreement = ({
                     }}
                     align="center"
                   >
-                    {item.ticketNo}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketNo}`}
                   </TableCell>
 
                   <TableCell

@@ -172,7 +172,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
             <Stack direction="row" gap={1} alignItems="center">
               <Stack>
                 <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: isScreenSmall ? "14px" : "16px" }}>
-                  {`Ticket Number - ${data?.ticketRequestConcerns[0]?.ticketConcernId}`}
+                  {`Ticket Number - ${moment(data?.created_At).format("YYYY")}-${data?.ticketRequestConcerns[0]?.ticketConcernId}`}
                 </Typography>
               </Stack>
             </Stack>

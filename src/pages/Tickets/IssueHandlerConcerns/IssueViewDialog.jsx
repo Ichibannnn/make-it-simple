@@ -203,7 +203,9 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.ticketConcernId}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${moment(data?.created_At).format("YYYY")}-${
+                        data?.ticketConcernId
+                      }`}</Typography>
                     </Box>
                   </Stack>
 
@@ -470,7 +472,9 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${moment(data?.created_At).format("YYYY")}-${
+                        data?.ticketConcernId
+                      }`}</Typography>
                     </Box>
                   </Stack>
 

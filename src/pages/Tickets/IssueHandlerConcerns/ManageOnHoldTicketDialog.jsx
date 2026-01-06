@@ -13,6 +13,7 @@ import { theme } from "../../../theme/theme";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+import moment from "moment";
 
 const schema = yup.object().shape({
   id: yup.number(),
@@ -315,7 +316,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    {` Ticket Number : #${data?.ticketConcernId}`}
+                    {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
 

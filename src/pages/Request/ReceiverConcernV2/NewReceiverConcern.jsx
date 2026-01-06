@@ -350,7 +350,7 @@ const NewReceiverConcern = () => {
                               <Stack direction="row" gap={0.5} alignItems="center">
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
                                 <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item.ticketRequestConcerns[0]?.ticketConcernId}
+                                  {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}
                                 </Typography>
                               </Stack>
 
@@ -591,7 +591,7 @@ const NewReceiverConcern = () => {
                               }}
                               align="center"
                             >
-                              <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
+                              <Stack sx={{ flexDirection: "row", alignItems: "center" }}>
                                 <Stack>
                                   <Checkbox
                                     checked={isSelected(item)}
@@ -600,7 +600,7 @@ const NewReceiverConcern = () => {
                                   />
                                 </Stack>
                                 {item.severity === "Urgent" && <FlashOn color="warning" />}
-                                <Typography sx={{ fontSize: "12px" }}>{item.ticketRequestConcerns[0]?.ticketConcernId}</Typography>
+                                <Typography sx={{ fontSize: "12px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}</Typography>
                               </Stack>
                             </TableCell>
 

@@ -390,7 +390,7 @@ const CloseTicketsHistory = ({
                     }}
                     align="center"
                   >
-                    {item.ticket_Number}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticket_Number}`}
                   </TableCell>
 
                   <Tooltip title={item?.description} placement="bottom-start">

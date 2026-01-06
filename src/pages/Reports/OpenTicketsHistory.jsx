@@ -203,7 +203,7 @@ const OpenTicketsHistory = ({
                       }}
                       align="center"
                     >
-                      {item.ticketConcernId}
+                      {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                     </TableCell>
 
                     <Tooltip title={item?.concern_Description} placement="bottom-start">

@@ -343,7 +343,7 @@ const MisClosedTickets = ({
                     }}
                     align="center"
                   >
-                    {item.ticketNumber}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketNumber}`}
                   </TableCell>
 
                   <TableCell
