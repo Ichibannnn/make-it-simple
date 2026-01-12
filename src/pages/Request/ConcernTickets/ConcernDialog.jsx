@@ -268,7 +268,7 @@ const ConcernDialog = ({ open, onClose }) => {
             title: "Success!",
             html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
               <span style="color: gray; font-size: 13px;">
-                Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} 
+                Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId} 
                 and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you 
                 shortly to provide further assistance.
               </span>
@@ -299,7 +299,13 @@ const ConcernDialog = ({ open, onClose }) => {
             if (result.isConfirmed) {
               console.log("result: ", result);
 
-              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}. Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${res?.value?.concern}`;
+              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${
+                res?.value?.requestorDepartment
+              }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
+                res?.value?.ticketConcernId
+              } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
+                res?.value?.concern
+              }`;
 
               navigator.clipboard.writeText(ticketMessage).then(() => {
                 Swal.fire({

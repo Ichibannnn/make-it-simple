@@ -56,12 +56,16 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = (formData) => {
-    if (formData.id) {
-      createEditSubCategory({
+    if (data) {
+      const editPayload = {
         id: formData.id,
         subCategory_Description: formData.subCategory_Description,
-        categoryId: formData.categoryId.id,
-      })
+        categoryId: formData.categoryId.categoryId,
+      };
+
+      console.log("EditPayload: ", editPayload);
+
+      createEditSubCategory(editPayload)
         .unwrap()
         .then(() => {
           toast.success("Success!", {
@@ -79,10 +83,12 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
           });
         });
     } else {
-      createEditSubCategory({
+      const addPayload = {
         subCategory_Description: formData.subCategory_Description,
         categoryId: formData.categoryId.id,
-      })
+      };
+
+      createEditSubCategory(addPayload)
         .unwrap()
         .then(() => {
           toast.success("Success!", {
@@ -152,7 +158,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                         }}
                         onChange={(_, value) => onChange(value)}
                         getOptionLabel={(option) => option.category_Description}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        isOptionEqualToValue={(option, value) => option.categoryId === value.categoryId}
                         sx={{
                           flex: 2,
                         }}

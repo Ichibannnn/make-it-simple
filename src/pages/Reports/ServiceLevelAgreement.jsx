@@ -184,50 +184,6 @@ const ServiceLevelAgreement = ({
                 DATE
               </TableCell>
 
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                OPEN DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TARGET DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                FOR CLOSING DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                CLOSED DATE
-              </TableCell> */}
-
               <TableCell
                 sx={{
                   background: "#1C2536",
@@ -237,6 +193,17 @@ const ServiceLevelAgreement = ({
                 }}
               >
                 SOLUTION
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                REMARKS
               </TableCell>
 
               <TableCell
@@ -282,17 +249,6 @@ const ServiceLevelAgreement = ({
               >
                 CATEGORY
               </TableCell>
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                SUB CATEGORY
-              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -353,9 +309,9 @@ const ServiceLevelAgreement = ({
 
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: "#22B4BF",
                       fontSize: "12px",
-                      fontWeight: 500,
+                      fontWeight: 800,
                       "&:hover": {
                         background: "",
                         color: "#EDF2F7",
@@ -391,7 +347,7 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {item.store}
+                    {item.store ? item.store : "--"}
                   </TableCell>
 
                   <TableCell
@@ -405,12 +361,16 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {item.description?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
+                    <Stack sx={{ width: "400px" }}>
+                      <Typography sx={{ fontSize: "12px", fontWeight: 500, wordWrap: "break-word" }}>
+                        {item.description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Stack>
                   </TableCell>
 
                   <TableCell
@@ -443,7 +403,7 @@ const ServiceLevelAgreement = ({
                     </Stack>
                   </TableCell>
 
-                  {/* <TableCell
+                  <TableCell
                     sx={{
                       color: "#EDF2F7",
                       fontSize: "12px",
@@ -454,7 +414,18 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {moment(item.openDate).format("LL hh:mma")}
+                    <Stack sx={{ width: "400px" }}>
+                      <Typography sx={{ fontSize: "12px", fontWeight: 500, wordWrap: "break-word" }}>
+                        {item?.solution
+                          ? item.solution?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
                   </TableCell>
 
                   <TableCell
@@ -468,7 +439,7 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {item.targetDate ? moment(item.targetDate).format("LL") : "--"}
+                    {item.remarks ? item.remarks : "--"}
                   </TableCell>
 
                   <TableCell
@@ -482,7 +453,7 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}
+                    {item.requestType ? item.requestType : "--"}
                   </TableCell>
 
                   <TableCell
@@ -496,21 +467,7 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {item.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
-                  </TableCell> */}
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.solution ? item.solution : "--"}
+                    {item.status ? item.status : "--"}
                   </TableCell>
 
                   <TableCell
@@ -524,35 +481,7 @@ const ServiceLevelAgreement = ({
                       },
                     }}
                   >
-                    {item.requestType}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.status}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.rating}
+                    {item.rating ? item.rating : "--"}
                   </TableCell>
 
                   <TableCell

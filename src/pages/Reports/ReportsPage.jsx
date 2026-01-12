@@ -72,7 +72,7 @@ const ReportsPage = () => {
     "Transferred Tickets",
     "On-Hold Tickets",
     "Service Level Agreement",
-    "Service Level Agreement (SAD)",
+    // "Service Level Agreement (SAD)",
     "MIS Closed Tickets",
   ];
   const remarksOptions = ["On-Time Tickets", "Delayed Tickets"];
@@ -813,24 +813,25 @@ const ReportsPage = () => {
                 setPageSize={setPageSize}
                 setSheetData={setSheetData}
               />
-            ) : reportNavigation === "Service Level Agreement (SAD)" ? (
-              <SadSlaReport
-                search={search}
-                searchValue={searchValue}
-                setSearchValue={setSearchValue}
-                serviceProvider={serviceProvider}
-                channel={channel}
-                user={user}
-                remarks={remarks}
-                dateFrom={dateFrom}
-                dateTo={dateTo}
-                pageNumber={pageNumber}
-                setPageNumber={setPageNumber}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                setSheetData={setSheetData}
-              />
-            ) : reportNavigation === "MIS Closed Tickets" ? (
+            ) : // : reportNavigation === "Service Level Agreement (SAD)" ? (
+            //   <SadSlaReport
+            //     search={search}
+            //     searchValue={searchValue}
+            //     setSearchValue={setSearchValue}
+            //     serviceProvider={serviceProvider}
+            //     channel={channel}
+            //     user={user}
+            //     remarks={remarks}
+            //     dateFrom={dateFrom}
+            //     dateTo={dateTo}
+            //     pageNumber={pageNumber}
+            //     setPageNumber={setPageNumber}
+            //     pageSize={pageSize}
+            //     setPageSize={setPageSize}
+            //     setSheetData={setSheetData}
+            //   />
+            // )
+            reportNavigation === "MIS Closed Tickets" ? (
               <MisClosedTickets
                 search={search}
                 searchValue={searchValue}

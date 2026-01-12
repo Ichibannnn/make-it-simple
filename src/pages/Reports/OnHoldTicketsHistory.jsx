@@ -185,62 +185,46 @@ const OnHoldTicketsHistory = ({
               !isLoading &&
               !isFetching &&
               data?.value?.reports?.map((item) => (
-                <TableRow
-                  key={item.ticketConcernId}
-                  sx={{
-                    "&:hover": {
-                      background: "",
-                      color: "#EDF2F7",
-                    },
-                  }}
-                >
+                <TableRow key={item.ticketConcernId}>
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: "#22B4BF",
                       fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+                      fontWeight: 800,
                     }}
                     align="center"
                   >
                     {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "400px",
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.concerns?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
+                  <TableCell>
+                    <Stack sx={{ width: "400px" }}>
+                      <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                        {item.concerns
+                          ? item.concerns?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      color: theme.palette.warning.main,
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.reason}
+                  <TableCell>
+                    <Stack sx={{ width: "200px" }}>
+                      <Typography sx={{ color: theme.palette.warning.main, fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                        {item.reason
+                          ? item.reason?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
                   </TableCell>
 
                   <TableCell
@@ -248,10 +232,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.added_By}
@@ -262,10 +242,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     <Chip
@@ -287,10 +263,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.approvedBy !== null ? item.approvedBy : `---`}
@@ -301,10 +273,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item.approvedDate !== null ? (
@@ -330,10 +298,6 @@ const OnHoldTicketsHistory = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
                     }}
                   >
                     {item?.resume_At ? (

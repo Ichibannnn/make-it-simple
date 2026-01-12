@@ -501,7 +501,6 @@ const IssueHandlerConcerns = () => {
       closingTicketId: data?.getForClosingTickets?.[0]?.closingTicketId,
     };
 
-    console.log("payload: ", payload);
     Swal.fire({
       title: "Confirmation",
       text: `Cancel ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
@@ -1819,7 +1818,6 @@ const IssueHandlerConcerns = () => {
                                   color: "#EDF2F7",
                                   fontSize: "12px",
                                   fontWeight: 500,
-                                  // width: "150px",
                                   "&:hover": {
                                     background: "",
                                     color: "#EDF2F7",
@@ -1831,67 +1829,56 @@ const IssueHandlerConcerns = () => {
                               </TableCell>
 
                               <TableCell onClick={() => onViewAction(item)}>
-                                <Typography
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
-                                  {item.requestor_Name}
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    color: theme.palette.text.secondary,
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
-                                  {item.department_Name}
-                                </Typography>
+                                <Stack sx={{ width: "180px" }}>
+                                  <Typography
+                                    sx={{
+                                      color: "#EDF2F7",
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {item.requestor_Name}
+                                  </Typography>
 
-                                <Typography
-                                  sx={{
-                                    color: theme.palette.text.secondary,
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
-                                  {item.location_Name}
-                                </Typography>
+                                  <Typography
+                                    sx={{
+                                      color: theme.palette.text.secondary,
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {item.department_Name}
+                                  </Typography>
+
+                                  <Typography
+                                    sx={{
+                                      color: theme.palette.text.secondary,
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {item.location_Name}
+                                  </Typography>
+                                </Stack>
                               </TableCell>
 
-                              <Tooltip
-                                title={item.concern_Description.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                                placement="bottom-start"
-                              >
-                                <TableCell
-                                  className="ellipsis-styling"
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "11px",
-                                    fontWeight: 500,
-                                    width: "500px",
-                                    "&:hover": {
-                                      background: "",
-                                      color: "#EDF2F7",
-                                    },
-                                  }}
-                                  onClick={() => onViewAction(item)}
-                                >
-                                  {item.concern_Description?.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
-                                </TableCell>
-                              </Tooltip>
+                              <TableCell onClick={() => onViewAction(item)}>
+                                <Stack sx={{ width: "200px" }}>
+                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                    {item.concern_Description
+                                      ? item.concern_Description?.split("\r\n").map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
+                                      : "--"}
+                                  </Typography>
+                                </Stack>
+                              </TableCell>
 
                               {ticketStatus !== "For Approval" && (
                                 <TableCell
@@ -2252,8 +2239,10 @@ const IssueHandlerConcerns = () => {
             onHold={onHoldTicketAction}
           />
         )}
+
         {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
+
         <RejectDateDialog
           data={rejectDateData}
           open={rejectDateOpen}
@@ -2261,6 +2250,7 @@ const IssueHandlerConcerns = () => {
             rejectDateOnClose(setRejectDateData(null));
           }}
         />
+
         <ManageTicketDialog
           data={closeTicketData}
           open={manageTicketOpen}
@@ -2268,6 +2258,7 @@ const IssueHandlerConcerns = () => {
             manageTicketOnClose(setCloseTicketData(null));
           }}
         />
+
         {transferTicketOpen && (
           <TicketForTransferDialog
             data={transferTicketData}
@@ -2278,6 +2269,7 @@ const IssueHandlerConcerns = () => {
             viewOnClose={viewOnClose}
           />
         )}
+
         <ManageTransferDialog
           data={transferTicketData}
           open={manageTransferOpen}
@@ -2285,6 +2277,7 @@ const IssueHandlerConcerns = () => {
             manageTransferOnClose(setTransferTicketData(null));
           }}
         />
+
         {approveTransferOpen && (
           <ApproveTransferTicket
             data={transferTicketData}
@@ -2294,7 +2287,9 @@ const IssueHandlerConcerns = () => {
             }}
           />
         )}
+
         {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
+
         {holdTicketOpen && (
           <IssueHandlerHoldDialog
             data={holdTicketData}
@@ -2305,6 +2300,7 @@ const IssueHandlerConcerns = () => {
             viewOnClose={viewOnClose}
           />
         )}
+
         {manageHoldTicketOpen && (
           <ManageOnHoldTicketDialog
             data={holdTicketData}
