@@ -401,7 +401,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
     );
   };
 
@@ -486,7 +486,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -495,7 +495,9 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [subCategoryData]);
 
   useEffect(() => {
-    if (watch("IssueHandler")) {
+    // if (!serviceProviderIsSuccess) getServiceProvider({ Status: true });
+
+    if (userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician") {
       setValue("ServiceProvider", {
         id: userDetails?.serviceProviders?.[0]?.id,
         serviceProviderName: userDetails?.serviceProviders?.[0]?.serviceProviderName,
@@ -505,11 +507,13 @@ const ConcernDialog = ({ open, onClose }) => {
         channelId: userDetails?.channels?.[0]?.channelId,
         channelName: userDetails?.channels?.[0]?.channelName,
       });
+
+      getServiceProvider({ Status: true });
     } else {
       setValue("ServiceProvider", null);
       setValue("ChannelId", null);
     }
-  }, [watch("IssueHandler")]);
+  }, [userDetails]);
 
   if (!watch("UserId")) {
     return (
@@ -1175,7 +1179,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
 
                 <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
-                  {/* Self-Assign */}
+                  {/* Self-Assign (watch("IssueHandler"))*/}
                   <Controller
                     name="IssueHandler"
                     control={control}
@@ -1215,7 +1219,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={watch("IssueHandler") ? userDetails?.serviceProviders : serviceProviderData?.value?.serviceProvider || []}
+                              options={serviceProviderData?.value?.serviceProvider || []}
                               loading={serviceProviderIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
@@ -1269,7 +1273,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={watch("IssueHandler") ? userDetails?.channels : watch("ServiceProvider")?.serviceChannel || []}
+                              options={serviceProviderData?.value?.serviceProvider?.[0]?.serviceChannel || []}
                               renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => {
                                 onChange(value);
@@ -1730,7 +1734,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
                             Concern #{idx + 1}: {err.message}
                           </Typography>
-                        )
+                        ),
                     )}
 
                   <Stack sx={{ width: "100%", mt: 1 }}>

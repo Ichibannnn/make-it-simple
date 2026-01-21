@@ -243,7 +243,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -298,12 +298,19 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   useEffect(() => {
+    if (!concernCategoryData) getConcernCategory({ Status: true });
+
     if (data) {
       setValue("ticketConcernId", data?.ticketConcernId);
 
       setValue("ChannelId", {
         id: data?.channelId,
         channel_Name: data?.channel_Name,
+      });
+
+      setValue("CategoryConcern", {
+        id: concernCategoryData?.value?.category?.[0]?.id,
+        categoryConcern: concernCategoryData?.value?.category?.[0]?.categoryConcern,
       });
 
       const category = data?.getOpenTicketCategories?.map((item) => ({
@@ -331,13 +338,15 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     }
   }, [data]);
 
+  console.log("ConcernCategory: ", concernCategoryData);
+
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {

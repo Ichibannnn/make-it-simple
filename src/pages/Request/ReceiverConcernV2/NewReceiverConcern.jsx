@@ -416,6 +416,11 @@ const NewReceiverConcern = () => {
                                   label={moment(item.date_Needed).format("LL")}
                                 />
                               </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CREATED BY:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.added_By}</Typography>
+                              </Stack>
                             </Stack>
                           </Stack>
                         </CardContent>
@@ -464,9 +469,13 @@ const NewReceiverConcern = () => {
             </>
           ) : (
             <>
-              <TableContainer>
+              <TableContainer
+                sx={{
+                  overflow: "auto",
+                }}
+              >
                 <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
-                  <TableHead>
+                  <TableHead sx={{ whiteSpace: "nowrap" }}>
                     <TableRow>
                       <TableCell
                         sx={{
@@ -564,6 +573,17 @@ const NewReceiverConcern = () => {
                       >
                         DATE NEEDED
                       </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                        }}
+                      >
+                        CREATED BY
+                      </TableCell>
                     </TableRow>
                   </TableHead>
 
@@ -640,38 +660,20 @@ const NewReceiverConcern = () => {
                               </Typography>
                             </TableCell>
 
-                            <Tooltip
-                              title={item.concern.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-                              placement="bottom-start"
-                            >
-                              <TableCell
-                                className="ellipsis-styling"
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  minWidth: "300px",
-                                  maxWidth: "300px",
-                                  "&:hover": {
-                                    background: "",
-                                    color: "#EDF2F7",
-                                  },
-                                }}
-                                onClick={() => onViewAction(item)}
-                              >
-                                {item.concern?.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                              </TableCell>
-                            </Tooltip>
+                            <TableCell onClick={() => onViewAction(item)}>
+                              <Stack sx={{ width: "200px" }}>
+                                <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                  {item.concern
+                                    ? item.concern?.split("\r\n").map((line, index) => (
+                                        <span key={index}>
+                                          {line}
+                                          <br />
+                                        </span>
+                                      ))
+                                    : "--"}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
 
                             <TableCell
                               sx={{
@@ -747,13 +749,28 @@ const NewReceiverConcern = () => {
                             >
                               {moment(item.date_Needed).format("LL")}
                             </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              {item.added_By}
+                            </TableCell>
                           </TableRow>
                         );
                       })}
 
                     {isError && (
                       <TableRow>
-                        <TableCell colSpan={11} align="center">
+                        <TableCell colSpan={12} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
@@ -764,7 +781,7 @@ const NewReceiverConcern = () => {
 
                     {(isLoading || isFetching) && (
                       <TableRow>
-                        <TableCell colSpan={11} align="center">
+                        <TableCell colSpan={12} align="center">
                           <CircularProgress />
                           <Typography variant="h5" color="#EDF2F7">
                             Please wait...
@@ -775,7 +792,7 @@ const NewReceiverConcern = () => {
 
                     {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={12} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.

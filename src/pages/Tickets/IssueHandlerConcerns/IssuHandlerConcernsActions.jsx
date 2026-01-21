@@ -12,14 +12,14 @@ import {
   PendingOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
-import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import { useRef } from "react";
+import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
-import useDisclosure from "../../../hooks/useDisclosure";
+import moment from "moment";
 import { theme } from "../../../theme/theme";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import moment from "moment";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 const IssueHandlerConcernsActions = ({
   data,
@@ -321,8 +321,6 @@ const IssueHandlerConcernsActions = ({
       </MenuItem>
     );
   }
-
-  // console.log("Data: ", data);
 
   return (
     <>
