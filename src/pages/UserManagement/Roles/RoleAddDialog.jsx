@@ -168,37 +168,37 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     if (!e.target.checked && e.target.value === "User Management") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !userManagementCheckbox.includes(item))
+        watch("permissions").filter((item) => !userManagementCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Masterlist") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !masterlistCheckbox.includes(item))
+        watch("permissions").filter((item) => !masterlistCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Requestor") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !requestCheckbox.includes(item))
+        watch("permissions").filter((item) => !requestCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Receiver") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !receiverCheckbox.includes(item))
+        watch("permissions").filter((item) => !receiverCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Approver") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !approverCheckbox.includes(item))
+        watch("permissions").filter((item) => !approverCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Ticketing") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !ticketingCheckbox.includes(item))
+        watch("permissions").filter((item) => !ticketingCheckbox.includes(item)),
       );
     }
   };

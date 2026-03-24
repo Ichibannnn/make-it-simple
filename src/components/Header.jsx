@@ -65,6 +65,7 @@ const Header = () => {
 
   const fullName = useSelector((state) => state?.user?.fullname);
   const userRole = useSelector((state) => state?.user?.userRoleName);
+
   const [showBadge, setShowBadge] = useState(false);
 
   const [notificationNav] = useGetNotificationNavMutation();
@@ -77,6 +78,7 @@ const Header = () => {
   };
 
   const menuHandler = (event) => {
+    console.log("Event: ", event);
     setAnchorEl(event.currentTarget);
   };
 
@@ -363,7 +365,7 @@ const ChangePassword = ({ open, onClose }) => {
               description: "Password has been changed!",
               duration: 1500,
             }),
-          300
+          300,
         );
       })
       .catch((error) => {

@@ -330,7 +330,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
                 description: "Password has been changed!",
                 duration: 1500,
               }),
-            300
+            300,
           );
         })
         .catch((error) => {

@@ -85,7 +85,6 @@ const UserAccounts = () => {
   };
 
   const onStatusChange = (_, newValue) => {
-    console.log("NewValue: ", newValue);
     if (newValue === "pending") {
       setOnPendingTab(newValue);
       setStatus(newValue);

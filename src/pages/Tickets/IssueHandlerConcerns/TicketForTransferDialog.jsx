@@ -87,7 +87,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Request to transfer this ticket number ${data?.ticketConcernId}?`,
+      text: `Request to transfer this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -157,7 +157,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };

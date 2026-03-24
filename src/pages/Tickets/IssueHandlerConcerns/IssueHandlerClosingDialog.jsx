@@ -338,8 +338,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     }
   }, [data]);
 
-  console.log("ConcernCategory: ", concernCategoryData);
-
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
     const selectedSubCategories = watch("SubCategoryId");

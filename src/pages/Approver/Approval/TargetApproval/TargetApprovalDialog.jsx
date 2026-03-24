@@ -101,7 +101,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
           name: item.fileName,
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
           link: item.attachment,
-        }))
+        })),
       );
     }
   }, [data]);
@@ -196,7 +196,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
               <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
               <Stack>
                 <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>
-                  for closing:
+                  for approval request ticket:
                 </Typography>
                 <Typography
                   sx={{

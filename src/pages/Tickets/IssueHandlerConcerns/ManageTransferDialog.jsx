@@ -114,7 +114,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -148,7 +148,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Edit tranfer ticket number ${data?.ticketConcernId}?`,
+      text: `Edit tranfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -246,7 +246,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
             size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
             link: subItem.attachment,
           };
-        })
+        }),
       );
 
       setAttachments(
@@ -255,7 +255,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
           name: item.name,
           size: item.size,
           link: item.link,
-        }))
+        })),
       );
     }
   }, [data]);

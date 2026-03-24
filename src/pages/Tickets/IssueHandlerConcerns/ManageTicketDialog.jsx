@@ -126,7 +126,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -156,7 +156,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const onSubmitAction = (formData) => {
     Swal.fire({
       title: "Confirmation",
-      text: `Edit this ticket number ${data?.ticketConcernId}?`,
+      text: `Edit this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -318,7 +318,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
             size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
             link: subItem.attachment,
           };
-        })
+        }),
       );
 
       setAttachments(
@@ -327,7 +327,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
           name: item.name,
           size: item.size,
           link: item.link,
-        }))
+        })),
       );
     }
   }, [data]);

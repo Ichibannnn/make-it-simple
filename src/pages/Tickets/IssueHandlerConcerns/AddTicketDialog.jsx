@@ -304,7 +304,7 @@ const AddTicketDialog = ({ open, onClose }) => {
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
     );
   };
 
@@ -350,7 +350,7 @@ const AddTicketDialog = ({ open, onClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -1016,7 +1016,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                           <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
                             Concern #{idx + 1}: {err.message}
                           </Typography>
-                        )
+                        ),
                     )}
 
                   <Stack sx={{ width: "100%", mt: 1 }}>

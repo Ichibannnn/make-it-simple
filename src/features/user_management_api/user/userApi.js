@@ -10,6 +10,7 @@ export const userApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoin
         method: "GET",
         params: params,
       }),
+      
       providesTags: tags,
     }),
 
