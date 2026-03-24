@@ -340,18 +340,24 @@ const SidebarList = () => {
     },
     {
       id: 7,
+      name: "PMS",
+      path: "/pms",
+      icon: "BuildCircleOutlined",
+    },
+    {
+      id: 8,
       name: "Reports",
       path: "/reports",
       icon: "AssessmentOutlined",
     },
     {
-      id: 8,
+      id: 9,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 9,
+      id: 10,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",

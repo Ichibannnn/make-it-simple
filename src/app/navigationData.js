@@ -125,6 +125,11 @@ export const sidebarNavigationData = [
   },
   {
     id: 8,
+    path: "/pms",
+    name: "PMS",
+  },
+  {
+    id: 9,
     path: "/reports",
     name: "Reports",
   },

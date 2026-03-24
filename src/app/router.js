@@ -39,6 +39,7 @@ import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
 import NewApprover from "../pages/ChannelSetup/ApproverSetup/NewApprover";
 
 import Redirect from "../pages/Redirect";
+import Pms from "../pages/PMS/Pms";
 
 export const router = createBrowserRouter([
   {
@@ -173,6 +174,11 @@ export const router = createBrowserRouter([
             element: <IssueHandlerConcerns />,
           },
         ],
+      },
+
+      {
+        path: "/pms",
+        element: <Pms />,
       },
 
       {

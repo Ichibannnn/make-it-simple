@@ -1,0 +1,188 @@
+import { Box, Button, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { theme } from "../../theme/theme";
+import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
+import { useState } from "react";
+import PmsCalendar from "./PmsCalendar";
+import PmsTable from "./PmsTable";
+import PmsReport from "./PmsReport";
+
+const Pms = () => {
+  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const [tabNavigation, setTabNavigation] = useState("1");
+
+  const onTabChange = (_, newValue) => {
+    setTabNavigation(newValue);
+  };
+
+  return (
+    <Stack
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        backgroundColor: theme.palette.bgForm.black1,
+        color: "#fff",
+        padding: isScreenSmall ? "20px" : "2px 64px 24px 64px",
+      }}
+    >
+      <Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Stack justifyItems="left">
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS</Typography>
+            <Typography color="gray" fontSize="small">
+              Track and manage visits through the year
+            </Typography>
+          </Stack>
+          <Stack>
+            <Stack marginTop={1}>
+              <Button
+                size={isScreenSmall ? "small" : "medium"}
+                variant="contained"
+                color="primary"
+                startIcon={<ContentPasteGoOutlined />}
+                // onClick={addTicketOnToggle}
+                sx={{ fontSize: "12px" }}
+              >
+                Start PMS
+              </Button>
+            </Stack>
+          </Stack>
+        </Stack>
+
+        <Stack
+          sx={{
+            width: "100%",
+            height: "100%",
+            flexDirection: isScreenSmall ? "column" : "row",
+            mt: 2,
+            alignItems: "flex-end",
+          }}
+        >
+          <Stack direction="row" gap={1} sx={{ width: "30%" }}>
+            <Box width="40%">
+              <Typography sx={{ fontSize: "12px" }}>Filter by Site:</Typography>
+              <Select size="small" sx={{ width: "100%", fontSize: "11px", background: theme.palette.primary.main }}>
+                <MenuItem value="Stores" sx={{ fontSize: "11px" }}>
+                  Store
+                </MenuItem>
+                <MenuItem value="Head Office" sx={{ fontSize: "11px" }}>
+                  Head Office
+                </MenuItem>
+                <MenuItem value="Farm" sx={{ fontSize: "11px" }}>
+                  Farm
+                </MenuItem>
+              </Select>
+            </Box>
+
+            <Box width="40%">
+              <Typography sx={{ fontSize: "12px" }}>Filter by PMS Type:</Typography>
+              <Select size="small" sx={{ width: "100%", fontSize: "11px", background: theme.palette.primary.main }}>
+                <MenuItem value="All" sx={{ fontSize: "11px" }}>
+                  All PMS
+                </MenuItem>
+                <MenuItem value="Store" sx={{ fontSize: "11px" }}>
+                  Store
+                </MenuItem>
+                <MenuItem value="Desktop" sx={{ fontSize: "11px" }}>
+                  Desktop
+                </MenuItem>
+                <MenuItem value="Laptop" sx={{ fontSize: "11px" }}>
+                  Laptop
+                </MenuItem>
+                <MenuItem value="Weighing Scale" sx={{ fontSize: "11px" }}>
+                  Weighing Scale
+                </MenuItem>
+              </Select>
+            </Box>
+          </Stack>
+
+          <Stack sx={{ width: "40%" }}>
+            <OutlinedInput
+              size="small"
+              placeholder="Search store..."
+              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+              // value={searchValue}
+              // onChange={(e) => dispatch(setSearchValue(e.target.value))}
+              sx={{
+                borderRadius: "15px",
+                fontSize: "small",
+                fontWeight: 400,
+                lineHeight: "1.4375rem",
+                borderRadius: "none",
+              }}
+            />
+          </Stack>
+
+          <Stack>
+            <Stack sx={{ width: "100%", justifyItems: "right" }}>
+              <Tabs
+                value={tabNavigation}
+                onChange={onTabChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{
+                  ".MuiTab-root": {
+                    minWidth: isScreenSmall ? "80px" : "120px",
+                    fontSize: { xs: "10px", sm: "12px", md: "13px" },
+                  },
+                  ".MuiTabs-scrollButtons": {
+                    color: "#fff",
+                    "&.Mui-disabled": {
+                      opacity: 0.3,
+                    },
+                  },
+                }}
+              >
+                <Tab
+                  value="1"
+                  className="tabs-styling"
+                  label="Calendar"
+                  iconPosition="start"
+                  sx={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    ".MuiBadge-badge": {
+                      color: "#ffff",
+                    },
+                  }}
+                />
+
+                <Tab
+                  value="2"
+                  className="tabs-styling"
+                  label="PMS Monitoring"
+                  iconPosition="start"
+                  sx={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    ".MuiBadge-badge": {
+                      color: "#ffff",
+                    },
+                  }}
+                />
+
+                <Tab
+                  value="3"
+                  className="tabs-styling"
+                  label="Reports"
+                  iconPosition="start"
+                  sx={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    ".MuiBadge-badge": {
+                      color: "#ffff",
+                    },
+                  }}
+                />
+              </Tabs>
+            </Stack>
+          </Stack>
+        </Stack>
+      </Stack>
+
+      {tabNavigation === "1" ? <PmsCalendar /> : tabNavigation === "2" ? <PmsTable /> : <PmsReport />}
+    </Stack>
+  );
+};
+
+export default Pms;

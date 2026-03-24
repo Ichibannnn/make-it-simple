@@ -6,6 +6,7 @@ import {
   AssessmentOutlined,
   AttachFileOutlined,
   BallotOutlined,
+  BuildCircleOutlined,
   ConfirmationNumberOutlined,
   CreditScoreOutlined,
   DynamicFeedOutlined,
@@ -25,6 +26,7 @@ export const getMenuIcon = (iconName) => {
     ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
     CreditScoreOutlined: <CreditScoreOutlined />,
     AssessmentOutlined: <AssessmentOutlined />,
+    BuildCircleOutlined: <BuildCircleOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;
