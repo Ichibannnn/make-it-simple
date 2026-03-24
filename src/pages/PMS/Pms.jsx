@@ -25,7 +25,7 @@ const Pms = () => {
         padding: isScreenSmall ? "20px" : "2px 64px 24px 64px",
       }}
     >
-      <Stack>
+      <Stack mb={1}>
         <Stack direction="row" justifyContent="space-between">
           <Stack justifyItems="left">
             <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS</Typography>
@@ -33,8 +33,9 @@ const Pms = () => {
               Track and manage visits through the year
             </Typography>
           </Stack>
+
           <Stack>
-            <Stack marginTop={1}>
+            <Stack marginTop={0.5}>
               <Button
                 size={isScreenSmall ? "small" : "medium"}
                 variant="contained"
@@ -97,29 +98,32 @@ const Pms = () => {
           </Stack>
 
           <Stack sx={{ width: "40%" }}>
-            <OutlinedInput
-              size="small"
-              placeholder="Search store..."
-              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-              // value={searchValue}
-              // onChange={(e) => dispatch(setSearchValue(e.target.value))}
-              sx={{
-                borderRadius: "15px",
-                fontSize: "small",
-                fontWeight: 400,
-                lineHeight: "1.4375rem",
-                borderRadius: "none",
-              }}
-            />
+            <Stack sx={{ width: "97.5%" }}>
+              <OutlinedInput
+                size="small"
+                placeholder="Search store..."
+                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+                // value={searchValue}
+                // onChange={(e) => dispatch(setSearchValue(e.target.value))}
+                sx={{
+                  borderRadius: "15px",
+                  fontSize: "small",
+                  fontWeight: 400,
+                  lineHeight: "1.4375rem",
+                  borderRadius: "none",
+                }}
+              />
+            </Stack>
           </Stack>
 
-          <Stack>
+          <Stack sx={{ width: "30%" }}>
             <Stack sx={{ width: "100%", justifyItems: "right" }}>
               <Tabs
                 value={tabNavigation}
                 onChange={onTabChange}
-                variant="scrollable"
+                variant="fullWidth"
                 scrollButtons="auto"
+                full
                 sx={{
                   ".MuiTab-root": {
                     minWidth: isScreenSmall ? "80px" : "120px",
