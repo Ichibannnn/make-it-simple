@@ -1,10 +1,11 @@
 import { Box, Button, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { useState } from "react";
 import { theme } from "../../theme/theme";
 import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
-import { useState } from "react";
-import PmsCalendar from "./PmsCalendar";
-import PmsTable from "./PmsTable";
-import PmsReport from "./PmsReport";
+
+import PmsCalendar from "./PMSCalendar/PmsCalendar";
+import PmsTable from "./PMSTable/PmsTable";
+import PmsReport from "./PMSReport/PmsReport";
 
 const Pms = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -28,7 +29,7 @@ const Pms = () => {
       <Stack mb={1}>
         <Stack direction="row" justifyContent="space-between">
           <Stack justifyItems="left">
-            <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS</Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS SCHEDULE</Typography>
             <Typography color="gray" fontSize="small">
               Track and manage visits through the year
             </Typography>

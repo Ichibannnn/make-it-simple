@@ -1,13 +1,24 @@
 import { Box, MenuItem, Select, Stack, Typography } from "@mui/material";
-import { theme } from "../../theme/theme";
+import { theme } from "../../../theme/theme";
 import { EventOutlined, NotificationsOutlined } from "@mui/icons-material";
 
+import moment from "moment";
+import { useState } from "react";
+
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
 const PmsCalendar = () => {
+  const [filterByDate, setFilterByDate] = useState("");
+
   const data = [
     {
       id: 1,
       store: "F003- FIELDS MCARTHUR",
-      date: "Oct 12, 2026",
+      date: "March 12, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9 PMS completed",
@@ -15,7 +26,7 @@ const PmsCalendar = () => {
     {
       id: 2,
       store: "F002- NEPO",
-      date: "Oct 13, 2026",
+      date: "March 15, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9 PMS completed",
@@ -23,7 +34,7 @@ const PmsCalendar = () => {
     {
       id: 3,
       store: "F009- DAU",
-      date: "Oct 12, 2026",
+      date: "March 1, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9 PMS completed",
@@ -31,7 +42,7 @@ const PmsCalendar = () => {
     {
       id: 4,
       store: "F009- DAU",
-      date: "Oct 12, 2026",
+      date: "March 5, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9 PMS completed",
@@ -39,7 +50,7 @@ const PmsCalendar = () => {
     {
       id: 5,
       store: "F009- DAU",
-      date: "Oct 12, 2026",
+      date: "March 12, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9 PMS completed",
@@ -47,7 +58,7 @@ const PmsCalendar = () => {
     {
       id: 6,
       store: "F009- DAU",
-      date: "Oct 12, 2026",
+      date: "March 12, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9 PMS completed",
@@ -55,7 +66,7 @@ const PmsCalendar = () => {
     {
       id: 7,
       store: "F009- DAU",
-      date: "Oct 12, 2026",
+      date: "March 7, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9 PMS completed",
@@ -63,18 +74,56 @@ const PmsCalendar = () => {
     {
       id: 8,
       store: "F009- DAU",
-      date: "Oct 12, 2026",
+      date: "March 12, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9 PMS completed",
     },
   ];
 
-  console.log("Data:", data);
+  const onShowScheduleDetails = (data) => {
+    console.log("Data: ", data);
+
+    if (data) {
+    }
+  };
 
   return (
     <Stack sx={{ width: "100%", height: "100vh", flexDirection: "row", justifyContent: "space-between" }}>
-      <Stack sx={{ width: "69%", backgroundColor: theme.palette.bgForm.black2, height: "100%" }}></Stack>
+      <Stack sx={{ width: "69%", backgroundColor: theme.palette.bgForm.black2, height: "100%" }}>
+        <FullCalendar
+          height="100%"
+          // contentHeight="auto"
+          plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+          initialView="dayGridMonth"
+          dateClick={(data) => onShowScheduleDetails(data.dateStr)}
+          dayMaxEvents={2}
+          headerToolbar={{
+            right: "prev,next",
+            center: "title",
+            left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
+          }}
+          events={data?.map((item) => {
+            return {
+              title: `(${item.store})`,
+              start: `${moment(item.date).format("YYYY-MM-DD")}`,
+
+              backgroundColor: item?.status === "Done" ? "#09DF72" : "#FF8914",
+              borderColor: "transparent",
+            };
+          })}
+          eventContent={(eventInfo) => (
+            <Typography fontSize="11px" fontWeight={500} sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {eventInfo.event.title}
+            </Typography>
+          )}
+          moreLinkContent={(args) => (
+            <Typography fontSize="11px" fontWeight={600}>
+              +{args.num} more
+            </Typography>
+          )}
+        />
+      </Stack>
 
       <Stack sx={{ width: "30%", backgroundColor: theme.palette.bgForm.black2, height: "100%", p: 2 }}>
         <Stack direction="row" gap={0.5}>

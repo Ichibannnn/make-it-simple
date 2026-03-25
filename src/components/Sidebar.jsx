@@ -126,8 +126,6 @@ const SidebarList = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  console.log("Path: ", pathname);
-
   const userPermission = useSelector((state) => state?.user?.permissions);
   const { data: notificationData } = useGetNotificationQuery();
   const openNotification = notificationData?.value?.openTicketNotif || 0;
