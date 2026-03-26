@@ -15,6 +15,153 @@ const Pms = () => {
     setTabNavigation(newValue);
   };
 
+  const data = [
+    {
+      id: 1,
+      store: "F003- FIELDS MCARTHUR",
+      date: "March 12, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 2,
+      store: "F002- NEPO",
+      date: "March 15, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 3,
+      store: "F009- DAU",
+      date: "March 1, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 4,
+      store: "F009- DAU",
+      date: "March 5, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 5,
+      store: "F009- DAU",
+      date: "March 12, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 6,
+      store: "F009- DAU",
+      date: "March 12, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 7,
+      store: "F009- DAU",
+      date: "March 7, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 8,
+      store: "F009- DAU",
+      date: "March 12, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 9,
+      store: "F009- DAU",
+      date: "March 26, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 10,
+      store: "F009- DAU",
+      date: "March 26, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 11,
+      store: "F009- DAU",
+      date: "March 29, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 12,
+      store: "F009- DAU",
+      date: "March 27, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 13,
+      store: "F009- DAU",
+      date: "March 27, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 14,
+      store: "F009- DAU",
+      date: "March 20, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 15,
+      store: "F009- DAU",
+      date: "March 21, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 16,
+      store: "F009- DAU",
+      date: "March 28, 2026",
+      area: "Region A - Area 1",
+      status: "Pending",
+      completion: "6/9",
+    },
+    {
+      id: 17,
+      store: "F009- DAU",
+      date: "March 26, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+    {
+      id: 18,
+      store: "F009- DAU",
+      date: "March 25, 2026",
+      area: "Region A - Area 1",
+      status: "Done",
+      completion: "6/9",
+    },
+  ];
+
   return (
     <Stack
       sx={{
@@ -185,7 +332,7 @@ const Pms = () => {
         </Stack>
       </Stack>
 
-      {tabNavigation === "1" ? <PmsCalendar /> : tabNavigation === "2" ? <PmsTable /> : <PmsReport />}
+      {tabNavigation === "1" ? <PmsCalendar data={data} /> : tabNavigation === "2" ? <PmsTable /> : <PmsReport />}
     </Stack>
   );
 };

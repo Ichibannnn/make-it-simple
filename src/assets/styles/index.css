@@ -366,6 +366,44 @@ input:-webkit-autofill:active {
   caret-color: #ffffff !important; /* cursor color */
 }
 
+.fc .fc-list {
+  font-size: 13px;
+}
+
+.fc .fc-list-day-cushion {
+  background-color: #1e293b; /* your dark bg */
+  color: #e2e8f0; /* text color */
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fc .fc-list-event {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.fc .fc-list-event:hover td {
+  background-color: #6e53a5 !important;
+  color: #fff;
+  cursor: pointer;
+}
+
+.fc .fc-popover {
+  background-color: #0f172a; /* dark theme */
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.fc .fc-popover-header {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-bottom: 1px solid #334155;
+}
+
 /* Scrollbar buttons (up/down arrows) */
 /* ::-webkit-scrollbar-button {
   display: block;
