@@ -44,6 +44,16 @@ body {
   top: 0;
 }
 
+.nostore-illustration {
+  width: 170px;
+  height: 170px;
+  object-fit: fill;
+  border-style: none;
+  background: none;
+  z-index: 1;
+  top: 0;
+}
+
 .something-went-wrong {
   width: 300px;
   height: 300px;

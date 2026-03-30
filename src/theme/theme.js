@@ -76,6 +76,9 @@ const theme = createTheme({
     error: {
       main: "#ef5350",
     },
+    accent: {
+      main: "#d4d9dd",
+    },
   },
   typography: {
     fontFamily: "Plus Jakarta Sans",

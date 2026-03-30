@@ -7,12 +7,41 @@ import PmsCalendar from "./PMSCalendar/PmsCalendar";
 import PmsTable from "./PMSTable/PmsTable";
 import PmsReport from "./PMSReport/PmsReport";
 
+const TAB_CONFIG = [
+  {
+    value: 1,
+    label: "Calendar",
+  },
+  {
+    value: 2,
+    label: "PMS Monitoring",
+  },
+  {
+    value: 3,
+    label: "Reports",
+  },
+];
+
 const Pms = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  const [tabNavigation, setTabNavigation] = useState("1");
+
+  const [activeTab, setActiveTab] = useState(1);
 
   const onTabChange = (_, newValue) => {
-    setTabNavigation(newValue);
+    setActiveTab(newValue);
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 1:
+        return <PmsCalendar data={data} />;
+      case 2:
+        return <PmsTable />;
+      case 3:
+        return <PmsReport />;
+      default:
+        return null;
+    }
   };
 
   const data = [
@@ -175,7 +204,7 @@ const Pms = () => {
     >
       <Stack mb={1}>
         <Stack direction="row" justifyContent="space-between">
-          <Stack justifyItems="left">
+          <Stack>
             <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS SCHEDULE</Typography>
             <Typography color="gray" fontSize="small">
               Track and manage visits through the year
@@ -267,7 +296,7 @@ const Pms = () => {
           <Stack sx={{ width: "30%" }}>
             <Stack sx={{ width: "100%", justifyItems: "right" }}>
               <Tabs
-                value={tabNavigation}
+                value={activeTab}
                 onChange={onTabChange}
                 variant="fullWidth"
                 scrollButtons="auto"
@@ -285,54 +314,28 @@ const Pms = () => {
                   },
                 }}
               >
-                <Tab
-                  value="1"
-                  className="tabs-styling"
-                  label="Calendar"
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    ".MuiBadge-badge": {
-                      color: "#ffff",
-                    },
-                  }}
-                />
-
-                <Tab
-                  value="2"
-                  className="tabs-styling"
-                  label="PMS Monitoring"
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    ".MuiBadge-badge": {
-                      color: "#ffff",
-                    },
-                  }}
-                />
-
-                <Tab
-                  value="3"
-                  className="tabs-styling"
-                  label="Reports"
-                  iconPosition="start"
-                  sx={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    ".MuiBadge-badge": {
-                      color: "#ffff",
-                    },
-                  }}
-                />
+                {TAB_CONFIG.map(({ value, label }) => (
+                  <Tab
+                    key={value}
+                    value={value}
+                    label={label}
+                    className="tabs-styling"
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      ".MuiBadge-badge": {
+                        color: "#ffff",
+                      },
+                    }}
+                  />
+                ))}
               </Tabs>
             </Stack>
           </Stack>
         </Stack>
       </Stack>
 
-      {tabNavigation === "1" ? <PmsCalendar data={data} /> : tabNavigation === "2" ? <PmsTable /> : <PmsReport />}
+      {renderTabContent()}
     </Stack>
   );
 };
