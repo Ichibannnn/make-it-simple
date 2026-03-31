@@ -14,20 +14,30 @@ import interactionPlugin from "@fullcalendar/interaction";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import useDisclosure from "../../../hooks/useDisclosure";
 import PmsDetailDialog from "./PmsDetailDialog";
+import PmsAddSchedule from "./PmsAddSchedule";
+import PmsUploadSchedule from "./PmsUploadSchedule";
 
 const PmsCalendar = ({ data }) => {
   const [getDate, setGetDate] = useState("");
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
+  const { open: openAddSchedule, onToggle: onToggleAddSchedule, onClose: onCloseAddSchedule } = useDisclosure();
+  const { open: openUploadSchedule, onToggle: onToggleUploadSchedule, onClose: onCloseUploadSchedule } = useDisclosure();
 
   const onShowScheduleDetails = (data) => {
-    console.log("Data: ", data);
-
     if (data) {
       setGetDate(data);
       viewOnToggle();
     }
+  };
+
+  const onOpenAddScheduleAction = () => {
+    onToggleAddSchedule();
+  };
+
+  const onOpenUploadScheduleAction = () => {
+    onToggleUploadSchedule();
   };
 
   return (
@@ -42,19 +52,13 @@ const PmsCalendar = ({ data }) => {
               variant="contained"
               color="primary"
               startIcon={<AccessTimeOutlined />}
-              // onClick={addTicketOnToggle}
+              onClick={onOpenAddScheduleAction}
               sx={{ fontSize: "12px" }}
             >
               Add Schedule
             </Button>
 
-            <Button
-              size={isScreenSmall ? "small" : "medium"}
-              variant="outlined"
-              startIcon={<FileUploadOutlined />}
-              // onClick={addTicketOnToggle}
-              sx={{ fontSize: "12px" }}
-            >
+            <Button size={isScreenSmall ? "small" : "medium"} variant="outlined" startIcon={<FileUploadOutlined />} onClick={onOpenUploadScheduleAction} sx={{ fontSize: "12px" }}>
               Upload Schedule
             </Button>
           </Stack>
@@ -182,6 +186,8 @@ const PmsCalendar = ({ data }) => {
         </Stack>
       </Stack>
 
+      <PmsAddSchedule openAddSchedule={openAddSchedule} onCloseAddSchedule={onCloseAddSchedule} />
+      <PmsUploadSchedule openUploadSchedule={openUploadSchedule} onCloseUploadSchedule={onCloseUploadSchedule} />
       <PmsDetailDialog data={data} getDate={getDate} setGetDate={setGetDate} open={viewOpen} onClose={viewOnClose} />
     </Stack>
   );

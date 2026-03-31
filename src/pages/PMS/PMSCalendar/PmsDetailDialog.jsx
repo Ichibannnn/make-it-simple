@@ -1,15 +1,17 @@
 import { Close, FiberManualRecord, TodayOutlined } from "@mui/icons-material";
 import { Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
+
 import moment from "moment";
-import { theme } from "../../../theme/theme";
-import noStore from "../../../assets/svg/noSchedule2.svg";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
+import { theme } from "../../../theme/theme";
+
 import useDisclosure from "../../../hooks/useDisclosure";
+import noStore from "../../../assets/svg/noSchedule2.svg";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
   const [getRescheduleData, setGetRescheduleData] = useState(null);
@@ -117,13 +119,11 @@ const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
 export default PmsDetailDialog;
 
 const schema = yup.object().shape({
-  TargetDate: yup.date().required().label("Target Date"),
-  Reason: yup.string().required().label("Reason"),
+  RescheduleDate: yup.date().required().label("Target Date"),
+  Remarks: yup.string().required().label("Reason"),
 });
 
 const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) => {
-  console.log("ScheduledData: ", data);
-
   const {
     control,
     handleSubmit,
@@ -136,9 +136,14 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) 
     mode: "onChange",
     defaultValues: {
       RescheduleDate: null,
-      Reason: "",
+      Remarks: "",
     },
   });
+
+  const onCloseAction = () => {
+    reset();
+    onCloseScheduleDialog();
+  };
 
   return (
     <>
@@ -205,7 +210,7 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) 
                               padding: "8.5px 14px",
                             },
                             "& .MuiOutlinedInput-root": {
-                              fontSize: "11px",
+                              fontSize: "13px",
                             },
                           },
                         },
@@ -228,26 +233,26 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) 
 
               <Controller
                 control={control}
-                name="Reason"
+                name="Remarks"
                 render={({ field: { ref, value, onChange } }) => {
                   return (
                     <TextField
                       inputRef={ref}
                       size="medium"
                       value={value}
-                      placeholder="Add Reason"
+                      placeholder="Add Remarks"
                       onChange={onChange}
                       sx={{
                         width: "100%",
                       }}
                       InputProps={{
                         style: {
-                          fontSize: "11px",
+                          fontSize: "13px",
                         },
                       }}
                       InputLabelProps={{
                         style: {
-                          fontSize: "11px",
+                          fontSize: "13px",
                         },
                       }}
                       autoComplete="off"
@@ -267,7 +272,7 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) 
               Confirm Schedule
             </Button>
 
-            <Button variant="outlined" onClick={onCloseScheduleDialog} fullWidth>
+            <Button variant="outlined" onClick={onCloseAction} fullWidth>
               Cancel
             </Button>
           </Stack>
