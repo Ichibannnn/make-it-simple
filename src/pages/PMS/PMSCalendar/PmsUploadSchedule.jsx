@@ -1,12 +1,14 @@
-import { Close } from "@mui/icons-material";
-import { Button, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography } from "@mui/material";
-import React from "react";
-import { theme } from "../../../theme/theme";
+import { FileUploadOutlined } from "@mui/icons-material";
+import { Button, Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
+import { RiFileExcel2Line } from "react-icons/ri";
+
+import { pmsStyles } from "../styles/pmsStyles";
 
 const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
   return (
     <>
       <Dialog
+        sx={pmsStyles.dialog}
         fullWidth
         maxWidth="sm"
         open={openUploadSchedule}
@@ -17,40 +19,33 @@ const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
           }
           onCloseUploadSchedule();
         }}
-        disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
         PaperProps={{ style: { overflow: "auto", border: "2px solid #4b586f" } }}
+        disableEscapeKeyDown={false}
       >
-        <DialogContent sx={{ padding: 0 }}>
-          <Stack sx={{ borderBottom: "2px solid #4b586f" }}>
-            <Stack p={2} direction="row" justifyContent="space-between" alignItems="center">
-              <Stack>
-                <Typography sx={{ fontWeight: 600 }}>Reschedule Store Visit</Typography>
-              </Stack>
+        <DialogContent sx={pmsStyles.dialogContent}>
+          <Stack sx={pmsStyles.dialogStackContainer}>
+            <Stack sx={pmsStyles.dashedUploadBox}>
+              <RiFileExcel2Line fontSize="40px" color="text.secondary" />
+              <Typography variant="title" color="text.main" mt={1}>
+                Upload Excel File
+              </Typography>
+              <Typography variant="subTitle" color="text.secondary">
+                Drag and drop your file here or click to browse
+              </Typography>
 
-              <Stack direction="row" gap={0.5} alignItems="center">
-                <IconButton onClick={onCloseUploadSchedule}>
-                  <Close />
-                </IconButton>
+              <Stack mt={4} direction="row" gap={1}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  startIcon={<FileUploadOutlined />}
+                  sx={{
+                    borderRadius: "5px",
+                  }}
+                >
+                  Select File
+                </Button>
               </Stack>
             </Stack>
-          </Stack>
-
-          <Stack pr={4} pl={4} pt={4}>
-            <Stack
-              p={2}
-              sx={{
-                height: "200px",
-                overflow: "auto",
-                border: "1px solid #4b586f",
-                borderRadius: "7px",
-                borderStyle: "dashed",
-                borderWidth: "2px",
-                backgroundColor: theme.palette.bgForm.black2,
-              }}
-              justifyContent="center"
-              alignItems="center"
-            ></Stack>
           </Stack>
         </DialogContent>
 

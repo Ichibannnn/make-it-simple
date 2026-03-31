@@ -103,6 +103,8 @@ const theme = createTheme({
       marginInlineStart: "0px",
       marginInlineEnd: "0px",
     },
+    title: { fontSize: "16px" },
+    subTitle: { fontSize: "13px" },
   },
   components: {
     MuiInputBase: {
