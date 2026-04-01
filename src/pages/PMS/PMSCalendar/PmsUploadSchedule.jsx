@@ -25,7 +25,7 @@ const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
         <DialogContent sx={pmsStyles.dialogContent}>
           <Stack sx={pmsStyles.dialogStackContainer}>
             <Stack sx={pmsStyles.dashedUploadBox}>
-              <RiFileExcel2Line fontSize="40px" color="text.secondary" />
+              <RiFileExcel2Line fontSize="40px" color="#A0AEC0" />
               <Typography variant="title" color="text.main" mt={1}>
                 Upload Excel File
               </Typography>
@@ -34,14 +34,7 @@ const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
               </Typography>
 
               <Stack mt={4} direction="row" gap={1}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  startIcon={<FileUploadOutlined />}
-                  sx={{
-                    borderRadius: "5px",
-                  }}
-                >
+                <Button variant="contained" fullWidth startIcon={<FileUploadOutlined />} sx={pmsStyles.selectFileButton}>
                   Select File
                 </Button>
               </Stack>

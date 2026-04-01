@@ -286,12 +286,13 @@ const Header = () => {
 
         {/* Account */}
         <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
-          <MenuItem onClick={toggleChangePasswordHandler}>
+          {/* Removed function due to One Login Integration */}
+          {/* <MenuItem onClick={toggleChangePasswordHandler}>
             <ListItemIcon>
               <Password fontSize="small" />
             </ListItemIcon>
             <Typography>Change Password</Typography>
-          </MenuItem>
+          </MenuItem> */}
 
           <MenuItem onClick={logoutHandler}>
             <ListItemIcon>

@@ -6,6 +6,7 @@ import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
 import PmsCalendar from "./PMSCalendar/PmsCalendar";
 import PmsTable from "./PMSTable/PmsTable";
 import PmsReport from "./PMSReport/PmsReport";
+import { pmsStyles } from "./styles/pmsStyles";
 
 const TAB_CONFIG = [
   {
@@ -24,7 +25,6 @@ const TAB_CONFIG = [
 
 const Pms = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-
   const [activeTab, setActiveTab] = useState(1);
 
   const onTabChange = (_, newValue) => {
@@ -48,7 +48,7 @@ const Pms = () => {
     {
       id: 1,
       store: "F003- FIELDS MCARTHUR",
-      date: "March 12, 2026",
+      date: "April 12, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -56,7 +56,7 @@ const Pms = () => {
     {
       id: 2,
       store: "F002- NEPO",
-      date: "March 15, 2026",
+      date: "April 15, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -64,7 +64,7 @@ const Pms = () => {
     {
       id: 3,
       store: "F009- DAU",
-      date: "March 1, 2026",
+      date: "April 1, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -72,7 +72,7 @@ const Pms = () => {
     {
       id: 4,
       store: "F009- DAU",
-      date: "March 5, 2026",
+      date: "April 5, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -80,7 +80,7 @@ const Pms = () => {
     {
       id: 5,
       store: "F009- DAU",
-      date: "March 12, 2026",
+      date: "April 23, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -88,7 +88,7 @@ const Pms = () => {
     {
       id: 6,
       store: "F009- DAU",
-      date: "March 12, 2026",
+      date: "April 23, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -96,7 +96,7 @@ const Pms = () => {
     {
       id: 7,
       store: "F009- DAU",
-      date: "March 7, 2026",
+      date: "April 7, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -104,7 +104,7 @@ const Pms = () => {
     {
       id: 8,
       store: "F009- DAU",
-      date: "March 12, 2026",
+      date: "April 23, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -112,7 +112,7 @@ const Pms = () => {
     {
       id: 9,
       store: "F009- DAU",
-      date: "March 26, 2026",
+      date: "April 17, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -120,7 +120,7 @@ const Pms = () => {
     {
       id: 10,
       store: "F009- DAU",
-      date: "March 26, 2026",
+      date: "April 17, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -128,7 +128,7 @@ const Pms = () => {
     {
       id: 11,
       store: "F009- DAU",
-      date: "March 29, 2026",
+      date: "April 29, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -136,7 +136,7 @@ const Pms = () => {
     {
       id: 12,
       store: "F009- DAU",
-      date: "March 27, 2026",
+      date: "April 27, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -144,7 +144,7 @@ const Pms = () => {
     {
       id: 13,
       store: "F009- DAU",
-      date: "March 27, 2026",
+      date: "April 27, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -152,7 +152,7 @@ const Pms = () => {
     {
       id: 14,
       store: "F009- DAU",
-      date: "March 20, 2026",
+      date: "April 20, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -160,7 +160,7 @@ const Pms = () => {
     {
       id: 15,
       store: "F009- DAU",
-      date: "March 21, 2026",
+      date: "April 21, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -168,7 +168,7 @@ const Pms = () => {
     {
       id: 16,
       store: "F009- DAU",
-      date: "March 28, 2026",
+      date: "April 28, 2026",
       area: "Region A - Area 1",
       status: "Pending",
       completion: "6/9",
@@ -176,7 +176,7 @@ const Pms = () => {
     {
       id: 17,
       store: "F009- DAU",
-      date: "March 26, 2026",
+      date: "April 17, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -184,7 +184,7 @@ const Pms = () => {
     {
       id: 18,
       store: "F009- DAU",
-      date: "March 25, 2026",
+      date: "April 25, 2026",
       area: "Region A - Area 1",
       status: "Done",
       completion: "6/9",
@@ -192,18 +192,9 @@ const Pms = () => {
   ];
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        backgroundColor: theme.palette.bgForm.black1,
-        color: "#fff",
-        padding: isScreenSmall ? "20px" : "2px 64px 24px 64px",
-      }}
-    >
+    <Stack sx={pmsStyles.layoutContainer}>
       <Stack mb={1}>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack justifyContent="space-between" sx={pmsStyles.pmsHeaderContainer}>
           <Stack>
             <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS SCHEDULE</Typography>
             <Typography color="gray" fontSize="small">
@@ -212,62 +203,45 @@ const Pms = () => {
           </Stack>
 
           <Stack>
-            <Stack marginTop={0.5}>
-              <Button
-                size={isScreenSmall ? "small" : "medium"}
-                variant="contained"
-                color="primary"
-                startIcon={<ContentPasteGoOutlined />}
-                // onClick={addTicketOnToggle}
-                sx={{ fontSize: "12px" }}
-              >
-                Start PMS
-              </Button>
-            </Stack>
+            <Button variant="contained" color="primary" startIcon={<ContentPasteGoOutlined />} sx={pmsStyles.buttons}>
+              Start PMS
+            </Button>
           </Stack>
         </Stack>
 
-        <Stack
-          sx={{
-            width: "100%",
-            height: "100%",
-            flexDirection: isScreenSmall ? "column" : "row",
-            mt: 2,
-            alignItems: "flex-end",
-          }}
-        >
+        <Stack sx={pmsStyles.pmsContentContainer}>
           <Stack direction="row" gap={1} sx={{ width: "30%" }}>
-            <Box width="40%">
-              <Typography sx={{ fontSize: "12px" }}>Filter by Site:</Typography>
-              <Select size="small" sx={{ width: "100%", fontSize: "11px", background: theme.palette.primary.main }}>
-                <MenuItem value="Stores" sx={{ fontSize: "11px" }}>
+            <Box width="48%">
+              <Typography fontSize="12px">Filter by Site:</Typography>
+              <Select size="small" sx={pmsStyles.customSelect}>
+                <MenuItem value="Stores" sx={pmsStyles.menuItemsFont}>
                   Store
                 </MenuItem>
-                <MenuItem value="Head Office" sx={{ fontSize: "11px" }}>
+                <MenuItem value="Head Office" sx={pmsStyles.menuItemsFont}>
                   Head Office
                 </MenuItem>
-                <MenuItem value="Farm" sx={{ fontSize: "11px" }}>
+                <MenuItem value="Farm" sx={pmsStyles.menuItemsFont}>
                   Farm
                 </MenuItem>
               </Select>
             </Box>
 
-            <Box width="40%">
+            <Box width="48%">
               <Typography sx={{ fontSize: "12px" }}>Filter by PMS Type:</Typography>
-              <Select size="small" sx={{ width: "100%", fontSize: "11px", background: theme.palette.primary.main }}>
-                <MenuItem value="All" sx={{ fontSize: "11px" }}>
+              <Select size="small" sx={pmsStyles.customSelect}>
+                <MenuItem value="All" sx={pmsStyles.menuItemsFont}>
                   All PMS
                 </MenuItem>
-                <MenuItem value="Store" sx={{ fontSize: "11px" }}>
+                <MenuItem value="Store" sx={pmsStyles.menuItemsFont}>
                   Store
                 </MenuItem>
-                <MenuItem value="Desktop" sx={{ fontSize: "11px" }}>
+                <MenuItem value="Desktop" sx={pmsStyles.menuItemsFont}>
                   Desktop
                 </MenuItem>
-                <MenuItem value="Laptop" sx={{ fontSize: "11px" }}>
+                <MenuItem value="Laptop" sx={pmsStyles.menuItemsFont}>
                   Laptop
                 </MenuItem>
-                <MenuItem value="Weighing Scale" sx={{ fontSize: "11px" }}>
+                <MenuItem value="Weighing Scale" sx={pmsStyles.menuItemsFont}>
                   Weighing Scale
                 </MenuItem>
               </Select>
@@ -277,57 +251,21 @@ const Pms = () => {
           <Stack sx={{ width: "40%" }}>
             <Stack sx={{ width: "97.5%" }}>
               <OutlinedInput
-                size="small"
-                placeholder="Search store..."
-                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
                 // value={searchValue}
                 // onChange={(e) => dispatch(setSearchValue(e.target.value))}
-                sx={{
-                  borderRadius: "15px",
-                  fontSize: "small",
-                  fontWeight: 400,
-                  lineHeight: "1.4375rem",
-                  borderRadius: "none",
-                }}
+                size="small"
+                placeholder="Search store..."
+                startAdornment={<Search sx={pmsStyles.customSearchIcon} />}
+                sx={pmsStyles.customSearch}
               />
             </Stack>
           </Stack>
 
           <Stack sx={{ width: "30%" }}>
-            <Stack sx={{ width: "100%", justifyItems: "right" }}>
-              <Tabs
-                value={activeTab}
-                onChange={onTabChange}
-                variant="fullWidth"
-                scrollButtons="auto"
-                full
-                sx={{
-                  ".MuiTab-root": {
-                    minWidth: isScreenSmall ? "80px" : "120px",
-                    fontSize: { xs: "10px", sm: "12px", md: "13px" },
-                  },
-                  ".MuiTabs-scrollButtons": {
-                    color: "#fff",
-                    "&.Mui-disabled": {
-                      opacity: 0.3,
-                    },
-                  },
-                }}
-              >
+            <Stack>
+              <Tabs value={activeTab} onChange={onTabChange} variant="fullWidth" scrollButtons="auto">
                 {TAB_CONFIG.map(({ value, label }) => (
-                  <Tab
-                    key={value}
-                    value={value}
-                    label={label}
-                    className="tabs-styling"
-                    sx={{
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      ".MuiBadge-badge": {
-                        color: "#ffff",
-                      },
-                    }}
-                  />
+                  <Tab key={value} value={value} label={label} className="tabs-styling" sx={pmsStyles.customTab} />
                 ))}
               </Tabs>
             </Stack>

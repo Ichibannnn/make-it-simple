@@ -182,7 +182,7 @@ const theme = createTheme({
           padding: "8px 20px",
           fontSize: "0.875rem",
           fontWeight: "600px",
-          borderRadius: "12px",
+          borderRadius: "5px",
           textTransform: "capitalize",
           boxSizing: "border-box",
           ":disabled": {
