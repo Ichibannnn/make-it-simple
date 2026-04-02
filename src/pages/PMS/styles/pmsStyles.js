@@ -23,7 +23,6 @@ export const pmsStyles = {
       md: "row",
     },
   },
-
   pmsHeaderContainer: {
     flexDirection: {
       xs: "column",
@@ -57,10 +56,6 @@ export const pmsStyles = {
   },
   buttons: {
     fontSize: "12px",
-    // size: {
-    //   xs: "small",
-    //   md: "medium",
-    // },
   },
   customSelect: {
     width: "100%",
@@ -111,4 +106,27 @@ export const pmsStyles = {
   },
 
   searchContainer: {},
+  selectFilterContainer: {
+    width: {
+      xs: "100%",
+      md: "30%",
+    },
+    flexDirection: {
+      xs: "column",
+      md: "row",
+    },
+    gap: 1,
+  },
+  selectSiteContainer: {
+    width: {
+      xs: "100%",
+      md: "48%",
+    },
+  },
+  selectPmsTypeContainer: {
+    width: {
+      xs: "100%",
+      md: "48%",
+    },
+  },
 };
