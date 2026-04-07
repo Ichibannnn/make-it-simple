@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import { theme } from "../../theme/theme";
 import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
@@ -19,6 +8,7 @@ import PmsTable from "./PMSTable/PmsTable";
 import PmsReport from "./PMSReport/PmsReport";
 import { pmsStyles } from "./styles/pmsStyles";
 import { data } from "../../data";
+import { global } from "../../styles/global";
 
 const TAB_CONFIG = [
   {
@@ -48,7 +38,7 @@ const Pms = () => {
       case 1:
         return <PmsCalendar data={data} />;
       case 2:
-        return <PmsTable />;
+        return <PmsTable data={data} />;
       case 3:
         return <PmsReport />;
       default:
@@ -61,21 +51,14 @@ const Pms = () => {
       <Stack mb={1}>
         <Stack justifyContent="space-between" sx={pmsStyles.pmsHeaderContainer}>
           <Stack>
-            <Typography variant={isScreenSmall ? "h5" : "h4"}>
-              PMS SCHEDULE
-            </Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS SCHEDULE</Typography>
             <Typography color="text.secondary" fontSize="small">
               Track and manage visits through the year
             </Typography>
           </Stack>
 
           <Stack>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<ContentPasteGoOutlined />}
-              sx={pmsStyles.buttons}
-            >
+            <Button variant="contained" color="primary" startIcon={<ContentPasteGoOutlined />} sx={pmsStyles.buttons}>
               Start PMS
             </Button>
           </Stack>
@@ -104,9 +87,7 @@ const Pms = () => {
             </Box>
 
             <Box sx={pmsStyles.selectPmsTypeContainer}>
-              <Typography sx={{ fontSize: "12px" }}>
-                Filter by PMS Type:
-              </Typography>
+              <Typography sx={{ fontSize: "12px" }}>Filter by PMS Type:</Typography>
               <Select size="small" sx={pmsStyles.customSelect}>
                 <MenuItem value="All" sx={pmsStyles.menuItemsFont}>
                   All PMS
@@ -134,7 +115,7 @@ const Pms = () => {
                 // onChange={(e) => dispatch(setSearchValue(e.target.value))}
                 size="small"
                 placeholder="Search store..."
-                startAdornment={<Search sx={pmsStyles.customSearchIcon} />}
+                startAdornment={<Search sx={global.searchIcon} />}
                 sx={pmsStyles.customSearch}
               />
             </Stack>
@@ -142,20 +123,9 @@ const Pms = () => {
 
           <Stack sx={{ width: "30%" }}>
             <Stack>
-              <Tabs
-                value={activeTab}
-                onChange={onTabChange}
-                variant="fullWidth"
-                scrollButtons="auto"
-              >
+              <Tabs value={activeTab} onChange={onTabChange} variant="fullWidth" scrollButtons="auto">
                 {TAB_CONFIG.map(({ value, label }) => (
-                  <Tab
-                    key={value}
-                    value={value}
-                    label={label}
-                    className="tabs-styling"
-                    sx={pmsStyles.customTab}
-                  />
+                  <Tab key={value} value={value} label={label} className="tabs-styling" sx={pmsStyles.customTab} />
                 ))}
               </Tabs>
             </Stack>

@@ -1,4 +1,3 @@
-import { useMediaQuery } from "@mui/material";
 import { theme } from "../../../theme/theme";
 
 export const pmsStyles = {
@@ -37,6 +36,18 @@ export const pmsStyles = {
   dialogContent: {
     padding: 0,
   },
+  dialogTitleContainer: {
+    flexDirection: "row",
+    p: 2,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dialogTitleBackground: {
+    backgroundColor: theme.palette.bgForm.black1,
+  },
+  dialogTitleText: {
+    fontWeight: 600,
+  },
   dialogStackContainer: {
     paddingRight: 4,
     paddingLeft: 4,
@@ -57,23 +68,37 @@ export const pmsStyles = {
   buttons: {
     fontSize: "12px",
   },
+  customSearch: {
+    fontWeight: 400,
+    lineHeight: "1.4375rem",
+    borderRadius: "3px",
+    fontSize: "13px",
+  },
+  tableSearch: {
+    flex: "auto",
+    fontWeight: 400,
+    lineHeight: "1.4375rem",
+    borderRadius: "3px",
+    fontSize: "13px",
+  },
   customSelect: {
     width: "100%",
     fontSize: "12px",
     background: theme.palette.primary.main,
   },
-  customSearch: {
-    fontWeight: 400,
-    lineHeight: "1.4375rem",
-    borderRadius: "3px",
-    fontSize: "12px",
-  },
-  customSearchIcon: {
-    marginRight: 0.5,
-    color: "#A0AEC0",
-  },
   menuItemsFont: {
     fontSize: "12px",
+  },
+  tableSelect: {
+    width: "100%",
+    fontSize: "12px",
+    // background: theme.palette.primary.main,
+  },
+  tableMenuItemsFont: {
+    fontSize: "14px",
+  },
+  inputLabel: {
+    fontSize: "14px",
   },
   customTabs: {
     ".MuiTab-root": {
@@ -104,8 +129,6 @@ export const pmsStyles = {
     },
     gap: 1,
   },
-
-  searchContainer: {},
   selectFilterContainer: {
     width: {
       xs: "100%",

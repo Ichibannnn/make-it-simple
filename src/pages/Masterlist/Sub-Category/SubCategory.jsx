@@ -198,7 +198,6 @@ const Category = () => {
   };
 
   const onEditAction = (data) => {
-    console.log("Edit Data", data);
     onToggle();
     setEditData(data);
   };
