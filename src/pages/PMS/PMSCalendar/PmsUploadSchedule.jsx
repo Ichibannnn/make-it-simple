@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { RiFileExcel2Line } from "react-icons/ri";
+import * as XLSX from "xlsx";
 
 import { pmsStyles } from "../styles/pmsStyles";
 import { useRef } from "react";
@@ -16,15 +17,43 @@ import { useState } from "react";
 const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
   const uploadFileRef = useRef();
   const [excelData, setExcelData] = useState([]);
+  const [workbook, setWorkbook] = useState([]);
 
   const handleUploadButtonClick = () => {
     uploadFileRef.current.click();
   };
 
-  const handleFileOnChange = (fileDate) => {
-    console.log("File:", fileDate);
-    // const file = event.target.files[0];
+  const handleFileHandler = async (fileData) => {
+    const data = await fileData.arrayBuffer();
+    const workbook = XLSX.readFile(data);
+
+    const initialSheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(initialSheet);
+    console.log("jsonData:", jsonData);
+
+    handleFileToJson(jsonData);
   };
+
+  const handleFileToJson = (jsonData) => {
+    setExcelData([]);
+
+    jsonData.forEach((row) => {
+      Object.keys(row).forEach((key) => {
+        let newKey = key.trim().toLowerCase().replace(/ /g, "_");
+
+        if (key !== newKey) {
+          row[newKey] = row[key];
+          delete row[key];
+        }
+      });
+    });
+
+    setExcelData(jsonData);
+  };
+
+  console.log("ExcelData: ", excelData);
+
+  const getExcelData = () => excelData.map((item) => item);
 
   return (
     <>
@@ -73,7 +102,7 @@ const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
                 ref={uploadFileRef}
                 style={{ display: "none" }}
                 accept=".xlsx, .xls"
-                onChange={(event) => handleFileOnChange(event.target.files[0])}
+                onChange={(event) => handleFileHandler(event.target.files[0])}
               />
             </Stack>
           </Stack>
