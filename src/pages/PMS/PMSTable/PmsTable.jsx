@@ -36,19 +36,21 @@ import useDisclosure from "../../../hooks/useDisclosure";
 
 import PmsTableActions from "./PmsTableActions";
 import PmsTableViewDialog from "./PmsTableViewDialog";
+import { global } from "../../../styles/global";
 
 const PmsTable = ({ data }) => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [editData, setEditData] = useState(null);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const [editData, setEditData] = useState(null);
-
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open: openView, onToggle: onViewToggle, onClose: onViewClose } = useDisclosure();
+
+  const TABLE_HEAD = ["REGION", "AREA", "STORE", "NUMBER OF PMS", "STATUS", "ACTIONS"];
 
   // const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSubCategoryQuery({
   //   Status: status,
@@ -220,7 +222,7 @@ const PmsTable = ({ data }) => {
           <OutlinedInput
             value={searchValue}
             placeholder="Search forms by name and description..."
-            startAdornment={<Search sx={pmsStyles.customSearchIcon} />}
+            startAdornment={<Search sx={global.searchIcon} />}
             onChange={(e) => setSearchValue(e.target.value)}
             sx={pmsStyles.tableSearch}
           />
@@ -356,108 +358,20 @@ const PmsTable = ({ data }) => {
               <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
                 <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      REGION
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      AREA
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      STORE
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      NUMBER OF PMS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      STATUS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ACTIONS
-                    </TableCell>
+                    {TABLE_HEAD?.map((header, index) => (
+                      <TableCell key={index} sx={global.tableCelHeader}>
+                        {header}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
                   {data?.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        Regiona A
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        Area 1
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.store}
-                      </TableCell>
-
+                      <TableCell sx={global.tableCellBody}>Regiona A</TableCell>
+                      <TableCell sx={global.tableCellBody}>Area 1</TableCell>
+                      <TableCell sx={global.tableCellBody}>{item.store}</TableCell>
                       <TableCell
                         sx={{
                           color: theme.palette.primary.main,
@@ -467,14 +381,7 @@ const PmsTable = ({ data }) => {
                       >
                         {item.completion}
                       </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
+                      <TableCell sx={global.tableCellBody}>
                         <Chip
                           variant="filled"
                           size="30px"
@@ -487,15 +394,7 @@ const PmsTable = ({ data }) => {
                           label={item.status === "Done" ? "DONE" : "PENDING"}
                         />
                       </TableCell>
-
-                      <TableCell
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                        align="center"
-                      >
+                      <TableCell sx={global.tableCellBody}>
                         <PmsTableActions data={item} onView={onViewAction} />
                       </TableCell>
                     </TableRow>
