@@ -1,20 +1,42 @@
 import { Close } from "@mui/icons-material";
-import { Chip, Dialog, DialogContent, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-
-import noStore from "../../../assets/svg/noLocation.svg";
-
+import {
+  Chip,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import { global } from "../../../styles/global";
 import { pmsStyles } from "../styles/pmsStyles";
-import ShowChecklistDialog from "./ShowChecklistDialog";
 import { details } from "../../../data";
+
+import ShowChecklistDialog from "./ShowChecklistDialog";
 import PmsTableDetailsActions from "./PmsTableDetailsAction";
 
 const PmsTableViewDialog = ({ open, onClose }) => {
-  const { open: openShowChecklist, onToggle: onShowChecklistToggle, onClose: onShowChecklistClose } = useDisclosure();
+  const {
+    open: openShowChecklist,
+    onToggle: onShowChecklistToggle,
+    onClose: onShowChecklistClose,
+  } = useDisclosure();
 
-  const tableHeader = ["STORE", "TICKET NO.", "MONTH", "DONE ON", "STATUS", "ACTION"];
+  const tableHeader = [
+    "STORE",
+    "TICKET NO.",
+    "MONTH",
+    "DONE ON",
+    "STATUS",
+    "ACTION",
+  ];
 
   const onShowCheclistAction = () => {
     onShowChecklistToggle();
@@ -64,24 +86,37 @@ const PmsTableViewDialog = ({ open, onClose }) => {
                 <TableBody>
                   {details?.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell sx={global.tableCellBody}>{item.store}</TableCell>
-                      <TableCell sx={global.tableCellBody}>{item.ticketNumber}</TableCell>
-                      <TableCell sx={global.tableCellBody}>{item.month}</TableCell>
-                      <TableCell sx={global.tableCellBody}>{item.doneOn ? item.doneOn : "--"}</TableCell>
+                      <TableCell sx={global.tableCellBody}>
+                        {item.store}
+                      </TableCell>
+                      <TableCell sx={global.tableCellBody}>
+                        {item.ticketNumber}
+                      </TableCell>
+                      <TableCell sx={global.tableCellBody}>
+                        {item.month}
+                      </TableCell>
+                      <TableCell sx={global.tableCellBody}>
+                        {item.doneOn ? item.doneOn : "--"}
+                      </TableCell>
                       <TableCell>
                         <Chip
                           variant="filled"
                           sx={{
                             fontSize: "13px",
-                            backgroundColor: item.status === "Done" ? "#112C32" : "#2D2823",
-                            color: item.status === "Done" ? "#10B981" : "#D27D0E",
+                            backgroundColor:
+                              item.status === "Done" ? "#112C32" : "#2D2823",
+                            color:
+                              item.status === "Done" ? "#10B981" : "#D27D0E",
                             fontWeight: 800,
                           }}
                           label={item.status === "Done" ? "DONE" : "PENDING"}
                         />
                       </TableCell>
                       <TableCell sx={global.tableCellBody}>
-                        <PmsTableDetailsActions data={item} onShowChecklist={onShowCheclistAction} />
+                        <PmsTableDetailsActions
+                          data={item}
+                          onShowChecklist={onShowCheclistAction}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
