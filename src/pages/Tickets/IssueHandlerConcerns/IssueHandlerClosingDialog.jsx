@@ -37,6 +37,7 @@ import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import moment from "moment";
+import { sweetAlertDialog } from "../../../hooks/useSweetAlertDialog";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -96,7 +97,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     },
   });
 
-  const onSubmitAction = (formData) => {
+  const onSubmitAction = async (formData) => {
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
@@ -155,34 +156,16 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
     // 4pm Cut-off Warning
     // const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
-    Swal.fire({
+
+    const result = await sweetAlertDialog({
       title: "Confirmation",
       text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
       icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
       confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-      // footer: isAfter4PM
-      //   ? '<span style="color: orange; border-color: none !important;">' +
-      //     '<Warning style="margin-right: 5px;" />' +
-      //     "Please note that closing of tickets are only available until 4:00pm.</span>"
-      //   : "",
-    }).then((result) => {
-      if (result.isConfirmed) {
+    });
+
+    if (result.isConfirmed) {
+      try {
         closeIssueHandlerTickets(payload)
           .unwrap()
           .then(() => {
@@ -196,16 +179,66 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             reset();
             viewOnClose();
             onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
           });
+      } catch (error) {
+        toast.error("Error!", {
+          description: error.data.error.message,
+          duration: 1500,
+        });
       }
-    });
+    }
+
+    // Swal.fire({
+    //   title: "Confirmation",
+    //   text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
+    //   icon: "info",
+    //   color: "white",
+    //   showCancelButton: true,
+    //   background: "#111927",
+    //   confirmButtonColor: "#9e77ed",
+    //   confirmButtonText: "Yes",
+    //   cancelButtonText: "No",
+    //   cancelButtonColor: "#1C2536",
+    //   heightAuto: false,
+    //   width: "30em",
+    //   customClass: {
+    //     container: "custom-container",
+    //     title: "custom-title",
+    //     htmlContainer: "custom-text",
+    //     icon: "custom-icon",
+    //     confirmButton: "custom-confirm-btn",
+    //     cancelButton: "custom-cancel-btn",
+    //   },
+    //   // footer: isAfter4PM
+    //   //   ? '<span style="color: orange; border-color: none !important;">' +
+    //   //     '<Warning style="margin-right: 5px;" />' +
+    //   //     "Please note that closing of tickets are only available until 4:00pm.</span>"
+    //   //   : "",
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     closeIssueHandlerTickets(payload)
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success!", {
+    //           description: "Ticket submitted successfully!",
+    //           duration: 1500,
+    //         });
+    //         dispatch(notificationApi.util.resetApiState());
+    //         dispatch(notificationMessageApi.util.resetApiState());
+    //         setAddAttachments([]);
+    //         reset();
+    //         viewOnClose();
+    //         onClose();
+    //       })
+    //       .catch((err) => {
+    //         console.log("Error", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
+    //   }
+    // });
   };
 
   const handleAttachments = (event) => {
