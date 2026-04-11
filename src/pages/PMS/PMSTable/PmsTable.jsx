@@ -48,9 +48,20 @@ const PmsTable = ({ data }) => {
   const search = useDebounce(searchValue, 500);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { open: openView, onToggle: onViewToggle, onClose: onViewClose } = useDisclosure();
+  const {
+    open: openView,
+    onToggle: onViewToggle,
+    onClose: onViewClose,
+  } = useDisclosure();
 
-  const TABLE_HEAD = ["REGION", "AREA", "STORE", "NUMBER OF PMS", "STATUS", "ACTIONS"];
+  const TABLE_HEAD = [
+    "REGION",
+    "AREA",
+    "STORE",
+    "NUMBER OF PMS",
+    "STATUS",
+    "ACTIONS",
+  ];
 
   // const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSubCategoryQuery({
   //   Status: status,
@@ -218,7 +229,13 @@ const PmsTable = ({ data }) => {
           marginTop: "20px",
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ marginTop: "10px", padding: "20px" }}
+          gap={4}
+        >
           <OutlinedInput
             value={searchValue}
             placeholder="Search forms by name and description..."
@@ -227,7 +244,11 @@ const PmsTable = ({ data }) => {
             sx={pmsStyles.tableSearch}
           />
 
-          <Stack direction="row" gap={1} sx={{ width: isSmallScreen ? "100%" : "35%" }}>
+          <Stack
+            direction="row"
+            gap={1}
+            sx={{ width: isSmallScreen ? "100%" : "35%" }}
+          >
             <FormControl fullWidth>
               <InputLabel sx={pmsStyles.inputLabel}>Select Region</InputLabel>
               <Select sx={pmsStyles.tableSelect} label="Select Region">
@@ -259,7 +280,6 @@ const PmsTable = ({ data }) => {
             </FormControl>
           </Stack>
         </Stack>
-
         {isSmallScreen ? (
           // Card-Based Layout for Small Screens
           <Stack spacing={2}>
@@ -280,7 +300,8 @@ const PmsTable = ({ data }) => {
                         size="small"
                         sx={{
                           fontSize: "10px",
-                          backgroundColor: item.status === "Done" ? "#112C32" : "#2D2823",
+                          backgroundColor:
+                            item.status === "Done" ? "#112C32" : "#2D2823",
                           borderRadius: "none",
                           color: item.status === "Done" ? "#10B981" : "#D27D0E",
                         }}
@@ -288,22 +309,36 @@ const PmsTable = ({ data }) => {
                     </Stack>
 
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={global.cardTypographyTitle}>REGION:</Typography>
-                      <Typography sx={global.cardTypographyDescription}>Region A</Typography>
+                      <Typography sx={global.cardTypographyTitle}>
+                        REGION:
+                      </Typography>
+                      <Typography sx={global.cardTypographyDescription}>
+                        Region A
+                      </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={global.cardTypographyTitle}>AREA:</Typography>
-                      <Typography sx={global.cardTypographyDescription}>Area 1</Typography>
+                      <Typography sx={global.cardTypographyTitle}>
+                        AREA:
+                      </Typography>
+                      <Typography sx={global.cardTypographyDescription}>
+                        Area 1
+                      </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={global.cardTypographyTitle}>STORE:</Typography>
-                      <Typography sx={global.cardTypographyDescription}>{item.store}</Typography>
+                      <Typography sx={global.cardTypographyTitle}>
+                        STORE:
+                      </Typography>
+                      <Typography sx={global.cardTypographyDescription}>
+                        {item.store}
+                      </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={global.cardTypographyTitle}>NUMBER OF PMS:</Typography>
+                      <Typography sx={global.cardTypographyTitle}>
+                        NUMBER OF PMS:
+                      </Typography>
                       <Typography
                         sx={{
                           ...global.cardTypographyDescription,
@@ -315,12 +350,18 @@ const PmsTable = ({ data }) => {
                     </Stack>
 
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={global.cardTypographyTitle}>STATUS:</Typography>
-                      <Typography sx={global.cardTypographyDescription}>{item.status}</Typography>
+                      <Typography sx={global.cardTypographyTitle}>
+                        STATUS:
+                      </Typography>
+                      <Typography sx={global.cardTypographyDescription}>
+                        {item.status}
+                      </Typography>
                     </Stack>
 
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={global.cardTypographyTitle}>ACTION:</Typography>
+                      <Typography sx={global.cardTypographyTitle}>
+                        ACTION:
+                      </Typography>
                       <PmsTableActions data={item} onView={onViewAction} />
                     </Stack>
                   </Stack>
@@ -385,7 +426,9 @@ const PmsTable = ({ data }) => {
                     <TableRow key={item.id}>
                       <TableCell sx={global.tableCellBody}>Regiona A</TableCell>
                       <TableCell sx={global.tableCellBody}>Area 1</TableCell>
-                      <TableCell sx={global.tableCellBody}>{item.store}</TableCell>
+                      <TableCell sx={global.tableCellBody}>
+                        {item.store}
+                      </TableCell>
                       <TableCell
                         sx={{
                           color: theme.palette.primary.main,
@@ -399,8 +442,10 @@ const PmsTable = ({ data }) => {
                           variant="filled"
                           sx={{
                             fontSize: "13px",
-                            backgroundColor: item.status === "Done" ? "#112C32" : "#2D2823",
-                            color: item.status === "Done" ? "#10B981" : "#D27D0E",
+                            backgroundColor:
+                              item.status === "Done" ? "#112C32" : "#2D2823",
+                            color:
+                              item.status === "Done" ? "#10B981" : "#D27D0E",
                             fontWeight: 800,
                           }}
                           label={item.status === "Done" ? "DONE" : "PENDING"}
@@ -460,7 +505,6 @@ const PmsTable = ({ data }) => {
             /> */}
           </>
         )}
-
         <PmsTableViewDialog open={openView} onClose={onViewClose} />
       </Stack>
     </Stack>
