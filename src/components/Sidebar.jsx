@@ -238,6 +238,18 @@ const SidebarList = () => {
           path: "/masterlist/approver-setup",
           icon: "GroupsOutlined",
         },
+        {
+          id: 9,
+          name: "PMS Type",
+          path: "/masterlist/pms-type",
+          icon: "GroupsOutlined",
+        },
+        {
+          id: 10,
+          name: "Sites",
+          path: "/masterlist/sites",
+          icon: "GroupsOutlined",
+        },
       ],
     },
     {
@@ -338,24 +350,30 @@ const SidebarList = () => {
     },
     {
       id: 7,
+      name: "Checklist Management",
+      path: "/checklist-management",
+      icon: "FolderOutlined",
+    },
+    {
+      id: 8,
       name: "PMS",
       path: "/pms",
       icon: "BuildCircleOutlined",
     },
     {
-      id: 8,
+      id: 9,
       name: "Reports",
       path: "/reports",
       icon: "AssessmentOutlined",
     },
     {
-      id: 9,
+      id: 10,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 10,
+      id: 11,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",

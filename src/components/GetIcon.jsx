@@ -11,6 +11,7 @@ import {
   CreditScoreOutlined,
   DynamicFeedOutlined,
   EqualizerOutlined,
+  FolderOutlined,
   NumbersOutlined,
 } from "@mui/icons-material";
 
@@ -27,6 +28,7 @@ export const getMenuIcon = (iconName) => {
     CreditScoreOutlined: <CreditScoreOutlined />,
     AssessmentOutlined: <AssessmentOutlined />,
     BuildCircleOutlined: <BuildCircleOutlined />,
+    FolderOutlined: <FolderOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

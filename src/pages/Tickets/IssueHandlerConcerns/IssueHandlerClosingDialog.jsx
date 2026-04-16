@@ -153,7 +153,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     }
 
     // console.log("Payload Entries: ", [...payload.entries()]);
-
     // 4pm Cut-off Warning
     // const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
 

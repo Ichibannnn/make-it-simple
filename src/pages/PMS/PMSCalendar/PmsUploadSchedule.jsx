@@ -6,11 +6,13 @@ import * as XLSX from "xlsx";
 import { pmsStyles } from "../styles/pmsStyles";
 import { useRef } from "react";
 import { useState } from "react";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
   const uploadFileRef = useRef();
   const [excelData, setExcelData] = useState([]);
-  const [workbook, setWorkbook] = useState([]);
+
+  const { open: openPreview, onClose: onClosePreview, onToggle: onPreviewToggle } = useDisclosure();
 
   const handleUploadButtonClick = () => {
     uploadFileRef.current.click();
