@@ -15,7 +15,7 @@ const schema = yup.object().shape({
   permissions: yup.array().required(),
 });
 
-const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "PMS", "Reports"];
+const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Checklist Management", "PMS", "Reports"];
 const userManagementCheckbox = ["User Account", "User Role"];
 const masterlistCheckbox = [
   "One Charging",
@@ -26,7 +26,6 @@ const masterlistCheckbox = [
   "Service Provider",
   "Receiver Setup",
   "Approver Setup",
-  "Checklist Management",
   "PMS Type",
   "Sites",
 ];

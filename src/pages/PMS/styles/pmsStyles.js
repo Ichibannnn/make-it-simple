@@ -1,17 +1,6 @@
 import { theme } from "../../../theme/theme";
 
 export const pmsStyles = {
-  layoutContainer: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    backgroundColor: theme.palette.bgForm.black1,
-    color: "#fff",
-    padding: {
-      xs: "20px",
-      md: "2px 64px 24px 64px",
-    },
-  },
   pmsContentContainer: {
     mt: 2,
     width: "100%",

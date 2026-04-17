@@ -210,3 +210,68 @@ export const details = [
     status: "Pending",
   },
 ];
+
+export const checklistData = [
+  {
+    id: 1,
+    title: "Store Checklist",
+    description: "Sample 1",
+    createdAt: "April 12, 2026",
+  },
+
+  {
+    id: 2,
+    title: "Desktop Checklist",
+    description: "Sample 2",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+
+  {
+    id: 3,
+    title: "Laptop Checklist",
+    description: "Sample 2",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+
+  {
+    id: 4,
+    title: "Weighing Scale Checklist",
+    description: "Sample 2",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+
+  {
+    id: 5,
+    title: "Sample 5",
+    description: "Sample 1",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+
+  {
+    id: 6,
+    title: "Sample 6",
+    description: "Sample 2",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+
+  {
+    id: 7,
+    title: "Sample 7",
+    description: "Sample 2",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+
+  {
+    id: 8,
+    title: "Sample 8",
+    description: "Sample 2",
+    createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+  },
+];

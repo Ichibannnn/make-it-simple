@@ -47,9 +47,9 @@ const Pms = () => {
   };
 
   return (
-    <Stack sx={pmsStyles.layoutContainer}>
+    <Stack sx={global.layoutContainer}>
       <Stack mb={1}>
-        <Stack justifyContent="space-between" sx={pmsStyles.pmsHeaderContainer}>
+        <Stack justifyContent="space-between" sx={global.headerContainer}>
           <Stack>
             <Typography variant={isScreenSmall ? "h5" : "h4"}>PMS SCHEDULE</Typography>
             <Typography color="text.secondary" fontSize="small">
@@ -64,13 +64,8 @@ const Pms = () => {
           </Stack>
         </Stack>
 
-        <Stack sx={pmsStyles.pmsContentContainer}>
-          <Stack
-            // direction="row"
-            // gap={1}
-            // sx={{ width: "30%" }}
-            sx={pmsStyles.selectFilterContainer}
-          >
+        <Stack sx={global.contentContainer}>
+          <Stack sx={pmsStyles.selectFilterContainer}>
             <Box sx={pmsStyles.selectSiteContainer}>
               <Typography fontSize="12px">Filter by Site:</Typography>
               <Select size="small" sx={pmsStyles.customSelect}>
