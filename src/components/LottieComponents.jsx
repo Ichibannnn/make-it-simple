@@ -3,7 +3,7 @@ import { styled } from "@mui/system";
 import Lottie from "lottie-react";
 import React from "react";
 
-import pageNotFound from "../assets/page-not-found.json";
+import pageNotFound from "../assets/lotties/page-not-found.json";
 import { ChevronLeft } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 

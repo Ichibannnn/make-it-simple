@@ -55,10 +55,10 @@ const ChecklistManagementPage = () => {
                 <CreateCard onClick={() => console.log("create new form")} />
               </Grid>
 
-              {checklistData?.map((item) => (
-                <>
+              {checklistData?.map((item, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
                   <ChecklistCards data={item} />
-                </>
+                </Grid>
               ))}
             </Grid>
           </Stack>

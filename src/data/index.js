@@ -215,63 +215,72 @@ export const checklistData = [
   {
     id: 1,
     title: "Store Checklist",
-    description: "Sample 1",
+    description: "Description1",
     createdAt: "April 12, 2026",
+    modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 2,
     title: "Desktop Checklist",
-    description: "Sample 2",
+    description: "Description2",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 3,
     title: "Laptop Checklist",
-    description: "Sample 2",
+    description: "Description3",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 4,
     title: "Weighing Scale Checklist",
-    description: "Sample 2",
+    description: "Description4",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 5,
     title: "Sample 5",
-    description: "Sample 1",
+    description: "Description5",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 6,
     title: "Sample 6",
-    description: "Sample 2",
+    description: "Description6",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 7,
     title: "Sample 7",
-    description: "Sample 2",
+    description: "Description7",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 
   {
     id: 8,
     title: "Sample 8",
-    description: "Sample 2",
+    description: "Description8",
     createdAt: "April 12, 2026",
     modifiedAt: "April 12, 2026",
+    status: "Active",
   },
 ];

@@ -20,4 +20,34 @@ export const checklistStyles = {
     display: "flex",
     justifyContent: "space-between",
   },
+
+  createCard: {
+    height: "100%",
+    minHeight: 180,
+    borderStyle: "dashed",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    "&:hover": { borderColor: "primary.main", bgcolor: "action.hover" },
+  },
+
+  createAddIcon: { fontSize: 44, color: "text.secordary", mb: 1 },
+
+  createNewFormText: {
+    color: "text.secondary",
+    display: "block",
+    fontWeight: 500,
+    letterSpacing: 0.5,
+  },
+
+  cardTitle: {
+    fontWeight: 700,
+    color: "primary.main",
+  },
+
+  cardDetails: {
+    fontSize: "12px",
+    color: "text.secondary",
+  },
 };

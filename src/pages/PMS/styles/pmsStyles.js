@@ -1,22 +1,22 @@
 import { theme } from "../../../theme/theme";
 
 export const pmsStyles = {
-  pmsContentContainer: {
-    mt: 2,
-    width: "100%",
-    height: "100%",
-    alignItems: "flex-end",
-    flexDirection: {
-      xs: "column",
-      md: "row",
-    },
-  },
-  pmsHeaderContainer: {
-    flexDirection: {
-      xs: "column",
-      md: "row",
-    },
-  },
+  // pmsContentContainer: {
+  //   mt: 2,
+  //   width: "100%",
+  //   height: "100%",
+  //   alignItems: "flex-end",
+  //   flexDirection: {
+  //     xs: "column",
+  //     md: "row",
+  //   },
+  // },
+  // pmsHeaderContainer: {
+  //   flexDirection: {
+  //     xs: "column",
+  //     md: "row",
+  //   },
+  // },
   dialog: {
     borderRadius: 0,
     padding: 0,
