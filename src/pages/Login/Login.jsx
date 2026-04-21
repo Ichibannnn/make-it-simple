@@ -153,7 +153,6 @@ const LoginForm = () => {
   const loginHandler = async (data) => {
     try {
       const res = await logIn(data).unwrap();
-      console.log("Res: ", res);
 
       const { token, ...user } = res.value;
 

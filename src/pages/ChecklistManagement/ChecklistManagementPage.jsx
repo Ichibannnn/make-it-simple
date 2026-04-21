@@ -11,8 +11,6 @@ import ChecklistCards from "./ChecklistCards";
 const ChecklistManagementPage = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  console.log("Checklist: ", checklistData);
-
   return (
     <Stack sx={global.layoutContainer}>
       <Stack mb={1}>

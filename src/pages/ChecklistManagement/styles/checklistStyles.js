@@ -46,6 +46,10 @@ export const checklistStyles = {
     color: "primary.main",
   },
 
+  cardDescription: {
+    fontSize: "12px",
+  },
+
   cardDetails: {
     fontSize: "12px",
     color: "text.secondary",
