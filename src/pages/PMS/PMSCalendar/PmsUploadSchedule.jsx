@@ -24,7 +24,7 @@ const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
 
     const initialSheet = workbook.Sheets[workbook.SheetNames[0]];
     const jsonData = XLSX.utils.sheet_to_json(initialSheet);
-    console.log("jsonData:", jsonData);
+    // console.log("jsonData:", jsonData);
 
     handleFileToJson(jsonData);
   };
@@ -46,7 +46,7 @@ const PmsUploadSchedule = ({ openUploadSchedule, onCloseUploadSchedule }) => {
     setExcelData(jsonData);
   };
 
-  console.log("ExcelData: ", excelData);
+  // console.log("ExcelData: ", excelData);
 
   const getExcelData = () => excelData.map((item) => item);
 

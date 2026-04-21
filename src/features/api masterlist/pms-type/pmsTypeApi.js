@@ -13,6 +13,15 @@ export const pmsTypeApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getActivePmsType: builder.query({
+      query: (params) => ({
+        url: "pms-types?Status=true",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     addEditPmsType: builder.mutation({
       query: (body) => ({
         url: "pms-types",
@@ -32,4 +41,4 @@ export const pmsTypeApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
   }),
 });
 
-export const { useGetPmsTypeQuery, useAddEditPmsTypeMutation, useArchivePmsTypeMutation } = pmsTypeApi;
+export const { useGetPmsTypeQuery, useLazyGetActivePmsTypeQuery, useAddEditPmsTypeMutation, useArchivePmsTypeMutation } = pmsTypeApi;
