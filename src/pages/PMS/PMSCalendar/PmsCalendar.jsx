@@ -1,10 +1,11 @@
-import { Box, Button, MenuItem, Select, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, MenuItem, Select, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { AccessTimeOutlined, EventOutlined, FileUploadOutlined, NotificationsOutlined } from "@mui/icons-material";
 
 import { useState } from "react";
 import { theme } from "../../../theme/theme";
 
 import moment from "moment";
+import useDisclosure from "../../../hooks/useDisclosure";
 import noStore from "../../../assets/svg/noLocation.svg";
 
 import listPlugin from "@fullcalendar/list";
@@ -12,13 +13,19 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import useDisclosure from "../../../hooks/useDisclosure";
+
 import PmsDetailDialog from "./PmsDetailDialog";
 import PmsAddSchedule from "./PmsAddSchedule";
 import PmsUploadSchedule from "./PmsUploadSchedule";
 
-const PmsCalendar = ({ data }) => {
+import { usePmsReminderParams } from "../../../hooks/api_params/pms/usePmsReminderParams";
+import { useGetPmsReminderQuery } from "../../../features/api_pms/pms_reminder/pmsReminderApi";
+
+const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
   const [getDate, setGetDate] = useState("");
+
+  const { params: reminderParams, setStatus, setTimePeriod } = usePmsReminderParams();
+  const { data: pmsReminderData, isLoading: pmsReminderIsLoading, isFetching: pmsReminderIsFetching, isError: pmsReminderIsError } = useGetPmsReminderQuery(reminderParams);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
@@ -40,8 +47,11 @@ const PmsCalendar = ({ data }) => {
     onToggleUploadSchedule();
   };
 
+  // console.log("Data: ", data);
+
   return (
     <Stack sx={{ width: "100%", flexDirection: isScreenSmall ? "column" : "row", justifyContent: "space-between" }}>
+      {/* PMS Calendar */}
       <Stack sx={{ width: isScreenSmall ? "100%" : "69%", height: "auto", backgroundColor: theme.palette.bgForm.black3 }}>
         <Stack direction="row" sx={{ justifyContent: "space-between" }}>
           <Box />
@@ -66,7 +76,6 @@ const PmsCalendar = ({ data }) => {
 
         <FullCalendar
           height={isScreenSmall ? "64vh" : "100%"}
-          // contentHeight="auto"
           plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
           initialView="dayGridMonth"
           dateClick={(data) => onShowScheduleDetails(data.dateStr)}
@@ -76,9 +85,11 @@ const PmsCalendar = ({ data }) => {
             center: "title",
             left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
           }}
-          events={data?.map((item) => {
+          events={data?.value?.pms?.map((item) => {
+            console.log("Date:", moment(item.date).format("YYYY-MM-DD"));
+
             return {
-              title: `(${item.store})`,
+              title: `(${item.name})`,
               start: `${moment(item.date).format("YYYY-MM-DD")}`,
 
               backgroundColor: item?.status === "Done" ? "#09DF72" : "#FF8914",
@@ -98,6 +109,7 @@ const PmsCalendar = ({ data }) => {
         />
       </Stack>
 
+      {/* PMS Reminder */}
       <Stack sx={{ width: isScreenSmall ? "100%" : "30%", backgroundColor: theme.palette.bgForm.black3, height: "100%", p: 2 }}>
         <Stack direction="row" gap={0.5}>
           <NotificationsOutlined />
@@ -107,7 +119,7 @@ const PmsCalendar = ({ data }) => {
         <Stack mt={4} gap={1}>
           <Box>
             <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Filter by Site:</Typography>
-            <Select size="small" sx={{ width: "100%", fontSize: "13px" }}>
+            <Select size="small" sx={{ width: "100%", fontSize: "13px" }} onChange={(e) => console.log(e.target.value)}>
               <MenuItem value="All Status" sx={{ fontSize: "13px" }}>
                 All Status
               </MenuItem>
@@ -125,7 +137,7 @@ const PmsCalendar = ({ data }) => {
 
           <Box mt={2}>
             <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Time Period:</Typography>
-            <Select size="small" sx={{ width: "100%", fontSize: "13px" }}>
+            {/* <Select size="small" sx={{ width: "100%", fontSize: "13px" }}>
               <MenuItem value="All Status" sx={{ fontSize: "13px" }}>
                 All Status
               </MenuItem>
@@ -138,12 +150,12 @@ const PmsCalendar = ({ data }) => {
               <MenuItem value="Delayed" sx={{ fontSize: "13px" }}>
                 Delayed
               </MenuItem>
-            </Select>
+            </Select> */}
           </Box>
         </Stack>
 
         <Stack mt={3}>
-          {data?.length ? (
+          {data?.pms?.length ? (
             <Stack>
               <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>{`${data?.length} store(s) found:`}</Typography>
             </Stack>
@@ -151,9 +163,9 @@ const PmsCalendar = ({ data }) => {
             ""
           )}
 
-          {data?.length > 0 ? (
+          {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching ? (
             <Stack spacing={1} sx={{ maxHeight: "420px", overflow: "auto" }}>
-              {data?.map((item, i) => (
+              {data?.pms?.map((item, i) => (
                 <Stack key={i} spacing={1} p={1} sx={{ width: "100%", backgroundColor: theme.palette.bgForm.black2 }}>
                   <Stack direction="row" justifyContent="space-between">
                     <Typography sx={{ fontSize: "13px", fontWeight: 800 }}>{item?.store}</Typography>
@@ -174,6 +186,10 @@ const PmsCalendar = ({ data }) => {
                   </Stack>
                 </Stack>
               ))}
+            </Stack>
+          ) : isLoading || isFetching ? (
+            <Stack spacing={1} sx={{ height: "420px", backgroundColor: theme.palette.bgForm.black2, justifyContent: "center", alignItems: "center" }}>
+              <Skeleton variant="rounded" animation="wave" />
             </Stack>
           ) : (
             <Stack spacing={1} sx={{ height: "420px", backgroundColor: theme.palette.bgForm.black2, justifyContent: "center", alignItems: "center" }}>

@@ -1,17 +1,23 @@
 import { Autocomplete, Box, Button, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
+
+import { data } from "../../data";
 import { useEffect, useState } from "react";
 import { theme } from "../../theme/theme";
-import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
+import { global } from "../../styles/global";
+import { pmsStyles } from "./styles/pmsStyles";
+import { Controller } from "react-hook-form";
+
+import { useLazyGetActivePmsTypeQuery } from "../../features/api masterlist/pms-type/pmsTypeApi";
+import { useLazyGetActiveSitesQuery } from "../../features/api masterlist/sites/sitesApi";
+import { usePmsCalendarParams } from "../../hooks/api_params/pms/usePmsCalendarParams";
 
 import PmsCalendar from "./PMSCalendar/PmsCalendar";
 import PmsTable from "./PMSTable/PmsTable";
 import PmsReport from "./PMSReport/PmsReport";
-import { pmsStyles } from "./styles/pmsStyles";
-import { data } from "../../data";
-import { global } from "../../styles/global";
-import { useLazyGetActivePmsTypeQuery } from "../../features/api masterlist/pms-type/pmsTypeApi";
-import { useLazyGetActiveSitesQuery } from "../../features/api masterlist/sites/sitesApi";
-import { Controller } from "react-hook-form";
+
+import { useGetPmsCalendarQuery } from "../../features/api_pms/pms_calendar/pmsCalendarApi";
+import { usePmsReminderParams } from "../../hooks/api_params/pms/usePmsReminderParams";
 
 const TAB_CONFIG = [
   {
@@ -31,6 +37,12 @@ const TAB_CONFIG = [
 const Pms = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [activeTab, setActiveTab] = useState(1);
+  const [defaultSite, setDefaultSite] = useState(null);
+  const [defaultPmsType, setDefaultPmsType] = useState(null);
+
+  const { params, setSearch, setSiteId, setPmsTypeId } = usePmsCalendarParams();
+
+  const { data: pmsCalendarData, isLoading: pmsCalendarIsLoading, isFetching: pmsCalendarIsFetching, isError: pmsCalendarIsError } = useGetPmsCalendarQuery(params);
 
   const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
   const [getPmsTypes, { data: pmsTypeData, isLoading: pmsTypeIsLoading, isSuccess: pmsTypeIsSuccess }] = useLazyGetActivePmsTypeQuery();
@@ -42,7 +54,7 @@ const Pms = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 1:
-        return <PmsCalendar data={data} />;
+        return <PmsCalendar data={pmsCalendarData} isLoading={pmsCalendarIsLoading} isFetching={pmsCalendarIsFetching} isError={pmsCalendarIsError} />;
       case 2:
         return <PmsTable data={data} />;
       case 3:
@@ -55,14 +67,15 @@ const Pms = () => {
   useEffect(() => {
     getPmsTypes();
     getSites();
-  }, []);
 
-  console.log("Sites: ", siteData);
-  console.log("PmsType: ", pmsTypeData);
+    if (siteData?.value?.sites?.length && pmsTypeData?.value?.type?.length) {
+      setDefaultSite(siteData?.value?.sites?.[0]);
+      setSiteId(siteData?.value?.sites?.[0]?.id);
 
-  const handleChange = (event) => {
-    console.log("event", event);
-  };
+      setDefaultPmsType(pmsTypeData?.value?.type?.[0]);
+      setPmsTypeId(pmsTypeData?.value?.type?.[0]?.id);
+    }
+  }, [getPmsTypes, getSites, siteData, pmsTypeData]);
 
   return (
     <Stack sx={global.layoutContainer}>
@@ -87,9 +100,17 @@ const Pms = () => {
             <Box sx={pmsStyles.selectSiteContainer}>
               <Typography fontSize="12px">Filter by Site:</Typography>
 
-              <Select size="small" sx={pmsStyles.customSelect}>
+              <Select
+                value={defaultSite || ""}
+                size="small"
+                sx={pmsStyles.customSelect}
+                onChange={(e) => {
+                  setDefaultSite(e.target.value);
+                  setSiteId(e.target.value.id);
+                }}
+              >
                 {siteData?.value?.sites?.map((item, i) => (
-                  <MenuItem key={i} value={item} sx={pmsStyles.menuItemsFont} onChange={(e) => handleChange(e)}>
+                  <MenuItem key={i} value={item} sx={pmsStyles.menuItemsFont}>
                     {item.name}
                   </MenuItem>
                 ))}
@@ -98,13 +119,22 @@ const Pms = () => {
 
             <Box sx={pmsStyles.selectPmsTypeContainer}>
               <Typography sx={{ fontSize: "12px" }}>Filter by PMS Type:</Typography>
-              <Select size="small" sx={pmsStyles.customSelect}>
+              <Select
+                value={defaultPmsType || ""}
+                size="small"
+                sx={pmsStyles.customSelect}
+                onChange={(e) => {
+                  setDefaultPmsType(e.target.value);
+                  setPmsTypeId(e.target.value.id);
+                }}
+              >
                 {pmsTypeData?.value?.type?.map((item, i) => (
-                  <MenuItem key={i} value={item.name} sx={pmsStyles.menuItemsFont}>
+                  <MenuItem key={i} value={item} sx={pmsStyles.menuItemsFont}>
                     {item.name}
                   </MenuItem>
                 ))}
               </Select>
+
               {/* <Select size="small" sx={pmsStyles.customSelect}>
                 <MenuItem value="All" sx={pmsStyles.menuItemsFont}>
                   All PMS

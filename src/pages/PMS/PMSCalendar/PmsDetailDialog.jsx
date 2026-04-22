@@ -15,7 +15,7 @@ import { Controller, useForm } from "react-hook-form";
 
 const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
   const [getRescheduleData, setGetRescheduleData] = useState(null);
-  const filteredData = data?.filter((item) => moment(item?.date).format("YYYY-MM-DD") === getDate);
+  const filteredData = data?.pms?.filter((item) => moment(item?.date).format("YYYY-MM-DD") === getDate);
 
   const { open: openScheduleDialog, onToggle: onToggleScheduleDialog, onClose: onCloseScheduleDialog } = useDisclosure();
 
