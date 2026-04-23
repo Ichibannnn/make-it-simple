@@ -1,7 +1,7 @@
 import { Box, Button, MenuItem, Select, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { AccessTimeOutlined, EventOutlined, FileUploadOutlined, NotificationsOutlined } from "@mui/icons-material";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 
 import moment from "moment";
@@ -21,11 +21,20 @@ import PmsUploadSchedule from "./PmsUploadSchedule";
 import { usePmsReminderParams } from "../../../hooks/api_params/pms/usePmsReminderParams";
 import { useGetPmsReminderQuery } from "../../../features/api_pms/pms_reminder/pmsReminderApi";
 
+const arrayStatus = ["All Status", "Pending", "Done", "Delayed"];
+const arrayTimePeriod = ["All", "Today", "This Week", "Delayed"];
+
 const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
   const [getDate, setGetDate] = useState("");
 
-  const { params: reminderParams, setStatus, setTimePeriod } = usePmsReminderParams();
-  const { data: pmsReminderData, isLoading: pmsReminderIsLoading, isFetching: pmsReminderIsFetching, isError: pmsReminderIsError } = useGetPmsReminderQuery(reminderParams);
+  const { params: pmsReminderParams, setStatus, setTimePeriod } = usePmsReminderParams();
+  const {
+    data: pmsReminderData,
+    isLoading: pmsReminderIsLoading,
+    isFetching: pmsReminderIsFetching,
+    isSuccess: pmsReminderIsSuccess,
+    isError: pmsReminderIsError,
+  } = useGetPmsReminderQuery(pmsReminderParams);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
@@ -47,7 +56,14 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
     onToggleUploadSchedule();
   };
 
-  // console.log("Data: ", data);
+  useEffect(() => {
+    setStatus(arrayStatus?.[0]);
+    setTimePeriod(arrayTimePeriod?.[0]);
+  }, []);
+
+  // console.log("ReminderData: ", pmsReminderData);
+
+  console.log("ReminderParams: ", pmsReminderParams);
 
   return (
     <Stack sx={{ width: "100%", flexDirection: isScreenSmall ? "column" : "row", justifyContent: "space-between" }}>
@@ -86,8 +102,6 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
             left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
           }}
           events={data?.value?.pms?.map((item) => {
-            console.log("Date:", moment(item.date).format("YYYY-MM-DD"));
-
             return {
               title: `(${item.name})`,
               start: `${moment(item.date).format("YYYY-MM-DD")}`,
@@ -118,39 +132,25 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
 
         <Stack mt={4} gap={1}>
           <Box>
-            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Filter by Site:</Typography>
-            <Select size="small" sx={{ width: "100%", fontSize: "13px" }} onChange={(e) => console.log(e.target.value)}>
-              <MenuItem value="All Status" sx={{ fontSize: "13px" }}>
-                All Status
-              </MenuItem>
-              <MenuItem value="Pending" sx={{ fontSize: "13px" }}>
-                Pending
-              </MenuItem>
-              <MenuItem value="Done" sx={{ fontSize: "13px" }}>
-                Done
-              </MenuItem>
-              <MenuItem value="Delayed" sx={{ fontSize: "13px" }}>
-                Delayed
-              </MenuItem>
+            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Filter by Status:</Typography>
+            <Select value={arrayStatus?.[0] || ""} size="small" sx={{ width: "100%", fontSize: "13px" }} onChange={(e) => setStatus(e.target.value)}>
+              {arrayStatus?.map((item, i) => (
+                <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
+                  {item}
+                </MenuItem>
+              ))}
             </Select>
           </Box>
 
           <Box mt={2}>
             <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Time Period:</Typography>
-            {/* <Select size="small" sx={{ width: "100%", fontSize: "13px" }}>
-              <MenuItem value="All Status" sx={{ fontSize: "13px" }}>
-                All Status
-              </MenuItem>
-              <MenuItem value="Pending" sx={{ fontSize: "13px" }}>
-                Pending
-              </MenuItem>
-              <MenuItem value="Done" sx={{ fontSize: "13px" }}>
-                Done
-              </MenuItem>
-              <MenuItem value="Delayed" sx={{ fontSize: "13px" }}>
-                Delayed
-              </MenuItem>
-            </Select> */}
+            <Select value={arrayTimePeriod?.[0] || ""} size="small" sx={{ width: "100%", fontSize: "13px" }} onChange={(e) => setTimePeriod(e.target.value)}>
+              {arrayTimePeriod?.map((item, i) => (
+                <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
+                  {item}
+                </MenuItem>
+              ))}
+            </Select>
           </Box>
         </Stack>
 
@@ -163,9 +163,9 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
             ""
           )}
 
-          {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching ? (
+          {pmsReminderIsSuccess && !pmsReminderData?.value?.pms.length && !pmsReminderIsLoading && !pmsReminderIsFetching ? (
             <Stack spacing={1} sx={{ maxHeight: "420px", overflow: "auto" }}>
-              {data?.pms?.map((item, i) => (
+              {pmsReminderData?.value?.pms?.map((item, i) => (
                 <Stack key={i} spacing={1} p={1} sx={{ width: "100%", backgroundColor: theme.palette.bgForm.black2 }}>
                   <Stack direction="row" justifyContent="space-between">
                     <Typography sx={{ fontSize: "13px", fontWeight: 800 }}>{item?.store}</Typography>
@@ -187,7 +187,7 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
                 </Stack>
               ))}
             </Stack>
-          ) : isLoading || isFetching ? (
+          ) : pmsReminderIsLoading || pmsReminderIsFetching ? (
             <Stack spacing={1} sx={{ height: "420px", backgroundColor: theme.palette.bgForm.black2, justifyContent: "center", alignItems: "center" }}>
               <Skeleton variant="rounded" animation="wave" />
             </Stack>
