@@ -134,24 +134,6 @@ const Pms = () => {
                   </MenuItem>
                 ))}
               </Select>
-
-              {/* <Select size="small" sx={pmsStyles.customSelect}>
-                <MenuItem value="All" sx={pmsStyles.menuItemsFont}>
-                  All PMS
-                </MenuItem>
-                <MenuItem value="Store" sx={pmsStyles.menuItemsFont}>
-                  Store
-                </MenuItem>
-                <MenuItem value="Desktop" sx={pmsStyles.menuItemsFont}>
-                  Desktop
-                </MenuItem>
-                <MenuItem value="Laptop" sx={pmsStyles.menuItemsFont}>
-                  Laptop
-                </MenuItem>
-                <MenuItem value="Weighing Scale" sx={pmsStyles.menuItemsFont}>
-                  Weighing Scale
-                </MenuItem>
-              </Select> */}
             </Box>
           </Stack>
 

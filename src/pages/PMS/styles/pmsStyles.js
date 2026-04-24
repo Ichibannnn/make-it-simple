@@ -1,22 +1,6 @@
 import { theme } from "../../../theme/theme";
 
 export const pmsStyles = {
-  // pmsContentContainer: {
-  //   mt: 2,
-  //   width: "100%",
-  //   height: "100%",
-  //   alignItems: "flex-end",
-  //   flexDirection: {
-  //     xs: "column",
-  //     md: "row",
-  //   },
-  // },
-  // pmsHeaderContainer: {
-  //   flexDirection: {
-  //     xs: "column",
-  //     md: "row",
-  //   },
-  // },
   dialog: {
     borderRadius: 0,
     padding: 0,
@@ -140,5 +124,136 @@ export const pmsStyles = {
       xs: "100%",
       md: "48%",
     },
+  },
+
+  // PMS Calendar
+  parentContainer: {
+    width: "100%",
+    flexDirection: {
+      xs: "column",
+      md: "row",
+    },
+    height: "100%",
+    justifyContent: "space-between",
+  },
+  calendarContainer: {
+    width: {
+      xs: "100%",
+      md: "69%",
+    },
+    height: "100%",
+    backgroundColor: theme.palette.bgForm.black3,
+  },
+  calendarHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  calendarButtonContainer: {
+    direction: "row",
+    gap: 0.5,
+    mb: 1,
+    flexDirection: "row",
+  },
+  calendarHeaderButton: {
+    fontSize: "12px",
+  },
+  calendarTitle: {
+    fontSize: "11px",
+    fontWeight: 500,
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+  },
+  calendarLinkContent: {
+    fontSize: "11px",
+    fontWeight: 600,
+  },
+
+  // PMS Reminder
+  reminderContainer: {
+    width: {
+      xs: "100%",
+      md: "30%",
+    },
+    backgroundColor: theme.palette.bgForm.black3,
+    height: "100%",
+    p: 2,
+  },
+  reminderTitle: {
+    flexDirection: "row",
+    gap: 0.5,
+  },
+  reminderDropdownContainer: {
+    mt: 4,
+    gap: 1,
+  },
+  reminderDropdowns: {
+    width: "100%",
+    fontSize: "13px",
+  },
+  reminderMenuItems: {
+    fontSize: "13px",
+  },
+  reminderDropdownTitles: {
+    fontSize: "13px",
+    fontWeight: 600,
+    color: theme.palette.text.secondary,
+  },
+  reminderStoresContainer: {
+    spacing: 1,
+    maxHeight: "420px",
+    overflow: "auto",
+  },
+  reminderStackContent: {
+    spacing: 1,
+    p: 1,
+    width: "100%",
+    backgroundColor: theme.palette.bgForm.black2,
+  },
+  reminderStoreHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    mb: 1,
+  },
+  reminderStoreHeader: {
+    fontSize: "13px",
+    fontWeight: 800,
+  },
+  reminderStoreStatus: {
+    fontSize: "13px",
+    fontWeight: 700,
+  },
+  reminderDetailsContainer: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  reminderDetailsContent: {
+    flexDirection: "row",
+    gap: 0.5,
+  },
+  reminderCalendarIcon: {
+    fontSize: "16px",
+    color: theme.palette.text.secondary,
+  },
+  reminderContentTexts: {
+    fontSize: "12px",
+    color: theme.palette.text.secondary,
+  },
+  reminderSkeletonContainer: {
+    spacing: 1,
+    height: "420px",
+    // backgroundColor: theme.palette.bgForm.black2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  skeletonStyle: {
+    backgroundColor: theme.palette.bgForm.black2,
+  },
+  reminderNoStoreContainer: {
+    spacing: 1,
+    height: "420px",
+    backgroundColor: theme.palette.bgForm.black2,
+    justifyContent: "center",
+    alignItems: "center",
   },
 };

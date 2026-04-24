@@ -3,6 +3,7 @@ import { AccessTimeOutlined, EventOutlined, FileUploadOutlined, NotificationsOut
 
 import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
+import { pmsStyles } from "../styles/pmsStyles";
 
 import moment from "moment";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -28,6 +29,8 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
   const [getDate, setGetDate] = useState("");
 
   const { params: pmsReminderParams, setStatus, setTimePeriod } = usePmsReminderParams();
+  const { Status, TimePeriod } = pmsReminderParams;
+
   const {
     data: pmsReminderData,
     isLoading: pmsReminderIsLoading,
@@ -62,29 +65,34 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
   }, []);
 
   // console.log("ReminderData: ", pmsReminderData);
-
-  console.log("ReminderParams: ", pmsReminderParams);
+  // console.log("ReminderParams: ", pmsReminderParams);
 
   return (
-    <Stack sx={{ width: "100%", flexDirection: isScreenSmall ? "column" : "row", justifyContent: "space-between" }}>
+    <Stack sx={pmsStyles.parentContainer}>
       {/* PMS Calendar */}
-      <Stack sx={{ width: isScreenSmall ? "100%" : "69%", height: "auto", backgroundColor: theme.palette.bgForm.black3 }}>
-        <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+      <Stack sx={pmsStyles.calendarContainer}>
+        <Stack sx={pmsStyles.calendarHeader}>
           <Box />
 
-          <Stack direction="row" gap={0.5} mb={1}>
+          <Stack sx={pmsStyles.calendarButtonContainer}>
             <Button
-              size={isScreenSmall ? "small" : "medium"}
               variant="contained"
               color="primary"
+              size={isScreenSmall ? "small" : "medium"}
               startIcon={<AccessTimeOutlined />}
               onClick={onOpenAddScheduleAction}
-              sx={{ fontSize: "12px" }}
+              sx={pmsStyles.calendarHeaderButton}
             >
               Add Schedule
             </Button>
 
-            <Button size={isScreenSmall ? "small" : "medium"} variant="outlined" startIcon={<FileUploadOutlined />} onClick={onOpenUploadScheduleAction} sx={{ fontSize: "12px" }}>
+            <Button
+              variant="outlined"
+              size={isScreenSmall ? "small" : "medium"}
+              startIcon={<FileUploadOutlined />}
+              onClick={onOpenUploadScheduleAction}
+              sx={pmsStyles.calendarHeaderButton}
+            >
               Upload Schedule
             </Button>
           </Stack>
@@ -110,32 +118,24 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
               borderColor: "transparent",
             };
           })}
-          eventContent={(eventInfo) => (
-            <Typography fontSize="11px" fontWeight={500} sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {eventInfo.event.title}
-            </Typography>
-          )}
-          moreLinkContent={(args) => (
-            <Typography fontSize="11px" fontWeight={600}>
-              +{args.num} more
-            </Typography>
-          )}
+          eventContent={(eventInfo) => <Typography sx={pmsStyles.calendarTitle}>{eventInfo.event.title}</Typography>}
+          moreLinkContent={(args) => <Typography sx={pmsStyles.calendarLinkContent}>+{args.num} more</Typography>}
         />
       </Stack>
 
       {/* PMS Reminder */}
-      <Stack sx={{ width: isScreenSmall ? "100%" : "30%", backgroundColor: theme.palette.bgForm.black3, height: "100%", p: 2 }}>
-        <Stack direction="row" gap={0.5}>
+      <Stack sx={pmsStyles.reminderContainer}>
+        <Stack sx={pmsStyles.reminderTitle}>
           <NotificationsOutlined />
           <Typography>PMS Reminder</Typography>
         </Stack>
 
-        <Stack mt={4} gap={1}>
+        <Stack sx={pmsStyles.reminderDropdownContainer}>
           <Box>
-            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Filter by Status:</Typography>
-            <Select value={arrayStatus?.[0] || ""} size="small" sx={{ width: "100%", fontSize: "13px" }} onChange={(e) => setStatus(e.target.value)}>
+            <Typography sx={pmsStyles.reminderDropdownTitles}>Filter by Status:</Typography>
+            <Select value={Status || ""} size="small" sx={pmsStyles.reminderDropdowns} onChange={(e) => setStatus(e.target.value)}>
               {arrayStatus?.map((item, i) => (
-                <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
+                <MenuItem key={i} value={item} sx={pmsStyles.reminderMenuItems}>
                   {item}
                 </MenuItem>
               ))}
@@ -143,10 +143,10 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
           </Box>
 
           <Box mt={2}>
-            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>Time Period:</Typography>
-            <Select value={arrayTimePeriod?.[0] || ""} size="small" sx={{ width: "100%", fontSize: "13px" }} onChange={(e) => setTimePeriod(e.target.value)}>
+            <Typography sx={pmsStyles.reminderDropdownTitles}>Time Period:</Typography>
+            <Select value={TimePeriod || ""} size="small" sx={pmsStyles.reminderDropdowns} onChange={(e) => setTimePeriod(e.target.value)}>
               {arrayTimePeriod?.map((item, i) => (
-                <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
+                <MenuItem key={i} value={item} sx={pmsStyles.reminderMenuItems}>
                   {item}
                 </MenuItem>
               ))}
@@ -155,50 +155,68 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
         </Stack>
 
         <Stack mt={3}>
-          {data?.pms?.length ? (
+          {pmsReminderData?.value?.pms?.length ? (
             <Stack>
-              <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>{`${data?.length} store(s) found:`}</Typography>
+              <Typography sx={pmsStyles.reminderDropdownTitles}>{`${pmsReminderData?.value?.pms.length} store(s) found:`}</Typography>
             </Stack>
           ) : (
             ""
           )}
 
-          {pmsReminderIsSuccess && !pmsReminderData?.value?.pms.length && !pmsReminderIsLoading && !pmsReminderIsFetching ? (
-            <Stack spacing={1} sx={{ maxHeight: "420px", overflow: "auto" }}>
-              {pmsReminderData?.value?.pms?.map((item, i) => (
-                <Stack key={i} spacing={1} p={1} sx={{ width: "100%", backgroundColor: theme.palette.bgForm.black2 }}>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography sx={{ fontSize: "13px", fontWeight: 800 }}>{item?.store}</Typography>
+          {/* {pmsReminderIsSuccess && !pmsReminderIsLoading && !pmsReminderIsFetching ? ( */}
+          <Stack sx={pmsStyles.reminderStoresContainer}>
+            {pmsReminderIsSuccess &&
+              !pmsReminderIsLoading &&
+              !pmsReminderIsFetching &&
+              pmsReminderData?.value?.pms?.map((item, i) => (
+                <Stack key={i} sx={pmsStyles.reminderStackContent}>
+                  <Stack sx={pmsStyles.reminderStoreHeaderContainer}>
+                    <Typography sx={pmsStyles.reminderStoreHeader}>{item?.name}</Typography>
 
-                    <Typography sx={{ fontSize: "13px", color: item?.status === "Done" ? theme.palette.success.main : theme.palette.warning.main, fontWeight: 700 }}>
-                      {item?.status}
-                    </Typography>
+                    <Typography sx={{ ...pmsStyles.reminderDropdownTitles, color: item?.status === "Done" ? "#09DF72" : "#FF8914" }}>{item?.status}</Typography>
                   </Stack>
 
-                  <Stack direction="column" justifyContent="space-between">
-                    <Stack direction="row" gap={0.5}>
-                      <EventOutlined sx={{ fontSize: "16px", color: theme.palette.text.secondary }} />
-                      <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{item.date}</Typography>
+                  <Stack sx={pmsStyles.reminderDetailsContainer}>
+                    <Stack sx={pmsStyles.reminderDetailsContent}>
+                      <EventOutlined sx={pmsStyles.reminderCalendarIcon} />
+                      <Typography sx={pmsStyles.reminderContentTexts}>{moment(item.date).format("LL")}</Typography>
                     </Stack>
 
-                    <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{item.area}</Typography>
-                    <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{`${item.completion} PMS Completed`}</Typography>
+                    <Typography sx={pmsStyles.reminderContentTexts}>{item.area}</Typography>
+                    <Typography sx={pmsStyles.reminderContentTexts}>{`${item.completion} PMS Completed`}</Typography>
                   </Stack>
                 </Stack>
               ))}
-            </Stack>
-          ) : pmsReminderIsLoading || pmsReminderIsFetching ? (
-            <Stack spacing={1} sx={{ height: "420px", backgroundColor: theme.palette.bgForm.black2, justifyContent: "center", alignItems: "center" }}>
-              <Skeleton variant="rounded" animation="wave" />
-            </Stack>
-          ) : (
-            <Stack spacing={1} sx={{ height: "420px", backgroundColor: theme.palette.bgForm.black2, justifyContent: "center", alignItems: "center" }}>
+          </Stack>
+
+          {pmsReminderIsLoading ||
+            (pmsReminderIsFetching && (
+              <Stack spacing={1} sx={pmsStyles.reminderSkeletonContainer}>
+                <Skeleton variant="rounded" width={300} height={420} sx={pmsStyles.skeletonStyle} />
+              </Stack>
+            ))}
+
+          {pmsReminderIsSuccess && !pmsReminderData?.value?.pms?.length && !pmsReminderIsLoading && !pmsReminderIsFetching && (
+            <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
               <img src={noStore} alt="No Store Found" className="norecords-found-table" />
               <Typography color="gray" align="center">
                 No store found.
               </Typography>
             </Stack>
           )}
+
+          {/* ) : pmsReminderIsLoading || pmsReminderIsFetching ? (
+            <Stack spacing={1} sx={pmsStyles.reminderSkeletonContainer}>
+              <Skeleton variant="rounded" width={300} height={420} sx={pmsStyles.skeletonStyle} />
+            </Stack>
+          ) : (
+            <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
+              <img src={noStore} alt="No Store Found" className="norecords-found-table" />
+              <Typography color="gray" align="center">
+                No store found.
+              </Typography>
+            </Stack>
+          )} */}
         </Stack>
       </Stack>
 

@@ -10,9 +10,9 @@ const DEFAULT_PARAMS = {
 export function usePmsCalendarParams() {
   const [params, setParams] = useState(DEFAULT_PARAMS);
 
-  const setSearch = useCallback((search) => setParams((prev) => ({ ...prev, Search: search }), []));
-  const setSiteId = useCallback((siteId) => setParams((prev) => ({ ...prev, SiteId: siteId }), []));
-  const setPmsTypeId = useCallback((pmsTypeId) => setParams((prev) => ({ ...prev, PmsTypeId: pmsTypeId }), []));
+  const setSearch = useCallback((search) => setParams((prev) => ({ ...prev, Search: search })), []);
+  const setSiteId = useCallback((siteId) => setParams((prev) => ({ ...prev, SiteId: siteId })), []);
+  const setPmsTypeId = useCallback((pmsTypeId) => setParams((prev) => ({ ...prev, PmsTypeId: pmsTypeId })), []);
 
   const resetParams = useCallback(() => setParams(DEFAULT_PARAMS), []);
 

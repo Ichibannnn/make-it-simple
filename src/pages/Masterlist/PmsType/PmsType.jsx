@@ -323,7 +323,7 @@ const PmsType = () => {
             {isSuccess &&
               !isLoading &&
               !isFetching &&
-              data?.value?.sites?.map((item, index) => (
+              data?.value?.type?.map((item, index) => (
                 <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
                   <CardContent>
                     <Stack spacing={1}>
@@ -376,7 +376,7 @@ const PmsType = () => {
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.sites?.length && (
+            {isSuccess && !data?.value?.type?.length && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
@@ -454,7 +454,7 @@ const PmsType = () => {
                   {isSuccess &&
                     !isLoading &&
                     !isFetching &&
-                    data?.value?.sites?.map((item, i) => (
+                    data?.value?.type?.map((item, i) => (
                       <TableRow key={item.id}>
                         <TableCell
                           sx={{
@@ -533,7 +533,7 @@ const PmsType = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.sites.length && !isLoading && !isFetching && (
+                  {isSuccess && !data?.value?.type?.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
