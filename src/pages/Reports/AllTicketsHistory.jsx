@@ -264,8 +264,6 @@ const AllTicketsHistory = ({
                             fontSize: "12px",
                             fontWeight: 500,
                             width: "100px",
-                            overflowWrap: "break-word",
-                            wordBreak: "break-word",
                           }}
                         >
                           {item.concerns?.split("\r\n").map((line, index) => (
@@ -405,36 +403,36 @@ const AllTicketsHistory = ({
                                 item.ticket_Status === "Open"
                                   ? "Open"
                                   : item.ticket_Status === "Transfer"
-                                  ? "Transfer"
-                                  : item.ticket_Status === "For On-Hold"
-                                  ? "Hold Approval"
-                                  : item.ticket_Status === "On-Hold"
-                                  ? "On-Hold"
-                                  : item.ticket_Status === "For Closing Ticket"
-                                  ? "For Closing"
-                                  : item.ticket_Status === "Confirmation"
-                                  ? "For Confirmation"
-                                  : item.ticket_Status === "Closed"
-                                  ? "Closed"
-                                  : "--"
+                                    ? "Transfer"
+                                    : item.ticket_Status === "For On-Hold"
+                                      ? "Hold Approval"
+                                      : item.ticket_Status === "On-Hold"
+                                        ? "On-Hold"
+                                        : item.ticket_Status === "For Closing Ticket"
+                                          ? "For Closing"
+                                          : item.ticket_Status === "Confirmation"
+                                            ? "For Confirmation"
+                                            : item.ticket_Status === "Closed"
+                                              ? "Closed"
+                                              : "--"
                               }
                               sx={{
                                 backgroundColor:
                                   item.ticket_Status === "Open"
                                     ? "#ec9d29"
                                     : item.ticket_Status === "Transfer"
-                                    ? "#ff7043"
-                                    : item.ticket_Status === "For On-Hold"
-                                    ? "#ffb74d"
-                                    : item.ticket_Status === "On-Hold"
-                                    ? "#ff6d00"
-                                    : item.ticket_Status === "For Closing Ticket"
-                                    ? "#3A96FA"
-                                    : item.ticket_Status === "For Confirmation"
-                                    ? "#009688"
-                                    : item.ticket_Status === "Closed"
-                                    ? "#00913c"
-                                    : "transparent",
+                                      ? "#ff7043"
+                                      : item.ticket_Status === "For On-Hold"
+                                        ? "#ffb74d"
+                                        : item.ticket_Status === "On-Hold"
+                                          ? "#ff6d00"
+                                          : item.ticket_Status === "For Closing Ticket"
+                                            ? "#3A96FA"
+                                            : item.ticket_Status === "For Confirmation"
+                                              ? "#009688"
+                                              : item.ticket_Status === "Closed"
+                                                ? "#00913c"
+                                                : "transparent",
                                 color: "#ffffffde",
                                 borderRadius: "20px",
                                 fontSize: "12px",

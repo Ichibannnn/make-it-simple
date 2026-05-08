@@ -315,6 +315,10 @@ const ServiceLevelAgreement = ({
                       color: "#22B4BF",
                       fontSize: "12px",
                       fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
                     }}
                     align="center"
                   >
@@ -361,7 +365,7 @@ const ServiceLevelAgreement = ({
                     }}
                   >
                     {item.store}
-                  </TableCell> */}
+                  </TableCell>
 
                   <TableCell
                     sx={{
@@ -416,21 +420,13 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
-
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
                     }}
                   >
                     {moment(item.openDate).format("LL hh:mma")}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-
-                    }}
-                  >
-                    {item.targetDate ? moment(item.targetDate).format("LL") : "--"}
                   </TableCell>
 
                   <TableCell
@@ -463,6 +459,32 @@ const ServiceLevelAgreement = ({
 
                     }}
                   >
+<<<<<<< Updated upstream
+                    <Stack sx={{ width: "400px" }}>
+                      <Typography sx={{ fontSize: "12px", fontWeight: 500, wordWrap: "break-word" }}>
+                        {item?.solution
+                          ? item.solution?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
+=======
+                    {item.remarks ? item.remarks : "--"}
+>>>>>>> Stashed changes
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "#EDF2F7",
+                      fontSize: "12px",
+                      fontWeight: 500,
+
+                    }}
+                  >
                     {item.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
                   </TableCell> */}
 
@@ -471,6 +493,10 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
                     }}
                   >
                     {item.solution ? item.solution : "--"}
@@ -483,7 +509,11 @@ const ServiceLevelAgreement = ({
                       fontWeight: 500,
                     }}
                   >
+<<<<<<< Updated upstream
                     {item.requestType ? item.requestType : "--"}
+=======
+                    {item.status ? item.status : "--"}
+>>>>>>> Stashed changes
                   </TableCell>
 
                   <TableCell
@@ -501,6 +531,10 @@ const ServiceLevelAgreement = ({
                       color: "#EDF2F7",
                       fontSize: "12px",
                       fontWeight: 500,
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
                     }}
                   >
                     {item.rating ? item.rating : "--"}
