@@ -640,7 +640,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       color: "#48BB78",
                     }}
                   >
-                    New Incident
+                    New Request
                   </Typography>
                 </Stack>
               </Stack>
