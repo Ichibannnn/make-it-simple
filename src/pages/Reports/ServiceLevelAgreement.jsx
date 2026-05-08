@@ -459,7 +459,6 @@ const ServiceLevelAgreement = ({
 
                     }}
                   >
-<<<<<<< Updated upstream
                     <Stack sx={{ width: "400px" }}>
                       <Typography sx={{ fontSize: "12px", fontWeight: 500, wordWrap: "break-word" }}>
                         {item?.solution
@@ -472,9 +471,6 @@ const ServiceLevelAgreement = ({
                           : "--"}
                       </Typography>
                     </Stack>
-=======
-                    {item.remarks ? item.remarks : "--"}
->>>>>>> Stashed changes
                   </TableCell>
 
                   <TableCell
@@ -509,11 +505,7 @@ const ServiceLevelAgreement = ({
                       fontWeight: 500,
                     }}
                   >
-<<<<<<< Updated upstream
                     {item.requestType ? item.requestType : "--"}
-=======
-                    {item.status ? item.status : "--"}
->>>>>>> Stashed changes
                   </TableCell>
 
                   <TableCell

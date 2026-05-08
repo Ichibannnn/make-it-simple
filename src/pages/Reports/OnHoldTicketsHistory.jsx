@@ -186,24 +186,6 @@ const OnHoldTicketsHistory = ({
               !isFetching &&
               data?.value?.reports?.map((item) => (
                 <TableRow key={item.ticketConcernId}>
-<<<<<<< Updated upstream
-=======
-                  <TableCell
-                    sx={{
-                      color: "#22B4BF",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                    align="center"
-                  >
-                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
-                  </TableCell>
-
->>>>>>> Stashed changes
                   <TableCell
                     sx={{
                       color: "#22B4BF",
@@ -216,16 +198,7 @@ const OnHoldTicketsHistory = ({
                       },
                     }}
                   >
-<<<<<<< Updated upstream
                     {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
-=======
-                    {item.concerns?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
->>>>>>> Stashed changes
                   </TableCell>
 
                   <TableCell
