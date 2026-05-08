@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -34,7 +34,6 @@ import { useGetUnitQuery, useSyncUnitMutation } from "../../../features/api mast
 import { UnitErrorDialog } from "./UnitErrorDialog";
 
 const Unit = () => {
-  const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -45,7 +44,7 @@ const Unit = () => {
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetUnitQuery({
-    Status: status,
+    Status: true,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,

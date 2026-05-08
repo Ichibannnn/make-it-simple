@@ -32,15 +32,17 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
+
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import ConcernMenuActions from "../../Request/ConcernTickets/ConcernMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const AddTicketDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -302,7 +304,7 @@ const AddTicketDialog = ({ open, onClose }) => {
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
     );
   };
 
@@ -348,7 +350,7 @@ const AddTicketDialog = ({ open, onClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -534,7 +536,6 @@ const AddTicketDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* REQUESTOR DETAILS */}
-                {/* <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Requestor Details</Typography> */}
                 <Stack direction="row" sx={{ width: "100%", display: "none" }}>
                   <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
                     {/* Requestor Name */}
@@ -838,26 +839,12 @@ const AddTicketDialog = ({ open, onClose }) => {
                               getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                               sx={{
                                 flex: 2,
-                                // "& .MuiButtonBase-root-MuiChip-root": {
-                                //   fontSize: "11px",
-                                // },
-                                // "& .MuiAutocomplete-root .MuiOutlinedInput-root.MuiInputBase-sizeSmall": {
-                                //   paddingTop: "3px",
-                                //   paddingBottom: "3px",
-                                //   paddingLeft: "3px",
-                                // },
                               }}
                               fullWidth
                               disabled={!watch("ChannelId")}
                               disablePortal
                               disableClearable
                               componentsProps={{
-                                // tag: {
-                                //   sx: {
-                                //     fontSize: "11px",
-                                //     height: 24, // optional: adjust height for compact look
-                                //   },
-                                // },
                                 popper: {
                                   sx: {
                                     "& .MuiAutocomplete-listbox": {
@@ -891,9 +878,6 @@ const AddTicketDialog = ({ open, onClose }) => {
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
-                              // onOpen={() => {
-                              //   if (!subCategoryIsSuccess) getSubCategory();
-                              // }}
                               onChange={(_, value) => {
                                 onChange(value || []);
                               }}
@@ -1032,7 +1016,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                           <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
                             Concern #{idx + 1}: {err.message}
                           </Typography>
-                        )
+                        ),
                     )}
 
                   <Stack sx={{ width: "100%", mt: 1 }}>
@@ -1041,7 +1025,6 @@ const AddTicketDialog = ({ open, onClose }) => {
                       variant="contained"
                       onClick={() => append("")}
                       startIcon={<AddOutlined />}
-                      // disabled={!watch("Concern")}
                       sx={{
                         borderRadius: "0%",
                         ":disabled": {
@@ -1155,14 +1138,17 @@ const AddTicketDialog = ({ open, onClose }) => {
                           sx={{
                             display: "flex",
                             width: "100%",
-                            flexDirection: "column",
+                            flexDirection: "row",
+                            alignItems: "center",
                             padding: 1,
                             maxWidth: "100%",
                             overflow: "hidden",
                           }}
                         >
+                          {getAttachmentIcon(fileName)}
                           <Box
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
                               justifyContent: "space-between",
@@ -1215,7 +1201,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                     render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
-                        accept=".png,.jpg,.jpeg,.docx"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         style={{ display: "none" }}
                         multiple
                         type="file"

@@ -77,7 +77,6 @@ const Category = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -213,6 +212,12 @@ const Category = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   return (
     <Stack

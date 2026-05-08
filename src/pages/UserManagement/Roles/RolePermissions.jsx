@@ -1,24 +1,9 @@
 import { LanOutlined } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Badge,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { Autocomplete, Badge, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 
-import React, { useRef } from "react";
-import useDisclosure from "../../../hooks/useDisclosure";
+import { useRef } from "react";
 import { LoadingButton } from "@mui/lab";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 const RolePermissions = ({ permissions }) => {
   const ref = useRef();
@@ -61,9 +46,7 @@ const RolePermissions = ({ permissions }) => {
               options={permissions?.map((option) => option)}
               defaultValue={permissions?.map((option) => option)}
               readOnly
-              renderInput={(params) => (
-                <TextField {...params} label="Permissions" />
-              )}
+              renderInput={(params) => <TextField {...params} label="Permissions" />}
             />
           </Stack>
         </DialogContent>

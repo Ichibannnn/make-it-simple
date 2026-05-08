@@ -193,37 +193,29 @@ const OpenTicketsHistory = ({
                   >
                     <TableCell
                       sx={{
-                        color: "#EDF2F7",
+                        color: "#22B4BF",
                         fontSize: "12px",
-                        fontWeight: 500,
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
+                        fontWeight: 800,
                       }}
                       align="center"
                     >
-                      {item.ticketConcernId}
+                      {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                     </TableCell>
 
-                    <Tooltip title={item?.concern_Description} placement="bottom-start">
-                      <TableCell
-                        className="ellipsis-styling"
-                        sx={{
-                          color: "#EDF2F7",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          width: "200px",
-                        }}
-                      >
-                        {item.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </TableCell>
-                    </Tooltip>
+                    <TableCell>
+                      <Stack sx={{ width: "400px" }}>
+                        <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                          {item.concern_Description
+                            ? item.concern_Description?.split("\r\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))
+                            : "--"}
+                        </Typography>
+                      </Stack>
+                    </TableCell>
 
                     <TableCell
                       sx={{

@@ -15,16 +15,17 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { theme } from "../../../theme/theme";
-import { DiscountOutlined, ExpandMore, GppBadOutlined, SyncOutlined } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
+import { ExpandMore, GppBadOutlined, SyncOutlined } from "@mui/icons-material";
+
 import Swal from "sweetalert2";
-import { useSyncDepartmentMutation } from "../../../features/api masterlist/department/departmentApi";
+import { useState } from "react";
+import { theme } from "../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
+import { useSyncDepartmentMutation } from "../../../features/api masterlist/department/departmentApi";
 
 export const DepartmentErrorDialog = ({ errorData, open, onClose }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const [syncDepartments, { isLoading: isDepartmentSyncLoading, isFetching: isDepartmentSyncFetching }] = useSyncDepartmentMutation();
 
@@ -75,8 +76,6 @@ export const DepartmentErrorDialog = ({ errorData, open, onClose }) => {
           businessUnit_Name: item.businessUnit_Name,
         }));
 
-        console.log("Available: ", available);
-
         syncDepartments({
           departments: available,
         })
@@ -99,8 +98,6 @@ export const DepartmentErrorDialog = ({ errorData, open, onClose }) => {
   const onCloseAction = () => {
     onClose();
   };
-
-  console.log("availableSyncData: ", availableSyncData);
 
   return (
     <>

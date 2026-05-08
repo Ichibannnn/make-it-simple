@@ -6,10 +6,12 @@ import {
   AssessmentOutlined,
   AttachFileOutlined,
   BallotOutlined,
+  BuildCircleOutlined,
   ConfirmationNumberOutlined,
   CreditScoreOutlined,
   DynamicFeedOutlined,
   EqualizerOutlined,
+  FolderOutlined,
   NumbersOutlined,
 } from "@mui/icons-material";
 
@@ -25,6 +27,8 @@ export const getMenuIcon = (iconName) => {
     ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
     CreditScoreOutlined: <CreditScoreOutlined />,
     AssessmentOutlined: <AssessmentOutlined />,
+    BuildCircleOutlined: <BuildCircleOutlined />,
+    FolderOutlined: <FolderOutlined />,
   };
 
   return iconMap[iconName] || <IcecreamOutlinedIcon />;

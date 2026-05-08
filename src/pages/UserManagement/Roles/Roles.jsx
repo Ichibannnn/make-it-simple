@@ -19,12 +19,13 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { theme } from "../../../theme/theme";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -42,10 +43,10 @@ const Roles = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [editData, setEditData] = useState(null);
+
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
-
-  const [editData, setEditData] = useState(null);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
@@ -298,7 +299,6 @@ const Roles = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>
@@ -409,6 +409,7 @@ const Roles = () => {
                     >
                       LINE NO.
                     </TableCell>
+
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -419,6 +420,7 @@ const Roles = () => {
                     >
                       ROLE NAME
                     </TableCell>
+
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -430,6 +432,7 @@ const Roles = () => {
                     >
                       PERMISSIONS
                     </TableCell>
+
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -441,6 +444,7 @@ const Roles = () => {
                     >
                       STATUS
                     </TableCell>
+
                     <TableCell
                       sx={{
                         background: "#1C2536",
@@ -454,6 +458,7 @@ const Roles = () => {
                     </TableCell>
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
                   {isSuccess &&
                     !isLoading &&

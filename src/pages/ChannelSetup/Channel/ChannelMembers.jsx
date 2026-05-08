@@ -1,15 +1,7 @@
-import { GroupsOutlined, LanOutlined } from "@mui/icons-material";
-import {
-  Badge,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-  Tooltip,
-} from "@mui/material";
+import { GroupsOutlined } from "@mui/icons-material";
+import { Badge, IconButton, List, ListItem, ListItemText, Menu, Tooltip } from "@mui/material";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 const ChannelMembers = ({ members }) => {

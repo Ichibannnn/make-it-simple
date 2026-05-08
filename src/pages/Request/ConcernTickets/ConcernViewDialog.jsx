@@ -14,7 +14,6 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 import {
-  useCreateEditRequestorConcernMutation,
   useDeleteRequestorAttachmentMutation,
   useEditRequestorConcernMutation,
   useLazyGetBackjobTicketsQuery,
@@ -38,6 +37,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const ConcernViewDialog = ({ editData, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -46,9 +46,10 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [downloadLoading, setDownloadLoading] = useState(false);
-  const [viewLoading, setViewLoading] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const [viewIsLoading, setViewIsLoading] = useState(false);
+  const [downloadIsLoading, setDownloadIsLoading] = useState(false);
+  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
 
   const dateNeededValidation = new moment();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -151,8 +152,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   });
 
   const onConcernFormSubmit = (formData) => {
-    // console.log("FormData: ", formData);
-
     const payload = new FormData();
 
     payload.append("RequestConcernId", formData.RequestConcernId);
@@ -211,7 +210,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
       payload.append(`RequestAttachmentsFile[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     createEditRequestorConcern(payload)
       .unwrap()
@@ -267,6 +266,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
+    setDeleteIsLoading(true);
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -281,6 +281,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         "RequestAttachmentsFiles",
         watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
       );
+      setDeleteIsLoading(false);
     } catch (error) {}
   };
 
@@ -325,8 +326,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
 
   // Function to open image view dialog
   const handleViewImage = async (file) => {
-    setViewLoading(true);
-    setIsMenuOpen(true);
+    setViewIsLoading(true);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
@@ -334,16 +334,20 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
-        setViewLoading(false);
-        setIsMenuOpen(false);
       }
+      setViewIsLoading(false);
     } catch (error) {
       console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
     }
   };
 
   const handleViewImageWithoutId = (file) => {
-    setViewLoading(true);
+    setViewIsLoading(true);
     try {
       const reader = new FileReader();
 
@@ -352,13 +356,20 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         setIsViewDialogOpen(true);
       };
       reader.readAsDataURL(file);
+      setViewIsLoading(false);
     } catch (error) {
       console.error("Error fetching image:", error);
+
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
     }
   };
 
   const handleDownloadAttachment = async (file) => {
-    setDownloadLoading(true);
+    setDownloadIsLoading(true);
     try {
       const response = await getDownloadAttachment(file?.ticketAttachmentId);
 
@@ -371,12 +382,15 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link); // Clean up after download
-        setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
+        setDownloadIsLoading(false);
       }
     } catch (error) {
       console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadIsLoading(false);
     }
   };
 
@@ -591,7 +605,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                     fontWeight: 500,
                   }}
                 >
-                  {`Ticket Number: ${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
+                  {`Ticket Number: ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                 </Typography>
 
                 {/* REQUEST TYPE */}
@@ -1250,7 +1264,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   });
                               }}
                               onChange={(_, value) => {
-                                // console.log("Value:", value);
                                 onChange(value);
 
                                 const categoryIdParams = value?.map((category) => category?.id);
@@ -1592,7 +1605,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       padding: 1,
                     }}
                     onDragOver={handleDragOver}
-                    // onDrop={handleDrop}
                   >
                     {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
                       <Box
@@ -1641,14 +1653,17 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                             sx={{
                               display: "flex",
                               width: "100%",
-                              flexDirection: "column",
+                              flexDirection: "row",
+                              alignItems: "center",
                               padding: 1,
                               maxWidth: "100%",
                               overflow: "hidden",
                             }}
                           >
+                            {getAttachmentIcon(fileName)}
                             <Box
                               sx={{
+                                width: "100%",
                                 display: "flex",
                                 flexDirection: "row",
                                 justifyContent: "space-between",
@@ -1706,6 +1721,9 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                                   onDelete={handleDeleteFile}
                                   onDownload={handleDownloadAttachment}
                                   isImageFile={isImageFile}
+                                  viewIsLoading={viewIsLoading}
+                                  downloadIsLoading={downloadIsLoading}
+                                  deleteIsLoading={deleteIsLoading}
                                 />
                               </Box>
                             </Box>
@@ -1722,7 +1740,7 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".png,.jpg,.jpeg,.docx"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         onChange={(event) => {
                           if (ticketAttachmentId) {
                             const files = Array.from(event.target.files);
@@ -1788,8 +1806,6 @@ const ConcernViewDialog = ({ editData, open, onClose }) => {
                   !watch("DateNeeded") ||
                   !watch("Concern") ||
                   moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY") ||
-                  // watch("CategoryId").length === 0 ||
-                  // watch("SubCategoryId").length === 0 ||
                   (watch("Request_Type") === "Rework" && !watch("BackJobId"))
                 }
               >

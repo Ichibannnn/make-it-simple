@@ -1,15 +1,14 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
-import { useEffect } from "react";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { Save } from "@mui/icons-material";
 
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { toast } from "sonner";
 
-import { Save } from "@mui/icons-material";
 import { useCreateEditCategoryConcernMutation } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 
 const schema = yup.object().shape({
@@ -49,8 +48,6 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = (formData) => {
-    console.log("Form Data: ", formData);
-
     if (formData.id) {
       const editPayload = {
         id: data.id,
@@ -78,8 +75,6 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
       const addPayload = {
         concernCategory: formData?.concernCategory,
       };
-
-      console.log("Add Payload: ", addPayload);
 
       createEditCategory(addPayload)
         .unwrap()

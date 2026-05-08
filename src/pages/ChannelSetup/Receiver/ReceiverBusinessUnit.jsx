@@ -1,24 +1,9 @@
 import { LanOutlined } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Badge,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { Autocomplete, Badge, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 
-import React, { useRef } from "react";
-import useDisclosure from "../../../hooks/useDisclosure";
+import { useRef } from "react";
 import { LoadingButton } from "@mui/lab";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 const ReceiverBusinessUnit = ({ businessUnits }) => {
   const ref = useRef();
@@ -27,8 +12,6 @@ const ReceiverBusinessUnit = ({ businessUnits }) => {
   const onCloseAction = () => {
     onClose();
   };
-
-  console.log("Business Units: ", businessUnits);
 
   return (
     <div>
@@ -62,13 +45,9 @@ const ReceiverBusinessUnit = ({ businessUnits }) => {
               multiple
               options={businessUnits || []}
               defaultValue={businessUnits}
-              getOptionLabel={(option) =>
-                `${option.businessUnit_Code} - ${option.businessUnit_Name}`
-              }
+              getOptionLabel={(option) => `${option.businessUnit_Code} - ${option.businessUnit_Name}`}
               readOnly
-              renderInput={(params) => (
-                <TextField {...params} label="Business Units" />
-              )}
+              renderInput={(params) => <TextField {...params} label="Business Units" />}
             />
           </Stack>
         </DialogContent>

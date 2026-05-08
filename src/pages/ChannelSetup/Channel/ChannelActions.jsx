@@ -1,12 +1,6 @@
-import {
-  ArchiveOutlined,
-  EditOutlined,
-  GroupsOutlined,
-  MoreHoriz,
-  RestoreOutlined,
-} from "@mui/icons-material";
+import { ArchiveOutlined, GroupsOutlined, MoreHoriz, RestoreOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import React, { useRef } from "react";
+import { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
@@ -45,13 +39,7 @@ const ChannelActions = ({ data, onArchive, onUpdate }) => {
         )}
 
         <MenuItem onClick={() => onArchiveAction(data)}>
-          <ListItemIcon>
-            {data?.is_Active ? (
-              <ArchiveOutlined fontSize="small" />
-            ) : (
-              <RestoreOutlined fontSize="small" />
-            )}
-          </ListItemIcon>
+          <ListItemIcon>{data?.is_Active ? <ArchiveOutlined fontSize="small" /> : <RestoreOutlined fontSize="small" />}</ListItemIcon>
 
           {data?.is_Active ? "Archive" : "Restore"}
         </MenuItem>

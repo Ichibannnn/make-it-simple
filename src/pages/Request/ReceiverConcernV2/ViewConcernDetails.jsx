@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 import { Controller, useForm } from "react-hook-form";
@@ -8,12 +8,14 @@ import * as yup from "yup";
 import useDisclosure from "../../../hooks/useDisclosure";
 
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
-import { AttachFileOutlined, Attachment, Close, Receipt } from "@mui/icons-material";
+import { AttachFileOutlined, Attachment, Close } from "@mui/icons-material";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import AssignTicketDrawer from "./AssignTicketDrawer";
 import MenuActions from "./MenuActions";
+import { toast } from "sonner";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -48,7 +50,6 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
   });
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -89,16 +90,20 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
-      console.log("Res: ", response);
-
       if (response?.data) {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
         setViewLoading(false);
       }
+      setViewLoading(false);
     } catch (error) {
-      console.error("Error fetching image:", error);
+      console.log("error: ", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewLoading(false);
     }
   };
 
@@ -117,11 +122,14 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
         link.click();
         document.body.removeChild(link); // Clean up after download
         setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log("error: ", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadLoading(false);
     }
   };
 
@@ -164,7 +172,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
             <Stack direction="row" gap={1} alignItems="center">
               <Stack>
                 <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: isScreenSmall ? "14px" : "16px" }}>
-                  {`Ticket Number - ${data?.ticketRequestConcerns[0]?.ticketConcernId}`}
+                  {`Ticket Number - ${moment(data?.created_At).format("YYYY")}-${data?.ticketRequestConcerns[0]?.ticketConcernId}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -438,7 +446,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         </Box>
 
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px", wordBreak: "break-word" }}>
                             {data?.concern?.split("\r\n").map((line, index) => (
                               <span key={index}>
                                 {line}
@@ -455,7 +463,9 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         </Box>
 
                         <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px", wordBreak: "break-word" }}>
+                            {data?.notes !== null ? data?.notes : "-"}
+                          </Typography>
                         </Box>
                       </Stack>
                     </Stack>
@@ -806,7 +816,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                             {data?.concern?.split("\r\n").map((line, index) => (
                               <span key={index}>
                                 {line}
@@ -825,7 +835,9 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                         <Box sx={{ width: "10%" }} />
 
                         <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.notes !== null ? data?.notes : "-"}</Typography>
+                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
+                            {data?.notes !== null ? data?.notes : "-"}
+                          </Typography>
                         </Box>
                       </Stack>
                     </Stack>
@@ -912,15 +924,18 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                   <Box
                     key={index}
                     sx={{
-                      display: "flex",
                       width: "100%",
-                      flexDirection: "column",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
                       justifyContent: "space-between",
                       padding: 1,
                     }}
                   >
+                    {getAttachmentIcon(fileName)}
                     <Box
                       sx={{
+                        width: "100%",
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
@@ -948,35 +963,14 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                       </Box>
 
                       <Box>
-                        <MenuActions fileName={fileName} onView={handleViewImage} isImageFile={isImageFile} onDownload={handleDownloadAttachment} />
-
-                        {/* {isImageFile(fileName.name) && (
-                          <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => handleViewImage(fileName)} // View image in dialog
-                            style={{ background: "none" }}
-                          >
-                            {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                          </IconButton>
-                        )}
-
-                        <Tooltip title="Download">
-                          {downloadLoading ? (
-                            <CircularProgress size={14} />
-                          ) : (
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleDownloadAttachment(fileName)}
-                              style={{
-                                background: "none",
-                              }}
-                            >
-                              <FileDownloadOutlined />
-                            </IconButton>
-                          )}
-                        </Tooltip> */}
+                        <MenuActions
+                          fileName={fileName}
+                          onView={handleViewImage}
+                          isImageFile={isImageFile}
+                          onDownload={handleDownloadAttachment}
+                          viewIsLoading={viewLoading}
+                          downloadIsLoading={downloadLoading}
+                        />
                       </Box>
                     </Box>
                   </Box>
@@ -991,7 +985,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".png,.jpg,.jpeg,.docx"
+                  accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                   onChange={(event) => {
                     if (ticketAttachmentId) {
                       const files = Array.from(event.target.files);

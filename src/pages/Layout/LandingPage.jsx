@@ -1,10 +1,7 @@
-import React from "react";
-import Header from "../../components/Header";
-import { Outlet } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
+import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar";
 import MainContent from "../../components/MainContent";
-import { useEffect } from "react";
 
 const LandingPage = () => {
   return (

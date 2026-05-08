@@ -1,7 +1,7 @@
 import { MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
 const ClosingDialogMenuActions = ({ fileName, onView, onDelete, isImageFile }) => {

@@ -4,9 +4,8 @@ import { useEffect } from "react";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme } from "../../../theme/theme";
+import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
@@ -16,9 +15,20 @@ const schema = yup.object().shape({
   permissions: yup.array().required(),
 });
 
-const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Reports", "Filing", "Generate"];
+const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Checklist Management", "PMS", "Reports"];
 const userManagementCheckbox = ["User Account", "User Role"];
-const masterlistCheckbox = ["One Charging", "Category", "Sub Category", "Concern Category", "Receiver Setup", "Channel Setup", "Service Provider", "Approver Setup"];
+const masterlistCheckbox = [
+  "One Charging",
+  "Channel Setup",
+  "Category",
+  "Sub Category",
+  "Concern Category",
+  "Service Provider",
+  "Receiver Setup",
+  "Approver Setup",
+  "PMS Type",
+  "Sites",
+];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
 const approverCheckbox = ["Approval", "View Tickets"];
@@ -80,7 +90,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         if (data) {
-          // ROLE API
+          // Role API
           if (formData.user_Role_Name !== data.user_Role_Name) {
             updateRoleName({
               id: data.id,
@@ -100,12 +110,9 @@ const RoleAddDialog = ({ data, open, onClose }) => {
               });
           }
 
-          // ROLE PERMISSION API
+          // Role Permission API
           const isPermissionMatch = formData.permissions.every((item) => data.permissions.includes(item)) && formData.permissions.length === data.permissions.length;
-
           if (!isPermissionMatch) {
-            console.log("isPermissionMatch: ", isPermissionMatch);
-            console.log("Data: ", data);
             updateRolePermission({
               id: data.id,
               permissions: formData.permissions,
@@ -172,37 +179,37 @@ const RoleAddDialog = ({ data, open, onClose }) => {
     if (!e.target.checked && e.target.value === "User Management") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !userManagementCheckbox.includes(item))
+        watch("permissions").filter((item) => !userManagementCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Masterlist") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !masterlistCheckbox.includes(item))
+        watch("permissions").filter((item) => !masterlistCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Requestor") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !requestCheckbox.includes(item))
+        watch("permissions").filter((item) => !requestCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Receiver") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !receiverCheckbox.includes(item))
+        watch("permissions").filter((item) => !receiverCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Approver") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !approverCheckbox.includes(item))
+        watch("permissions").filter((item) => !approverCheckbox.includes(item)),
       );
     }
     if (!e.target.checked && e.target.value === "Ticketing") {
       setValue(
         "permissions",
-        watch("permissions").filter((item) => !ticketingCheckbox.includes(item))
+        watch("permissions").filter((item) => !ticketingCheckbox.includes(item)),
       );
     }
   };
@@ -240,7 +247,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             </Stack>
 
             <Stack direction="column">
-              {/* PERMISSIONS */}
+              {/* Permissions */}
               <FormControl
                 component="fieldset"
                 variant="standard"
@@ -298,7 +305,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormGroup>
               </FormControl>
 
-              {/* USER MANAGEMENT */}
+              {/* User Management */}
               {watch("permissions")?.includes("User Management") && (
                 <FormControl
                   component="fieldset"
@@ -357,7 +364,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* MASTERLIST */}
+              {/* Masterlist */}
               {watch("permissions")?.includes("Masterlist") && (
                 <FormControl
                   component="fieldset"
@@ -416,7 +423,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* REQUESTOR */}
+              {/* Requestor */}
               {watch("permissions")?.includes("Requestor") && (
                 <FormControl
                   component="fieldset"
@@ -475,7 +482,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* RECEIVER */}
+              {/* Receiver */}
               {watch("permissions")?.includes("Receiver") && (
                 <FormControl
                   component="fieldset"
@@ -534,7 +541,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* APPROVER */}
+              {/* Approver */}
               {watch("permissions")?.includes("Approver") && (
                 <FormControl
                   component="fieldset"
@@ -593,7 +600,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 </FormControl>
               )}
 
-              {/* TICKETING */}
+              {/* Ticketing */}
               {watch("permissions")?.includes("Ticketing") && (
                 <FormControl
                   component="fieldset"

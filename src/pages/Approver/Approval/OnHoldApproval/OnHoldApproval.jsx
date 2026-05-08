@@ -17,24 +17,24 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, Check, Close, LocalOffer } from "@mui/icons-material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import moment from "moment";
-import { theme } from "../../../../theme/theme";
+import Swal from "sweetalert2";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
-import OnHoldApprovalDialog from "./OnHoldApprovalDialog";
-import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
+
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+import { theme } from "../../../../theme/theme";
+import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { DisapproveSelectedDialog } from "./DisapprovedOnHoldDialog";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
-import { useDispatch } from "react-redux";
-import Swal from "sweetalert2";
-import { toast } from "sonner";
+import OnHoldApprovalDialog from "./OnHoldApprovalDialog";
 
 const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewOnHoldData, setViewOnHoldData] = useState(null);
@@ -86,8 +86,6 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
         onHoldTicketId: item,
       })),
     };
-
-    console.log("payload:", payload);
 
     Swal.fire({
       title: "Confirmation",
@@ -223,12 +221,14 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketConcernId}</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{`${moment(item.requestedAt).format(
+                              "YYYY"
+                            )}-${item.ticketConcernId}`}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET DESCRIPTION:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                               {item.concern_Details?.split("\r\n").map((line, index) => (
                                 <span key={index}>
                                   {line}
@@ -421,7 +421,7 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {item.ticketConcernId}
+                          {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                         </TableCell>
 
                         <TableCell>
@@ -459,17 +459,19 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                         <Tooltip title={item?.concern_Details} placement="bottom-start">
                           <TableCell
-                            // className="ellipsis-styling"
+                            className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",
                               fontWeight: 500,
-                              maxWidth: "300px",
                             }}
                             onClick={() => onViewAction(item)}
                           >
                             {item?.concern_Details.split("\r\n").map((line, index) => (
-                              <div key={index}>{line}</div>
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
                             ))}
                           </TableCell>
                         </Tooltip>

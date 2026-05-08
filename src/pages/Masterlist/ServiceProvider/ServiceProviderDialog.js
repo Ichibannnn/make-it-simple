@@ -82,8 +82,6 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
         })),
       };
 
-      console.log("Add: ", addPayload);
-
       createEditServiceProvider(addPayload)
         .unwrap()
         .then(() => {

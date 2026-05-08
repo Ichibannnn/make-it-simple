@@ -1,23 +1,46 @@
 import { FileDownloadOutlined, MoreHoriz, VisibilityOutlined } from "@mui/icons-material";
-import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../../hooks/useDisclosure";
+import { useEffect } from "react";
 
-const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile }) => {
+const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
 
   const onViewAction = (fileName) => {
-    onToggle();
     onView(fileName);
   };
 
   const onDownloadAction = (fileName) => {
-    onToggle();
     onDownload(fileName);
   };
+
+  const handleMenuViewClick = (event, action) => {
+    if (viewIsLoading) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    action();
+  };
+
+  const handleMenuDownloadClick = (event, action) => {
+    if (downloadIsLoading) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    action();
+  };
+
+  // useEffect(() => {
+  //   if (!viewIsLoading && !downloadIsLoading) {
+  //     onToggle();
+  //   }
+  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>
@@ -25,20 +48,16 @@ const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile }) =>
         <MoreHoriz />
       </IconButton>
 
-      <Menu anchorEl={ref.current} open={open} onClose={onToggle} disableAutoFocusItem={true}>
+      <Menu anchorEl={ref.current} open={open} onClose={onToggle} disableAutoFocusItem>
         {isImageFile(fileName.name) && (
-          <MenuItem onClick={() => onViewAction(fileName)}>
-            <ListItemIcon>
-              <VisibilityOutlined fontSize="small" />
-            </ListItemIcon>
+          <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
+            <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
             View
           </MenuItem>
         )}
 
-        <MenuItem onClick={() => onDownloadAction(fileName)}>
-          <ListItemIcon>
-            <FileDownloadOutlined fontSize="small" />
-          </ListItemIcon>
+        <MenuItem onClick={(e) => handleMenuDownloadClick(e, () => onDownloadAction(fileName))} disabled={downloadIsLoading}>
+          <ListItemIcon>{downloadIsLoading ? <CircularProgress size={18} /> : <FileDownloadOutlined fontSize="small" />}</ListItemIcon>
           Download
         </MenuItem>
       </Menu>

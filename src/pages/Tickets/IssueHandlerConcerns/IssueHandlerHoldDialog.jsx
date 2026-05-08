@@ -1,8 +1,8 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import { Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Add, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -11,13 +11,13 @@ import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import OnHoldMenuActions from "./MenuActions/OnHoldMenuActions";
+import moment from "moment";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -78,7 +78,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to hold this ticket number ${data?.ticketConcernId}?`,
+      text: `Requesting to hold this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -128,7 +128,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -147,8 +146,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -200,8 +197,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
   // Function to open image view dialog
   const handleViewImage = (file) => {
-    console.log("File: ", file);
-
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
@@ -264,7 +259,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
               </Stack>
             </Stack>
 
-            {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
@@ -277,7 +271,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    {` Ticket Number : #${data?.ticketConcernId}`}
+                    {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
 
@@ -285,7 +279,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                   <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                     <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
 
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
                         <span key={index}>
                           {line}
@@ -301,7 +295,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Box>
                     <Box sx={{ width: "5%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                         {data?.concern_Description?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -390,7 +384,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                           width: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          // justifyContent: "space-between",
                           padding: 1,
                         }}
                       >
@@ -447,32 +440,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
                             <Box>
                               <OnHoldMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-
-                              {/* {isImageFile(fileName.name) && (
-                                <Tooltip title="Remove">
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handleViewImage(fileName.file)} // View image in dialog
-                                    style={{ background: "none" }}
-                                  >
-                                    <VisibilityOutlined />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-
-                              <Tooltip title="Remove">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteFile(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <RemoveCircleOutline />
-                                </IconButton>
-                              </Tooltip> */}
                             </Box>
                           </Box>
                         ))}
@@ -486,7 +453,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept=".png,.jpg,.jpeg,.docx"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
@@ -508,6 +475,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
             </Stack>
           </Stack>
         </DialogContent>
+
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
             <LoadingButton

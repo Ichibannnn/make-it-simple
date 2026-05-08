@@ -1,15 +1,16 @@
 import { Badge, Box, Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
-import React, { Fragment, useEffect, useState } from "react";
-import { theme } from "../theme/theme";
-import { useDispatch, useSelector } from "react-redux";
+import { Fragment, useEffect, useState } from "react";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
+import { theme } from "../theme/theme";
+import { getMenuIcon } from "./GetIcon";
+import { useDispatch, useSelector } from "react-redux";
 import { setSidebar } from "../features/sidebar/sidebarSlice";
+
 import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
-import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
 import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
-import helpDeskNameLogo from "../assets/images/helpdesk-icon-name.png";
+
 import helpDeskLogo from "../assets/images/helpdesk_icon.png";
 
 const Sidebar = () => {
@@ -91,6 +92,7 @@ const SidebarHeader = () => {
       }}
     >
       <img src={helpDeskLogo} alt="dotek-icon" width="74" height="50" className="logo-sidebar" />
+
       <Stack direction="row" gap={0.5} mt={0.5}>
         <Typography
           sx={{
@@ -103,6 +105,7 @@ const SidebarHeader = () => {
         >
           MIS
         </Typography>
+
         <Typography
           sx={{
             fontSize: ".9rem",
@@ -152,7 +155,6 @@ const SidebarList = () => {
         userManagementOnToggle();
         masterlistOnClose();
         requestOnClose();
-        // channelOnClose();
         ticketingOnClose();
         approverOnClose();
       },
@@ -183,7 +185,6 @@ const SidebarList = () => {
         masterListOnToggle();
         userManagementOnClose();
         requestOnClose();
-        // channelOnClose();
         receiverOnClose();
         ticketingOnClose();
         approverOnClose();
@@ -197,44 +198,56 @@ const SidebarList = () => {
         },
         {
           id: 2,
-          name: "Category",
-          path: "/masterlist/category",
-          icon: "CategoryOutlined",
-        },
-        {
-          id: 3,
-          name: "Sub Category",
-          path: "/masterlist/sub-category",
-          icon: "AutoAwesomeMotionOutlined",
-        },
-        {
-          id: 4,
-          name: "Concern Category",
-          path: "/masterlist/concern-category",
-          icon: "AutoAwesomeMotionOutlined",
-        },
-        {
-          id: 5,
-          name: "Receiver Setup",
-          path: "/masterlist/receiver-setup",
-          icon: "ContactsOutlined",
-        },
-        {
-          id: 6,
           name: "Channel Setup",
           path: "/masterlist/channel-setup",
           icon: "HubOutlined",
         },
         {
-          id: 7,
+          id: 3,
+          name: "Category",
+          path: "/masterlist/category",
+          icon: "CategoryOutlined",
+        },
+        {
+          id: 4,
+          name: "Sub Category",
+          path: "/masterlist/sub-category",
+          icon: "AutoAwesomeMotionOutlined",
+        },
+        {
+          id: 5,
           name: "Service Provider",
           path: "/masterlist/service-provider",
           icon: "HubOutlined",
         },
         {
+          id: 6,
+          name: "Concern Category",
+          path: "/masterlist/concern-category",
+          icon: "AutoAwesomeMotionOutlined",
+        },
+        {
+          id: 7,
+          name: "Receiver Setup",
+          path: "/masterlist/receiver-setup",
+          icon: "ContactsOutlined",
+        },
+        {
           id: 8,
           name: "Approver Setup",
           path: "/masterlist/approver-setup",
+          icon: "GroupsOutlined",
+        },
+        {
+          id: 9,
+          name: "PMS Type",
+          path: "/masterlist/pms-type",
+          icon: "GroupsOutlined",
+        },
+        {
+          id: 10,
+          name: "Sites",
+          path: "/masterlist/sites",
           icon: "GroupsOutlined",
         },
       ],
@@ -337,18 +350,30 @@ const SidebarList = () => {
     },
     {
       id: 7,
+      name: "Checklist Management",
+      path: "/checklist-management",
+      icon: "FolderOutlined",
+    },
+    {
+      id: 8,
+      name: "PMS",
+      path: "/pms",
+      icon: "BuildCircleOutlined",
+    },
+    {
+      id: 9,
       name: "Reports",
       path: "/reports",
       icon: "AssessmentOutlined",
     },
     {
-      id: 8,
+      id: 10,
       name: "Filing",
       path: "/filing",
       icon: "AttachFileOutlined",
     },
     {
-      id: 9,
+      id: 11,
       name: "Generate",
       path: "/generate",
       icon: "BallotOutlined",
@@ -381,6 +406,7 @@ const SidebarList = () => {
                       mb: "2px",
                     }}
                   />
+
                   {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
                     <Badge color="error" variant="dot">
                       {item.open ? <ExpandLess /> : <ExpandMore />}

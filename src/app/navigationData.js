@@ -68,6 +68,16 @@ export const sidebarNavigationData = [
         name: "Approver",
         path: "/masterlist/approver-setup",
       },
+      {
+        id: 9,
+        name: "PMS Type",
+        path: "/masterlist/pms-type",
+      },
+      {
+        id: 10,
+        name: "Sites",
+        path: "/masterlist/sites",
+      },
     ],
   },
   {
@@ -125,6 +135,16 @@ export const sidebarNavigationData = [
   },
   {
     id: 8,
+    path: "/checklist-management",
+    name: "Checklist Management",
+  },
+  {
+    id: 9,
+    path: "/pms",
+    name: "PMS",
+  },
+  {
+    id: 10,
     path: "/reports",
     name: "Reports",
   },

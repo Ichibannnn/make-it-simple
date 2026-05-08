@@ -1,5 +1,4 @@
 import { createTheme } from "@mui/material";
-import { purple, red } from "@mui/material/colors";
 
 const black = {
   100: "#d1d2d5",
@@ -77,6 +76,9 @@ const theme = createTheme({
     error: {
       main: "#ef5350",
     },
+    accent: {
+      main: "#d4d9dd",
+    },
   },
   typography: {
     fontFamily: "Plus Jakarta Sans",
@@ -101,6 +103,8 @@ const theme = createTheme({
       marginInlineStart: "0px",
       marginInlineEnd: "0px",
     },
+    title: { fontSize: "16px" },
+    subTitle: { fontSize: "13px" },
   },
   components: {
     MuiInputBase: {
@@ -178,7 +182,7 @@ const theme = createTheme({
           padding: "8px 20px",
           fontSize: "0.875rem",
           fontWeight: "600px",
-          borderRadius: "12px",
+          borderRadius: "5px",
           textTransform: "capitalize",
           boxSizing: "border-box",
           ":disabled": {
@@ -206,12 +210,6 @@ const theme = createTheme({
             color: "#9e77ed", // Change the text color when hovering
           },
         },
-      },
-    },
-
-    MuiListItemButton: {
-      defaultProps: {
-        disableTouchRipple: true,
       },
     },
 
@@ -252,6 +250,9 @@ const theme = createTheme({
           },
           fontSize: "15px",
         },
+      },
+      defaultProps: {
+        disableTouchRipple: true,
       },
     },
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { Add, CheckOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
@@ -39,8 +39,6 @@ const ConcernReturn = ({ data, open, onClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    // console.log("FormData: ", formData);
-
     const payload = new FormData();
 
     payload.append("RequestConcernId", data?.requestConcernId);
@@ -106,7 +104,6 @@ const ConcernReturn = ({ data, open, onClose }) => {
   };
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -124,8 +121,6 @@ const ConcernReturn = ({ data, open, onClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    // console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -313,7 +308,7 @@ const ConcernReturn = ({ data, open, onClose }) => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".png,.jpg,.jpeg,.docx"
+                  accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                   onChange={(event) => {
                     if (ticketAttachmentId) {
                       const files = Array.from(event.target.files);

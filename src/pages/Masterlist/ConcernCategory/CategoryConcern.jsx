@@ -23,8 +23,8 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
 
@@ -33,10 +33,10 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
+
 import { CategoryConcernActions } from "./CategoryConcernActions";
 import { CategoryConcernDialog } from "./CategoryConcernDialog";
 import { useArchiveCategoryConcernMutation, useGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
-import { use } from "react";
 
 const CategoryConcern = () => {
   const theming = useTheme();
@@ -73,12 +73,9 @@ const CategoryConcern = () => {
   };
 
   const onStatusChange = (_, newValue) => {
-    console.log("Status: ", newValue);
-
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    // refetch();
   };
 
   const onDialogClose = () => {
@@ -316,7 +313,6 @@ const CategoryConcern = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>

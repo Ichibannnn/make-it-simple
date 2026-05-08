@@ -1,10 +1,9 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import React from "react";
 
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { theme } from "../../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
@@ -20,8 +19,6 @@ const schema = yup.object().shape({
 
 const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
   const [disapproveOnHold, { isLoading, isFetching }] = useRejectOnHoldMutation();
-
-  console.log("Disapproved Data: ", data);
 
   const dispatch = useDispatch();
 
@@ -47,8 +44,6 @@ const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
       ],
       reject_Remarks: formData?.reject_Remarks,
     };
-
-    console.log("disapprovePayload: ", disapprovePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -148,7 +143,6 @@ const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
               <TextField
                 {...register("reject_Remarks")}
                 variant="outlined"
-                // label="Enters Re"
                 placeholder="Enter Remarks"
                 helperText={errors?.reject_Remarks?.message}
                 error={!!errors?.reject_Remarks?.message}
@@ -213,8 +207,6 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
       })),
       reject_Remarks: formData?.reject_Remarks,
     };
-
-    console.log("Disapprove: ", disapprovePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -313,7 +305,6 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
               <TextField
                 {...register("reject_Remarks")}
                 variant="outlined"
-                // label="Enters Re"
                 placeholder="Enter Remarks"
                 helperText={errors?.reject_Remarks?.message}
                 error={!!errors?.reject_Remarks?.message}

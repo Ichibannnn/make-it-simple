@@ -1,9 +1,17 @@
 import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
 
-import { Controller, set, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+
+import Swal from "sweetalert2";
+import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
+import useDisclosure from "../../../hooks/useDisclosure";
+import UserAccountWarningDialog from "./UserAccountWarningDialog";
+import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 import { useLazyGetEmployeesQuery } from "../../../features/sedar/sedarApi";
 import { useLazyGetRolesQuery } from "../../../features/user_management_api/role/roleApi";
@@ -14,19 +22,9 @@ import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitA
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
-import Swal from "sweetalert2";
-import { toast } from "sonner";
-import { theme } from "../../../theme/theme";
-import { LoadingButton } from "@mui/lab";
-import useDisclosure from "../../../hooks/useDisclosure";
-import UserAccountWarningDialog from "./UserAccountWarningDialog";
-import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [storeCheckbox, setStoreCheckbox] = useState(false);
-  const [storeEmpId, setStoreEmpId] = useState(null);
-  const [storeFullname, setStoreFullname] = useState(null);
-  const [storeUsername, setStoreUsername] = useState(null);
 
   const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();

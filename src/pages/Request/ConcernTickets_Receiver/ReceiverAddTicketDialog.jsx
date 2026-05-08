@@ -1409,27 +1409,6 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
 
                             <Box>
                               <ReceiverMenuAction fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                              {/* {isImageFile(fileName.name) && (
-                                <IconButton
-                                  size="small"
-                                  color="primary"
-                                  onClick={() => handleViewImage(fileName.file)} // View image in dialog
-                                  style={{ background: "none" }}
-                                >
-                                  <VisibilityOutlined />
-                                </IconButton>
-                              )}
-
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => handleDeleteFile(fileName)}
-                                style={{
-                                  background: "none",
-                                }}
-                              >
-                                <RemoveCircleOutline />
-                              </IconButton> */}
                             </Box>
                           </Box>
                         </Box>
@@ -1443,7 +1422,7 @@ const ReceiverAddTicketDialog = ({ open, onClose }) => {
                     render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
-                        accept=".png,.jpg,.jpeg,.docx"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         style={{ display: "none" }}
                         multiple
                         type="file"

@@ -16,8 +16,8 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { DeleteOutlineOutlined, SaveOutlined, SyncOutlined } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { DeleteOutlineOutlined } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -53,7 +53,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
     setValue: receiverFormSetValue,
     watch: receiverFormWatch,
     reset: receiverFormReset,
-    formState: { errors: receiverFormErrors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -65,10 +64,8 @@ const ReceiverDialog = ({ data, open, onClose }) => {
   const {
     control: businessUnitFormControl,
     handleSubmit: businessUnitFormHandleSubmit,
-    setValue: businessUnitFormSetValue,
     watch: businessUnitFormWatch,
     reset: businessUnitFormReset,
-    formState: { errors: businessUnitFormErrors },
   } = useForm({
     resolver: yupResolver(businessUnitSchema),
     defaultValues: {
@@ -86,8 +83,6 @@ const ReceiverDialog = ({ data, open, onClose }) => {
           businessUnitId: item.businessUnitId,
         })),
       };
-
-      console.log("Addpayload", addPayload);
 
       createEditReceiver(addPayload)
         .unwrap()

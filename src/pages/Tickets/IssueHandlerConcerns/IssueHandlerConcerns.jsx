@@ -40,16 +40,20 @@ import {
   SwapVertOutlined,
   ThumbDownOffAlt,
 } from "@mui/icons-material";
-
 import React, { useEffect, useMemo, useState } from "react";
-import moment from "moment";
-import { theme } from "../../../theme/theme";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
+import moment from "moment";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
 
 import {
   useCancelClosingIssueHandlerTicketsMutation,
@@ -57,6 +61,10 @@ import {
   useGetIssueHandlerConcernsQuery,
   useResumeIssueHandlerTicketsMutation,
 } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
+import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
+import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
+import { useConfirmConcernMutation } from "../../../features/api_request/concerns/concernApi";
 
 import IssueViewDialog from "./IssueViewDialog";
 import IssueHandlerConcernsActions from "./IssuHandlerConcernsActions";
@@ -65,22 +73,12 @@ import ManageTicketDialog from "./ManageTicketDialog";
 import TicketFiltering from "./TicketFiltering";
 import TicketForTransferDialog from "./TicketForTransferDialog";
 import ManageTransferDialog from "./ManageTransferDialog";
-import Swal from "sweetalert2";
-import { toast } from "sonner";
-
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import PrintServiceReport from "./PrintServiceReport";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import ManageOnHoldTicketDialog from "./ManageOnHoldTicketDialog";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ApproveTransferTicket from "./ApproveTransferTicket";
-import RejectTransfer from "./RejectTransfer";
-import { setAscending, setPageNumber, setPageSize, setSearchValue } from "../../../features/global/rootSlice";
 import AddTicketDialog from "./AddTicketDialog";
-import { useConfirmConcernMutation } from "../../../features/api_request/concerns/concernApi";
-import { LoadingButton } from "@mui/lab";
+import RejectTransfer from "./RejectTransfer";
 import RejectDateDialog from "./RejectDateDialog";
 
 import srReport from "../../../pdf/MIS_SRFinal_v2.pdf";
@@ -126,7 +124,7 @@ const IssueHandlerConcerns = () => {
   const { open: rejectTransferOpen, onToggle: rejectTransferOnToggle, onClose: rejectTransferOnClose } = useDisclosure();
   const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
   const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
-  const { open: printTicketOpen, onToggle: printTicketOnToggle, onClose: printTicketOnClose } = useDisclosure();
+  const { open: printTicketOpen, onClose: printTicketOnClose } = useDisclosure();
   const { open: rejectDateOpen, onToggle: rejectDateOnToggle, onClose: rejectDateOnClose } = useDisclosure();
 
   const dispatch = useDispatch();
@@ -134,7 +132,6 @@ const IssueHandlerConcerns = () => {
   // useSignalRConnection();
 
   const { data: notificationBadge } = useGetNotificationQuery();
-
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetIssueHandlerConcernsQuery({
     Concern_Status: ticketStatus,
     Search: search,
@@ -409,7 +406,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to resume this ticket number ${data?.ticketConcernId}?`,
+      text: `Requesting to resume this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -459,7 +456,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Cancel transfer ticket number ${data?.ticketConcernId}?`,
+      text: `Cancel transfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -504,10 +501,9 @@ const IssueHandlerConcerns = () => {
       closingTicketId: data?.getForClosingTickets?.[0]?.closingTicketId,
     };
 
-    console.log("payload: ", payload);
     Swal.fire({
       title: "Confirmation",
-      text: `Cancel ticket number ${data?.ticketConcernId}?`,
+      text: `Cancel ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -1220,7 +1216,7 @@ const IssueHandlerConcerns = () => {
                                   color: theme.palette.text.main,
                                 }}
                               >
-                                {item.ticketConcernId}
+                                {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
                               </Typography>
                             </Stack>
 
@@ -1822,7 +1818,6 @@ const IssueHandlerConcerns = () => {
                                   color: "#EDF2F7",
                                   fontSize: "12px",
                                   fontWeight: 500,
-                                  // width: "150px",
                                   "&:hover": {
                                     background: "",
                                     color: "#EDF2F7",
@@ -1830,71 +1825,60 @@ const IssueHandlerConcerns = () => {
                                 }}
                                 onClick={() => onViewAction(item)}
                               >
-                                {item.ticketConcernId}
+                                {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
                               </TableCell>
 
                               <TableCell onClick={() => onViewAction(item)}>
-                                <Typography
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
-                                  {item.requestor_Name}
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    color: theme.palette.text.secondary,
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
-                                  {item.department_Name}
-                                </Typography>
+                                <Stack sx={{ width: "180px" }}>
+                                  <Typography
+                                    sx={{
+                                      color: "#EDF2F7",
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {item.requestor_Name}
+                                  </Typography>
 
-                                <Typography
-                                  sx={{
-                                    color: theme.palette.text.secondary,
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
-                                  {item.location_Name}
-                                </Typography>
+                                  <Typography
+                                    sx={{
+                                      color: theme.palette.text.secondary,
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {item.department_Name}
+                                  </Typography>
+
+                                  <Typography
+                                    sx={{
+                                      color: theme.palette.text.secondary,
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {item.location_Name}
+                                  </Typography>
+                                </Stack>
                               </TableCell>
 
-                              <Tooltip
-                                title={item.concern_Description.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                                placement="bottom-start"
-                              >
-                                <TableCell
-                                  className="ellipsis-styling"
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "11px",
-                                    fontWeight: 500,
-                                    width: "500px",
-                                    "&:hover": {
-                                      background: "",
-                                      color: "#EDF2F7",
-                                    },
-                                  }}
-                                  onClick={() => onViewAction(item)}
-                                >
-                                  {item.concern_Description?.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
-                                </TableCell>
-                              </Tooltip>
+                              <TableCell onClick={() => onViewAction(item)}>
+                                <Stack sx={{ width: "200px" }}>
+                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                    {item.concern_Description
+                                      ? item.concern_Description?.split("\r\n").map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
+                                      : "--"}
+                                  </Typography>
+                                </Stack>
+                              </TableCell>
 
                               {ticketStatus !== "For Approval" && (
                                 <TableCell
@@ -2038,7 +2022,7 @@ const IssueHandlerConcerns = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                     "&:hover": {
-                                      background: ticketStatus === "Closed" && item?.closed_Status === "On-Time" ? "" : "",
+                                      background: ticketStatus === "Closed" && item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? "" : "",
                                       color: "#EDF2F7",
                                     },
                                   }}
@@ -2103,9 +2087,9 @@ const IssueHandlerConcerns = () => {
                                     variant="filled"
                                     size="small"
                                     icon={
-                                      item?.closed_Status === "On-Time" ? (
+                                      item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? (
                                         <FiberManualRecord fontSize="small" color="success" />
-                                      ) : item?.closed_Status === "Delay" ? (
+                                      ) : item?.getForClosingTickets?.[0]?.closed_Status === "Delay" ? (
                                         <FiberManualRecord fontSize="small" color="error" />
                                       ) : (
                                         ""
@@ -2113,12 +2097,15 @@ const IssueHandlerConcerns = () => {
                                     }
                                     sx={{
                                       fontSize: "12px",
-                                      backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
+                                      backgroundColor:
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" || item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
+                                          ? theme.palette.bgForm.black1
+                                          : "transparent",
                                       color: theme.palette.text.main,
                                       fontWeight: 800,
                                     }}
                                     label={
-                                      item?.closed_Status === "On-Time" ? (
+                                      item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? (
                                         <Typography
                                           sx={{
                                             color: theme.palette.success.main,
@@ -2128,7 +2115,7 @@ const IssueHandlerConcerns = () => {
                                         >
                                           On-Time
                                         </Typography>
-                                      ) : item?.closed_Status === "Delay" ? (
+                                      ) : item?.getForClosingTickets?.[0]?.closed_Status === "Delay" ? (
                                         <Typography
                                           sx={{
                                             color: theme.palette.error.main,
@@ -2252,8 +2239,8 @@ const IssueHandlerConcerns = () => {
             onHold={onHoldTicketAction}
           />
         )}
-        {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
 
+        {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
         <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
 
         <RejectDateDialog
@@ -2313,6 +2300,7 @@ const IssueHandlerConcerns = () => {
             viewOnClose={viewOnClose}
           />
         )}
+
         {manageHoldTicketOpen && (
           <ManageOnHoldTicketDialog
             data={holdTicketData}

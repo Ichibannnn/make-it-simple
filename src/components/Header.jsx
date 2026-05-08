@@ -18,50 +18,49 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useContext } from "react";
-import { theme } from "../theme/theme";
-
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import {
-  AccountCircleRounded,
   CheckCircle,
-  Close,
   CloseOutlined,
   NotificationsNoneOutlined,
   NotificationsOffOutlined,
-  NotificationsRounded,
   Password,
-  PersonOutlineOutlined,
 } from "@mui/icons-material";
 
+import { theme } from "../theme/theme";
+import React, { useContext } from "react";
 import { useState } from "react";
+import { useEffect } from "react";
+
+import * as yup from "yup";
+import moment from "moment";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUserDetails } from "../features/user_management_api/user/userSlice";
 import { toggleSidebar } from "../features/sidebar/sidebarSlice";
-
-import ReusableAlert from "../hooks/ReusableAlert";
 import useDisclosure from "../hooks/useDisclosure";
 
+import useSignalRConnection from "../hooks/useSignalRConnection";
 import { concernApi } from "../features/api_request/concerns/concernApi";
 import { concernReceiverApi } from "../features/api_request/concerns_receiver/concernReceiverApi";
 import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../features/api_notification/notificationApi";
-import { notificationMessageApi, useGetNotificationMessageQuery, useGetNotificationNavMutation } from "../features/api_notification_message/notificationMessageApi";
-import useSignalRConnection from "../hooks/useSignalRConnection";
-import moment from "moment";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { ParameterContext } from "../context/ParameterContext";
-import { Controller, useForm } from "react-hook-form";
-import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
+import {
+  notificationMessageApi,
+  useGetNotificationMessageQuery,
+  useGetNotificationNavMutation,
+} from "../features/api_notification_message/notificationMessageApi";
+
 import { LoadingButton } from "@mui/lab";
 import { signOut } from "../features/auth/authSlice";
+import { useChangeUserPasswordMutation } from "../features/user_management_api/user/userApi";
+import { Controller, useForm } from "react-hook-form";
+import { ParameterContext } from "../context/ParameterContext";
 
 const Header = () => {
   const hideMenu = useMediaQuery("(max-width: 1639px)");
@@ -69,42 +68,35 @@ const Header = () => {
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const notificationOpen = Boolean(notificationAnchor);
-  const { parameter, setParameter } = useContext(ParameterContext);
 
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const fullName = useSelector((state) => state?.user?.fullname);
-  const userName = useSelector((state) => state?.user?.username);
   const userRole = useSelector((state) => state?.user?.userRoleName);
+
+  const [showBadge, setShowBadge] = useState(false);
 
   const [notificationNav] = useGetNotificationNavMutation();
 
   const { data: notificationMessage } = useGetNotificationMessageQuery();
-  const { open: openChangePassword, onToggle: changePasswordOnToggle, onClose: changePasswordOnClose } = useDisclosure();
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    severity: "",
-    title: "",
-    description: "",
-  });
-  const [showBadge, setShowBadge] = useState(false);
+  const {
+    open: openChangePassword,
+    onToggle: changePasswordOnToggle,
+    onClose: changePasswordOnClose,
+  } = useDisclosure();
 
   const notificationHandler = (event) => {
     setNotificationAnchor(event.currentTarget);
   };
 
   const menuHandler = (event) => {
+    console.log("Event: ", event);
     setAnchorEl(event.currentTarget);
   };
 
   const closeHandler = () => {
-    setAnchorEl(null);
-  };
-
-  const closeNotificationHandler = () => {
     setAnchorEl(null);
   };
 
@@ -138,19 +130,10 @@ const Header = () => {
       dispatch(signOut());
       dispatch(clearUserDetails());
       navigate("/login");
-    } catch (error) {
-      setAlertData({
-        severity: "error",
-        title: "Error!",
-        description: `Something went wrong.`,
-      });
-      setShowAlert(true);
-    }
+    } catch (error) {}
   };
 
   const onNavigateAction = (data) => {
-    // console.log("Data: ", data);
-
     const navigationId = {
       id: data?.id,
     };
@@ -175,8 +158,6 @@ const Header = () => {
           dispatch(clearUserDetails());
           navigate("/login");
         } else {
-          // console.log("Parameter: ", data?.modules_Parameter);
-          setParameter(data?.modules_Parameter);
           navigate(data?.modules);
         }
       })
@@ -185,10 +166,6 @@ const Header = () => {
           description: "Something went wrong",
         });
       });
-  };
-
-  const handleAlertClose = () => {
-    setShowAlert(false);
   };
 
   const toggleSidebarHandler = () => {
@@ -222,7 +199,10 @@ const Header = () => {
     >
       <Box>
         {hideMenu && (
-          <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
+          <IconButton
+            onClick={toggleSidebarHandler}
+            aria-label="Toggle sidebar"
+          >
             <MenuOutlinedIcon />
           </IconButton>
         )}
@@ -250,21 +230,40 @@ const Header = () => {
 
           <IconButton onClick={menuHandler} ml={1}>
             <Tooltip title="Account">
-              <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 38, height: 38 }}>{trimLetters(fullName)}</Avatar>
+              <Avatar
+                sx={{
+                  bgcolor: theme.palette.primary.main,
+                  width: 38,
+                  height: 38,
+                }}
+              >
+                {trimLetters(fullName)}
+              </Avatar>
             </Tooltip>
           </IconButton>
 
           <Stack mt={0.5}>
-            <Typography className="capitalize-letter" sx={{ fontSize: "13px", fontWeight: 500 }}>
+            <Typography
+              className="capitalize-letter"
+              sx={{ fontSize: "13px", fontWeight: 500 }}
+            >
               {fullName}
             </Typography>
 
-            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>{userRole}</Typography>
+            <Typography
+              sx={{ fontSize: "13px", color: theme.palette.text.secondary }}
+            >
+              {userRole}
+            </Typography>
           </Stack>
         </Box>
 
         {/* Notification */}
-        <Menu anchorEl={notificationAnchor} open={notificationOpen} onClose={notificationCloseHandler}>
+        <Menu
+          anchorEl={notificationAnchor}
+          open={notificationOpen}
+          onClose={notificationCloseHandler}
+        >
           <Stack sx={{ maxHeight: 400, width: "350px" }}>
             <Stack sx={{ width: "100%", padding: "6px 16px" }}>
               <Typography>Notifications</Typography>
@@ -287,10 +286,15 @@ const Header = () => {
                     onClick={() => onNavigateAction(data)}
                   >
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>{trimLetters(data.added_By)}</Avatar>
+                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                        {trimLetters(data.added_By)}
+                      </Avatar>
 
                       <div style={{ flexGrow: 1, marginLeft: "10px" }}>
-                        <Typography variant="body2" sx={{ fontWeight: "semibold" }}>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "semibold" }}
+                        >
                           {data.message}
                         </Typography>
 
@@ -302,33 +306,58 @@ const Header = () => {
                           </Stack>
 
                           <Typography variant="caption" color="textSecondary">
-                            {moment(data.created_At).format("MMMM Do YYYY, h:mm:ss a")}
+                            {moment(data.created_At).format(
+                              "MMMM Do YYYY, h:mm:ss a",
+                            )}
                           </Typography>
                         </Stack>
                       </div>
                     </Stack>
 
-                    <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
+                    <Divider
+                      variant="fullWidth"
+                      sx={{ background: "#2D3748" }}
+                    />
                   </ListItem>
                 ))}
               </List>
             ) : (
-              <Stack sx={{ width: "100%", justifyContent: "center", alignItems: "center", gap: 0.5, padding: 4 }}>
-                <NotificationsOffOutlined sx={{ color: theme.palette.text.secondary }} />
-                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>No notifications</Typography>
+              <Stack
+                sx={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 0.5,
+                  padding: 4,
+                }}
+              >
+                <NotificationsOffOutlined
+                  sx={{ color: theme.palette.text.secondary }}
+                />
+                <Typography
+                  sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
+                >
+                  No notifications
+                </Typography>
               </Stack>
             )}
           </Stack>
         </Menu>
 
         {/* Account */}
-        <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
-          <MenuItem onClick={toggleChangePasswordHandler}>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={closeHandler}
+          onClick={closeHandler}
+        >
+          {/* Removed function due to One Login Integration */}
+          {/* <MenuItem onClick={toggleChangePasswordHandler}>
             <ListItemIcon>
               <Password fontSize="small" />
             </ListItemIcon>
             <Typography>Change Password</Typography>
-          </MenuItem>
+          </MenuItem> */}
 
           <MenuItem onClick={logoutHandler}>
             <ListItemIcon>
@@ -338,7 +367,12 @@ const Header = () => {
           </MenuItem>
         </Menu>
 
-        {openChangePassword && <ChangePassword open={openChangePassword} onClose={changePasswordOnClose} />}
+        {openChangePassword && (
+          <ChangePassword
+            open={openChangePassword}
+            onClose={changePasswordOnClose}
+          />
+        )}
       </Box>
     </Stack>
   );
@@ -361,12 +395,7 @@ const ChangePassword = ({ open, onClose }) => {
 
   const [changePassword] = useChangeUserPasswordMutation();
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, watch } = useForm({
     resolver: yupResolver(changePasswordSchema),
     defaultValues: {
       id: null,
@@ -407,7 +436,7 @@ const ChangePassword = ({ open, onClose }) => {
               description: "Password has been changed!",
               duration: 1500,
             }),
-          300
+          300,
         );
       })
       .catch((error) => {
@@ -457,7 +486,18 @@ const ChangePassword = ({ open, onClose }) => {
                 control={control}
                 name="current_Password"
                 render={({ field: { ref, value, onChange } }) => {
-                  return <TextField inputRef={ref} size="medium" value={value} label="Current Password" type="password" onChange={onChange} fullWidth autoComplete="off" />;
+                  return (
+                    <TextField
+                      inputRef={ref}
+                      size="medium"
+                      value={value}
+                      label="Current Password"
+                      type="password"
+                      onChange={onChange}
+                      fullWidth
+                      autoComplete="off"
+                    />
+                  );
                 }}
               />
 
@@ -478,7 +518,10 @@ const ChangePassword = ({ open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                            {watch("new_Password") ===
+                              watch("confirm_Password") &&
+                            watch("new_Password") !== null &&
+                            watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -508,7 +551,10 @@ const ChangePassword = ({ open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                            {watch("new_Password") ===
+                              watch("confirm_Password") &&
+                            watch("new_Password") !== null &&
+                            watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -527,8 +573,10 @@ const ChangePassword = ({ open, onClose }) => {
                 type="submit"
                 variant="contained"
                 disabled={
-                  // watch("new_Password") !== watch("current_Password") ||
-                  !watch("current_Password") || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")
+                  !watch("current_Password") ||
+                  !watch("new_Password") ||
+                  !watch("confirm_Password") ||
+                  watch("new_Password") !== watch("confirm_Password")
                 }
                 sx={{
                   ":disabled": {

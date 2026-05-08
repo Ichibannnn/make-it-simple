@@ -384,33 +384,29 @@ const CloseTicketsHistory = ({
 
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: "#22B4BF",
                       fontSize: "12px",
-                      fontWeight: 500,
+                      fontWeight: 800,
                     }}
                     align="center"
                   >
-                    {item.ticket_Number}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticket_Number}`}
                   </TableCell>
 
-                  <Tooltip title={item?.description} placement="bottom-start">
-                    <TableCell
-                      className="ellipsis-styling"
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        width: "100px",
-                      }}
-                    >
-                      {item.description?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </TableCell>
-                  </Tooltip>
+                  <TableCell>
+                    <Stack sx={{ width: " 300px" }}>
+                      <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                        {item.description
+                          ? item.description?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
+                  </TableCell>
 
                   <TableCell
                     sx={{
@@ -442,50 +438,6 @@ const CloseTicketsHistory = ({
                       </Stack>
                     </Stack>
                   </TableCell>
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={moment(item.target_Date).format("LL")}
-                    />
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={moment(item.actual).format("LL")}
-                    />
-                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -568,44 +520,19 @@ const CloseTicketsHistory = ({
                     </Stack>
                   </TableCell>
 
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                    }}
-                    align="center"
-                  >
-                    {item.category}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                    }}
-                    align="center"
-                  >
-                    {item.categoryConcern ? item.categoryConcern : "--"}
-                  </TableCell> */}
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "400px",
-                    }}
-                  >
-                    {item.notes
-                      ? item.notes?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))
-                      : "--"}
+                  <TableCell>
+                    <Stack sx={{ width: "200px" }}>
+                      <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                        {item.notes
+                          ? item.notes?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}

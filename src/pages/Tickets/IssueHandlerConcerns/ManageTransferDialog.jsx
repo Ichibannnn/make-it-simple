@@ -2,10 +2,10 @@ import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
 
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
@@ -14,6 +14,7 @@ import { useDeleteRequestorAttachmentMutation } from "../../../features/api_requ
 import { useTransferIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
+import moment from "moment";
 
 const schema = yup.object().shape({
   TransferTicketId: yup.number(),
@@ -113,7 +114,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -147,7 +148,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Edit tranfer ticket number ${data?.ticketConcernId}?`,
+      text: `Edit tranfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -245,7 +246,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
             size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
             link: subItem.attachment,
           };
-        })
+        }),
       );
 
       setAttachments(
@@ -254,7 +255,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
           name: item.name,
           size: item.size,
           link: item.link,
-        }))
+        })),
       );
     }
   }, [data]);
@@ -375,7 +376,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                         color: theme.palette.text.main,
                       }}
                     >
-                      {` Ticket Number : #${data?.ticketConcernId}`}
+                      {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -714,7 +715,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept=".png,.jpg,.jpeg,.docx"
+                      accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                       onChange={(event) => {
                         if (ticketAttachmentId) {
                           const files = Array.from(event.target.files);

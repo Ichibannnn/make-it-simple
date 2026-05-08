@@ -1,16 +1,16 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
 
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Swal from "sweetalert2";
-import { theme } from "../../../../theme/theme";
-import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
+import { theme } from "../../../../theme/theme";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LoadingButton } from "@mui/lab";
 
-import { useDisapproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useDispatch } from "react-redux";
+import { useDisapproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 
@@ -45,8 +45,6 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
 
       reject_Remarks: formData?.reject_Remarks,
     };
-
-    console.log("Disapprove: ", disapprovePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -131,7 +129,6 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
               <TextField
                 {...register("reject_Remarks")}
                 variant="outlined"
-                // label="Enters Re"
                 placeholder="Enter Remarks"
                 helperText={errors?.reject_Remarks?.message}
                 error={!!errors?.reject_Remarks?.message}
@@ -172,7 +169,7 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
 export default DisapprovedSelectedTargetDialog;
 
 // One at a timee
-export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, setSelectedTickets }) => {
+export const DisapproveTargetDialog = ({ data, open, onClose, onCloseDisapprove, approvalOnClose, setSelectedTickets }) => {
   const [disapproveTarget, { isLoading, isFetching }] = useDisapproveTargetMutation();
   const dispatch = useDispatch();
 
@@ -198,8 +195,6 @@ export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, s
       ],
       reject_Remarks: formData?.reject_Remarks,
     };
-
-    console.log("Disapprove: ", disapprovePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -235,6 +230,7 @@ export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, s
             dispatch(notificationMessageApi.util.resetApiState());
             setSelectedTickets([]);
             reset();
+            onCloseDisapprove();
             onClose();
             approvalOnClose();
           })
@@ -250,7 +246,7 @@ export const DisapproveTargetDialog = ({ data, open, onClose, approvalOnClose, s
 
   const onCloseAction = () => {
     reset();
-    onClose();
+    onCloseDisapprove();
   };
 
   return (

@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -30,6 +29,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
+
+import Swal from "sweetalert2";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
@@ -47,10 +48,10 @@ import { useLazyGetLocationWithPaginationQuery } from "../../../features/api mas
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import ConcernMenuActions from "./ConcernMenuActions";
 import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
 import { useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
-import Swal from "sweetalert2";
+import ConcernMenuActions from "./ConcernMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
@@ -267,7 +268,7 @@ const ConcernDialog = ({ open, onClose }) => {
             title: "Success!",
             html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
               <span style="color: gray; font-size: 13px;">
-                Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} 
+                Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId} 
                 and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you 
                 shortly to provide further assistance.
               </span>
@@ -298,7 +299,13 @@ const ConcernDialog = ({ open, onClose }) => {
             if (result.isConfirmed) {
               console.log("result: ", result);
 
-              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}. Your request has been successfully created under Service Ticket #${res?.value?.ticketConcernId} and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${res?.value?.concern}`;
+              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${
+                res?.value?.requestorDepartment
+              }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
+                res?.value?.ticketConcernId
+              } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
+                res?.value?.concern
+              }`;
 
               navigator.clipboard.writeText(ticketMessage).then(() => {
                 Swal.fire({
@@ -374,12 +381,19 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const handleViewImage = (file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedImage(e.target.result);
-      setIsViewDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        setIsViewDialogOpen(true);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error("Error!", {
+        description: "Error viewing of file",
+        duration: 1500,
+      });
+    }
   };
 
   const handleDeleteFile = (fileNameToDelete) => {
@@ -387,7 +401,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
     );
   };
 
@@ -472,7 +486,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -481,7 +495,9 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [subCategoryData]);
 
   useEffect(() => {
-    if (watch("IssueHandler")) {
+    // if (!serviceProviderIsSuccess) getServiceProvider({ Status: true });
+
+    if (userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician") {
       setValue("ServiceProvider", {
         id: userDetails?.serviceProviders?.[0]?.id,
         serviceProviderName: userDetails?.serviceProviders?.[0]?.serviceProviderName,
@@ -491,11 +507,13 @@ const ConcernDialog = ({ open, onClose }) => {
         channelId: userDetails?.channels?.[0]?.channelId,
         channelName: userDetails?.channels?.[0]?.channelName,
       });
+
+      getServiceProvider({ Status: true });
     } else {
       setValue("ServiceProvider", null);
       setValue("ChannelId", null);
     }
-  }, [watch("IssueHandler")]);
+  }, [userDetails]);
 
   if (!watch("UserId")) {
     return (
@@ -768,7 +786,9 @@ const ConcernDialog = ({ open, onClose }) => {
                               size="small"
                               value={value}
                               options={
-                                userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician"
+                                userDetails?.userRoleName === "Helpdesk Associate" ||
+                                userDetails?.userRoleName === "Helpdesk Associate / Technician" ||
+                                userDetails?.userRoleName === "Technician"
                                   ? userData?.value?.users || []
                                   : userData?.value?.users?.filter((item) => item?.departmentId === watch("DepartmentId")?.id) || []
                               }
@@ -1159,7 +1179,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
 
                 <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
-                  {/* Self-Assign */}
+                  {/* Self-Assign (watch("IssueHandler"))*/}
                   <Controller
                     name="IssueHandler"
                     control={control}
@@ -1199,7 +1219,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={watch("IssueHandler") ? userDetails?.serviceProviders : serviceProviderData?.value?.serviceProvider || []}
+                              options={serviceProviderData?.value?.serviceProvider || []}
                               loading={serviceProviderIsLoading}
                               renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onOpen={() => {
@@ -1253,7 +1273,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={watch("IssueHandler") ? userDetails?.channels : watch("ServiceProvider")?.serviceChannel || []}
+                              options={serviceProviderData?.value?.serviceProvider?.[0]?.serviceChannel || []}
                               renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                               onChange={(_, value) => {
                                 onChange(value);
@@ -1714,7 +1734,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
                             Concern #{idx + 1}: {err.message}
                           </Typography>
-                        )
+                        ),
                     )}
 
                   <Stack sx={{ width: "100%", mt: 1 }}>
@@ -1825,14 +1845,17 @@ const ConcernDialog = ({ open, onClose }) => {
                           sx={{
                             display: "flex",
                             width: "100%",
-                            flexDirection: "column",
+                            flexDirection: "row",
+                            alignItems: "center",
                             padding: 1,
                             maxWidth: "100%",
                             overflow: "hidden",
                           }}
                         >
+                          {getAttachmentIcon(fileName)}
                           <Box
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
                               justifyContent: "space-between",
@@ -1885,7 +1908,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
-                        accept=".png,.jpg,.jpeg,.docx"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         style={{ display: "none" }}
                         multiple
                         type="file"

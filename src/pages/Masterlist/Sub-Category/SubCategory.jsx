@@ -21,10 +21,10 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
+import { useEffect, useState } from "react";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
@@ -35,7 +35,11 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { SubCategoryDialog } from "./SubCategoryDialog";
 import { SubCategoryActions } from "./SubCategoryActions";
 
-import { useArchiveSubCategoryMutation, useGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import {
+  useArchiveSubCategoryMutation,
+  useGetSubCategoryQuery,
+} from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { sweetAlertDialog } from "../../../hooks/useSweetAlertDialog";
 
 const Category = () => {
   const [status, setStatus] = useState("true");
@@ -50,12 +54,13 @@ const Category = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSubCategoryQuery({
-    Status: status,
-    Search: search,
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } =
+    useGetSubCategoryQuery({
+      Status: status,
+      Search: search,
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    });
 
   const [archiveSubCategory] = useArchiveSubCategoryMutation();
 
@@ -72,7 +77,6 @@ const Category = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -80,64 +84,91 @@ const Category = () => {
     onClose();
   };
 
-  const onArchiveAction = (data) => {
+  const onArchiveAction = async (data) => {
     if (data.isActive === true) {
-      Swal.fire({
+      await sweetAlertDialog({
         title: "Are you sure?",
         text: "This will move the sub category to the archived tab.",
         icon: "warning",
-        color: "white",
-        showCancelButton: true,
-        background: "#111927",
-        confirmButtonColor: "#9e77ed",
-        cancelButtonColor: "#1C2536",
-        heightAuto: false,
-        allowOutsideClick: false,
-        width: "30em",
-        customClass: {
-          container: "custom-container",
-          title: "custom-title",
-          htmlContainer: "custom-text",
-          icon: "custom-icon",
-          confirmButton: "custom-confirm-btn",
-          cancelButton: "custom-cancel-btn",
-        },
-        preConfirm: async () => {
-          try {
-            Swal.getConfirmButton().innerHTML = `
-            <div class="mui-btn-content">
-             <span class="mui-spinner"></span>
-             <span class="mui-label">Archiving...</span>
-            </div>
-            `;
-            Swal.getConfirmButton().disabled = true;
+        confirmButtonText: "Archive",
+        // showLoaderOnConfirm: true,
 
-            await archiveSubCategory(data.id)
-              .unwrap()
-              .then(() => {
-                toast.success("Success!", {
-                  description: "Sub Category archived successfully!",
-                });
-              })
-              .catch((error) => {
-                toast.error("Error!", {
-                  description: error.data.error.message,
-                });
+        onConfirm: async () => {
+          Swal.getConfirmButton().innerHTML = "Checking...";
+
+          await archiveSubCategory(data.id)
+            .unwrap()
+            .then(() => {
+              toast.success("Success!", {
+                description: "Sub Category archived successfully!",
               });
-
-            return true; // resolves success
-          } catch (err) {
-            console.log("Error", err);
-            Swal.hideLoading();
-            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
-            return false; // keeps modal open
-          }
+            })
+            .catch((error) => {
+              toast.error("Error!", {
+                description: error.data.error.message,
+              });
+            });
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.close();
-        }
       });
+
+      // Swal.fire({
+      //   title: "Are you sure?",
+      //   text: "This will move the sub category to the archived tab.",
+      //   icon: "warning",
+      //   color: "white",
+      //   showCancelButton: true,
+      //   background: "#111927",
+      //   confirmButtonColor: "#9e77ed",
+      //   cancelButtonColor: "#1C2536",
+      //   heightAuto: false,
+      //   allowOutsideClick: false,
+      //   width: "30em",
+      //   customClass: {
+      //     container: "custom-container",
+      //     title: "custom-title",
+      //     htmlContainer: "custom-text",
+      //     icon: "custom-icon",
+      //     confirmButton: "custom-confirm-btn",
+      //     cancelButton: "custom-cancel-btn",
+      //   },
+      //   preConfirm: async () => {
+      //     try {
+      //       Swal.getConfirmButton().innerHTML = `
+      //       <div class="mui-btn-content">
+      //        <span class="mui-spinner"></span>
+      //        <span class="mui-label">Archiving...</span>
+      //       </div>
+      //       `;
+      //       Swal.getConfirmButton().disabled = true;
+
+      //       await archiveSubCategory(data.id)
+      //         .unwrap()
+      //         .then(() => {
+      //           toast.success("Success!", {
+      //             description: "Sub Category archived successfully!",
+      //           });
+      //         })
+      //         .catch((error) => {
+      //           toast.error("Error!", {
+      //             description: error.data.error.message,
+      //           });
+      //         });
+
+      //       return true; // resolves success
+      //     } catch (err) {
+      //       console.log("Error", err);
+      //       Swal.hideLoading();
+      //       Swal.showValidationMessage(
+      //         err?.data?.error?.message || "Something went wrong",
+      //       );
+      //       return false; // keeps modal open
+      //     }
+      //   },
+      // }).then((result) => {
+      //   if (result.isConfirmed) {
+      //     Swal.close();
+      //   }
+      // });
     } else {
       Swal.fire({
         title: "Are you sure?",
@@ -186,7 +217,9 @@ const Category = () => {
           } catch (err) {
             console.log("Error", err);
             Swal.hideLoading();
-            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            Swal.showValidationMessage(
+              err?.data?.error?.message || "Something went wrong",
+            );
             return false;
           }
         },
@@ -199,7 +232,6 @@ const Category = () => {
   };
 
   const onEditAction = (data) => {
-    console.log("Edit Data", data);
     onToggle();
     setEditData(data);
   };
@@ -209,6 +241,12 @@ const Category = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   return (
     <Stack
@@ -223,13 +261,25 @@ const Category = () => {
     >
       <Stack>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
+          <Stack
+            width="100%"
+            justifyContent="space-between"
+            sx={{ flexDirection: isSmallScreen ? "column" : "row" }}
+          >
             <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>Sub Category</Typography>
+              <Typography variant={isSmallScreen ? "h5" : "h4"}>
+                Sub Category
+              </Typography>
             </Stack>
 
             <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
+              <Button
+                variant="contained"
+                size="large"
+                color="primary"
+                startIcon={<AddOutlined />}
+                onClick={onToggle}
+              >
                 Add
               </Button>
             </Stack>
@@ -245,7 +295,12 @@ const Category = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
+          <Tabs
+            value={status}
+            onChange={onStatusChange}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
             <Tab
               value=""
               label="All"
@@ -273,13 +328,24 @@ const Category = () => {
           </Tabs>
         </Stack>
 
-        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
+        <Divider
+          variant="fullWidth"
+          sx={{ background: "#2D3748", marginTop: "1px" }}
+        />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ marginTop: "10px", padding: "20px" }}
+          gap={4}
+        >
           <OutlinedInput
             flex="1"
             placeholder="Search sub category"
-            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+            startAdornment={
+              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
+            }
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             sx={{
@@ -288,7 +354,6 @@ const Category = () => {
               fontSize: "small",
               fontWeight: 400,
               lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
             }}
           />
         </Stack>
@@ -300,7 +365,14 @@ const Category = () => {
               !isLoading &&
               !isFetching &&
               data?.value?.subCategory?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                <Card
+                  key={item.id}
+                  sx={{
+                    backgroundColor: theme.palette.bgForm.black3,
+                    borderRadius: "15px",
+                    borderColor: "#2D3748",
+                  }}
+                >
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -313,7 +385,9 @@ const Category = () => {
                           size="small"
                           sx={{
                             fontSize: "10px",
-                            backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
+                            backgroundColor: item.is_Active
+                              ? "#112C32"
+                              : "#2D2823",
                             borderRadius: "none",
                             color: item.is_Active ? "#10B981" : "#D27D0E",
                           }}
@@ -321,18 +395,69 @@ const Category = () => {
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>CATEGORY:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.category_Description}</Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: "#D65DB1",
+                          }}
+                        >
+                          CATEGORY:
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 400,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: theme.palette.text.main,
+                          }}
+                        >
+                          {item.category_Description}
+                        </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB CATEGORY:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}> {item.subCategory_Description}</Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: "#D65DB1",
+                          }}
+                        >
+                          SUB CATEGORY:
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 400,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: theme.palette.text.main,
+                          }}
+                        >
+                          {" "}
+                          {item.subCategory_Description}
+                        </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
-                        <SubCategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <Typography
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: "#D65DB1",
+                          }}
+                        >
+                          ACTION:
+                        </Typography>
+                        <SubCategoryActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -341,7 +466,11 @@ const Category = () => {
 
             {isError && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -359,7 +488,11 @@ const Category = () => {
 
             {isSuccess && !data?.value?.subCategory?.length && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                <img
+                  src={noRecordsFound}
+                  alt="No Records Found"
+                  className="norecords-found-table"
+                />
                 <Typography variant="h6" align="center">
                   No records found.
                 </Typography>
@@ -367,7 +500,12 @@ const Category = () => {
             )}
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              sx={{
+                color: "#A0AEC0",
+                fontWeight: 400,
+                background: "#1C2536",
+                borderRadius: "0px 0px 20px 20px",
+              }}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
@@ -442,6 +580,7 @@ const Category = () => {
                     </TableCell>
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
                   {isSuccess &&
                     !isLoading &&
@@ -492,7 +631,9 @@ const Category = () => {
                             size="30px"
                             sx={{
                               fontSize: "13px",
-                              backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
+                              backgroundColor: item.is_Active
+                                ? "#112C32"
+                                : "#2D2823",
                               color: item.is_Active ? "#10B981" : "#D27D0E",
                               fontWeight: 800,
                             }}
@@ -508,7 +649,12 @@ const Category = () => {
                           }}
                           align="center"
                         >
-                          <SubCategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                          <SubCategoryActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -516,7 +662,11 @@ const Category = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           Something went wrong.
                         </Typography>
@@ -535,16 +685,27 @@ const Category = () => {
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.subCategory.length && !isLoading && !isFetching && (
-                    <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                          No records found.
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  {isSuccess &&
+                    !data?.value?.subCategory.length &&
+                    !isLoading &&
+                    !isFetching && (
+                      <TableRow>
+                        <TableCell colSpan={7} align="center">
+                          <img
+                            src={noRecordsFound}
+                            alt="No Records Found"
+                            className="norecords-found-table"
+                          />
+                          <Typography
+                            variant="h5"
+                            color="#EDF2F7"
+                            marginLeft={2}
+                          >
+                            No records found.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -562,7 +723,11 @@ const Category = () => {
           </>
         )}
 
-        <SubCategoryDialog data={editData} open={open} onClose={onDialogClose} />
+        <SubCategoryDialog
+          data={editData}
+          open={open}
+          onClose={onDialogClose}
+        />
       </Stack>
     </Stack>
   );

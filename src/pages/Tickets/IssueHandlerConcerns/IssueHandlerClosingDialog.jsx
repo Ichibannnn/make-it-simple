@@ -35,6 +35,9 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import ClosingDialogMenuActions from "./MenuActions/ClosingDialogMenuActions";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import moment from "moment";
+import { sweetAlertDialog } from "../../../hooks/useSweetAlertDialog";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -94,9 +97,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     },
   });
 
-  const onSubmitAction = (formData) => {
-    console.log("FormData: ", formData);
-
+  const onSubmitAction = async (formData) => {
     const payload = new FormData();
 
     payload.append("TicketConcernId", formData.ticketConcernId);
@@ -151,38 +152,19 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       payload.append(`AddClosingAttachments[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
-
+    // console.log("Payload Entries: ", [...payload.entries()]);
     // 4pm Cut-off Warning
     // const isAfter4PM = moment().isAfter(moment().set({ hour: 16, minute: 0 }));
-    Swal.fire({
+
+    const result = await sweetAlertDialog({
       title: "Confirmation",
       text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
       icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
       confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
-      },
-      // footer: isAfter4PM
-      //   ? '<span style="color: orange; border-color: none !important;">' +
-      //     '<Warning style="margin-right: 5px;" />' +
-      //     "Please note that closing of tickets are only available until 4:00pm.</span>"
-      //   : "",
-    }).then((result) => {
-      if (result.isConfirmed) {
+    });
+
+    if (result.isConfirmed) {
+      try {
         closeIssueHandlerTickets(payload)
           .unwrap()
           .then(() => {
@@ -196,16 +178,66 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             reset();
             viewOnClose();
             onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
           });
+      } catch (error) {
+        toast.error("Error!", {
+          description: error.data.error.message,
+          duration: 1500,
+        });
       }
-    });
+    }
+
+    // Swal.fire({
+    //   title: "Confirmation",
+    //   text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
+    //   icon: "info",
+    //   color: "white",
+    //   showCancelButton: true,
+    //   background: "#111927",
+    //   confirmButtonColor: "#9e77ed",
+    //   confirmButtonText: "Yes",
+    //   cancelButtonText: "No",
+    //   cancelButtonColor: "#1C2536",
+    //   heightAuto: false,
+    //   width: "30em",
+    //   customClass: {
+    //     container: "custom-container",
+    //     title: "custom-title",
+    //     htmlContainer: "custom-text",
+    //     icon: "custom-icon",
+    //     confirmButton: "custom-confirm-btn",
+    //     cancelButton: "custom-cancel-btn",
+    //   },
+    //   // footer: isAfter4PM
+    //   //   ? '<span style="color: orange; border-color: none !important;">' +
+    //   //     '<Warning style="margin-right: 5px;" />' +
+    //   //     "Please note that closing of tickets are only available until 4:00pm.</span>"
+    //   //   : "",
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     closeIssueHandlerTickets(payload)
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success!", {
+    //           description: "Ticket submitted successfully!",
+    //           duration: 1500,
+    //         });
+    //         dispatch(notificationApi.util.resetApiState());
+    //         dispatch(notificationMessageApi.util.resetApiState());
+    //         setAddAttachments([]);
+    //         reset();
+    //         viewOnClose();
+    //         onClose();
+    //       })
+    //       .catch((err) => {
+    //         console.log("Error", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
+    //   }
+    // });
   };
 
   const handleAttachments = (event) => {
@@ -243,7 +275,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -298,12 +330,19 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   useEffect(() => {
+    if (!concernCategoryData) getConcernCategory({ Status: true });
+
     if (data) {
       setValue("ticketConcernId", data?.ticketConcernId);
 
       setValue("ChannelId", {
         id: data?.channelId,
         channel_Name: data?.channel_Name,
+      });
+
+      setValue("CategoryConcern", {
+        id: concernCategoryData?.value?.category?.[0]?.id,
+        categoryConcern: concernCategoryData?.value?.category?.[0]?.categoryConcern,
       });
 
       const category = data?.getOpenTicketCategories?.map((item) => ({
@@ -337,16 +376,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
       setValue("SubCategoryId", []);
     }
   }, [subCategoryData]);
-
-  // console.log("Category: ", categoryData);
-  // console.log("ChannelId", watch("ChannelId"));
 
   return (
     <>
@@ -399,7 +435,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                       color: theme.palette.text.main,
                     }}
                   >
-                    {` Ticket Number : #${data?.ticketConcernId}`}
+                    {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
 
@@ -428,6 +464,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         color: theme.palette.text.main,
                         fontWeight: "500",
                         fontSize: "14px",
+                        wordBreak: "break-word",
                       }}
                     >
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -463,32 +500,23 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Box>
                     <Box sx={{ width: "5%" }} />
 
-                    <Tooltip
-                      title={data?.concern_Description.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                      placement="bottom-start"
-                    >
-                      <Box className="ellipsis-styling-label" width={{ width: "75%", ml: 2 }}>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.main,
-                            fontWeight: "500",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {data?.concern_Description?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
-                        </Typography>
-                      </Box>
-                    </Tooltip>
+                    <Box width={{ width: "75%", ml: 2 }}>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.main,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Box>
                   </Stack>
                 )}
 
@@ -628,7 +656,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                   flex: 2,
                                 }}
                                 fullWidth
-                                // disablePortal
                                 disableClearable
                                 componentsProps={{
                                   popper: {
@@ -840,7 +867,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                               inputRef={ref}
                               size="medium"
                               value={value}
-                              // placeholder="Enter resolution"
                               onChange={onChange}
                               autoComplete="off"
                               rows={4}
@@ -882,8 +908,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           minHeight: "195px",
                           display: "flex",
                           width: "100%",
-                          display: "flex",
                           flexDirection: "column",
+                          alignItems: "center",
                           padding: 1,
                         }}
                       >
@@ -891,56 +917,59 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           <Box
                             key={index}
                             sx={{
+                              width: "100%",
                               display: "flex",
                               flexDirection: "row",
-                              justifyContent: "space-between",
                               alignItems: "center",
-                              padding: 0.5,
+                              padding: 1,
                               borderBottom: "1px solid #2D3748",
                             }}
                           >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                              <Typography
-                                sx={{
-                                  fontSize: "12px",
-                                  color: theme.palette.text.secondary,
-                                }}
-                              >
-                                {fileName.size} Mb
-                              </Typography>
-
+                            {getAttachmentIcon(fileName)}
+                            <Stack sx={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                               <Box
                                 sx={{
                                   display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 1,
+                                  flexDirection: "column",
                                 }}
                               >
+                                <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                                 <Typography
                                   sx={{
-                                    fontSize: "14px",
-                                    fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    fontSize: "12px",
+                                    color: theme.palette.text.secondary,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  {fileName.size} Mb
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                              </Box>
-                            </Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontSize: "14px",
+                                      fontWeight: 500,
+                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    }}
+                                  >
+                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  </Typography>
 
-                            <Box>
-                              <ClosingDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                            </Box>
+                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                </Box>
+                              </Box>
+
+                              <Box>
+                                <ClosingDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                              </Box>
+                            </Stack>
                           </Box>
                         ))}
                       </Box>
@@ -953,7 +982,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept=".png,.jpg,.jpeg,.docx"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
@@ -975,6 +1004,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             </Stack>
           </Stack>
         </DialogContent>
+
         <DialogActions>
           <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
             <LoadingButton
@@ -988,6 +1018,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             </LoadingButton>
           </Stack>
         </DialogActions>
+
         {/* Dialog to view image */}
         <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
           <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>

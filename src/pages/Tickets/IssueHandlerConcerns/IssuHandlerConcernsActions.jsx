@@ -12,13 +12,14 @@ import {
   PendingOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
+import { useRef } from "react";
 import { IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
-import React, { useRef } from "react";
 
-import useDisclosure from "../../../hooks/useDisclosure";
+import moment from "moment";
 import { theme } from "../../../theme/theme";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 const IssueHandlerConcernsActions = ({
   data,
@@ -113,7 +114,9 @@ const IssueHandlerConcernsActions = ({
   };
 
   const onCopyOpenTicket = async (data) => {
-    const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your request has been successfully received under Service Ticket #${data?.ticketConcernId}. Will review your concern, and you will be updated once action has been taken. Thank you!`;
+    const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your request has been successfully received under Service Ticket #${moment(
+      data?.created_At
+    ).format("YYYY")}-${data?.ticketConcernId}. Will review your concern, and you will be updated once action has been taken. Thank you!`;
 
     try {
       await navigator.clipboard.writeText(message);
@@ -127,7 +130,9 @@ const IssueHandlerConcernsActions = ({
   };
 
   const onCopyConfirmTicket = async (data) => {
-    const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your concern under Service Ticket #${data?.ticketConcernId} has been resolved and is now marked as For Confirmation. Kindly review the resolution provided. If no confirmation is received within 24 hours, the system will automatically close the ticket. If the problem is still not fixed, you may return the ticket for further assistance before the auto-closure deadline. Thank you!`;
+    const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your concern under Service Ticket #${moment(data?.created_At).format("YYYY")}-${
+      data?.ticketConcernId
+    } has been resolved and is now marked as For Confirmation. Kindly review the resolution provided. If no confirmation is received within 24 hours, the system will automatically close the ticket. If the problem is still not fixed, you may return the ticket for further assistance before the auto-closure deadline. Thank you!`;
 
     try {
       await navigator.clipboard.writeText(message);
@@ -316,8 +321,6 @@ const IssueHandlerConcernsActions = ({
       </MenuItem>
     );
   }
-
-  // console.log("Data: ", data);
 
   return (
     <>

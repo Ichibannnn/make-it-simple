@@ -20,22 +20,24 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import { AddOutlined, Search } from "@mui/icons-material";
+
 import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
+
+import Swal from "sweetalert2";
+import { toast } from "sonner";
+import useDebounce from "../../../hooks/useDebounce";
+import useDisclosure from "../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import Swal from "sweetalert2";
-import useDebounce from "../../../hooks/useDebounce";
-import useDisclosure from "../../../hooks/useDisclosure";
-import { toast } from "sonner";
-import { AddOutlined, Search } from "@mui/icons-material";
-
 import UserAccountAction from "./UserAccountAction";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
-import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation } from "../../../features/user_management_api/user/userApi";
+import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation, useGetPendingUsersQuery } from "../../../features/user_management_api/user/userApi";
+import PendingAccountsTab from "./PendingAccounts/PendingAccountsTab";
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
@@ -46,12 +48,25 @@ const UserAccounts = () => {
   const search = useDebounce(searchValue, 500);
 
   const [editData, setEditData] = useState(null);
+  const [onPendingTab, setOnPendingTab] = useState(null);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetUsersQuery({
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetUsersQuery({
     Status: status,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
+
+  const {
+    data: pendingUsersData,
+    isLoading: pendingUsersiIsLoading,
+    isFetching: pendingUsersIsFetching,
+    isSuccess: pendingUsersIsSuccess,
+    isError: pendingUsersIsError,
+  } = useGetPendingUsersQuery({
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,
@@ -70,9 +85,17 @@ const UserAccounts = () => {
   };
 
   const onStatusChange = (_, newValue) => {
-    setStatus(newValue);
-    setPageNumber(1);
-    setPageSize(5);
+    if (newValue === "pending") {
+      setOnPendingTab(newValue);
+      setStatus(newValue);
+      setPageNumber(1);
+      setPageSize(5);
+    } else {
+      setOnPendingTab(null);
+      setStatus(newValue);
+      setPageNumber(1);
+      setPageSize(5);
+    }
   };
 
   const onDialogClose = () => {
@@ -355,6 +378,15 @@ const UserAccounts = () => {
                 fontWeight: 600,
               }}
             />
+
+            <Tab
+              value="pending"
+              label="Pending"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            />
           </Tabs>
         </Stack>
 
@@ -377,278 +409,300 @@ const UserAccounts = () => {
           />
         </Stack>
 
-        {isSmallScreen ? (
-          // Card-Based Layout for Small Screens
-          <Stack spacing={2}>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.users?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
-                  <CardContent>
-                    <Stack spacing={1}>
-                      <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography variant="body2" color="text.secondary">
-                          LINE NO. {index + 1}
-                        </Typography>
-
-                        <Chip
-                          label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                          size="small"
-                          sx={{
-                            fontSize: "10px",
-                            backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                            borderRadius: "none",
-                            color: item.is_Active ? "#10B981" : "#D27D0E",
-                          }}
-                        />
-                      </Stack>
-
-                      <Typography variant="h6" sx={{ color: "#EDF2F7" }}>
-                        {item.fullname}
-                      </Typography>
-
-                      <Typography variant="body2" color="text.secondary">
-                        USERNAME: {item.username}
-                      </Typography>
-
-                      <Typography variant="body2" sx={{ color: "#22B4BF" }}>
-                        ROLE: {item.user_Role_Name}
-                      </Typography>
-
-                      <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography variant="body2" color="text.secondary">
-                          ACCESS:
-                        </Typography>
-
-                        <UserAccountPermissions permissions={item.permission} />
-                      </Stack>
-
-                      <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography variant="body2" color="text.secondary">
-                          ACTION:
-                        </Typography>
-
-                        <UserAccountAction data={item} onReset={onResetPasswordAction} onArchive={onArchiveAction} onUpdate={onEditAction} />
-                      </Stack>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-
-            {isError && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                <Typography variant="h6" color="error" align="center">
-                  Something went wrong.
-                </Typography>
-              </Stack>
-            )}
-
-            {(isLoading || isFetching) && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
-                <CircularProgress />
-                <Typography variant="h5" color="#EDF2F7">
-                  Please wait...
-                </Typography>
-              </Stack>
-            )}
-
-            {isSuccess && !data?.value?.users.length && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                <Typography variant="h6" align="center">
-                  No records found.
-                </Typography>
-              </Stack>
-            )}
-
-            <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
-              component="div"
-              count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 100}
-              page={data?.value?.currentPage - 1 || 0}
-              onPageChange={onPageNumberChange}
-              onRowsPerPageChange={onPageSizeChange}
-            />
-          </Stack>
+        {onPendingTab ? (
+          <PendingAccountsTab
+            data={pendingUsersData}
+            isLoading={pendingUsersiIsLoading}
+            isFetching={pendingUsersIsFetching}
+            isSuccess={pendingUsersIsSuccess}
+            isError={pendingUsersIsError}
+            setPageNumber={setPageNumber}
+            setPageSize={setPageSize}
+            onPageNumberChange={onPageNumberChange}
+            onPageSizeChange={onPageSizeChange}
+            isSmallScreen={isSmallScreen}
+            search={search}
+          />
         ) : (
-          // Table Layout for Larger Screens
           <>
-            <Paper sx={{ width: "100%", overflow: "hidden" }}>
-              <TableContainer>
-                <Table stickyHeader sx={{ borderBottom: "none" }}>
-                  <TableHead>
-                    <TableRow>
-                      {["LINE NO.", "FULLNAME", "USERNAME", "ROLE", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].map((header, idx) => (
-                        <TableCell
-                          key={idx}
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                          align={["LINE NO.", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].includes(header) ? "center" : "left"}
-                        >
-                          {header}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {isSuccess &&
-                      !isLoading &&
-                      !isFetching &&
-                      data?.value?.users?.map((item, index) => (
-                        <TableRow key={item.id}>
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
-                            {index + 1}
-                          </TableCell>
-
-                          <TableCell>
-                            <Typography
-                              sx={{
-                                color: "#EDF2F7",
-                                fontSize: "14px",
-                                fontWeight: 500,
-                              }}
-                            >
-                              {item.fullname}
+            {isSmallScreen ? (
+              // Card-Based Layout for Small Screens
+              <Stack spacing={2}>
+                {isSuccess &&
+                  !isLoading &&
+                  !isFetching &&
+                  data?.value?.users?.map((item, index) => (
+                    <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                      <CardContent>
+                        <Stack spacing={1}>
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography variant="body2" color="text.secondary">
+                              LINE NO. {index + 1}
                             </Typography>
-                            <Typography
-                              sx={{
-                                color: theme.palette.text.secondary,
-                                fontSize: "12px",
-                                fontWeight: 500,
-                              }}
-                            >
-                              {item.empId}
-                            </Typography>
-                          </TableCell>
 
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {item.username}
-                          </TableCell>
-
-                          <TableCell
-                            sx={{
-                              color: "#22B4BF",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {item.user_Role_Name}
-                          </TableCell>
-
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
-                            <UserAccountPermissions permissions={item.permission} />
-                          </TableCell>
-
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
                             <Chip
-                              variant="filled"
-                              size="30px"
-                              sx={{
-                                fontSize: "13px",
-                                backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                                color: item.is_Active ? "#10B981" : "#D27D0E",
-                                fontWeight: 800,
-                              }}
                               label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                              size="small"
+                              sx={{
+                                fontSize: "10px",
+                                backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
+                                borderRadius: "none",
+                                color: item.is_Active ? "#10B981" : "#D27D0E",
+                              }}
                             />
-                          </TableCell>
+                          </Stack>
 
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
+                          <Typography variant="h6" sx={{ color: "#EDF2F7" }}>
+                            {item.fullname}
+                          </Typography>
+
+                          <Typography variant="body2" color="text.secondary">
+                            EMPLOYEE ID: {item.empId}
+                          </Typography>
+
+                          <Typography variant="body2" color="text.secondary">
+                            USERNAME: {item.username}
+                          </Typography>
+
+                          <Typography variant="body2" sx={{ color: "#22B4BF" }}>
+                            ROLE: {item.user_Role_Name}
+                          </Typography>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography variant="body2" color="text.secondary">
+                              ACCESS:
+                            </Typography>
+
+                            <UserAccountPermissions permissions={item.permission} />
+                          </Stack>
+
+                          <Stack direction="row" gap={0.5} alignItems="center">
+                            <Typography variant="body2" color="text.secondary">
+                              ACTION:
+                            </Typography>
+
                             <UserAccountAction data={item} onReset={onResetPasswordAction} onArchive={onArchiveAction} onUpdate={onEditAction} />
-                          </TableCell>
+                          </Stack>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                {isError && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                    <Typography variant="h6" color="error" align="center">
+                      Something went wrong.
+                    </Typography>
+                  </Stack>
+                )}
+
+                {(isLoading || isFetching) && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <CircularProgress />
+                    <Typography variant="h5" color="#EDF2F7">
+                      Please wait...
+                    </Typography>
+                  </Stack>
+                )}
+
+                {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
+                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                    <Typography variant="h6" align="center">
+                      No records found.
+                    </Typography>
+                  </Stack>
+                )}
+
+                <TablePagination
+                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
+                  component="div"
+                  count={data?.value?.totalCount || 0}
+                  rowsPerPage={data?.value?.pageSize || 100}
+                  page={data?.value?.currentPage - 1 || 0}
+                  onPageChange={onPageNumberChange}
+                  onRowsPerPageChange={onPageSizeChange}
+                />
+              </Stack>
+            ) : (
+              // Table Layout for Larger Screens
+              <>
+                <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                  <TableContainer>
+                    <Table stickyHeader sx={{ borderBottom: "none" }}>
+                      <TableHead>
+                        <TableRow>
+                          {["LINE NO.", "FULLNAME", "USERNAME", "ROLE", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].map((header, idx) => (
+                            <TableCell
+                              key={idx}
+                              sx={{
+                                background: "#1C2536",
+                                color: "#D65DB1",
+                                fontWeight: 700,
+                                fontSize: "12px",
+                              }}
+                              align={["LINE NO.", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].includes(header) ? "center" : "left"}
+                            >
+                              {header}
+                            </TableCell>
+                          ))}
                         </TableRow>
-                      ))}
+                      </TableHead>
 
-                    {isError && (
-                      <TableRow>
-                        <TableCell colSpan={7} align="center">
-                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                            Something went wrong.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
+                      <TableBody>
+                        {isSuccess &&
+                          !isLoading &&
+                          !isFetching &&
+                          data?.value?.users?.map((item, index) => (
+                            <TableRow key={item.id}>
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                                align="center"
+                              >
+                                {index + 1}
+                              </TableCell>
 
-                    {(isLoading || isFetching) && (
-                      <TableRow>
-                        <TableCell colSpan={7} align="center">
-                          <CircularProgress />
-                          <Typography variant="h5" color="#EDF2F7">
-                            Please wait...
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
+                              <TableCell>
+                                <Typography
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "14px",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {item.fullname}
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    color: theme.palette.text.secondary,
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {item.empId}
+                                </Typography>
+                              </TableCell>
 
-                    {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
-                      <TableRow>
-                        <TableCell colSpan={7} align="center">
-                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                            No records found.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.username}
+                              </TableCell>
 
-            <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
-              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
-              component="div"
-              count={data?.value?.totalCount || 0}
-              rowsPerPage={data?.value?.pageSize || 100}
-              page={data?.value?.currentPage - 1 || 0}
-              onPageChange={onPageNumberChange}
-              onRowsPerPageChange={onPageSizeChange}
-            />
+                              <TableCell
+                                sx={{
+                                  color: "#22B4BF",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.user_Role_Name}
+                              </TableCell>
+
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                                align="center"
+                              >
+                                <UserAccountPermissions permissions={item.permission} />
+                              </TableCell>
+
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                                align="center"
+                              >
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  sx={{
+                                    fontSize: "13px",
+                                    backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
+                                    color: item.is_Active ? "#10B981" : "#D27D0E",
+                                    fontWeight: 800,
+                                  }}
+                                  label={item.is_Active ? "ACTIVE" : "INACTIVE"}
+                                />
+                              </TableCell>
+
+                              <TableCell
+                                sx={{
+                                  color: "#EDF2F7",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                }}
+                                align="center"
+                              >
+                                <UserAccountAction data={item} onReset={onResetPasswordAction} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+
+                        {isError && (
+                          <TableRow>
+                            <TableCell colSpan={7} align="center">
+                              <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                              <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                                Something went wrong.
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+
+                        {(isLoading || isFetching) && (
+                          <TableRow>
+                            <TableCell colSpan={7} align="center">
+                              <CircularProgress />
+                              <Typography variant="h5" color="#EDF2F7">
+                                Please wait...
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+
+                        {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
+                          <TableRow>
+                            <TableCell colSpan={7} align="center">
+                              <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                              <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                                No records found.
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+
+                <TablePagination
+                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
+                  component="div"
+                  count={data?.value?.totalCount || 0}
+                  rowsPerPage={data?.value?.pageSize || 100}
+                  page={data?.value?.currentPage - 1 || 0}
+                  onPageChange={onPageNumberChange}
+                  onRowsPerPageChange={onPageSizeChange}
+                />
+              </>
+            )}
           </>
         )}
 

@@ -1,33 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
-import {
-  AccountCircleRounded,
-  AttachFileOutlined,
-  CalendarMonthOutlined,
-  Check,
-  Close,
-  FiberManualRecord,
-  FileDownloadOutlined,
-  GetAppOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { AccountCircleRounded, AttachFileOutlined, CalendarMonthOutlined, Check, Close, GetAppOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
+import moment from "moment";
 import useDisclosure from "../../../../hooks/useDisclosure";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import { useApproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import moment from "moment";
+
 import TargetApprovalMenuActions from "./MenuActions/TargetApprovalMenuActions";
 import { DisapproveTargetDialog } from "./DisapprovedSelectedTargetDialog";
+import { getAttachmentIcon } from "../../../../utils/getAttachmentIcon";
 
 const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
   const [attachments, setAttachments] = useState([]);
@@ -36,8 +27,8 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
 
-  const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
 
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -57,8 +48,6 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
         },
       ],
     };
-
-    console.log("Payload: ", approvePayload);
 
     Swal.fire({
       title: "Confirmation",
@@ -107,12 +96,12 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
   useEffect(() => {
     if (data) {
       setAttachments(
-        data?.closingAttachments?.map((item) => ({
+        data?.dateApprovalAttachments?.map((item) => ({
           ticketAttachmentId: item.ticketAttachmentId,
           name: item.fileName,
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
           link: item.attachment,
-        }))
+        })),
       );
     }
   }, [data]);
@@ -136,10 +125,15 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
         setIsViewDialogOpen(true);
-        setViewLoading(false);
       }
+      setViewLoading(false);
     } catch (error) {
       console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewLoading(false);
     }
   };
 
@@ -162,11 +156,14 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
         link.click();
         document.body.removeChild(link); // Clean up after download
         setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
       }
     } catch (error) {
       console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadLoading(false);
     }
   };
 
@@ -199,7 +196,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
               <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
               <Stack>
                 <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>
-                  for closing:
+                  for approval request ticket:
                 </Typography>
                 <Typography
                   sx={{
@@ -224,26 +221,18 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
           <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
             <Stack sx={{ width: "100%", background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
               {/* CONCERN DETAILS */}
-
               {isScreenSmall ? (
                 <>
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Concern No.:</Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.ticketConcernId}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${moment(data?.created_At).format("YYYY")}-${
+                        data?.ticketConcernId
+                      }`}</Typography>
                     </Box>
                   </Stack>
-
-                  {/* <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Service Provider:</Typography>
-                    </Box>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack> */}
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
@@ -321,7 +310,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Date Needed:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                         {data?.dateNeeded ? moment(data?.dateNeeded).format("LL") : "-"}
                       </Typography>
                     </Box>
@@ -352,7 +341,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                       <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordWrap: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -367,23 +356,15 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                 <>
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern No.:</Typography>
+                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketConcernId}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${moment(data?.created_At).format("YYYY")}-${
+                        data?.ticketConcernId
+                      }`}</Typography>
                     </Box>
                   </Stack>
-
-                  {/* <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Service Provider:</Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack> */}
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
@@ -467,7 +448,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                         {data?.dateNeeded ? moment(data?.dateNeeded).format("LL") : "-"}
                       </Typography>
                     </Box>
@@ -500,7 +481,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box sx={{ width: "75%" }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordWrap: "break-word" }}>
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -550,13 +531,15 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                         sx={{
                           display: "flex",
                           width: "100%",
-                          flexDirection: "column",
-                          // justifyContent: "space-between",
+                          flexDirection: "row",
+                          alignItems: "center",
                           padding: 1,
                         }}
                       >
+                        {getAttachmentIcon(fileName)}
                         <Box
                           sx={{
+                            width: "100%",
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "space-between",
@@ -584,33 +567,14 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                           </Box>
 
                           <Box>
-                            <TargetApprovalMenuActions fileName={fileName} onView={handleViewImage} onDownload={handleDownloadAttachment} isImageFile={isImageFile} />
-                            {/* <>
-                              {isImageFile(fileName.name) && (
-                                <Tooltip title="View">
-                                  <IconButton size="small" color="primary" onClick={() => handleViewImage(fileName)} style={{ background: "none" }}>
-                                    {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </>
-
-                            {downloadLoading ? (
-                              <CircularProgress size={14} />
-                            ) : (
-                              <Tooltip title="Download">
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDownloadAttachment(fileName)}
-                                  style={{
-                                    background: "none",
-                                  }}
-                                >
-                                  <FileDownloadOutlined />
-                                </IconButton>
-                              </Tooltip>
-                            )} */}
+                            <TargetApprovalMenuActions
+                              fileName={fileName}
+                              onView={handleViewImage}
+                              onDownload={handleDownloadAttachment}
+                              isImageFile={isImageFile}
+                              viewIsLoading={viewLoading}
+                              downloadIsLoading={downloadLoading}
+                            />
                           </Box>
                         </Box>
                       </Box>
@@ -648,7 +612,14 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
           </Stack>
         </DialogActions>
 
-        <DisapproveTargetDialog data={disapproveData} open={disapproveOpen} onClose={onClose} approvalOnClose={onCloseHandler} setSelectedTickets={setSelectedTickets} />
+        <DisapproveTargetDialog
+          data={disapproveData}
+          open={disapproveOpen}
+          onClose={onClose}
+          onCloseDisapprove={disapproveOnClose}
+          approvalOnClose={onCloseHandler}
+          setSelectedTickets={setSelectedTickets}
+        />
       </Dialog>
 
       {selectedImage && (

@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  Checkbox,
   Chip,
   CircularProgress,
   IconButton,
@@ -17,8 +16,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useState } from "react";
-import { AccessTimeOutlined, CalendarMonthOutlined, FiberManualRecord, SwapVertOutlined } from "@mui/icons-material";
+import { CalendarMonthOutlined, FiberManualRecord, SwapVertOutlined } from "@mui/icons-material";
 
 import moment from "moment";
 import { theme } from "../../../../theme/theme";
@@ -86,7 +84,9 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketConcernId}</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{`${moment(item.created_At).format(
+                              "YYYY",
+                            )}-${item.ticketConcernId}`}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -126,28 +126,28 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                                 item.ticketStatus === "Ongoing"
                                   ? "Open"
                                   : item.ticketStatus === "For Closing Ticket"
-                                  ? "For Closing"
-                                  : item.ticketStatus === "For Transfer"
-                                  ? "For Transfer"
-                                  : item.ticketStatus === "For On-Hold"
-                                  ? "Hold Approval"
-                                  : item.ticketStatus === "On-Hold"
-                                  ? "On-Hold"
-                                  : ""
+                                    ? "For Closing"
+                                    : item.ticketStatus === "For Transfer"
+                                      ? "For Transfer"
+                                      : item.ticketStatus === "For On-Hold"
+                                        ? "Hold Approval"
+                                        : item.ticketStatus === "On-Hold"
+                                          ? "On-Hold"
+                                          : ""
                               }
                               sx={{
                                 backgroundColor:
                                   item.ticketStatus === "Ongoing"
                                     ? "#ec9d29"
                                     : item.ticketStatus === "For Closing Ticket"
-                                    ? "#3A96FA"
-                                    : item.ticketStatus === "For Transfer"
-                                    ? "#ff7043"
-                                    : item.ticketStatus === "For On-Hold"
-                                    ? "#ffb74d"
-                                    : item.ticketStatus === "On-Hold"
-                                    ? "#ff6d00"
-                                    : "transparent",
+                                      ? "#3A96FA"
+                                      : item.ticketStatus === "For Transfer"
+                                        ? "#ff7043"
+                                        : item.ticketStatus === "For On-Hold"
+                                          ? "#ffb74d"
+                                          : item.ticketStatus === "On-Hold"
+                                            ? "#ff6d00"
+                                            : "transparent",
                                 color: "#ffffffde",
                                 borderRadius: "20px",
                               }}
@@ -352,7 +352,7 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {item.ticketConcernId}
+                          {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
                         </TableCell>
 
                         <TableCell onClick={() => onViewAction(item)}>
@@ -463,28 +463,28 @@ const ApproverOpenTicket = ({ data, isLoading, isFetching, isSuccess, isError, s
                               item.ticketStatus === "Ongoing"
                                 ? "Open"
                                 : item.ticketStatus === "For Transfer"
-                                ? "For Transfer"
-                                : item.ticketStatus === "For On-Hold"
-                                ? "Hold Approval"
-                                : item.ticketStatus === "On-Hold"
-                                ? "On-Hold"
-                                : item.ticketStatus === "For Closing Ticket"
-                                ? "For Closing"
-                                : ""
+                                  ? "For Transfer"
+                                  : item.ticketStatus === "For On-Hold"
+                                    ? "Hold Approval"
+                                    : item.ticketStatus === "On-Hold"
+                                      ? "On-Hold"
+                                      : item.ticketStatus === "For Closing Ticket"
+                                        ? "For Closing"
+                                        : ""
                             }
                             sx={{
                               backgroundColor:
                                 item.ticketStatus === "Ongoing"
                                   ? "#ec9d29"
                                   : item.ticketStatus === "For Transfer"
-                                  ? "#ff7043"
-                                  : item.ticketStatus === "For On-Hold"
-                                  ? "#ffb74d"
-                                  : item.ticketStatus === "On-Hold"
-                                  ? "#ff6d00"
-                                  : item.ticketStatus === "For Closing Ticket"
-                                  ? "#3A96FA"
-                                  : "transparent",
+                                    ? "#ff7043"
+                                    : item.ticketStatus === "For On-Hold"
+                                      ? "#ffb74d"
+                                      : item.ticketStatus === "On-Hold"
+                                        ? "#ff6d00"
+                                        : item.ticketStatus === "For Closing Ticket"
+                                          ? "#3A96FA"
+                                          : "transparent",
                               color: "#ffffffde",
                               borderRadius: "20px",
                             }}

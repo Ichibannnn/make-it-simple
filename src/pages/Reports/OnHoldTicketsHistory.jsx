@@ -185,24 +185,16 @@ const OnHoldTicketsHistory = ({
               !isLoading &&
               !isFetching &&
               data?.value?.reports?.map((item) => (
-                <TableRow
-                  key={item.ticketConcernId}
-                  sx={{
-                    "&:hover": {
-                      background: "",
-                      color: "#EDF2F7",
-                    },
-                  }}
-                >
+                <TableRow key={item.ticketConcernId}>
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: "#22B4BF",
                       fontSize: "12px",
                       fontWeight: 500,
                     }}
                     align="center"
                   >
-                    {item.ticketConcernId}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
                   <Tooltip title={item?.concerns} placement="bottom-start">

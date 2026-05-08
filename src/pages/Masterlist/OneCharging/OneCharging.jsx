@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,9 +17,10 @@ import {
 import { Search, SyncOutlined } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
-import { LoadingButton } from "@mui/lab";
 import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { LoadingButton } from "@mui/lab";
 
 import useDebounce from "../../../hooks/useDebounce";
 
@@ -29,7 +29,6 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import { useGetOneChargingQuery, useSyncOneChargingMutation } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 const OneCharging = () => {
-  const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(100);
 
@@ -38,10 +37,8 @@ const OneCharging = () => {
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  // const { toast } = useSweetAlert();
-
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOneChargingQuery({
-    Status: status,
+    Status: true,
     Search: search,
     PageNumber: pageNumber,
     PageSize: pageSize,

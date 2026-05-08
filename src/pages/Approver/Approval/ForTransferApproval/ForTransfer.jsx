@@ -1,5 +1,4 @@
 import {
-  Box,
   Card,
   CardContent,
   Checkbox,
@@ -13,25 +12,23 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import { AccessTimeOutlined, CalendarMonthOutlined, Close, LocalOffer } from "@mui/icons-material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import moment from "moment";
 import { theme } from "../../../../theme/theme";
+import { LoadingButton } from "@mui/lab";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
 import noRecordsFound from "../../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../../assets/svg/SomethingWentWrong.svg";
-import TransferApprovalDialog from "./TransferApprovalDialog";
-import { useGetNotificationQuery } from "../../../../features/api_notification/notificationApi";
-import useSignalRConnection from "../../../../hooks/useSignalRConnection";
+
 import { DisapproveSelectedDialog } from "./TransferDisapproveDialog";
-import { LoadingButton } from "@mui/lab";
+import TransferApprovalDialog from "./TransferApprovalDialog";
 
 const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize }) => {
   const [viewTransferData, setViewTransferData] = useState(null);
@@ -157,12 +154,14 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
 
                         <Stack direction="row" gap={0.5} alignItems="center">
                           <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                          <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketConcernId}</Typography>
+                          <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{`${moment(item.requestedAt).format(
+                            "YYYY"
+                          )}-${item.ticketConcernId}`}</Typography>
                         </Stack>
 
                         <Stack direction="row" gap={0.5} alignItems="center">
                           <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET DESCRIPTION:</Typography>
-                          <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                          <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                             {item.concern_Details?.split("\r\n").map((line, index) => (
                               <span key={index}>
                                 {line}
@@ -345,7 +344,7 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {item.ticketConcernId}
+                          {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                         </TableCell>
 
                         <TableCell
@@ -387,17 +386,19 @@ const ForTransfer = ({ data, isLoading, isFetching, isSuccess, isError, setPageN
 
                         <Tooltip title={item?.concern_Details} placement="bottom-start">
                           <TableCell
-                            // className="ellipsis-styling"
+                            className="ellipsis-styling"
                             sx={{
                               color: "#EDF2F7",
                               fontSize: "12px",
                               fontWeight: 500,
-                              maxWidth: "300px",
                             }}
                             onClick={() => onViewAction(item)}
                           >
-                            {item?.concern_Details.split("\r\n").map((line, index) => (
-                              <div key={index}>{line}</div>
+                            {item.concern_Details?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
                             ))}
                           </TableCell>
                         </Tooltip>

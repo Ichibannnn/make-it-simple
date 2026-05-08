@@ -1,10 +1,10 @@
 import moment from "moment";
 import { theme } from "../../../theme/theme";
 
+import { Close, History, PersonOutlineOutlined } from "@mui/icons-material";
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
-import { Dialog, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Box, Dialog, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { Close, PersonOutlineOutlined } from "@mui/icons-material";
 
 const ConcernHistory = ({ data, open, onClose }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -17,8 +17,6 @@ const ConcernHistory = ({ data, open, onClose }) => {
     onClose();
   };
 
-  console.log("dATA: ", data);
-
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} onClose={onCloseHandler} disableEscapeKeyDown={false} sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}>
@@ -27,7 +25,7 @@ const ConcernHistory = ({ data, open, onClose }) => {
             <Stack direction="row" gap={1} alignItems="center">
               <Stack>
                 <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "700", fontSize: "18px" }}>
-                  {`Ticket Number: ${data?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
+                  {`Ticket Number: ${moment(data?.created_At).format("YYYY")}-${data?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -64,8 +62,17 @@ const ConcernHistory = ({ data, open, onClose }) => {
                   {historyData?.value?.[0]?.upComingApprovers?.map((item, index) => (
                     <TimelineItem key={index}>
                       <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
-                        <Stack direction="row">
-                          <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                        <Stack>
+                          {item.transaction_Date ? (
+                            <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                          ) : (
+                            <Stack>
+                              <Box gap={0.3} sx={{ display: "flex", direction: "row", alignItems: "center", justifyContent: "end" }}>
+                                <History />
+                                <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>Pending...</Typography>
+                              </Box>
+                            </Stack>
+                          )}
                         </Stack>
                       </TimelineOppositeContent>
 

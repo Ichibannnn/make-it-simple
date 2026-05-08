@@ -5,10 +5,6 @@ import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 import useDebounce from "../../../hooks/useDebounce";
 
-import TicketApproval from "./TicketApproval/TicketApproval";
-import ForTransfer from "./ForTransferApproval/ForTransfer";
-import OnHoldApproval from "./OnHoldApproval/OnHoldApproval";
-
 import {
   useGetOnHoldApprovalQuery,
   useGetTargetApprovalQuery,
@@ -16,7 +12,11 @@ import {
   useGetTransferApprovalQuery,
 } from "../../../features/api_ticketing/approver/ticketApprovalApi";
 import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+
 import TargetApproval from "./TargetApproval/TargetApproval";
+import TicketApproval from "./TicketApproval/TicketApproval";
+import ForTransfer from "./ForTransferApproval/ForTransfer";
+import OnHoldApproval from "./OnHoldApproval/OnHoldApproval";
 
 const Approval = () => {
   const [tabNavigation, setTabNavigation] = useState("1");
@@ -89,8 +89,6 @@ const Approval = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
-
-  // console.log("Notification: ", notificationBadge);
 
   return (
     <Stack

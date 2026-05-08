@@ -20,7 +20,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
 import { theme } from "../../../theme/theme";
@@ -72,7 +72,6 @@ const Approver = () => {
     setStatus(newValue);
     setPageNumber(1);
     setPageSize(5);
-    refetch();
   };
 
   const onDialogClose = () => {
@@ -185,6 +184,12 @@ const Approver = () => {
       setPageNumber(1);
     }
   }, [searchValue]);
+
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   return (
     <Stack

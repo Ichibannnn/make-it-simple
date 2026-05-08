@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, Divider, IconButton, Stack, Typography } from "@mui/material";
-import React from "react";
 
 import { theme } from "../../../theme/theme";
 import { AccountCircleRounded, Close } from "@mui/icons-material";
@@ -8,8 +7,6 @@ const ViewTransferRemarksDialog = ({ data, open, onClose }) => {
   const onCloseAction = () => {
     onClose();
   };
-
-  // console.log("Data: ", data);
 
   return (
     <>

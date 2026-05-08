@@ -31,6 +31,15 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getClosedTicketsTarget: builder.query({
+      query: (params) => ({
+        url: "reports/TargetDateClosingReprot",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     getTransferredTickets: builder.query({
       query: (params) => ({
         url: "reports/transfer",
@@ -106,6 +115,16 @@ export const reportsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getDownloadClosedTicketsTarget: builder.query({
+      query: (params) => ({
+        url: `export/TargetDateClosingExport`,
+        method: "GET",
+        params: params,
+        responseHandler: (response) => response.blob(),
+      }),
+      providesTags: tags,
+    }),
+
     getDownloadTransferredTickets: builder.query({
       query: (params) => ({
         url: `export/transfer`,
@@ -162,6 +181,7 @@ export const {
   useGetAllTicketsQuery,
   useGetOpenTicketsQuery,
   useGetClosedTicketsQuery,
+  useGetClosedTicketsTargetQuery,
   useGetTransferredTicketsQuery,
   useGetOnHoldTicketsQuery,
   useGetSlaTicketsQuery,
@@ -171,6 +191,7 @@ export const {
   useLazyGetDownloadAllTicketsQuery,
   useLazyGetDownloadOpenTicketsQuery,
   useLazyGetDownloadClosedTicketsQuery,
+  useLazyGetDownloadClosedTicketsTargetQuery,
   useLazyGetDownloadTransferredTicketsQuery,
   useLazyGetDownloadOnHoldTicketsQuery,
   useLazyGetDownloadSlaTicketsQuery,

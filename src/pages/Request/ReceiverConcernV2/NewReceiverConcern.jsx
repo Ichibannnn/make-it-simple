@@ -33,7 +33,6 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
-import { useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import {
   useGetReceiverConcernsQuery,
@@ -97,7 +96,7 @@ const NewReceiverConcern = () => {
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetFilteredLocationQuery();
 
   const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
-  const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
+  const { open: addTicketOpen, onClose: addTicketOnClose } = useDisclosure();
   const { open: takeTicketOpen, onToggle: takeTicketOnToggle, onClose: takeTicketOnClose } = useDisclosure();
 
   const onPageNumberChange = (_, page) => {
@@ -136,8 +135,6 @@ const NewReceiverConcern = () => {
   const takeTicketHandler = () => {
     takeTicketOnToggle();
   };
-
-  console.log("Selected Ids: ", selectedIds);
 
   return (
     <Stack
@@ -353,7 +350,7 @@ const NewReceiverConcern = () => {
                               <Stack direction="row" gap={0.5} alignItems="center">
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
                                 <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item.ticketRequestConcerns[0]?.ticketConcernId}
+                                  {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}
                                 </Typography>
                               </Stack>
 
@@ -419,6 +416,11 @@ const NewReceiverConcern = () => {
                                   label={moment(item.date_Needed).format("LL")}
                                 />
                               </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center">
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CREATED BY:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.added_By}</Typography>
+                              </Stack>
                             </Stack>
                           </Stack>
                         </CardContent>
@@ -467,9 +469,13 @@ const NewReceiverConcern = () => {
             </>
           ) : (
             <>
-              <TableContainer>
+              <TableContainer
+                sx={{
+                  overflow: "auto",
+                }}
+              >
                 <Table stickyHeader size="small" sx={{ borderBottom: "none" }}>
-                  <TableHead>
+                  <TableHead sx={{ whiteSpace: "nowrap" }}>
                     <TableRow>
                       <TableCell
                         sx={{
@@ -567,6 +573,17 @@ const NewReceiverConcern = () => {
                       >
                         DATE NEEDED
                       </TableCell>
+
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                        }}
+                      >
+                        CREATED BY
+                      </TableCell>
                     </TableRow>
                   </TableHead>
 
@@ -594,7 +611,7 @@ const NewReceiverConcern = () => {
                               }}
                               align="center"
                             >
-                              <Stack sx={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 0.2 }}>
+                              <Stack sx={{ flexDirection: "row", alignItems: "center" }}>
                                 <Stack>
                                   <Checkbox
                                     checked={isSelected(item)}
@@ -603,7 +620,7 @@ const NewReceiverConcern = () => {
                                   />
                                 </Stack>
                                 {item.severity === "Urgent" && <FlashOn color="warning" />}
-                                <Typography sx={{ fontSize: "12px" }}>{item.ticketRequestConcerns[0]?.ticketConcernId}</Typography>
+                                <Typography sx={{ fontSize: "12px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}</Typography>
                               </Stack>
                             </TableCell>
 
@@ -643,38 +660,20 @@ const NewReceiverConcern = () => {
                               </Typography>
                             </TableCell>
 
-                            <Tooltip
-                              title={item.concern.split("\r\n").map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
-                              placement="bottom-start"
-                            >
-                              <TableCell
-                                className="ellipsis-styling"
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  minWidth: "300px",
-                                  maxWidth: "300px",
-                                  "&:hover": {
-                                    background: "",
-                                    color: "#EDF2F7",
-                                  },
-                                }}
-                                onClick={() => onViewAction(item)}
-                              >
-                                {item.concern?.split("\r\n").map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                              </TableCell>
-                            </Tooltip>
+                            <TableCell onClick={() => onViewAction(item)}>
+                              <Stack sx={{ width: "200px" }}>
+                                <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                  {item.concern
+                                    ? item.concern?.split("\r\n").map((line, index) => (
+                                        <span key={index}>
+                                          {line}
+                                          <br />
+                                        </span>
+                                      ))
+                                    : "--"}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
 
                             <TableCell
                               sx={{
@@ -750,13 +749,28 @@ const NewReceiverConcern = () => {
                             >
                               {moment(item.date_Needed).format("LL")}
                             </TableCell>
+
+                            <TableCell
+                              sx={{
+                                color: "#EDF2F7",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: "",
+                                  color: "#EDF2F7",
+                                },
+                              }}
+                              onClick={() => onViewAction(item)}
+                            >
+                              {item.added_By}
+                            </TableCell>
                           </TableRow>
                         );
                       })}
 
                     {isError && (
                       <TableRow>
-                        <TableCell colSpan={11} align="center">
+                        <TableCell colSpan={12} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
@@ -767,7 +781,7 @@ const NewReceiverConcern = () => {
 
                     {(isLoading || isFetching) && (
                       <TableRow>
-                        <TableCell colSpan={11} align="center">
+                        <TableCell colSpan={12} align="center">
                           <CircularProgress />
                           <Typography variant="h5" color="#EDF2F7">
                             Please wait...
@@ -778,7 +792,7 @@ const NewReceiverConcern = () => {
 
                     {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
                       <TableRow>
-                        <TableCell colSpan={10} align="center">
+                        <TableCell colSpan={12} align="center">
                           <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.

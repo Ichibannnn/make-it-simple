@@ -1,13 +1,6 @@
-import {
-  ArchiveOutlined,
-  EditOutlined,
-  MoreHoriz,
-  RefreshOutlined,
-  RestoreOutlined,
-} from "@mui/icons-material";
+import { ArchiveOutlined, EditOutlined, MoreHoriz, RestoreOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import React, { useRef } from "react";
-import Swal from "sweetalert2";
+import { useRef } from "react";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
@@ -46,13 +39,7 @@ export const CategoryActions = ({ data, onArchive, onUpdate }) => {
         )}
 
         <MenuItem onClick={() => onArchiveAction(data)}>
-          <ListItemIcon>
-            {data?.is_Active ? (
-              <ArchiveOutlined fontSize="small" />
-            ) : (
-              <RestoreOutlined fontSize="small" />
-            )}
-          </ListItemIcon>
+          <ListItemIcon>{data?.is_Active ? <ArchiveOutlined fontSize="small" /> : <RestoreOutlined fontSize="small" />}</ListItemIcon>
 
           {data?.is_Active ? "Archive" : "Restore"}
         </MenuItem>

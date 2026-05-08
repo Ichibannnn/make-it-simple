@@ -14,6 +14,10 @@ import MasterlistPage from "../pages/Masterlist/MasterlistPage";
 import Category from "../pages/Masterlist/Category/Category";
 import SubCategory from "../pages/Masterlist/Sub-Category/SubCategory";
 import CategoryConcern from "../pages/Masterlist/ConcernCategory/CategoryConcern";
+import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
+import NewApprover from "../pages/ChannelSetup/ApproverSetup/NewApprover";
+import PmsType from "../pages/Masterlist/PmsType/PmsType";
+import Sites from "../pages/Masterlist/Sites/Sites";
 
 import RequestsPage from "../pages/Request/RequestsPage";
 import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
@@ -35,8 +39,10 @@ import NewReceiverConcern from "../pages/Request/ReceiverConcernV2/NewReceiverCo
 import ReportsPage from "../pages/Reports/ReportsPage";
 import ChangePassword from "../pages/ChangePassword/ChangePassword";
 import AuthRedirect from "./AuthRedirect";
-import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
-import NewApprover from "../pages/ChannelSetup/ApproverSetup/NewApprover";
+
+import Redirect from "../pages/Redirect";
+import Pms from "../pages/PMS/Pms";
+import ChecklistManagementPage from "../pages/ChecklistManagement/ChecklistManagementPage";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +50,15 @@ export const router = createBrowserRouter([
     element: (
       <AuthRedirect>
         <Login />
+      </AuthRedirect>
+    ),
+  },
+
+  {
+    path: "/redirect",
+    element: (
+      <AuthRedirect>
+        <Redirect />
       </AuthRedirect>
     ),
   },
@@ -109,6 +124,14 @@ export const router = createBrowserRouter([
             path: "/masterlist/approver-setup",
             element: <NewApprover />,
           },
+          {
+            path: "/masterlist/pms-type",
+            element: <PmsType />,
+          },
+          {
+            path: "/masterlist/sites",
+            element: <Sites />,
+          },
         ],
       },
 
@@ -162,6 +185,16 @@ export const router = createBrowserRouter([
             element: <IssueHandlerConcerns />,
           },
         ],
+      },
+
+      {
+        path: "/pms",
+        element: <Pms />,
+      },
+
+      {
+        path: "/checklist-management",
+        element: <ChecklistManagementPage />,
       },
 
       {

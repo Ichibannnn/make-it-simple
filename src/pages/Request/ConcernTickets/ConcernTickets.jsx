@@ -7,7 +7,6 @@ import {
   Chip,
   CircularProgress,
   Divider,
-  IconButton,
   OutlinedInput,
   Stack,
   Tab,
@@ -31,8 +30,6 @@ import {
   ClearAllOutlined,
   FiberManualRecord,
   HowToRegOutlined,
-  KeyboardDoubleArrowDown,
-  KeyboardDoubleArrowUp,
   LocalOffer,
   PendingActionsOutlined,
   RotateRightOutlined,
@@ -65,9 +62,7 @@ import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorCon
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
-import { setSearchValue, setStatus, setAscending, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { setSearchValue, setStatus, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
 import ConcernTicketFiltering from "./ConcernTicketFiltering";
 
 const ConcernTickets = () => {
@@ -691,19 +686,33 @@ const ConcernTickets = () => {
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
                                 <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                  {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                                 </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
                                 <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
                                   {item.concern.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
                                       <br />
                                     </span>
                                   ))}
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>RESOLUTION:</Typography>
+                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
+                                  {item.resolution
+                                    ? item.resolution?.split("\r\n").map((line, index) => (
+                                        <span key={index}>
+                                          {line}
+                                          <br />
+                                        </span>
+                                      ))
+                                    : "--"}
                                 </Typography>
                               </Stack>
 
@@ -856,7 +865,6 @@ const ConcernTickets = () => {
                             fontWeight: 700,
                             fontSize: "12px",
                           }}
-                          align="center"
                         >
                           TICKET NO.
                         </TableCell>
@@ -967,51 +975,44 @@ const ConcernTickets = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                   }}
-                                  align="center"
+                                  // align="center"
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  {item.ticketRequestConcerns?.[0]?.ticketConcernId}
+                                  <Stack sx={{ width: "80px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Stack>
                                 </TableCell>
 
                                 <TableCell
                                   sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                    maxWidth: "500px",
+                                    width: "400px",
                                   }}
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  {item.concern.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
+                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                    {item.concern.split("\r\n").map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))}
+                                  </Typography>
                                 </TableCell>
 
                                 <TableCell
-                                  className="ellipsis-styling"
                                   sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                    maxWidth: "500px",
+                                    width: "400px",
                                   }}
                                   onClick={() => onViewHistoryAction(item)}
                                 >
-                                  <Tooltip key={index} title={item.resolution || "--"} placement="bottom-start">
-                                    <>
-                                      {item.resolution
-                                        ? item.resolution?.split("\r\n").map((line, index) => (
-                                            <span key={index}>
-                                              {line}
-                                              <br />
-                                            </span>
-                                          ))
-                                        : "--"}
-                                    </>
-                                  </Tooltip>
+                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                    {item.resolution
+                                      ? item.resolution?.split("\r\n").map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
+                                      : "--"}
+                                  </Typography>
                                 </TableCell>
 
                                 <TableCell

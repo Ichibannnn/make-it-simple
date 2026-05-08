@@ -1,22 +1,12 @@
-import React, { useRef } from "react";
-import { GroupsOutlined, LanOutlined } from "@mui/icons-material";
-import {
-  Badge,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-  Tooltip,
-} from "@mui/material";
+import { useRef } from "react";
+import { GroupsOutlined } from "@mui/icons-material";
+import { Badge, IconButton, Tooltip } from "@mui/material";
 
 import useDisclosure from "../../../hooks/useDisclosure";
 
 const ApproverChannels = ({ approvers }) => {
   const ref = useRef();
-  const { open, onToggle } = useDisclosure();
-
-  console.log("Approvers: ", approvers);
+  const { onToggle } = useDisclosure();
 
   return (
     <div>
@@ -27,28 +17,6 @@ const ApproverChannels = ({ approvers }) => {
           </Badge>
         </Tooltip>
       </IconButton>
-
-      {/* <Menu
-        anchorEl={ref.current}
-        open={open}
-        onClose={onToggle}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <List dense>
-          {approvers?.map((item, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={item.fullname} />
-            </ListItem>
-          ))}
-        </List>
-      </Menu> */}
     </div>
   );
 };

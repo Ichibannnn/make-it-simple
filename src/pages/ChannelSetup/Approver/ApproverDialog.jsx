@@ -1,6 +1,6 @@
 import { Autocomplete, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
-import { Close, DeleteOutlineOutlined, DragIndicator } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { DeleteOutlineOutlined, DragIndicator } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -9,13 +9,13 @@ import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
 
-import { useCreateEditApproverMutation, useLazyGetSubUnitListQuery, useLazyGetApproverListQuery } from "../../../features/api_channel_setup/approver/approverApi";
-
 import { DndContext, closestCorners } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+
+import { useCreateEditApproverMutation, useLazyGetSubUnitListQuery, useLazyGetApproverListQuery } from "../../../features/api_channel_setup/approver/approverApi";
 
 const subUnitSchema = yup.object().shape({
   subUnitId: yup.object().nullable(),
@@ -30,10 +30,8 @@ const ApproverDialog = ({ data, open, onClose }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [createEditApprover, { isLoading: createEditApproverIsLoading, isFetching: createEditApproverIsFetching }] = useCreateEditApproverMutation();
-
   const [getSubUnitList, { data: subUnitListData, isLoading: subUnitListIsLoading, isSuccess: subUnitListIsSuccess }] = useLazyGetSubUnitListQuery();
-
-  const [getApproverList, { data: approverListData, isLoading: approverListIsLoading, isSuccess: approverListIsSuccess }] = useLazyGetApproverListQuery();
+  const [getApproverList, { data: approverListData, isLoading: approverListIsLoading }] = useLazyGetApproverListQuery();
 
   const {
     control: subUnitFormControl,
@@ -41,7 +39,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
     setValue: subUnitFormSetValue,
     watch: subUnitFormWatch,
     reset: subUnitFormReset,
-    formState: { errors: subUnitFormErrors },
   } = useForm({
     resolver: yupResolver(subUnitSchema),
     defaultValues: {
@@ -52,10 +49,8 @@ const ApproverDialog = ({ data, open, onClose }) => {
   const {
     control: approverFormControl,
     handleSubmit: approverFormHandleSubmit,
-    setValue: approverFormSetValue,
     watch: approverFormWatch,
     reset: approverFormReset,
-    formState: { errors: approverFormErrors },
   } = useForm({
     resolver: yupResolver(approverSchema),
     defaultValues: {
@@ -97,10 +92,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
         approverLevel: item.id,
       }));
 
-      console.log("editSubUnit: ", subUnitIdParams);
-      console.log("Edit Payload", editPayload);
-      // console.log("Data: ", data);
-
       createEditApprover({ id: subUnitIdParams, approvers: editPayload })
         .unwrap()
         .then(() => {
@@ -123,8 +114,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
   };
 
   const onApproverListFormAdd = (data) => {
-    // console.log("Data: ", data);
-
     setApprovers((currentValue) => [
       ...currentValue,
       {
@@ -139,8 +128,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
   };
 
   const onApproverListFormDelete = (index) => {
-    console.log("Deleting approver at index:", index);
-
     setApprovers((approvers) => {
       const updatedApprovers = approvers.filter((_, i) => i !== index);
 
@@ -203,12 +190,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
     }
   }, [data]);
 
-  // console.log("Table: ", approvers);
-
-  // console.log("Data: ", data);
-
-  // console.log("Sub unit: ", subUnitFormWatch("subUnitId"));
-
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} sx={{ borderRadius: "none", padding: 0 }} PaperProps={{ style: { overflow: "unset" } }}>
@@ -247,7 +228,6 @@ const ApproverDialog = ({ data, open, onClose }) => {
                       ref={ref}
                       size="small"
                       value={value}
-                      // options={subUnitListData?.value || []}
                       options={data ? [] : subUnitListData?.value || []}
                       loading={subUnitListIsLoading}
                       renderInput={(params) => <TextField {...params} label="Sub Unit" size="small" />}

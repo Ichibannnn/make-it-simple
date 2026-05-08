@@ -195,50 +195,6 @@ const ServiceLevelAgreement = ({
                 DATE
               </TableCell>
 
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                OPEN DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TARGET DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                FOR CLOSING DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                CLOSED DATE
-              </TableCell> */}
-
               <TableCell
                 sx={{
                   background: "#1C2536",
@@ -248,6 +204,17 @@ const ServiceLevelAgreement = ({
                 }}
               >
                 SOLUTION
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  background: "#1C2536",
+                  color: "#D65DB1",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                }}
+              >
+                REMARKS
               </TableCell>
 
               <TableCell
@@ -293,17 +260,6 @@ const ServiceLevelAgreement = ({
               >
                 CATEGORY
               </TableCell>
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                SUB CATEGORY
-              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -356,13 +312,13 @@ const ServiceLevelAgreement = ({
 
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: "#22B4BF",
                       fontSize: "12px",
                       fontWeight: 500,
                     }}
                     align="center"
                   >
-                    {item.ticketNo}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketNo}`}
                   </TableCell>
 
                   <TableCell
@@ -414,12 +370,16 @@ const ServiceLevelAgreement = ({
                       fontWeight: 500,
                     }}
                   >
-                    {item.description?.split("\r\n").map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
+                    <Stack sx={{ width: "400px" }}>
+                      <Typography sx={{ fontSize: "12px", fontWeight: 500, wordWrap: "break-word" }}>
+                        {item.description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </Typography>
+                    </Stack>
                   </TableCell>
 
                   <TableCell
@@ -481,7 +441,18 @@ const ServiceLevelAgreement = ({
 
                     }}
                   >
-                    {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}
+                    <Stack sx={{ width: "400px" }}>
+                      <Typography sx={{ fontSize: "12px", fontWeight: 500, wordWrap: "break-word" }}>
+                        {item?.solution
+                          ? item.solution?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
                   </TableCell>
 
                   <TableCell
@@ -512,7 +483,7 @@ const ServiceLevelAgreement = ({
                       fontWeight: 500,
                     }}
                   >
-                    {item.requestType}
+                    {item.requestType ? item.requestType : "--"}
                   </TableCell>
 
                   <TableCell
@@ -522,7 +493,7 @@ const ServiceLevelAgreement = ({
                       fontWeight: 500,
                     }}
                   >
-                    {item.status}
+                    {item.status ? item.status : "--"}
                   </TableCell>
 
                   <TableCell
@@ -532,7 +503,7 @@ const ServiceLevelAgreement = ({
                       fontWeight: 500,
                     }}
                   >
-                    {item.rating}
+                    {item.rating ? item.rating : "--"}
                   </TableCell>
 
                   <TableCell

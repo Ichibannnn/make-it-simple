@@ -310,7 +310,6 @@ export const DisapproveSelectedDialog = ({ open, onClose, selectedTickets, setSe
               <TextField
                 {...register("reject_Remarks")}
                 variant="outlined"
-                // label="Enters Re"
                 placeholder="Enter Remarks"
                 helperText={errors?.reject_Remarks?.message}
                 error={!!errors?.reject_Remarks?.message}

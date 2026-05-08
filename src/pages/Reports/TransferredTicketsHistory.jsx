@@ -105,17 +105,6 @@ const TransferredTicketsHistory = ({
         <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
           <TableHead sx={{ whiteSpace: "nowrap" }}>
             <TableRow>
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TRANSFERRED BY
-              </TableCell> */}
-
               <TableCell
                 sx={{
                   background: "#1C2536",
@@ -137,39 +126,6 @@ const TransferredTicketsHistory = ({
               >
                 TICKET DESCRIPTION
               </TableCell>
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TARGET DATE
-              </TableCell> */}
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                APPROVED BY
-              </TableCell> */}
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                APPROVED DATE
-              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -231,121 +187,30 @@ const TransferredTicketsHistory = ({
                     },
                   }}
                 >
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.transfered_By}
-                  </TableCell> */}
-
                   <TableCell
                     sx={{
-                      color: "#EDF2F7",
+                      color: "#22B4BF",
                       fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
+                      fontWeight: 800,
                     }}
                   >
-                    {item.ticketConcernId}
+                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
-                  <Tooltip title={item?.concern_Details} placement="bottom-start">
-                    <TableCell
-                      className="ellipsis-styling"
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        width: "100px",
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
-                      }}
-                    >
-                      {item.concern_Details?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </TableCell>
-                  </Tooltip>
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={moment(item.target_Date).format("LL")}
-                    />
-                  </TableCell> */}
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      maxWidth: "400px",
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.approvedBy !== null ? item.approvedBy : "---"}
-                  </TableCell> */}
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    <Chip
-                      variant="filled"
-                      size="30px"
-                      icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                      sx={{
-                        fontSize: "12px",
-                        backgroundColor: "#1D1F3B",
-                        color: theme.palette.primary.main,
-                        fontWeight: 800,
-                      }}
-                      label={`${moment(item.approved_At).format("MMMM D, YYYY HH:mm")}`}
-                    />
-                  </TableCell> */}
+                  <TableCell>
+                    <Stack sx={{ width: "300px" }}>
+                      <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                        {item.concern_Details
+                          ? item.concern_Details?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
+                  </TableCell>
 
                   <TableCell
                     sx={{
@@ -403,39 +268,46 @@ const TransferredTicketsHistory = ({
                   >
                     <Stack gap={0.5}>
                       <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Requested Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.requested_Date).format("MMMM D, YYYY HH:mm")}</Typography>
+                      </Stack>
+
+                      <Stack>
                         <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Previous Target Date:</Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.previous_Target_Date).format("LL")}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>New Target Date:</Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.new_Target_Date).format("LL")}</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Transferred Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.transferredDate).format("MMMM D, YYYY HH:mm")}</Typography>
                       </Stack>
 
                       <Stack>
                         <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Approved Date:</Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.approved_At).format("MMMM D, YYYY HH:mm")}</Typography>
                       </Stack>
+
+                      <Stack>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>New Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.new_Target_Date).format("LL")}</Typography>
+                      </Stack>
                     </Stack>
                   </TableCell>
 
-                  <Tooltip title={item?.remarks} placement="bottom-start">
-                    <TableCell
-                      className="ellipsis-styling"
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        width: "100px",
-                        "&:hover": {
-                          background: "",
-                          color: "#EDF2F7",
-                        },
-                      }}
-                    >
-                      {item.remarks}
-                    </TableCell>
-                  </Tooltip>
+                  <TableCell>
+                    <Stack sx={{ width: "300px" }}>
+                      <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                        {item.remarks
+                          ? item.remarks?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))
+                          : "--"}
+                      </Typography>
+                    </Stack>
+                  </TableCell>
                 </TableRow>
               ))}
 

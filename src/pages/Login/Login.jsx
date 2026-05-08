@@ -33,7 +33,6 @@ import { concernReceiverApi } from "../../features/api_request/concerns_receiver
 import { useSelector } from "react-redux";
 
 const Login = () => {
-  // const hideLoginForm = useMediaQuery("(max-width: 958px)");
   const hideLoginForm = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
@@ -92,6 +91,7 @@ const Login = () => {
           </Stack>
         </Paper>
       </Stack>
+
       <Box zIndex="1" borderRadius="10px 0 0 10px" mt={6} flexDirection="column" display="flex" justifyContent="center">
         <Box justifyContent="center" display="flex">
           <img src={misLogo} alt="logo" loading="lazy" style={{ width: "10%", height: "100%" }} />
@@ -107,7 +107,7 @@ const Login = () => {
 export default Login;
 
 const schema = yup.object().shape({
-  usernameOrEmail: yup.string().required().label("Username"),
+  username: yup.string().required().label("Username"),
   password: yup.string().required().label("Password"),
 });
 
@@ -145,7 +145,7 @@ const LoginForm = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      usernameOrEmail: "",
+      username: "",
       password: "",
     },
   });
@@ -153,6 +153,7 @@ const LoginForm = () => {
   const loginHandler = async (data) => {
     try {
       const res = await logIn(data).unwrap();
+
       const { token, ...user } = res.value;
 
       if (res?.value?.isPasswordChanged === null) {
@@ -196,8 +197,6 @@ const LoginForm = () => {
     }
   };
 
-  // console.log("getPassword", getPassword);
-
   const showPasswordHandler = () => {
     setShowPassword(!showPassword);
   };
@@ -217,11 +216,11 @@ const LoginForm = () => {
           <Grid container spacing={2} mt={0.5}>
             <Grid item xs={12}>
               <TextField
-                {...register("usernameOrEmail")}
+                {...register("username")}
                 variant="outlined"
                 label="Enter your username"
-                helperText={errors?.usernameOrEmail?.message}
-                error={!!errors.usernameOrEmail}
+                helperText={errors?.username?.message}
+                error={!!errors.username}
                 sx={{ borderColor: "primary" }}
                 fullWidth
                 autoComplete="off"
@@ -282,9 +281,7 @@ const LoginForm = () => {
 };
 
 export const ChangePassword = ({ changePasswordDetails, open, onClose, getPassword }) => {
-  // console.log("User Name: ", changePasswordDetails.value.username);
-
-  const [changeUserPassword, { isSuccess: isPostSuccess }] = useChangeUserPasswordMutation();
+  const [changeUserPassword] = useChangeUserPasswordMutation();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -296,15 +293,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
     confirm_Password: yup.string().required().label("Confirm Password"),
   });
 
-  const {
-    control,
-    handleSubmit,
-    register,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, watch, setValue, reset } = useForm({
     resolver: yupResolver(changePasswordSchema),
     defaultValues: {
       id: null,
@@ -340,7 +329,7 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
                 description: "Password has been changed!",
                 duration: 1500,
               }),
-            300
+            300,
           );
         })
         .catch((error) => {

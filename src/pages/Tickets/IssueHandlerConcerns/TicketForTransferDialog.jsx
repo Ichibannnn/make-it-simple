@@ -2,23 +2,23 @@ import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { Add, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
-import Swal from "sweetalert2";
-import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetForTransferUsersQuery, useTransferIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
 import { useSelector } from "react-redux";
 import TransferDialogMenuActions from "./MenuActions/TransferDialogMenuActions";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import moment from "moment";
 
 const schema = yup.object().shape({
   TransferRemarks: yup.string().required().label("Remarks is required"),
@@ -30,7 +30,6 @@ const schema = yup.object().shape({
 
 const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
-  const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
@@ -43,7 +42,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
   const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetForTransferUsersQuery();
-  // const [getIssueHandler, { isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
   const [transferTicket, { isLoading: transferTicketIsLoading, isFetching: transferTicketIsFetching }] = useTransferIssueHandlerTicketsMutation();
 
   const {
@@ -65,8 +63,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   });
 
   const onSubmitAction = (formData) => {
-    console.log("FormData: ", formData);
-
     const payload = new FormData();
 
     payload.append("TicketConcernId", data?.ticketConcernId);
@@ -91,7 +87,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Request to transfer this ticket number ${data?.ticketConcernId}?`,
+      text: `Request to transfer this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -161,7 +157,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -195,8 +191,6 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleViewImage = (file) => {
-    console.log("File: ", file);
-
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target.result);
@@ -278,7 +272,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                     color: theme.palette.text.main,
                   }}
                 >
-                  {` Ticket Number : #${data?.ticketConcernId}`}
+                  {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -287,7 +281,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
               <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
                 <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
 
-                <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                   {data?.concern_Description?.split("\r\n").map((line, index) => (
                     <span key={index}>
                       {line}
@@ -303,7 +297,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                 </Box>
                 <Box sx={{ width: "5%" }} />
                 <Box width={{ width: "75%", ml: 2 }}>
-                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                  <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
                     {data?.concern_Description?.split("\r\n").map((line, index) => (
                       <span key={index}>
                         {line}
@@ -500,56 +494,59 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                       <Box
                         key={index}
                         sx={{
+                          width: "100%",
                           display: "flex",
                           flexDirection: "row",
-                          justifyContent: "space-between",
                           alignItems: "center",
                           padding: 0.5,
                           borderBottom: "1px solid #2D3748",
                         }}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "12px",
-                              color: theme.palette.text.secondary,
-                            }}
-                          >
-                            {fileName.size} Mb
-                          </Typography>
-
+                        {getAttachmentIcon(fileName)}
+                        <Stack sx={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                           <Box
                             sx={{
                               display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              gap: 1,
+                              flexDirection: "column",
                             }}
                           >
+                            <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+
                             <Typography
                               sx={{
-                                fontSize: "14px",
-                                fontWeight: 500,
-                                color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                fontSize: "12px",
+                                color: theme.palette.text.secondary,
                               }}
                             >
-                              {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                              {fileName.size} Mb
                             </Typography>
 
-                            {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
-                          </Box>
-                        </Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                  color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                }}
+                              >
+                                {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                              </Typography>
 
-                        <Box>
-                          <TransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
-                        </Box>
+                              {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            <TransferDialogMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                          </Box>
+                        </Stack>
                       </Box>
                     ))}
                   </Box>
@@ -562,19 +559,18 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept=".png,.jpg,.jpeg,.docx"
+                      accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                       onChange={(event) => {
                         handleAttachments(event);
                         const files = Array.from(event.target.files);
                         const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
-                        console.log("Controller Files: ", files);
+                        // console.log("Controller Files: ", files);
 
                         onChange([...value, ...uniqueNewFiles]);
                         fileInputRef.current.value = "";
                       }}
                       hidden
-                      multiple={!!ticketAttachmentId}
                     />
                   )}
                 />
