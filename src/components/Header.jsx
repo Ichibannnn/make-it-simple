@@ -20,13 +20,7 @@ import {
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import {
-  CheckCircle,
-  CloseOutlined,
-  NotificationsNoneOutlined,
-  NotificationsOffOutlined,
-  Password,
-} from "@mui/icons-material";
+import { CheckCircle, CloseOutlined, NotificationsNoneOutlined, NotificationsOffOutlined, Password } from "@mui/icons-material";
 
 import { theme } from "../theme/theme";
 import React, { useContext } from "react";
@@ -50,11 +44,7 @@ import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../features/api_notification/notificationApi";
-import {
-  notificationMessageApi,
-  useGetNotificationMessageQuery,
-  useGetNotificationNavMutation,
-} from "../features/api_notification_message/notificationMessageApi";
+import { notificationMessageApi, useGetNotificationMessageQuery, useGetNotificationNavMutation } from "../features/api_notification_message/notificationMessageApi";
 
 import { LoadingButton } from "@mui/lab";
 import { signOut } from "../features/auth/authSlice";
@@ -81,11 +71,7 @@ const Header = () => {
   const [notificationNav] = useGetNotificationNavMutation();
 
   const { data: notificationMessage } = useGetNotificationMessageQuery();
-  const {
-    open: openChangePassword,
-    onToggle: changePasswordOnToggle,
-    onClose: changePasswordOnClose,
-  } = useDisclosure();
+  const { open: openChangePassword, onToggle: changePasswordOnToggle, onClose: changePasswordOnClose } = useDisclosure();
 
   const notificationHandler = (event) => {
     setNotificationAnchor(event.currentTarget);
@@ -115,22 +101,33 @@ const Header = () => {
   };
 
   const logoutHandler = () => {
+    // One Login redirect when logging out
+    const oneRdfWindow = window.open("", "OneRDF_Portal");
     try {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
+      if (oneRdfWindow.location.href === "about:blank" || oneRdfWindow.location.href === "") {
+        oneRdfWindow.close();
+        window.location.href = "https://one.rdfmis.com/login";
+      } else {
+        window.close();
+      }
+    } catch (error) {
+      window.close();
+    }
 
-      // dispatch(notificationApi.util.resetApiState());
-      // dispatch(notificationMessageApi.util.resetApiState());
-      dispatch(concernApi.util.resetApiState());
-      dispatch(concernReceiverApi.util.resetApiState());
-      dispatch(concernIssueHandlerApi.util.resetApiState());
-      dispatch(ticketApprovalApi.util.resetApiState());
-      dispatch(closingTicketApi.util.resetApiState());
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
 
-      dispatch(signOut());
-      dispatch(clearUserDetails());
-      navigate("/login");
-    } catch (error) {}
+    // dispatch(notificationApi.util.resetApiState());
+    // dispatch(notificationMessageApi.util.resetApiState());
+    dispatch(concernApi.util.resetApiState());
+    dispatch(concernReceiverApi.util.resetApiState());
+    dispatch(concernIssueHandlerApi.util.resetApiState());
+    dispatch(ticketApprovalApi.util.resetApiState());
+    dispatch(closingTicketApi.util.resetApiState());
+
+    dispatch(signOut());
+    dispatch(clearUserDetails());
+    // navigate("/login");
   };
 
   const onNavigateAction = (data) => {
@@ -199,10 +196,7 @@ const Header = () => {
     >
       <Box>
         {hideMenu && (
-          <IconButton
-            onClick={toggleSidebarHandler}
-            aria-label="Toggle sidebar"
-          >
+          <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
             <MenuOutlinedIcon />
           </IconButton>
         )}
@@ -243,27 +237,16 @@ const Header = () => {
           </IconButton>
 
           <Stack mt={0.5}>
-            <Typography
-              className="capitalize-letter"
-              sx={{ fontSize: "13px", fontWeight: 500 }}
-            >
+            <Typography className="capitalize-letter" sx={{ fontSize: "13px", fontWeight: 500 }}>
               {fullName}
             </Typography>
 
-            <Typography
-              sx={{ fontSize: "13px", color: theme.palette.text.secondary }}
-            >
-              {userRole}
-            </Typography>
+            <Typography sx={{ fontSize: "13px", color: theme.palette.text.secondary }}>{userRole}</Typography>
           </Stack>
         </Box>
 
         {/* Notification */}
-        <Menu
-          anchorEl={notificationAnchor}
-          open={notificationOpen}
-          onClose={notificationCloseHandler}
-        >
+        <Menu anchorEl={notificationAnchor} open={notificationOpen} onClose={notificationCloseHandler}>
           <Stack sx={{ maxHeight: 400, width: "350px" }}>
             <Stack sx={{ width: "100%", padding: "6px 16px" }}>
               <Typography>Notifications</Typography>
@@ -286,15 +269,10 @@ const Header = () => {
                     onClick={() => onNavigateAction(data)}
                   >
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                        {trimLetters(data.added_By)}
-                      </Avatar>
+                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>{trimLetters(data.added_By)}</Avatar>
 
                       <div style={{ flexGrow: 1, marginLeft: "10px" }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: "semibold" }}
-                        >
+                        <Typography variant="body2" sx={{ fontWeight: "semibold" }}>
                           {data.message}
                         </Typography>
 
@@ -306,18 +284,13 @@ const Header = () => {
                           </Stack>
 
                           <Typography variant="caption" color="textSecondary">
-                            {moment(data.created_At).format(
-                              "MMMM Do YYYY, h:mm:ss a",
-                            )}
+                            {moment(data.created_At).format("MMMM Do YYYY, h:mm:ss a")}
                           </Typography>
                         </Stack>
                       </div>
                     </Stack>
 
-                    <Divider
-                      variant="fullWidth"
-                      sx={{ background: "#2D3748" }}
-                    />
+                    <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
                   </ListItem>
                 ))}
               </List>
@@ -331,26 +304,15 @@ const Header = () => {
                   padding: 4,
                 }}
               >
-                <NotificationsOffOutlined
-                  sx={{ color: theme.palette.text.secondary }}
-                />
-                <Typography
-                  sx={{ fontSize: "14px", color: theme.palette.text.secondary }}
-                >
-                  No notifications
-                </Typography>
+                <NotificationsOffOutlined sx={{ color: theme.palette.text.secondary }} />
+                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>No notifications</Typography>
               </Stack>
             )}
           </Stack>
         </Menu>
 
         {/* Account */}
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={closeHandler}
-          onClick={closeHandler}
-        >
+        <Menu anchorEl={anchorEl} open={open} onClose={closeHandler} onClick={closeHandler}>
           {/* Removed function due to One Login Integration */}
           {/* <MenuItem onClick={toggleChangePasswordHandler}>
             <ListItemIcon>
@@ -367,12 +329,7 @@ const Header = () => {
           </MenuItem>
         </Menu>
 
-        {openChangePassword && (
-          <ChangePassword
-            open={openChangePassword}
-            onClose={changePasswordOnClose}
-          />
-        )}
+        {openChangePassword && <ChangePassword open={openChangePassword} onClose={changePasswordOnClose} />}
       </Box>
     </Stack>
   );
@@ -486,18 +443,7 @@ const ChangePassword = ({ open, onClose }) => {
                 control={control}
                 name="current_Password"
                 render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="medium"
-                      value={value}
-                      label="Current Password"
-                      type="password"
-                      onChange={onChange}
-                      fullWidth
-                      autoComplete="off"
-                    />
-                  );
+                  return <TextField inputRef={ref} size="medium" value={value} label="Current Password" type="password" onChange={onChange} fullWidth autoComplete="off" />;
                 }}
               />
 
@@ -518,10 +464,7 @@ const ChangePassword = ({ open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") ===
-                              watch("confirm_Password") &&
-                            watch("new_Password") !== null &&
-                            watch("confirm_Password") ? (
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -551,10 +494,7 @@ const ChangePassword = ({ open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") ===
-                              watch("confirm_Password") &&
-                            watch("new_Password") !== null &&
-                            watch("confirm_Password") ? (
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -572,12 +512,7 @@ const ChangePassword = ({ open, onClose }) => {
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={
-                  !watch("current_Password") ||
-                  !watch("new_Password") ||
-                  !watch("confirm_Password") ||
-                  watch("new_Password") !== watch("confirm_Password")
-                }
+                disabled={!watch("current_Password") || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

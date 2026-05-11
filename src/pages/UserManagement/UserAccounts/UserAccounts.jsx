@@ -335,9 +335,9 @@ const UserAccounts = () => {
             </Stack>
 
             <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button variant="contained" size={isSmallScreen ? "medium" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
+              {/* <Button variant="contained" size={isSmallScreen ? "medium" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
                 Add
-              </Button>
+              </Button> */}
             </Stack>
           </Stack>
         </Stack>
