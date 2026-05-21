@@ -202,7 +202,7 @@ export const pmsStyles = {
   reminderStoresContainer: {
     spacing: 1,
     maxHeight: "420px",
-    overflow: "auto",
+    overflow: "hidden",
   },
   reminderStackContent: {
     spacing: 1,
@@ -248,6 +248,9 @@ export const pmsStyles = {
   },
   skeletonStyle: {
     backgroundColor: theme.palette.bgForm.black2,
+    width: 420,
+    flex: 1,
+    overflow: "auto",
   },
   reminderNoStoreContainer: {
     spacing: 1,
@@ -255,5 +258,120 @@ export const pmsStyles = {
     backgroundColor: theme.palette.bgForm.black2,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  // Store Visits Dialog
+  dialogHeaderContainer: {
+    borderBottom: "2px solid #4b586f",
+  },
+  dialogHeaderText: {
+    padding: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dialogHeaderDate: {
+    fontSize: "13px",
+  },
+  storeContainer: {
+    padding: 2,
+    backgroundColor: theme.palette.bgForm.black2,
+    border: "2px solid #4b586f",
+    borderRadius: "12px",
+  },
+  storeStackDirection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  storeStackName: {
+    fontSize: "13px",
+    fontWeight: 700,
+  },
+  storeStackStatus: {
+    fontSize: "13px",
+    fontWeight: 700,
+  },
+  storeStackArea: {
+    fontSize: "12px",
+    color: theme.palette.text.secondary,
+  },
+  reschedButton: {
+    borderRadius: "5px",
+    fontSize: "0.7rem",
+    padding: "2px 6px",
+    minWidth: "unset",
+  },
+  completionText: {
+    fontSize: "12px",
+    color: theme.palette.text.secondary,
+  },
+  noStoreVisitContainer: {
+    height: "320px",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // Reschedule Dialog
+  rescheduleHeaderStack: {
+    padding: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  currentScheduleContainer: {
+    paddingRight: 4,
+    paddingLeft: 4,
+    paddingTop: 4,
+    maxHeight: "400px",
+  },
+  currentScheduleBorder: {
+    overflow: "auto",
+    border: "1px solid #4b586f",
+    borderRadius: "7px",
+    padding: 2,
+  },
+  currentScheduleText: {
+    fontSize: "12px",
+    fontWeight: 700,
+    color: theme.palette.text.secondary,
+  },
+  currentScheduleName: {
+    fontSize: "13px",
+    fontWeight: 800,
+  },
+  currentScheduleArea: {
+    fontSize: "12px",
+  },
+  newRescheduleRemarksStack: {
+    paddingRight: 4,
+    paddingLeft: 4,
+    paddingTop: 2,
+    gap: 2,
+  },
+  newRescheduleRemarks: {
+    width: "100%",
+  },
+  newReschedContainer: {
+    alignItems: "center",
+    gap: 0.5,
+    flexDirection: "row",
+  },
+  datePicker: {
+    textField: {
+      variant: "outlined",
+      sx: {
+        "& .MuiInputBase-input": {
+          padding: "8.5px 14px",
+        },
+        "& .MuiOutlinedInput-root": {
+          fontSize: "13px",
+        },
+      },
+    },
+  },
+  dialogActions: {
+    width: "100%",
+    padding: 2,
+    flexDirection: "row",
+    gap: 1,
   },
 };

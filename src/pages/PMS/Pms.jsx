@@ -40,8 +40,7 @@ const Pms = () => {
   const [defaultSite, setDefaultSite] = useState(null);
   const [defaultPmsType, setDefaultPmsType] = useState(null);
 
-  const { params, setSearch, setSiteId, setPmsTypeId } = usePmsCalendarParams();
-
+  const { params, setSearch, setSite, setPmsType } = usePmsCalendarParams();
   const { data: pmsCalendarData, isLoading: pmsCalendarIsLoading, isFetching: pmsCalendarIsFetching, isError: pmsCalendarIsError } = useGetPmsCalendarQuery(params);
 
   const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
@@ -70,10 +69,10 @@ const Pms = () => {
 
     if (siteData?.value?.sites?.length && pmsTypeData?.value?.type?.length) {
       setDefaultSite(siteData?.value?.sites?.[0]);
-      setSiteId(siteData?.value?.sites?.[0]?.id);
+      setSite(siteData?.value?.sites?.[0]?.name);
 
       setDefaultPmsType(pmsTypeData?.value?.type?.[0]);
-      setPmsTypeId(pmsTypeData?.value?.type?.[0]?.id);
+      setPmsType(pmsTypeData?.value?.type?.[0]?.name);
     }
   }, [getPmsTypes, getSites, siteData, pmsTypeData]);
 
@@ -106,7 +105,7 @@ const Pms = () => {
                 sx={pmsStyles.customSelect}
                 onChange={(e) => {
                   setDefaultSite(e.target.value);
-                  setSiteId(e.target.value.id);
+                  setSite(e.target.value.name);
                 }}
               >
                 {siteData?.value?.sites?.map((item, i) => (
@@ -125,7 +124,7 @@ const Pms = () => {
                 sx={pmsStyles.customSelect}
                 onChange={(e) => {
                   setDefaultPmsType(e.target.value);
-                  setPmsTypeId(e.target.value.id);
+                  setPmsType(e.target.value.name);
                 }}
               >
                 {pmsTypeData?.value?.type?.map((item, i) => (
@@ -137,8 +136,8 @@ const Pms = () => {
             </Box>
           </Stack>
 
-          <Stack sx={{ width: "40%" }}>
-            <Stack sx={{ width: "97.5%" }}>
+          <Stack sx={{ width: "70%", flexDirection: "row" }}>
+            <Stack sx={{ width: "57%" }}>
               <OutlinedInput
                 // value={searchValue}
                 // onChange={(e) => dispatch(setSearchValue(e.target.value))}
@@ -148,10 +147,8 @@ const Pms = () => {
                 sx={pmsStyles.customSearch}
               />
             </Stack>
-          </Stack>
 
-          <Stack sx={{ width: "30%" }}>
-            <Stack>
+            <Stack sx={{ flex: 1 }}>
               <Tabs value={activeTab} onChange={onTabChange} variant="fullWidth" scrollButtons="auto">
                 {TAB_CONFIG.map(({ value, label }) => (
                   <Tab key={value} value={value} label={label} className="tabs-styling" sx={pmsStyles.customTab} />
@@ -159,6 +156,8 @@ const Pms = () => {
               </Tabs>
             </Stack>
           </Stack>
+
+          {/* <Stack sx={{ width: "30%" }}></Stack> */}
         </Stack>
       </Stack>
 

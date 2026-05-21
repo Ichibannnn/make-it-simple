@@ -64,13 +64,13 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
     setTimePeriod(arrayTimePeriod?.[0]);
   }, []);
 
-  // console.log("ReminderData: ", pmsReminderData);
+  // console.log("Calendar: ", data);
   // console.log("ReminderParams: ", pmsReminderParams);
 
   return (
     <Stack sx={pmsStyles.parentContainer}>
-      {/* PMS Calendar */}
       <Stack sx={pmsStyles.calendarContainer}>
+        {/* PMS Calendar */}
         <Stack sx={pmsStyles.calendarHeader}>
           <Box />
 
@@ -187,36 +187,22 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
                   </Stack>
                 </Stack>
               ))}
-          </Stack>
 
-          {pmsReminderIsLoading ||
-            (pmsReminderIsFetching && (
-              <Stack spacing={1} sx={pmsStyles.reminderSkeletonContainer}>
-                <Skeleton variant="rounded" width={300} height={420} sx={pmsStyles.skeletonStyle} />
+            {(pmsReminderIsLoading || pmsReminderIsFetching) && (
+              <Stack spacing={1} sx={{ ...pmsStyles.reminderSkeletonContainer }}>
+                <Skeleton variant="rounded" sx={pmsStyles.skeletonStyle} />
               </Stack>
-            ))}
+            )}
 
-          {pmsReminderIsSuccess && !pmsReminderData?.value?.pms?.length && !pmsReminderIsLoading && !pmsReminderIsFetching && (
-            <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
-              <img src={noStore} alt="No Store Found" className="norecords-found-table" />
-              <Typography color="gray" align="center">
-                No store found.
-              </Typography>
-            </Stack>
-          )}
-
-          {/* ) : pmsReminderIsLoading || pmsReminderIsFetching ? (
-            <Stack spacing={1} sx={pmsStyles.reminderSkeletonContainer}>
-              <Skeleton variant="rounded" width={300} height={420} sx={pmsStyles.skeletonStyle} />
-            </Stack>
-          ) : (
-            <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
-              <img src={noStore} alt="No Store Found" className="norecords-found-table" />
-              <Typography color="gray" align="center">
-                No store found.
-              </Typography>
-            </Stack>
-          )} */}
+            {pmsReminderIsSuccess && !pmsReminderData?.value?.pms?.length && !pmsReminderIsLoading && !pmsReminderIsFetching && (
+              <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
+                <img src={noStore} alt="No Store Found" className="norecords-found-table" />
+                <Typography color="gray" align="center">
+                  No store found.
+                </Typography>
+              </Stack>
+            )}
+          </Stack>
         </Stack>
       </Stack>
 

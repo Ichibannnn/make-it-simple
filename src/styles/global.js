@@ -59,4 +59,9 @@ export const global = {
     lineHeight: 1.57,
     color: theme.palette.text.main,
   },
+
+  // Dialog
+  dialogContent: {
+    padding: 0,
+  },
 };

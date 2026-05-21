@@ -6,12 +6,9 @@ export const ymirApi = createApi({
   reducerPath: "ymirApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://rdfymir.com/backend/public/api",
-    // baseUrl: "http://10.10.10.17:8000/api",
-    // baseUrl: "http://10.10.13.6:8080/api",
     prepareHeaders: (headers) => {
       headers.set("Accept", "application/json");
       headers.set("Token", `Bearer ${process.env.REACT_APP_YMIR_TOKEN}`);
-      // headers.set("Authorization", `Bearer ${process.env.REACT_APP_YMIR_TOKEN}`);
 
       return headers;
     },
