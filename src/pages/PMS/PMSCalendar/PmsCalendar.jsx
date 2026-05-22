@@ -1,5 +1,5 @@
-import { Box, Button, MenuItem, Select, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
-import { AccessTimeOutlined, EventOutlined, FileUploadOutlined, NotificationsOutlined } from "@mui/icons-material";
+import { Box, Button, Chip, MenuItem, OutlinedInput, Select, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
+import { AccessTime, AccessTimeOutlined, Add, CheckCircle, EventOutlined, FileUploadOutlined, NotificationsOutlined, Search } from "@mui/icons-material";
 
 import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
@@ -21,6 +21,7 @@ import PmsUploadSchedule from "./PmsUploadSchedule";
 
 import { usePmsReminderParams } from "../../../hooks/api_params/pms/usePmsReminderParams";
 import { useGetPmsReminderQuery } from "../../../features/api_pms/pms_reminder/pmsReminderApi";
+import { global } from "../../../styles/global";
 
 const arrayStatus = ["All Status", "Pending", "Done", "Delayed"];
 const arrayTimePeriod = ["All", "Today", "This Week", "Delayed"];
@@ -72,14 +73,23 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
       <Stack sx={pmsStyles.calendarContainer}>
         {/* PMS Calendar */}
         <Stack sx={pmsStyles.calendarHeader}>
-          <Box />
+          <Stack>
+            {/* <OutlinedInput
+              // value={searchValue}
+              // onChange={(e) => dispatch(setSearchValue(e.target.value))}
+              size="small"
+              placeholder="Search store..."
+              startAdornment={<Search sx={global.searchIcon} />}
+              sx={pmsStyles.customSearch}
+            /> */}
+          </Stack>
 
           <Stack sx={pmsStyles.calendarButtonContainer}>
             <Button
               variant="contained"
               color="primary"
               size={isScreenSmall ? "small" : "medium"}
-              startIcon={<AccessTimeOutlined />}
+              startIcon={<Add />}
               onClick={onOpenAddScheduleAction}
               sx={pmsStyles.calendarHeaderButton}
             >
@@ -105,9 +115,10 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
           dateClick={(data) => onShowScheduleDetails(data.dateStr)}
           dayMaxEvents={2}
           headerToolbar={{
-            right: "prev,next",
-            center: "title",
-            left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
+            right: "prev,today,next",
+            left: "title",
+            // center: "title",
+            // left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
           }}
           events={data?.value?.pms?.map((item) => {
             return {
@@ -163,27 +174,42 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
             ""
           )}
 
-          {/* {pmsReminderIsSuccess && !pmsReminderIsLoading && !pmsReminderIsFetching ? ( */}
-          <Stack sx={pmsStyles.reminderStoresContainer}>
+          <Stack gap={1} sx={pmsStyles.reminderStoresContainer}>
             {pmsReminderIsSuccess &&
               !pmsReminderIsLoading &&
               !pmsReminderIsFetching &&
               pmsReminderData?.value?.pms?.map((item, i) => (
-                <Stack key={i} sx={pmsStyles.reminderStackContent}>
-                  <Stack sx={pmsStyles.reminderStoreHeaderContainer}>
-                    <Typography sx={pmsStyles.reminderStoreHeader}>{item?.name}</Typography>
+                <Stack direction="row">
+                  <Stack
+                    sx={{
+                      ...pmsStyles.stackIndicator,
+                      backgroundColor: item.status == "Done" ? theme.palette.success.main : theme.palette.warning.main,
+                    }}
+                  />
+                  <Stack key={i} sx={pmsStyles.reminderStackContent}>
+                    <Stack>
+                      <Chip
+                        icon={item.status === "Done" ? <CheckCircle sx={pmsStyles.chipIconStyle} /> : <AccessTime sx={pmsStyles.chipIconStyle} />}
+                        variant="filled"
+                        label={item.status === "Done" ? "Done" : "Pending"}
+                        sx={{
+                          ...pmsStyles.chipStyle,
+                          backgroundColor: item.status === "Done" ? theme.palette.success.main : theme.palette.warning.main,
+                        }}
+                      />
 
-                    <Typography sx={{ ...pmsStyles.reminderDropdownTitles, color: item?.status === "Done" ? "#09DF72" : "#FF8914" }}>{item?.status}</Typography>
-                  </Stack>
-
-                  <Stack sx={pmsStyles.reminderDetailsContainer}>
-                    <Stack sx={pmsStyles.reminderDetailsContent}>
-                      <EventOutlined sx={pmsStyles.reminderCalendarIcon} />
-                      <Typography sx={pmsStyles.reminderContentTexts}>{moment(item.date).format("LL")}</Typography>
+                      <Typography sx={pmsStyles.reminderStoreHeader}>{item?.name}</Typography>
                     </Stack>
 
-                    <Typography sx={pmsStyles.reminderContentTexts}>{item.area}</Typography>
-                    <Typography sx={pmsStyles.reminderContentTexts}>{`${item.completion} PMS Completed`}</Typography>
+                    <Stack sx={pmsStyles.reminderDetailsContainer}>
+                      <Stack sx={pmsStyles.reminderDetailsContent}>
+                        <EventOutlined sx={pmsStyles.reminderCalendarIcon} />
+                        <Typography sx={pmsStyles.reminderContentTexts}>{moment(item.date).format("LL")}</Typography>
+                      </Stack>
+
+                      <Typography sx={pmsStyles.reminderContentTexts}>{item.area}</Typography>
+                      <Typography sx={pmsStyles.reminderContentTexts}>{`${item.completion} PMS Completed`}</Typography>
+                    </Stack>
                   </Stack>
                 </Stack>
               ))}

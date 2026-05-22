@@ -46,6 +46,7 @@ export const pmsStyles = {
     lineHeight: "1.4375rem",
     borderRadius: "3px",
     fontSize: "13px",
+    // width: "100%",
   },
   tableSearch: {
     flex: "auto",
@@ -136,6 +137,7 @@ export const pmsStyles = {
     height: "100%",
     justifyContent: "space-between",
   },
+
   calendarContainer: {
     width: {
       xs: "100%",
@@ -143,13 +145,14 @@ export const pmsStyles = {
     },
     height: "100%",
     backgroundColor: theme.palette.bgForm.black3,
+    padding: 1,
   },
   calendarHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
   },
   calendarButtonContainer: {
-    direction: "row",
     gap: 0.5,
     mb: 1,
     flexDirection: "row",
@@ -167,6 +170,15 @@ export const pmsStyles = {
   calendarLinkContent: {
     fontSize: "11px",
     fontWeight: 600,
+  },
+  searchAndTabContainer: {
+    width: {
+      xs: "100%",
+      md: "70%",
+    },
+    flexDirection: "row",
+    alignItems: "end",
+    gap: 1,
   },
 
   // PMS Reminder
@@ -200,9 +212,9 @@ export const pmsStyles = {
     color: theme.palette.text.secondary,
   },
   reminderStoresContainer: {
-    spacing: 1,
+    spacing: 5,
     maxHeight: "420px",
-    overflow: "hidden",
+    overflow: "auto",
   },
   reminderStackContent: {
     spacing: 1,
@@ -210,14 +222,9 @@ export const pmsStyles = {
     width: "100%",
     backgroundColor: theme.palette.bgForm.black2,
   },
-  reminderStoreHeaderContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    mb: 1,
-  },
   reminderStoreHeader: {
     fontSize: "13px",
-    fontWeight: 800,
+    fontWeight: 500,
   },
   reminderStoreStatus: {
     fontSize: "13px",
@@ -245,6 +252,7 @@ export const pmsStyles = {
     // backgroundColor: theme.palette.bgForm.black2,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
   skeletonStyle: {
     backgroundColor: theme.palette.bgForm.black2,
@@ -260,6 +268,32 @@ export const pmsStyles = {
     alignItems: "center",
   },
 
+  stackIndicator: {
+    width: "6px",
+  },
+
+  chipStyle: {
+    fontWeight: 500,
+    fontSize: "11px",
+    height: 18,
+    borderRadius: "8px",
+    width: "85px",
+    color: "#ffffffde",
+    "& .MuiChip-icon": {
+      color: "#ffffffde",
+      marginLeft: "6px",
+    },
+    "& .MuiChip-label": {
+      paddingLeft: "8px",
+    },
+    marginBottom: 0.5,
+  },
+
+  chipIconStyle: {
+    fontSize: 13,
+    color: "#ffffffde",
+  },
+
   // Store Visits Dialog
   dialogHeaderContainer: {
     borderBottom: "2px solid #4b586f",
@@ -271,6 +305,7 @@ export const pmsStyles = {
   },
   dialogHeaderDate: {
     fontSize: "13px",
+    color: theme.palette.text.secondary,
   },
   storeContainer: {
     padding: 2,
@@ -302,7 +337,7 @@ export const pmsStyles = {
   },
   completionText: {
     fontSize: "12px",
-    color: theme.palette.text.secondary,
+    marginTop: 1,
   },
   noStoreVisitContainer: {
     height: "320px",

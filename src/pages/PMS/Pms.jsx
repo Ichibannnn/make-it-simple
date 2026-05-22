@@ -136,16 +136,16 @@ const Pms = () => {
             </Box>
           </Stack>
 
-          <Stack sx={{ width: "70%", flexDirection: "row" }}>
-            <Stack sx={{ width: "57%" }}>
-              <OutlinedInput
+          <Stack sx={pmsStyles.searchAndTabContainer}>
+            <Stack sx={{ width: { xs: 0, md: "56%" } }}>
+              {/* <OutlinedInput
                 // value={searchValue}
                 // onChange={(e) => dispatch(setSearchValue(e.target.value))}
                 size="small"
                 placeholder="Search store..."
                 startAdornment={<Search sx={global.searchIcon} />}
                 sx={pmsStyles.customSearch}
-              />
+              /> */}
             </Stack>
 
             <Stack sx={{ flex: 1 }}>

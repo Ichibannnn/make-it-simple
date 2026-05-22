@@ -20,10 +20,9 @@ const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
   const [getRescheduleData, setGetRescheduleData] = useState(null);
 
   const filteredData = data?.value?.pms?.filter((item) => moment(item?.date).format("YYYY-MM-DD") === getDate);
+  const { open: openScheduleDialog, onToggle: onToggleScheduleDialog, onClose: onCloseScheduleDialog } = useDisclosure();
 
   console.log("FilteredData:", data);
-
-  const { open: openScheduleDialog, onToggle: onToggleScheduleDialog, onClose: onCloseScheduleDialog } = useDisclosure();
 
   const onReschedule = (item) => {
     setGetRescheduleData(item);
