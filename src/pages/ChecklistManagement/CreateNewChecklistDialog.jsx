@@ -1,15 +1,16 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
-import React from "react";
+import { Save } from "@mui/icons-material";
+import React, { useEffect } from "react";
 
 import * as yup from "yup";
-import { Controller, useForm } from "react-hook-form";
 import { theme } from "../../theme/theme";
-import { Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
 
-import { useAddEditChecklistMutation } from "../../features/api masterlist/checklist_management/checklistManagementApi";
 import { toast } from "sonner";
+import { checklistStyles } from "./styles/checklistStyles";
+import { useAddEditChecklistMutation } from "../../features/api masterlist/checklist_management/checklistManagementApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -17,8 +18,9 @@ const schema = yup.object().shape({
   description: yup.string().required("Description is required."),
 });
 
-const CreateNewChecklistDialog = ({ open, onClose }) => {
-  const [addEditChecklist, { isLoading: addEditChecklistIsLoading, isFetching: addEditChecklistIsFetching }] = useAddEditChecklistMutation();
+const CreateNewChecklistDialog = ({ data, open, onClose }) => {
+  const [addEditChecklist, { isLoading: addEditChecklistIsLoading, isFetching: addEditChecklistIsFetching }] =
+    useAddEditChecklistMutation();
 
   const {
     control,
@@ -38,8 +40,6 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
   });
 
   const onSubmitAction = async (data) => {
-    console.log("Data", data);
-
     if (!data.id) {
       const addPayload = {
         title: data.title,
@@ -69,6 +69,23 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
         title: data.title,
         description: data.description,
       };
+
+      await addEditChecklist(editPayload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Checklist updated!",
+            duration: 1500,
+          });
+          reset();
+          onClose();
+        })
+        .catch((error) => {
+          toast.error("Error!", {
+            description: "Title has already been taken.",
+            duration: 1500,
+          });
+        });
     }
   };
 
@@ -76,23 +93,19 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
     onClose();
   };
 
+  useEffect(() => {
+    if (data) {
+      setValue("id", data.id);
+      setValue("title", data.title);
+      setValue("description", data.description);
+    }
+  }, [data]);
+
   return (
     <>
       <Dialog fullWidth maxWidth="sm" open={open} PaperProps={{ style: { overflow: "unset" } }}>
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#48BB78",
-          }}
-        >
-          {/* {data ? "Edit Checklist" : "Add Checklist"} */}
-          Create New Checklist
+        <DialogTitle sx={checklistStyles.checklistDialog}>
+          {!data ? "Create New Checklist" : "Edit Checklist"}
         </DialogTitle>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
@@ -146,9 +159,9 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
-              loading={addEditChecklistIsLoading || addEditChecklistIsFetching}
               loadingPosition="start"
               startIcon={<Save />}
+              loading={addEditChecklistIsLoading || addEditChecklistIsFetching}
               disabled={!watch("title") || !watch("description")}
               sx={{
                 ":disabled": {

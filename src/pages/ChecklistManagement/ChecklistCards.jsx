@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, IconButton, Stack, Typography } from "@mui/material";
 
@@ -6,12 +6,23 @@ import Lottie from "lottie-react";
 import Folder from "../../assets/lotties/folder-yellow.json";
 
 import moment from "moment";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 import { theme } from "../../theme/theme";
 import { checklistStyles } from "./styles/checklistStyles";
+import useDisclosure from "../../hooks/useDisclosure";
+
+import ChecklistCardActions from "./ChecklistCardActions";
+import CreateNewChecklistDialog from "./CreateNewChecklistDialog";
+import { useArchiveChecklistMutation } from "../../features/api masterlist/checklist_management/checklistManagementApi";
 
 const ChecklistCards = ({ data }) => {
+  const [editData, setEditData] = useState(null);
   const lottieRef = useRef();
   const isHovering = useRef(false);
+
+  const { open: editOpen, onToggle: editOnToggle, onClose: editOnClose } = useDisclosure();
+  const [archiveChecklist] = useArchiveChecklistMutation();
 
   const TOTAL_FRAMES = 101;
   const MID_FRAME = TOTAL_FRAMES / 2;
@@ -39,6 +50,129 @@ const ChecklistCards = ({ data }) => {
     }
   };
 
+  const onEditAction = (data) => {
+    editOnToggle();
+    setEditData(data);
+  };
+
+  const onArchiveAction = (data) => {
+    if (data.isActive === true) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the checklist to the archived.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        allowOutsideClick: false,
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+             <span class="mui-spinner"></span>
+             <span class="mui-label">Archiving...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveChecklist(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Checklist archived successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.close();
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the checklist to the active.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        allowOutsideClick: false,
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+
+            await archiveChecklist(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Checklist restored successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.close();
+        }
+      });
+    }
+  };
+
   return (
     <>
       <Card
@@ -47,17 +181,22 @@ const ChecklistCards = ({ data }) => {
         onMouseLeave={handleMouseLeave}
         sx={{ position: "relative", "&:hover": { borderColor: "primary.main", cursor: "pointer" }, borderRadius: 2 }}
       >
-        <CardActionArea>
+        <CardActionArea component="div">
           <CardContent>
             <Stack justifyContent="center" sx={{ width: "100%" }}>
               <div
                 style={{
                   width: 150,
-                  marginBottom: 4,
                   cursor: "pointer",
                 }}
               >
-                <Lottie lottieRef={lottieRef} animationData={Folder} loop={false} autoplay={false} onEnterFrame={handleEnterFrame} />
+                <Lottie
+                  lottieRef={lottieRef}
+                  animationData={Folder}
+                  loop={false}
+                  autoplay={false}
+                  onEnterFrame={handleEnterFrame}
+                />
               </div>
             </Stack>
 
@@ -69,20 +208,27 @@ const ChecklistCards = ({ data }) => {
                   <Typography sx={checklistStyles.cardDescription}>{data?.description}</Typography>
 
                   <Stack mt={1}>
-                    <Typography sx={{ ...checklistStyles.cardDetails, color: data?.isActive ? theme.palette.success.main : theme.palette.error.main }}>
+                    <Typography
+                      sx={{
+                        ...checklistStyles.cardDetails,
+                        color: data?.isActive ? theme.palette.success.main : theme.palette.error.main,
+                      }}
+                    >
                       {data?.isActive ? "Active" : "Inactive"}
                     </Typography>
-                    <Typography sx={checklistStyles.cardDetails}>{`Created at: ${moment(data?.createdAt).format("LL")}`}</Typography>
+                    <Typography
+                      sx={checklistStyles.cardDetails}
+                    >{`Created at: ${moment(data?.createdAt).format("LL")}`}</Typography>
                   </Stack>
                 </Stack>
 
                 <Stack mt={2}>
-                  <IconButton>
-                    <MoreVertOutlined />
-                  </IconButton>
+                  <ChecklistCardActions data={data} onArchive={onArchiveAction} onEdit={onEditAction} />
                 </Stack>
               </Stack>
             </Stack>
+
+            <CreateNewChecklistDialog data={editData} open={editOpen} onClose={editOnClose} />
           </CardContent>
         </CardActionArea>
       </Card>

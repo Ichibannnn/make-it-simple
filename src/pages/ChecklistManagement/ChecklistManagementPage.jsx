@@ -53,9 +53,9 @@ const ChecklistManagementPage = () => {
               <IconButton onClick={() => setStatus(!checklistParams?.Status)} title={!checklistParams?.Status ? "Active" : "Inactive"}>
                 <Inventory sx={checklistStyles.icons} />
               </IconButton>
-              <IconButton>
+              {/* <IconButton>
                 <FilterList sx={checklistStyles.icons} />
-              </IconButton>
+              </IconButton> */}
             </Stack>
           </Stack>
 

@@ -34,6 +34,14 @@ export const checklistStyles = {
     "&:hover": { borderColor: "primary.main", bgcolor: "action.hover" },
   },
 
+  folderCards: {
+    width: "100%",
+    height: "100%",
+    bgcolor: "#111c2d",
+    borderRadius: 2,
+    p: 2,
+  },
+
   createAddIcon: {
     fontSize: 44,
     color: "text.secordary",
@@ -59,5 +67,17 @@ export const checklistStyles = {
   cardDetails: {
     fontSize: "12px",
     // color: "text.secondary",
+  },
+
+  // Checklist Dialog
+  checklistDialog: {
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginBlockEnd: "5.28px",
+    fontSize: "18px",
+    fontWeight: 700,
+    color: "#48BB78",
   },
 };

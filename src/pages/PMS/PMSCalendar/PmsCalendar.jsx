@@ -1,8 +1,29 @@
-import { Box, Button, Chip, MenuItem, OutlinedInput, Select, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
-import { AccessTime, AccessTimeOutlined, Add, CheckCircle, EventOutlined, FileUploadOutlined, NotificationsOutlined, Search } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Chip,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Skeleton,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  AccessTime,
+  AccessTimeOutlined,
+  Add,
+  CheckCircle,
+  EventOutlined,
+  FileUploadOutlined,
+  NotificationsOutlined,
+  Search,
+} from "@mui/icons-material";
 
 import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
+import { global } from "../../../styles/global";
 import { pmsStyles } from "../styles/pmsStyles";
 
 import moment from "moment";
@@ -21,7 +42,6 @@ import PmsUploadSchedule from "./PmsUploadSchedule";
 
 import { usePmsReminderParams } from "../../../hooks/api_params/pms/usePmsReminderParams";
 import { useGetPmsReminderQuery } from "../../../features/api_pms/pms_reminder/pmsReminderApi";
-import { global } from "../../../styles/global";
 
 const arrayStatus = ["All Status", "Pending", "Done", "Delayed"];
 const arrayTimePeriod = ["All", "Today", "This Week", "Delayed"];
@@ -43,7 +63,11 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: openAddSchedule, onToggle: onToggleAddSchedule, onClose: onCloseAddSchedule } = useDisclosure();
-  const { open: openUploadSchedule, onToggle: onToggleUploadSchedule, onClose: onCloseUploadSchedule } = useDisclosure();
+  const {
+    open: openUploadSchedule,
+    onToggle: onToggleUploadSchedule,
+    onClose: onCloseUploadSchedule,
+  } = useDisclosure();
 
   const onShowScheduleDetails = (data) => {
     if (data) {
@@ -64,9 +88,6 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
     setStatus(arrayStatus?.[0]);
     setTimePeriod(arrayTimePeriod?.[0]);
   }, []);
-
-  // console.log("Calendar: ", data);
-  // console.log("ReminderParams: ", pmsReminderParams);
 
   return (
     <Stack sx={pmsStyles.parentContainer}>
@@ -144,7 +165,12 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
         <Stack sx={pmsStyles.reminderDropdownContainer}>
           <Box>
             <Typography sx={pmsStyles.reminderDropdownTitles}>Filter by Status:</Typography>
-            <Select value={Status || ""} size="small" sx={pmsStyles.reminderDropdowns} onChange={(e) => setStatus(e.target.value)}>
+            <Select
+              value={Status || ""}
+              size="small"
+              sx={pmsStyles.reminderDropdowns}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               {arrayStatus?.map((item, i) => (
                 <MenuItem key={i} value={item} sx={pmsStyles.reminderMenuItems}>
                   {item}
@@ -155,7 +181,12 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
 
           <Box mt={2}>
             <Typography sx={pmsStyles.reminderDropdownTitles}>Time Period:</Typography>
-            <Select value={TimePeriod || ""} size="small" sx={pmsStyles.reminderDropdowns} onChange={(e) => setTimePeriod(e.target.value)}>
+            <Select
+              value={TimePeriod || ""}
+              size="small"
+              sx={pmsStyles.reminderDropdowns}
+              onChange={(e) => setTimePeriod(e.target.value)}
+            >
               {arrayTimePeriod?.map((item, i) => (
                 <MenuItem key={i} value={item} sx={pmsStyles.reminderMenuItems}>
                   {item}
@@ -168,7 +199,9 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
         <Stack mt={3}>
           {pmsReminderData?.value?.pms?.length ? (
             <Stack>
-              <Typography sx={pmsStyles.reminderDropdownTitles}>{`${pmsReminderData?.value?.pms.length} store(s) found:`}</Typography>
+              <Typography
+                sx={pmsStyles.reminderDropdownTitles}
+              >{`${pmsReminderData?.value?.pms.length} store(s) found:`}</Typography>
             </Stack>
           ) : (
             ""
@@ -189,12 +222,19 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
                   <Stack key={i} sx={pmsStyles.reminderStackContent}>
                     <Stack>
                       <Chip
-                        icon={item.status === "Done" ? <CheckCircle sx={pmsStyles.chipIconStyle} /> : <AccessTime sx={pmsStyles.chipIconStyle} />}
+                        icon={
+                          item.status === "Done" ? (
+                            <CheckCircle sx={pmsStyles.chipIconStyle} />
+                          ) : (
+                            <AccessTime sx={pmsStyles.chipIconStyle} />
+                          )
+                        }
                         variant="filled"
                         label={item.status === "Done" ? "Done" : "Pending"}
                         sx={{
                           ...pmsStyles.chipStyle,
-                          backgroundColor: item.status === "Done" ? theme.palette.success.main : theme.palette.warning.main,
+                          backgroundColor:
+                            item.status === "Done" ? theme.palette.success.main : theme.palette.warning.main,
                         }}
                       />
 
@@ -220,14 +260,17 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
               </Stack>
             )}
 
-            {pmsReminderIsSuccess && !pmsReminderData?.value?.pms?.length && !pmsReminderIsLoading && !pmsReminderIsFetching && (
-              <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
-                <img src={noStore} alt="No Store Found" className="norecords-found-table" />
-                <Typography color="gray" align="center">
-                  No store found.
-                </Typography>
-              </Stack>
-            )}
+            {pmsReminderIsSuccess &&
+              !pmsReminderData?.value?.pms?.length &&
+              !pmsReminderIsLoading &&
+              !pmsReminderIsFetching && (
+                <Stack spacing={1} sx={pmsStyles.reminderNoStoreContainer}>
+                  <img src={noStore} alt="No Store Found" className="norecords-found-table" />
+                  <Typography color="gray" align="center">
+                    No store found.
+                  </Typography>
+                </Stack>
+              )}
           </Stack>
         </Stack>
       </Stack>

@@ -299,7 +299,13 @@ const PmsType = () => {
 
         <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ marginTop: "10px", padding: "20px" }}
+          gap={4}
+        >
           <OutlinedInput
             flex="1"
             placeholder="Search PMS Type"
@@ -324,7 +330,10 @@ const PmsType = () => {
               !isLoading &&
               !isFetching &&
               data?.value?.type?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                <Card
+                  key={item.id}
+                  sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}
+                >
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -345,13 +354,31 @@ const PmsType = () => {
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>NAME:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.name ? item.name : "-"}</Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>
+                          NAME:
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 400,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: theme.palette.text.main,
+                          }}
+                        >
+                          {item.name ? item.name : "-"}
+                        </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
-                        <PmsTypeActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>
+                          ACTION:
+                        </Typography>
+                        <PmsTypeActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -506,7 +533,12 @@ const PmsType = () => {
                           }}
                           align="center"
                         >
-                          <PmsTypeActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                          <PmsTypeActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -514,7 +546,11 @@ const PmsType = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           Something went wrong.
                         </Typography>
@@ -536,7 +572,12 @@ const PmsType = () => {
                   {isSuccess && !data?.value?.type?.length && !isLoading && !isFetching && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
+                        <img
+                          src={noRecordsFound}
+                          alt="No Records Found"
+                          className="norecords-found-table"
+                          style={{ width: "100%", maxWidth: "300px" }}
+                        />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           No records found.
                         </Typography>

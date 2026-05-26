@@ -22,14 +22,14 @@ export const checklistManagementApi = api.enhanceEndpoints({ addTagTypes: tags }
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
 
-    // archiveSites: builder.mutation({
-    //   query: (id) => ({
-    //     url: `pms-sites/${id}`,
-    //     method: "PATCH",
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : tags),
-    // }),
+    archiveChecklist: builder.mutation({
+      query: (id) => ({
+        url: `pms-checklist-management/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: (_, error) => (error ? [] : tags),
+    }),
   }),
 });
 
-export const { useGetChecklistsQuery, useAddEditChecklistMutation } = checklistManagementApi;
+export const { useGetChecklistsQuery, useAddEditChecklistMutation, useArchiveChecklistMutation } = checklistManagementApi;

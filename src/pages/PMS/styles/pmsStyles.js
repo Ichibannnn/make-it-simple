@@ -289,6 +289,25 @@ export const pmsStyles = {
     marginBottom: 0.5,
   },
 
+  chipDateStyle: {
+    fontWeight: 500,
+    fontSize: "11px",
+    height: 18,
+    borderRadius: "8px",
+    width: "197px",
+    alignItems: "center",
+    borderRadius: 1,
+    color: "#ffffffde",
+    "& .MuiChip-icon": {
+      color: "#ffffffde",
+      marginLeft: "3px",
+    },
+    "& .MuiChip-label": {
+      paddingLeft: "8px",
+    },
+    marginBottom: 0.5,
+  },
+
   chipIconStyle: {
     fontSize: 13,
     color: "#ffffffde",
@@ -363,6 +382,7 @@ export const pmsStyles = {
     border: "1px solid #4b586f",
     borderRadius: "7px",
     padding: 2,
+    mb: 1,
   },
   currentScheduleText: {
     fontSize: "12px",

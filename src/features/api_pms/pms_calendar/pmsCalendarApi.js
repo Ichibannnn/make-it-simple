@@ -13,23 +13,14 @@ export const pmsCalendarParams = api.enhanceEndpoints({ addTagTypes: tags }).inj
       providesTags: tags,
     }),
 
-    // getActivePmsType: builder.query({
-    //   query: (params) => ({
-    //     url: "pms-types?Status=true",
-    //     method: "GET",
-    //     params: params,
-    //   }),
-    //   providesTags: tags,
-    // }),
-
-    // addEditPmsType: builder.mutation({
-    //   query: (body) => ({
-    //     url: "pms-types",
-    //     method: "POST",
-    //     body: body,
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : tags),
-    // }),
+    reschedulePms: builder.mutation({
+      query: (body) => ({
+        url: "pms",
+        method: "POST",
+        body: body,
+      }),
+      invalidatesTags: (_, error) => (error ? [] : tags),
+    }),
 
     // archivePmsType: builder.mutation({
     //   query: (id) => ({
@@ -41,4 +32,4 @@ export const pmsCalendarParams = api.enhanceEndpoints({ addTagTypes: tags }).inj
   }),
 });
 
-export const { useGetPmsCalendarQuery } = pmsCalendarParams;
+export const { useGetPmsCalendarQuery, useReschedulePmsMutation } = pmsCalendarParams;
