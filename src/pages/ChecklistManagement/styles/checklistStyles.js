@@ -23,7 +23,9 @@ export const checklistStyles = {
 
   createCard: {
     height: "100%",
-    minHeight: 180,
+    minHeight: 280,
+    width: "100%",
+    borderRadius: 2,
     borderStyle: "dashed",
     display: "flex",
     alignItems: "center",
@@ -32,7 +34,11 @@ export const checklistStyles = {
     "&:hover": { borderColor: "primary.main", bgcolor: "action.hover" },
   },
 
-  createAddIcon: { fontSize: 44, color: "text.secordary", mb: 1 },
+  createAddIcon: {
+    fontSize: 44,
+    color: "text.secordary",
+    mb: 1,
+  },
 
   createNewFormText: {
     color: "text.secondary",
@@ -52,6 +58,6 @@ export const checklistStyles = {
 
   cardDetails: {
     fontSize: "12px",
-    color: "text.secondary",
+    // color: "text.secondary",
   },
 };

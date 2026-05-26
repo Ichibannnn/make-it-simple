@@ -3,13 +3,34 @@ import { global } from "../../styles/global";
 import { theme } from "../../theme/theme";
 import { checklistData } from "../../data";
 import { Archive, Filter, FilterList, Inventory, Search } from "@mui/icons-material";
+
 import { checklistStyles } from "./styles/checklistStyles";
+import { useGetChecklistsQuery } from "../../features/api masterlist/checklist_management/checklistManagementApi";
+import { useChecklistManagementParams } from "../../hooks/api_params/checklist-management/useChecklistManagementParams";
 
 import CreateCard from "./CreateCard";
 import ChecklistCards from "./ChecklistCards";
+import ChecklistCardSkeleton from "./ChecklistCardSkeleton";
 
 const ChecklistManagementPage = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { params: checklistParams, setStatus, setSearch } = useChecklistManagementParams();
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetChecklistsQuery(checklistParams);
+
+  // console.log("Checklist Params: ", checklistParams);
+  // console.log("Data: ", data);
+
+  const renderSkeleton = () => {
+    const renderSkeletonRows = () => {
+      return Array.from(new Array(9)).map((_, index) => (
+        <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
+          <ChecklistCardSkeleton />
+        </Grid>
+      ));
+    };
+    return renderSkeletonRows();
+  };
 
   return (
     <Stack sx={global.layoutContainer}>
@@ -21,23 +42,15 @@ const ChecklistManagementPage = () => {
               Manage checklists based from the PMS Type
             </Typography>
           </Stack>
-
           <Stack />
         </Stack>
 
         <Stack mt={4}>
           <Stack sx={checklistStyles.searchContainer}>
             <Stack direction="row">
-              <OutlinedInput
-                size="small"
-                // value={searchValue}
-                // onChange={(e) => dispatch(setSearchValue(e.target.value))}
-                placeholder="Search checklist title..."
-                startAdornment={<Search sx={global.searchIcon} />}
-                sx={checklistStyles.customSearch}
-              />
+              <OutlinedInput size="small" placeholder="Search checklist title..." startAdornment={<Search sx={global.searchIcon} />} sx={checklistStyles.customSearch} />
 
-              <IconButton>
+              <IconButton onClick={() => setStatus(!checklistParams?.Status)} title={!checklistParams?.Status ? "Active" : "Inactive"}>
                 <Inventory sx={checklistStyles.icons} />
               </IconButton>
               <IconButton>
@@ -50,14 +63,19 @@ const ChecklistManagementPage = () => {
             {/* Form Grid */}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4} lg={2.4}>
-                <CreateCard onClick={() => console.log("create new form")} />
+                <CreateCard />
               </Grid>
 
-              {checklistData?.map((item, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
-                  <ChecklistCards data={item} />
-                </Grid>
-              ))}
+              {(isLoading || isFetching) && renderSkeleton()}
+
+              {isSuccess &&
+                !isLoading &&
+                !isFetching &&
+                data?.value?.checklistManagement?.map((item, index) => (
+                  <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
+                    <ChecklistCards data={item} />
+                  </Grid>
+                ))}
             </Grid>
           </Stack>
         </Stack>

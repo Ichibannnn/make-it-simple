@@ -1,12 +1,13 @@
 import React, { useRef } from "react";
+import { MoreVertOutlined } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, IconButton, Stack, Typography } from "@mui/material";
 
 import Lottie from "lottie-react";
 import Folder from "../../assets/lotties/folder-yellow.json";
 
-import { checklistStyles } from "./styles/checklistStyles";
-import { MoreVertOutlined } from "@mui/icons-material";
+import moment from "moment";
 import { theme } from "../../theme/theme";
+import { checklistStyles } from "./styles/checklistStyles";
 
 const ChecklistCards = ({ data }) => {
   const lottieRef = useRef();
@@ -37,53 +38,55 @@ const ChecklistCards = ({ data }) => {
       lottieRef.current.pause();
     }
   };
+
   return (
-    <Card
-      variant="outlined"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      sx={{ position: "relative", "&:hover": { borderColor: "primary.main", cursor: "pointer" } }}
-    >
-      <CardActionArea>
-        <CardContent>
-          <Stack justifyContent="center" sx={{ width: "100%" }}>
-            <div
-              style={{
-                width: 150,
-                marginBottom: 4,
-                cursor: "pointer",
-              }}
-            >
-              <Lottie lottieRef={lottieRef} animationData={Folder} loop={false} autoplay={false} onEnterFrame={handleEnterFrame} />
-            </div>
-          </Stack>
+    <>
+      <Card
+        variant="outlined"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        sx={{ position: "relative", "&:hover": { borderColor: "primary.main", cursor: "pointer" }, borderRadius: 2 }}
+      >
+        <CardActionArea>
+          <CardContent>
+            <Stack justifyContent="center" sx={{ width: "100%" }}>
+              <div
+                style={{
+                  width: 150,
+                  marginBottom: 4,
+                  cursor: "pointer",
+                }}
+              >
+                <Lottie lottieRef={lottieRef} animationData={Folder} loop={false} autoplay={false} onEnterFrame={handleEnterFrame} />
+              </div>
+            </Stack>
 
-          <Stack>
-            <Typography sx={checklistStyles.cardTitle}>{data?.title}</Typography>
+            <Stack>
+              <Typography sx={checklistStyles.cardTitle}>{data?.title}</Typography>
 
-            <Stack direction="row" justifyContent="space-between">
-              <Stack mt={2}>
-                <Typography sx={checklistStyles.cardDescription}>{data?.description}</Typography>
+              <Stack direction="row" justifyContent="space-between">
+                <Stack mt={2}>
+                  <Typography sx={checklistStyles.cardDescription}>{data?.description}</Typography>
 
-                <Stack mt={1}>
-                  <Typography sx={{ ...checklistStyles.cardDetails, color: data?.status === "Active" ? theme.palette.success.main : theme.palette.error.main }}>
-                    {data?.status}
-                  </Typography>
-                  <Typography sx={checklistStyles.cardDetails}>{`Created at: ${data?.createdAt}`}</Typography>
-                  <Typography sx={checklistStyles.cardDetails}>{`Modified at: ${data?.modifiedAt}`}</Typography>
+                  <Stack mt={1}>
+                    <Typography sx={{ ...checklistStyles.cardDetails, color: data?.isActive ? theme.palette.success.main : theme.palette.error.main }}>
+                      {data?.isActive ? "Active" : "Inactive"}
+                    </Typography>
+                    <Typography sx={checklistStyles.cardDetails}>{`Created at: ${moment(data?.createdAt).format("LL")}`}</Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack mt={2}>
+                  <IconButton>
+                    <MoreVertOutlined />
+                  </IconButton>
                 </Stack>
               </Stack>
-
-              <Stack mt={2}>
-                <IconButton>
-                  <MoreVertOutlined />
-                </IconButton>
-              </Stack>
             </Stack>
-          </Stack>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </>
   );
 };
 
