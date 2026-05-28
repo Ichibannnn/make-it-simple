@@ -106,8 +106,8 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
             </Stack>
 
             {/* Checklist Setup */}
-            <Stack sx={checklistStyles.checklistDialogSetup}>
-              <Stack>
+            <Stack sx={checklistStyles.checklistBodyContainer}>
+              <Stack sx={checklistStyles.checklistSectionsContainer}>
                 <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>Checklist Title</Typography>
               </Stack>
             </Stack>
