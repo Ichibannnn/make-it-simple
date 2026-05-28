@@ -62,7 +62,11 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
-  const { open: openAddSchedule, onToggle: onToggleAddSchedule, onClose: onCloseAddSchedule } = useDisclosure();
+  const {
+    open: openAddSchedule,
+    onToggle: onToggleAddSchedule,
+    onClose: onCloseAddSchedule,
+  } = useDisclosure();
   const {
     open: openUploadSchedule,
     onToggle: onToggleUploadSchedule,
@@ -129,30 +133,42 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
           </Stack>
         </Stack>
 
-        <FullCalendar
-          height={isScreenSmall ? "64vh" : "100%"}
-          plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-          initialView="dayGridMonth"
-          dateClick={(data) => onShowScheduleDetails(data.dateStr)}
-          dayMaxEvents={2}
-          headerToolbar={{
-            right: "prev,today,next",
-            left: "title",
-            // center: "title",
-            // left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
-          }}
-          events={data?.value?.pms?.map((item) => {
-            return {
-              title: `(${item.name})`,
-              start: `${moment(item.date).format("YYYY-MM-DD")}`,
+        <Stack sx={{ width: "100%", height: "100%" }}>
+          {isLoading || isFetching ? (
+            <CalendarSkeleton />
+          ) : (
+            <FullCalendar
+              height={isScreenSmall ? "64vh" : "100%"}
+              plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+              initialView="dayGridMonth"
+              dateClick={(data) => onShowScheduleDetails(data.dateStr)}
+              dayMaxEvents={2}
+              headerToolbar={{
+                right: "prev,today,next",
+                left: "title",
+                // center: "title",
+                // left: "today,dayGridMonth,dayGridWeek,dayGridDay,listWeek",
+              }}
+              events={data?.value?.pms?.map((item) => {
+                return {
+                  title: `(${item.name})`,
+                  start: `${moment(item.date).format("YYYY-MM-DD")}`,
 
-              backgroundColor: item?.status === "Done" ? "#09DF72" : "#FF8914",
-              borderColor: "transparent",
-            };
-          })}
-          eventContent={(eventInfo) => <Typography sx={pmsStyles.calendarTitle}>{eventInfo.event.title}</Typography>}
-          moreLinkContent={(args) => <Typography sx={pmsStyles.calendarLinkContent}>+{args.num} more</Typography>}
-        />
+                  backgroundColor: item?.status === "Done" ? "#09DF72" : "#FF8914",
+                  borderColor: "transparent",
+                };
+              })}
+              eventContent={(eventInfo) => (
+                <Typography sx={pmsStyles.calendarTitle}>{eventInfo.event.title}</Typography>
+              )}
+              moreLinkContent={(args) => (
+                <Typography sx={pmsStyles.calendarLinkContent}>+{args.num} more</Typography>
+              )}
+            />
+          )}
+
+          {/* <CalendarSkeleton /> */}
+        </Stack>
       </Stack>
 
       {/* PMS Reminder */}
@@ -216,7 +232,8 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
                   <Stack
                     sx={{
                       ...pmsStyles.stackIndicator,
-                      backgroundColor: item.status == "Done" ? theme.palette.success.main : theme.palette.warning.main,
+                      backgroundColor:
+                        item.status == "Done" ? theme.palette.success.main : theme.palette.warning.main,
                     }}
                   />
                   <Stack key={i} sx={pmsStyles.reminderStackContent}>
@@ -244,19 +261,23 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
                     <Stack sx={pmsStyles.reminderDetailsContainer}>
                       <Stack sx={pmsStyles.reminderDetailsContent}>
                         <EventOutlined sx={pmsStyles.reminderCalendarIcon} />
-                        <Typography sx={pmsStyles.reminderContentTexts}>{moment(item.date).format("LL")}</Typography>
+                        <Typography sx={pmsStyles.reminderContentTexts}>
+                          {moment(item.date).format("LL")}
+                        </Typography>
                       </Stack>
 
                       <Typography sx={pmsStyles.reminderContentTexts}>{item.area}</Typography>
-                      <Typography sx={pmsStyles.reminderContentTexts}>{`${item.completion} PMS Completed`}</Typography>
+                      <Typography
+                        sx={pmsStyles.reminderContentTexts}
+                      >{`${item.completion} PMS Completed`}</Typography>
                     </Stack>
                   </Stack>
                 </Stack>
               ))}
 
             {(pmsReminderIsLoading || pmsReminderIsFetching) && (
-              <Stack spacing={1} sx={{ ...pmsStyles.reminderSkeletonContainer }}>
-                <Skeleton variant="rounded" sx={pmsStyles.skeletonStyle} />
+              <Stack sx={{ ...pmsStyles.reminderSkeletonContainer }}>
+                <Skeleton animation="wave" variant="rectangular" width="100%" height="100%" />
               </Stack>
             )}
 
@@ -276,10 +297,34 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
       </Stack>
 
       <PmsAddSchedule openAddSchedule={openAddSchedule} onCloseAddSchedule={onCloseAddSchedule} />
-      <PmsUploadSchedule openUploadSchedule={openUploadSchedule} onCloseUploadSchedule={onCloseUploadSchedule} />
-      <PmsDetailDialog data={data} getDate={getDate} setGetDate={setGetDate} open={viewOpen} onClose={viewOnClose} />
+      <PmsUploadSchedule
+        openUploadSchedule={openUploadSchedule}
+        onCloseUploadSchedule={onCloseUploadSchedule}
+      />
+      <PmsDetailDialog
+        data={data}
+        getDate={getDate}
+        setGetDate={setGetDate}
+        open={viewOpen}
+        onClose={viewOnClose}
+      />
     </Stack>
   );
 };
 
 export default PmsCalendar;
+
+const CalendarSkeleton = () => {
+  return (
+    <Stack sx={pmsStyles.skeletonContainer}>
+      <Stack sx={pmsStyles.skeletonHeader}>
+        <Skeleton animation="wave" variant="text" width={150} height={70} />
+        <Skeleton animation="wave" variant="text" width={150} height={70} />
+      </Stack>
+
+      <Stack sx={pmsStyles.skeletonBody}>
+        <Skeleton animation="wave" variant="rectangular" width="100%" height={550} />
+      </Stack>
+    </Stack>
+  );
+};

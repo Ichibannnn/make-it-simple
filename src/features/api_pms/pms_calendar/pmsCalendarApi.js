@@ -21,14 +21,6 @@ export const pmsCalendarParams = api.enhanceEndpoints({ addTagTypes: tags }).inj
       }),
       invalidatesTags: (_, error) => (error ? [] : tags),
     }),
-
-    // archivePmsType: builder.mutation({
-    //   query: (id) => ({
-    //     url: `pms-types/${id}`,
-    //     method: "PATCH",
-    //   }),
-    //   invalidatesTags: (_, error) => (error ? [] : tags),
-    // }),
   }),
 });
 

@@ -181,6 +181,17 @@ export const pmsStyles = {
     gap: 1,
   },
 
+  skeletonHeader: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  skeletonBody: {
+    width: "100%",
+    height: "100%",
+  },
+
   // PMS Reminder
   reminderContainer: {
     width: {
@@ -213,7 +224,7 @@ export const pmsStyles = {
   },
   reminderStoresContainer: {
     spacing: 5,
-    maxHeight: "420px",
+    maxHeight: "425px",
     overflow: "auto",
   },
   reminderStackContent: {
@@ -248,7 +259,7 @@ export const pmsStyles = {
   },
   reminderSkeletonContainer: {
     spacing: 1,
-    height: "420px",
+    height: "490px",
     // backgroundColor: theme.palette.bgForm.black2,
     justifyContent: "center",
     alignItems: "center",
@@ -257,7 +268,7 @@ export const pmsStyles = {
   skeletonStyle: {
     backgroundColor: theme.palette.bgForm.black2,
     width: 420,
-    flex: 1,
+    // flex: 1,
     overflow: "auto",
   },
   reminderNoStoreContainer: {
@@ -311,6 +322,10 @@ export const pmsStyles = {
   chipIconStyle: {
     fontSize: 13,
     color: "#ffffffde",
+  },
+
+  skeletonContainer: {
+    height: "100%",
   },
 
   // Store Visits Dialog

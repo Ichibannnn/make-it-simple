@@ -2,7 +2,7 @@ import { api } from "../../index";
 
 const tags = ["PMS Reminder"];
 
-export const pmsReminderParams = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
+export const pmsReminderParamsApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoints({
   endpoints: (builder) => ({
     getPmsReminder: builder.query({
       query: (params) => ({
@@ -15,4 +15,4 @@ export const pmsReminderParams = api.enhanceEndpoints({ addTagTypes: tags }).inj
   }),
 });
 
-export const { useGetPmsReminderQuery } = pmsReminderParams;
+export const { useGetPmsReminderQuery } = pmsReminderParamsApi;

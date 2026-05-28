@@ -2,25 +2,26 @@ import React, { useRef, useState } from "react";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, IconButton, Stack, Typography } from "@mui/material";
 
-import Lottie from "lottie-react";
-import Folder from "../../assets/lotties/folder-yellow.json";
-
 import moment from "moment";
 import Swal from "sweetalert2";
+import Lottie from "lottie-react";
+import Folder from "../../assets/lotties/folder-yellow.json";
 import { toast } from "sonner";
 import { theme } from "../../theme/theme";
 import { checklistStyles } from "./styles/checklistStyles";
 import useDisclosure from "../../hooks/useDisclosure";
+import { useArchiveChecklistMutation } from "../../features/api masterlist/checklist_management/checklistManagementApi";
 
 import ChecklistCardActions from "./ChecklistCardActions";
 import CreateNewChecklistDialog from "./CreateNewChecklistDialog";
-import { useArchiveChecklistMutation } from "../../features/api masterlist/checklist_management/checklistManagementApi";
+import ChecklistFormDialog from "./ChecklistFormDialog";
 
 const ChecklistCards = ({ data }) => {
   const [editData, setEditData] = useState(null);
   const lottieRef = useRef();
   const isHovering = useRef(false);
 
+  const { open: checklistOpen, onToggle: checklistOnToggle, onClose: checklistOnClose } = useDisclosure();
   const { open: editOpen, onToggle: editOnToggle, onClose: editOnClose } = useDisclosure();
   const [archiveChecklist] = useArchiveChecklistMutation();
 
@@ -48,6 +49,10 @@ const ChecklistCards = ({ data }) => {
     if (!isHovering.current && e.direction === -1 && Math.floor(e.currentTime) <= 0) {
       lottieRef.current.pause();
     }
+  };
+
+  const onChecklistAction = () => {
+    checklistOnToggle();
   };
 
   const onEditAction = (data) => {
@@ -179,59 +184,63 @@ const ChecklistCards = ({ data }) => {
         variant="outlined"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        sx={{ position: "relative", "&:hover": { borderColor: "primary.main", cursor: "pointer" }, borderRadius: 2 }}
+        onClick={() => onChecklistAction()}
+        sx={checklistStyles.cardContainer}
       >
         <CardActionArea component="div">
           <CardContent>
-            <Stack justifyContent="center" sx={{ width: "100%" }}>
-              <div
-                style={{
-                  width: 150,
-                  cursor: "pointer",
-                }}
-              >
-                <Lottie
-                  lottieRef={lottieRef}
-                  animationData={Folder}
-                  loop={false}
-                  autoplay={false}
-                  onEnterFrame={handleEnterFrame}
-                />
-              </div>
-            </Stack>
-
             <Stack>
-              <Typography sx={checklistStyles.cardTitle}>{data?.title}</Typography>
+              <Stack justifyContent="center" sx={{ width: "100%" }}>
+                <div
+                  style={{
+                    width: 150,
+                    cursor: "pointer",
+                  }}
+                >
+                  <Lottie
+                    lottieRef={lottieRef}
+                    animationData={Folder}
+                    loop={false}
+                    autoplay={false}
+                    onEnterFrame={handleEnterFrame}
+                  />
+                </div>
+              </Stack>
 
-              <Stack direction="row" justifyContent="space-between">
-                <Stack mt={2}>
-                  <Typography sx={checklistStyles.cardDescription}>{data?.description}</Typography>
+              <Stack>
+                <Typography sx={checklistStyles.cardTitle}>{data?.title}</Typography>
 
-                  <Stack mt={1}>
-                    <Typography
-                      sx={{
-                        ...checklistStyles.cardDetails,
-                        color: data?.isActive ? theme.palette.success.main : theme.palette.error.main,
-                      }}
-                    >
-                      {data?.isActive ? "Active" : "Inactive"}
-                    </Typography>
-                    <Typography
-                      sx={checklistStyles.cardDetails}
-                    >{`Created at: ${moment(data?.createdAt).format("LL")}`}</Typography>
+                <Stack direction="row" justifyContent="space-between">
+                  <Stack mt={2}>
+                    <Typography sx={checklistStyles.cardDescription}>{data?.description}</Typography>
+
+                    <Stack mt={1}>
+                      <Typography
+                        sx={{
+                          ...checklistStyles.cardDetails,
+                          color: data?.isActive ? theme.palette.success.main : theme.palette.error.main,
+                        }}
+                      >
+                        {data?.isActive ? "Active" : "Inactive"}
+                      </Typography>
+                      <Typography
+                        sx={checklistStyles.cardDetails}
+                      >{`Created at: ${moment(data?.createdAt).format("LL")}`}</Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
 
-                <Stack mt={2}>
-                  <ChecklistCardActions data={data} onArchive={onArchiveAction} onEdit={onEditAction} />
+                  <Stack mt={2}>
+                    <ChecklistCardActions data={data} onArchive={onArchiveAction} onEdit={onEditAction} />
+                  </Stack>
                 </Stack>
               </Stack>
             </Stack>
-
-            <CreateNewChecklistDialog data={editData} open={editOpen} onClose={editOnClose} />
           </CardContent>
         </CardActionArea>
       </Card>
+
+      <CreateNewChecklistDialog data={editData} open={editOpen} onClose={editOnClose} />
+      <ChecklistFormDialog open={checklistOpen} onClose={checklistOnClose} />
     </>
   );
 };

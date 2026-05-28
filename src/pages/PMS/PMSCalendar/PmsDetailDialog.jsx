@@ -29,11 +29,15 @@ import { pmsStyles } from "../styles/pmsStyles";
 import { LoadingButton } from "@mui/lab";
 import { useReschedulePmsMutation } from "../../../features/api_pms/pms_calendar/pmsCalendarApi";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { pmsReminderParamsApi } from "../../../features/api_pms/pms_reminder/pmsReminderApi";
 
 const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
   const [getRescheduleData, setGetRescheduleData] = useState(null);
 
-  const filteredData = data?.value?.pms?.filter((item) => moment(item?.date).format("YYYY-MM-DD") === getDate);
+  const filteredData = data?.value?.pms?.filter(
+    (item) => moment(item?.date).format("YYYY-MM-DD") === getDate,
+  );
   const {
     open: openScheduleDialog,
     onToggle: onToggleScheduleDialog,
@@ -88,7 +92,8 @@ const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
                     <Typography
                       sx={{
                         ...pmsStyles.storeStackStatus,
-                        color: item?.status === "Done" ? theme.palette.success.main : theme.palette.warning.main,
+                        color:
+                          item?.status === "Done" ? theme.palette.success.main : theme.palette.warning.main,
                       }}
                     >
                       {item.status}
@@ -151,6 +156,8 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseStoreVisitDialog, 
   const [reschedulePms, { isLoading: reschedulePmsIsLoading, isFetching: reschedulePmsIsFetching }] =
     useReschedulePmsMutation();
 
+  const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
@@ -181,7 +188,7 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseStoreVisitDialog, 
     payload.append("ScheduleDate", moment(formData.RescheduleDate).format("YYYY-MM-DD"));
     payload.append("Remarks", formData.Remarks);
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     await reschedulePms(payload)
       .unwrap()
@@ -190,6 +197,7 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseStoreVisitDialog, 
           description: "PMS rescheduled!",
           duration: 1500,
         });
+        dispatch(pmsReminderParamsApi.util.invalidateTags(["PMS Reminder"]));
         onCloseStoreVisitDialog();
         onCloseScheduleDialog();
       })

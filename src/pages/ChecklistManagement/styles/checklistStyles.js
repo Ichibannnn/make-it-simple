@@ -21,6 +21,12 @@ export const checklistStyles = {
     justifyContent: "space-between",
   },
 
+  cardContainer: {
+    position: "relative",
+    "&:hover": { borderColor: "primary.main", cursor: "pointer" },
+    borderRadius: 2,
+  },
+
   createCard: {
     height: "100%",
     minHeight: 280,
@@ -66,18 +72,45 @@ export const checklistStyles = {
 
   cardDetails: {
     fontSize: "12px",
-    // color: "text.secondary",
+    color: "text.secondary",
   },
 
   // Checklist Dialog
-  checklistDialog: {
-    display: "flex",
+  checklistDialogContent: {
+    mt: 1,
+    height: "100%",
+    width: "100%",
+    justifyContent: "space-between",
+  },
+
+  checklistDialogHeader: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+  },
+
+  checklistHeaderText: {
+    fontSize: "24px",
+    fontWeight: 600,
+    margin: 0,
+  },
+
+  arrowButton: {
+    fontSize: "26px",
+  },
+
+  checklistBodyContainer: {
+    width: "100%",
+    height: "100%",
+    mt: 1,
+    alignItems: "center",
     justifyContent: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    marginBlockEnd: "5.28px",
-    fontSize: "18px",
-    fontWeight: 700,
-    color: "#48BB78",
+  },
+
+  checklistSectionsContainer: {
+    width: "40%",
+    height: "50%",
+    bgcolor: "#111c2d",
   },
 };

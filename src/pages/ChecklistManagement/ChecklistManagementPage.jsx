@@ -1,4 +1,15 @@
-import { Box, Grid, IconButton, InputAdornment, OutlinedInput, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import { useState } from "react";
 import { global } from "../../styles/global";
 import { theme } from "../../theme/theme";
 import { checklistData } from "../../data";
@@ -6,20 +17,25 @@ import { Archive, Filter, FilterList, Inventory, Search } from "@mui/icons-mater
 
 import { checklistStyles } from "./styles/checklistStyles";
 import { useGetChecklistsQuery } from "../../features/api masterlist/checklist_management/checklistManagementApi";
-import { useChecklistManagementParams } from "../../hooks/api_params/checklist-management/useChecklistManagementParams";
 
 import CreateCard from "./CreateCard";
 import ChecklistCards from "./ChecklistCards";
 import ChecklistCardSkeleton from "./ChecklistCardSkeleton";
+import useDebounce from "../../hooks/useDebounce";
 
 const ChecklistManagementPage = () => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { params: checklistParams, setStatus, setSearch } = useChecklistManagementParams();
-  const { data, isLoading, isFetching, isSuccess, isError } = useGetChecklistsQuery(checklistParams);
+  const [status, setStatus] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const search = useDebounce(searchValue, 500);
 
-  // console.log("Checklist Params: ", checklistParams);
-  // console.log("Data: ", data);
+  const queryParams = {
+    Status: status,
+    Search: search,
+  };
+
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetChecklistsQuery(queryParams);
 
   const renderSkeleton = () => {
     const renderSkeletonRows = () => {
@@ -38,9 +54,7 @@ const ChecklistManagementPage = () => {
         <Stack justifyContent="space-between" sx={global.headerContainer}>
           <Stack>
             <Typography variant={isScreenSmall ? "h5" : "h4"}>Checklist Management</Typography>
-            <Typography color="text.secondary" fontSize="small">
-              Manage checklists based from the PMS Type
-            </Typography>
+            <Typography color="text.secondary" fontSize="small"></Typography>
           </Stack>
           <Stack />
         </Stack>
@@ -48,9 +62,16 @@ const ChecklistManagementPage = () => {
         <Stack mt={4}>
           <Stack sx={checklistStyles.searchContainer}>
             <Stack direction="row">
-              <OutlinedInput size="small" placeholder="Search checklist title..." startAdornment={<Search sx={global.searchIcon} />} sx={checklistStyles.customSearch} />
+              <OutlinedInput
+                size="small"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder="Search checklist title..."
+                startAdornment={<Search sx={global.searchIcon} />}
+                sx={checklistStyles.customSearch}
+              />
 
-              <IconButton onClick={() => setStatus(!checklistParams?.Status)} title={!checklistParams?.Status ? "Active" : "Inactive"}>
+              <IconButton onClick={() => setStatus(!status)} title={!status ? "Active" : "Inactive"}>
                 <Inventory sx={checklistStyles.icons} />
               </IconButton>
               {/* <IconButton>

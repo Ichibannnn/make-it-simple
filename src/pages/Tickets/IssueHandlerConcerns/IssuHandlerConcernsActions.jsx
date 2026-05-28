@@ -115,11 +115,13 @@ const IssueHandlerConcernsActions = ({
 
   const onCopyOpenTicket = async (data) => {
     const message = `Fresh Morning, ${data?.requestor_Name}, ${data?.department_Name}. Your request has been successfully received under Service Ticket #${moment(
-      data?.created_At
-    ).format("YYYY")}-${data?.ticketConcernId}. Will review your concern, and you will be updated once action has been taken. Thank you!`;
+      data?.created_At,
+    ).format(
+      "YYYY",
+    )}-${data?.ticketConcernId}. Will review your concern, and you will be updated once action has been taken. Thank you!`;
 
     try {
-      await navigator.clipboard.writeText(message);
+      await navigator?.clipboard?.writeText(message);
       toast.success(`Ticket details copied to clipboard`, {
         duration: 1500,
       });
@@ -135,7 +137,7 @@ const IssueHandlerConcernsActions = ({
     } has been resolved and is now marked as For Confirmation. Kindly review the resolution provided. If no confirmation is received within 24 hours, the system will automatically close the ticket. If the problem is still not fixed, you may return the ticket for further assistance before the auto-closure deadline. Thank you!`;
 
     try {
-      await navigator.clipboard.writeText(message);
+      await navigator?.clipboard?.writeText(message);
       toast.success(`Ticket details copied to clipboard`, {
         duration: 1500,
       });
@@ -172,7 +174,7 @@ const IssueHandlerConcernsActions = ({
           <ContentCopyOutlined fontSize="small" />
         </ListItemIcon>
         Copy Ticket Details
-      </MenuItem>
+      </MenuItem>,
     );
   } else {
     if (data?.getForClosingTickets?.[0]?.isApprove === false) {
@@ -190,7 +192,7 @@ const IssueHandlerConcernsActions = ({
             <ArrowForwardOutlined fontSize="small" color="error" />
           </ListItemIcon>
           <Typography sx={{ color: theme.palette.error.main }}>Cancel Ticket</Typography>
-        </MenuItem>
+        </MenuItem>,
       );
     }
   }
@@ -208,7 +210,7 @@ const IssueHandlerConcernsActions = ({
           <KeyboardBackspaceOutlined fontSize="small" color="error" />
         </ListItemIcon>
         <Typography sx={{ color: theme.palette.error.main }}>Return</Typography>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -219,7 +221,7 @@ const IssueHandlerConcernsActions = ({
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
         Update On-Hold
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -230,7 +232,7 @@ const IssueHandlerConcernsActions = ({
           <ModeEditOutlineOutlined fontSize="small" />
         </ListItemIcon>
         <Typography>Manage Ticket</Typography>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -241,7 +243,7 @@ const IssueHandlerConcernsActions = ({
           <ArrowForwardOutlined fontSize="small" color="warning" />
         </ListItemIcon>
         <Typography sx={{ color: theme.palette.warning.main }}>Resume</Typography>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -254,29 +256,38 @@ const IssueHandlerConcernsActions = ({
           </ListItemIcon>
           <Typography>View Ticket</Typography>
         </Stack>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
-  if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && data?.ticket_Status !== "Closed") {
+  if (
+    data?.getForClosingTickets?.[0]?.isApprove === true &&
+    data?.ticket_Status !== "For Transfer" &&
+    data?.ticket_Status !== "Closed"
+  ) {
     menuItems.push(
       <MenuItem onClick={() => onCopyConfirmTicket(data)}>
         <ListItemIcon>
           <ContentCopyOutlined fontSize="small" />
         </ListItemIcon>
         <Typography>Copy Ticket Details</Typography>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
-  if (data?.getForClosingTickets?.[0]?.isApprove === true && data?.ticket_Status !== "For Transfer" && userDetails?.id === data?.requestor_By && data?.ticket_Status !== "Closed") {
+  if (
+    data?.getForClosingTickets?.[0]?.isApprove === true &&
+    data?.ticket_Status !== "For Transfer" &&
+    userDetails?.id === data?.requestor_By &&
+    data?.ticket_Status !== "Closed"
+  ) {
     menuItems.push(
       <MenuItem onClick={() => onConfirmAction(data)}>
         <ListItemIcon>
           <DoneOutlined fontSize="small" color="success" />
         </ListItemIcon>
         <Typography sx={{ color: theme.palette.success.main }}>Confirm</Typography>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -289,7 +300,7 @@ const IssueHandlerConcernsActions = ({
           </ListItemIcon>
           <Typography sx={{ color: theme.palette.success.main }}>Print</Typography>
         </Stack>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -307,7 +318,7 @@ const IssueHandlerConcernsActions = ({
           <CloseOutlined fontSize="small" color="error" />
         </ListItemIcon>
         <Typography sx={{ color: theme.palette.error.main }}>Cancel</Typography>
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
@@ -318,7 +329,7 @@ const IssueHandlerConcernsActions = ({
           <MoveDownOutlined fontSize="small" />
         </ListItemIcon>
         View Transfer
-      </MenuItem>
+      </MenuItem>,
     );
   }
 
