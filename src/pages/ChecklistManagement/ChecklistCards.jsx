@@ -17,6 +17,7 @@ import CreateNewChecklistDialog from "./CreateNewChecklistDialog";
 import ChecklistFormDialog from "./ChecklistFormDialog";
 
 const ChecklistCards = ({ data }) => {
+  const [checklistData, setChecklistData] = useState(null);
   const [editData, setEditData] = useState(null);
   const lottieRef = useRef();
   const isHovering = useRef(false);
@@ -51,7 +52,8 @@ const ChecklistCards = ({ data }) => {
     }
   };
 
-  const onChecklistAction = () => {
+  const onChecklistAction = (data) => {
+    setChecklistData(data);
     checklistOnToggle();
   };
 
@@ -184,7 +186,6 @@ const ChecklistCards = ({ data }) => {
         variant="outlined"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={() => onChecklistAction()}
         sx={checklistStyles.cardContainer}
       >
         <CardActionArea component="div">
@@ -196,6 +197,7 @@ const ChecklistCards = ({ data }) => {
                     width: 150,
                     cursor: "pointer",
                   }}
+                  onClick={() => onChecklistAction(data)}
                 >
                   <Lottie
                     lottieRef={lottieRef}
@@ -240,7 +242,7 @@ const ChecklistCards = ({ data }) => {
       </Card>
 
       <CreateNewChecklistDialog data={editData} open={editOpen} onClose={editOnClose} />
-      <ChecklistFormDialog open={checklistOpen} onClose={checklistOnClose} />
+      <ChecklistFormDialog data={checklistData} open={checklistOpen} onClose={checklistOnClose} />
     </>
   );
 };

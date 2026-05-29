@@ -49,6 +49,13 @@ const black = {
 //     900: "#301110"
 // },
 
+// 0D1117
+// 161B22
+
+// 1D293D
+// 314158
+// 45556C
+
 const theme = createTheme({
   palette: {
     bgForm: {
@@ -145,13 +152,13 @@ const theme = createTheme({
             borderColor: "#9e77ed",
           },
           "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#2D3748",
+            borderColor: "#404d63",
           },
         },
         input: {
           "&.MuiOutlinedInput-input.Mui-disabled": {
             color: "red",
-            "-webkit-text-fill-color": "#69717b",
+            "-webkit-text-fill-color": "#97a0ab",
           },
         },
       },

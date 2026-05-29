@@ -76,6 +76,18 @@ export const checklistStyles = {
   },
 
   // Checklist Dialog
+
+  checklistDialog: {
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginBlockEnd: "5.28px",
+    fontSize: "18px",
+    fontWeight: 700,
+    color: "#48BB78",
+  },
+
   checklistDialogContent: {
     mt: 1,
     height: "100%",
@@ -87,13 +99,15 @@ export const checklistStyles = {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
+    // justifyContent: "space-between",
     gap: 2,
   },
 
   checklistHeaderText: {
-    fontSize: "24px",
+    fontSize: "20px",
     fontWeight: 600,
     margin: 0,
+    letterSpacing: -0.5,
   },
 
   arrowButton: {
@@ -105,12 +119,88 @@ export const checklistStyles = {
     height: "100%",
     mt: 1,
     alignItems: "center",
-    justifyContent: "center",
   },
 
   checklistSectionsContainer: {
-    width: "40%",
+    width: "50%",
     height: "50%",
-    bgcolor: "#111c2d",
+    bgcolor: "#1D293D",
+    mt: 4,
+    borderRadius: "12px",
+    border: "1px solid #4b586f",
+  },
+
+  checklistSectionContent: {
+    width: "100%",
+    p: 2,
+  },
+
+  checklistSectionHeader: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  checklistFormDescription: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 0.2,
+  },
+
+  dotIcon: {
+    fontSize: "10px",
+  },
+
+  checklistFormText: {
+    fontSize: "14px",
+    // fontWeight: 600,
+    color: "#c9d1d9",
+  },
+
+  inputProps: {
+    style: {
+      fontSize: "14px",
+    },
+  },
+
+  inputLabelProps: {
+    style: {
+      fontSize: "14px",
+    },
+  },
+
+  checklistSectionsContent: {
+    mt: 2,
+    bgcolor: "#314158",
+    height: "100%",
+    borderRadius: "12px",
+    border: "1px solid #4b586f",
+    padding: 2,
+  },
+
+  sectionChipStyle: {
+    fontWeight: 500,
+    fontSize: "11px",
+    height: 20,
+    width: "fit-content",
+    borderRadius: "4px",
+    alignItems: "center",
+    borderRadius: 1,
+    color: "#ffffffde",
+    marginBottom: "8px",
+    // letterSpacing: 0.7,
+  },
+
+  sectionTextField: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 1,
+  },
+
+  sectionIconButton: {
+    border: "1px solid #4b586f",
+    borderRadius: "4px",
+    padding: "4px",
   },
 };

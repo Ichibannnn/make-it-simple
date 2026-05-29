@@ -166,8 +166,6 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
               )}
             />
           )}
-
-          {/* <CalendarSkeleton /> */}
         </Stack>
       </Stack>
 

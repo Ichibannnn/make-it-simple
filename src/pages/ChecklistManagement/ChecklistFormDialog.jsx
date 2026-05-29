@@ -1,4 +1,6 @@
 import {
+  Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,7 +11,15 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { ArrowBackOutlined, CloseOutlined, Save } from "@mui/icons-material";
+import {
+  Add,
+  ArrowBackOutlined,
+  CloseOutlined,
+  Delete,
+  DeleteOutlineOutlined,
+  FiberManualRecord,
+  Save,
+} from "@mui/icons-material";
 import React, { useEffect } from "react";
 
 import * as yup from "yup";
@@ -27,7 +37,7 @@ const schema = yup.object().shape({
   description: yup.string().required("Description is required."),
 });
 
-const CreateNewChecklistDialog = ({ open, onClose }) => {
+const CreateNewChecklistDialog = ({ data, open, onClose }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const onSubmitAction = async (data) => {
@@ -83,6 +93,8 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
     onClose();
   };
 
+  console.log("ChecklistData: ", data);
+
   return (
     <>
       <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "unset" } }}>
@@ -99,7 +111,7 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
 
               <Stack gap={0} p={0}>
                 <Typography sx={checklistStyles.checklistHeaderText}>Checklist Form Builder</Typography>
-                <Typography color="text.secondary" sx={{ fontSize: "14px" }}>
+                <Typography color="text.secondary" sx={{ fontSize: "13px" }}>
                   Create and manage your checklist
                 </Typography>
               </Stack>
@@ -108,7 +120,91 @@ const CreateNewChecklistDialog = ({ open, onClose }) => {
             {/* Checklist Setup */}
             <Stack sx={checklistStyles.checklistBodyContainer}>
               <Stack sx={checklistStyles.checklistSectionsContainer}>
-                <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>Checklist Title</Typography>
+                <Stack sx={checklistStyles.checklistSectionContent}>
+                  {/* Checklist Header   */}
+                  <Stack sx={checklistStyles.checklistSectionHeader}>
+                    <Stack>
+                      <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>Build your Checklist</Typography>
+                      <Typography color="text.secondary" sx={{ fontSize: "12px", fontWeight: 400 }}>
+                        Let's start with the basic information for your checklist.
+                      </Typography>
+                    </Stack>
+
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={<Add />}
+                      sx={{ fontSize: "11px", padding: "6px 16px" }}
+                    >
+                      Add Section
+                    </Button>
+                  </Stack>
+
+                  {/* Checklist Name */}
+                  <Stack mt={4} gap={2}>
+                    <Stack gap={0.5}>
+                      <Stack sx={checklistStyles.checklistFormDescription}>
+                        <FiberManualRecord color="error" sx={checklistStyles.dotIcon} />
+                        <Typography sx={checklistStyles.checklistFormText}>Checklist Name</Typography>
+                      </Stack>
+
+                      <TextField
+                        size="small"
+                        value={data?.title || ""}
+                        placeholder="Checklist Name"
+                        disabled
+                        InputProps={checklistStyles.inputProps}
+                        InputLabelProps={checklistStyles.inputLabelProps}
+                      />
+                    </Stack>
+                  </Stack>
+
+                  {/* Checklist Section */}
+                  <Stack sx={checklistStyles.checklistSectionsContent}>
+                    <Stack>
+                      <Chip
+                        variant="filled"
+                        label={`Section 1`}
+                        sx={{
+                          ...checklistStyles.sectionChipStyle,
+                          color: "#ffffffde",
+                          backgroundColor: theme.palette.primary.main,
+                        }}
+                      />
+                    </Stack>
+
+                    <Stack gap={0.5} mt={1}>
+                      <Stack sx={checklistStyles.checklistFormDescription}>
+                        <Typography sx={checklistStyles.checklistFormText}>Section Title</Typography>
+                        <FiberManualRecord color="error" sx={checklistStyles.dotIcon} />
+                      </Stack>
+
+                      <Stack sx={checklistStyles.sectionTextField}>
+                        <TextField
+                          size="small"
+                          placeholder="Input Section Title"
+                          InputProps={checklistStyles.inputProps}
+                          InputLabelProps={checklistStyles.inputLabelProps}
+                          sx={{ flex: 1 }}
+                        />
+                        <IconButton sx={checklistStyles.sectionIconButton}>
+                          <DeleteOutlineOutlined color="error" sx={{ fontSize: "24px" }} />
+                        </IconButton>
+                      </Stack>
+                    </Stack>
+
+                    {/* Add Question */}
+                    <Stack>
+                      <Button
+                        variant="contained"
+                        startIcon={<Add />}
+                        sx={{ fontSize: "11px", padding: "6px 16px", mt: 2 }}
+                      >
+                        Add Question
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Stack>
               </Stack>
             </Stack>
           </Stack>
