@@ -35,7 +35,10 @@ import { useSelector } from "react-redux";
 
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
+import {
+  useCreateEditRequestorConcernMutation,
+  useLazyGetBackjobTicketsQuery,
+} from "../../../features/api_request/concerns/concernApi";
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
@@ -56,14 +59,28 @@ const AddTicketDialog = ({ open, onClose }) => {
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
+  console.log("UserId: ", userId);
+  console.log("UserDetails: ", userDetails);
+
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    Concern: yup.array().of(yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required")).min(1, "At least one concern is required"),
+    Concern: yup
+      .array()
+      .of(
+        yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required"),
+      )
+      .min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
-    Request_Type: yup.string().oneOf(["New Request", "Rework"], "Invalid Request Type").required("Request Type is required"),
-    Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
+    Request_Type: yup
+      .string()
+      .oneOf(["New Request", "Rework"], "Invalid Request Type")
+      .required("Request Type is required"),
+    Severity: yup
+      .string()
+      .oneOf(["Normal", "Urgent"], "Invalid Severity")
+      .required("Severity Type is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 12 digits long",
@@ -84,16 +101,27 @@ const AddTicketDialog = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
 
-  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] =
-    useCreateEditRequestorConcernMutation();
+  const [
+    createEditRequestorConcern,
+    { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching },
+  ] = useCreateEditRequestorConcernMutation();
 
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
-  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
-  const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] =
+    useLazyGetUsersQuery();
+  const [
+    getBackjobTicket,
+    { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess },
+  ] = useLazyGetBackjobTicketsQuery();
 
-  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryArrayQuery();
+  const [
+    getServiceProvider,
+    { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess },
+  ] = useLazyGetServiceProviderQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
+    useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] =
+    useLazyGetSubCategoryArrayQuery();
 
   const {
     control,
@@ -135,6 +163,8 @@ const AddTicketDialog = ({ open, onClose }) => {
       Notes: "",
     },
   });
+
+  // console.log("Error: ", errors);
 
   const { fields, append, remove, replace } = useFieldArray({
     control,
@@ -227,7 +257,7 @@ const AddTicketDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
     createEditRequestorConcern(payload)
       .unwrap()
@@ -265,7 +295,9 @@ const AddTicketDialog = ({ open, onClose }) => {
       file: file,
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
+    const uniqueNewFiles = fileNames.filter(
+      (newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name),
+    );
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -350,7 +382,11 @@ const AddTicketDialog = ({ open, onClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
+        selectedCategories.some((category) =>
+          subCategoryData?.value?.some(
+            (item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id,
+          ),
+        ),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -434,7 +470,13 @@ const AddTicketDialog = ({ open, onClose }) => {
                     name="Request_Type"
                     control={control}
                     render={({ field }) => (
-                      <Select {...field} displayEmpty size="small" inputProps={{ "aria-label": "Without label" }} sx={{ width: "100%", fontSize: "11px" }}>
+                      <Select
+                        {...field}
+                        displayEmpty
+                        size="small"
+                        inputProps={{ "aria-label": "Without label" }}
+                        sx={{ width: "100%", fontSize: "11px" }}
+                      >
                         <MenuItem value="New Request" sx={{ fontSize: "11px" }}>
                           New Request
                         </MenuItem>
@@ -464,14 +506,22 @@ const AddTicketDialog = ({ open, onClose }) => {
                             value={value}
                             options={backjobTicketData?.value || []}
                             loading={backjobTicketIsLoading}
-                            renderInput={(params) => <TextField {...params} placeholder="Select Ticket Number" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Select Ticket Number"
+                                sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }}
+                              />
+                            )}
                             onOpen={() => {
                               if (!backjobTicketIsSuccess) getBackjobTicket();
                             }}
                             onChange={(_, value) => onChange(value)}
                             getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
                             noOptionsText={"No tickets available for backjob request"}
-                            isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
+                            isOptionEqualToValue={(option, value) =>
+                              option.ticketConcernId === value.ticketConcernId
+                            }
                             fullWidth
                             disablePortal
                             disableClearable
@@ -550,9 +600,19 @@ const AddTicketDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={userData?.value?.users?.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
+                              options={
+                                userData?.value?.users?.filter(
+                                  (item) => item.departmentId === watch("DepartmentId")?.id,
+                                ) || []
+                              }
                               loading={userIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Requestor"
+                                  sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }}
+                                />
+                              )}
                               onOpen={() => {
                                 if (!userIsSuccess)
                                   getUser({
@@ -669,7 +729,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* CONCERN INFORMATION */}
-                <Typography sx={{ fontSize: "13px", color: theme.palette.primary.main, mt: 2 }}>Concern Details</Typography>
+                <Typography sx={{ fontSize: "13px", color: theme.palette.primary.main, mt: 2 }}>
+                  Concern Details
+                </Typography>
 
                 <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
                   {/* Self-Assign */}
@@ -711,9 +773,19 @@ const AddTicketDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={watch("IssueHandler") ? userDetails?.serviceProviders : serviceProviderData?.value?.serviceProvider || []}
+                              options={
+                                watch("IssueHandler")
+                                  ? userDetails?.serviceProviders
+                                  : serviceProviderData?.value?.serviceProvider || []
+                              }
                               loading={serviceProviderIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Select Service Provider"
+                                  sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }}
+                                />
+                              )}
                               onOpen={() => {
                                 if (!serviceProviderIsSuccess)
                                   getServiceProvider({
@@ -763,8 +835,18 @@ const AddTicketDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={watch("IssueHandler") ? userDetails?.channels : watch("ServiceProvider")?.serviceChannel || []}
-                              renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
+                              options={
+                                watch("IssueHandler")
+                                  ? userDetails?.channels
+                                  : watch("ServiceProvider")?.serviceChannel || []
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Select Channel"
+                                  sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }}
+                                />
+                              )}
                               onChange={(_, value) => {
                                 onChange(value);
 
@@ -813,9 +895,19 @@ const AddTicketDialog = ({ open, onClose }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []}
+                              options={
+                                categoryData?.value?.category.filter(
+                                  (item) => item.channelId === watch("ChannelId")?.channelId,
+                                ) || []
+                              }
                               loading={categoryIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Select Category"
+                                  sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }}
+                                />
+                              )}
                               onOpen={() => {
                                 if (!categoryIsSuccess)
                                   getCategory({
@@ -836,7 +928,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                               }}
                               getOptionLabel={(option) => option.category_Description || ""}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
-                              getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
+                              getOptionDisabled={(option) =>
+                                watch("CategoryId").some((item) => item.id === option.id)
+                              }
                               sx={{
                                 flex: 2,
                               }}
@@ -877,13 +971,25 @@ const AddTicketDialog = ({ open, onClose }) => {
                               value={value || []}
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
-                              renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }} />}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Select Sub Category"
+                                  sx={{ "& .MuiInputBase-input": { fontSize: "11px" } }}
+                                />
+                              )}
                               onChange={(_, value) => {
                                 onChange(value || []);
                               }}
                               getOptionLabel={(option) => option?.sub_Category_Description || ""}
-                              isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
-                              getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
+                              isOptionEqualToValue={(option, value) =>
+                                option?.subCategoryId === value?.subCategoryId
+                              }
+                              getOptionDisabled={(option) =>
+                                watch("SubCategoryId").some(
+                                  (item) => item.subCategoryId === option.subCategoryId,
+                                )
+                              }
                               noOptionsText={"No sub category available"}
                               sx={{
                                 flex: 2,
@@ -925,7 +1031,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                             <DatePicker
                               value={field.value ? moment(field.value) : null}
                               onChange={(newValue) => {
-                                const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                const formattedValue = newValue
+                                  ? moment(newValue).format("YYYY-MM-DD")
+                                  : null;
                                 field.onChange(formattedValue);
                               }}
                               slotProps={{
@@ -970,7 +1078,12 @@ const AddTicketDialog = ({ open, onClose }) => {
                   </Stack>
 
                   {fields.map((field, index) => (
-                    <Stack key={field.id} direction="row" alignItems="flex-start" sx={{ width: "100%", mt: 1 }}>
+                    <Stack
+                      key={field.id}
+                      direction="row"
+                      alignItems="flex-start"
+                      sx={{ width: "100%", mt: 1 }}
+                    >
                       <Controller
                         control={control}
                         name={`Concern.${index}`}
@@ -1109,11 +1222,18 @@ const AddTicketDialog = ({ open, onClose }) => {
                         alignItems: "center",
                       }}
                     >
-                      <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="warning"
+                        onClick={handleUploadButtonClick}
+                      >
                         <Typography sx={{ fontSize: "12px" }}>Choose File</Typography>
                       </Button>
 
-                      <Typography sx={{ color: theme.palette.text.secondary, fontSize: "11px" }}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontSize: "11px" }}>
+                        .docx, .jpg, .jpeg, .png, .pdf file
+                      </Typography>
                     </Box>
 
                     <Divider
@@ -1163,7 +1283,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                                 flexDirection: "column",
                               }}
                             >
-                              <Typography sx={{ fontWeight: 500, fontSize: "11px" }}>{fileName.name}</Typography>
+                              <Typography sx={{ fontWeight: 500, fontSize: "11px" }}>
+                                {fileName.name}
+                              </Typography>
 
                               <Typography
                                 sx={{
@@ -1187,7 +1309,12 @@ const AddTicketDialog = ({ open, onClose }) => {
                             </Box>
 
                             <Box>
-                              <ConcernMenuActions fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} isImageFile={isImageFile} />
+                              <ConcernMenuActions
+                                fileName={fileName}
+                                onView={handleViewImage}
+                                onDelete={handleDeleteFile}
+                                isImageFile={isImageFile}
+                              />
                             </Box>
                           </Box>
                         </Box>
@@ -1208,7 +1335,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                         onChange={(event) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
-                          const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+                          const uniqueNewFiles = files.filter(
+                            (item) => !value.some((file) => file.name === item.name),
+                          );
 
                           onChange([...value, ...uniqueNewFiles]);
                           fileInputRef.current.value = "";
@@ -1225,7 +1354,9 @@ const AddTicketDialog = ({ open, onClose }) => {
             <LoadingButton
               variant="outlined"
               size="small"
-              disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
+              disabled={
+                isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading
+              }
               onClick={onCloseAction}
               sx={{
                 ":disabled": {
@@ -1242,7 +1373,9 @@ const AddTicketDialog = ({ open, onClose }) => {
               variant="contained"
               color="primary"
               type="submit"
-              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
+              loading={
+                isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading
+              }
               disabled={
                 !watch("ServiceProvider") ||
                 watch("Concern")?.length === 0 ||
@@ -1264,7 +1397,9 @@ const AddTicketDialog = ({ open, onClose }) => {
 
       {/* Dialog to view image */}
       <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-        <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+        <DialogContent sx={{ height: "auto" }}>
+          {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleViewClose}>Close</Button>
         </DialogActions>
