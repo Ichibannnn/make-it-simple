@@ -45,8 +45,13 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   // useSignalRConnection();
 
   const { open, onToggle, onClose } = useDisclosure();
-  const { open: disapproveSelectedOpen, onToggle: disapproveSelectedOnToggle, onClose: disapproveSelectedOnClose } = useDisclosure();
-  const [approveOnHold, { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching }] = useApproveOnHoldMutation();
+  const {
+    open: disapproveSelectedOpen,
+    onToggle: disapproveSelectedOnToggle,
+    onClose: disapproveSelectedOnClose,
+  } = useDisclosure();
+  const [approveOnHold, { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching }] =
+    useApproveOnHoldMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -77,7 +82,9 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   };
 
   const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+    setSelectedTickets((prevSelected) =>
+      prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item],
+    );
   };
 
   const handleApproveSelected = () => {
@@ -89,7 +96,7 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
     Swal.fire({
       title: "Confirmation",
-      text: "Close selected tickets?",
+      text: "Approve selected on hold ticket requests?",
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -114,7 +121,7 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
           .unwrap()
           .then(() => {
             toast.success("Success!", {
-              description: "Ticket approved successfully!",
+              description: "On-Hold tickets approved successfully!",
               duration: 1500,
             });
             dispatch(notificationApi.util.resetApiState());
@@ -144,7 +151,12 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
           alignItems={isScreenSmall ? "left" : "center"}
           justifyContent="space-between"
           gap={0.5}
-          sx={{ padding: "10px 20px", backgroundColor: theme.palette.bgForm.black2, borderRadius: "20px", marginBottom: 1 }}
+          sx={{
+            padding: "10px 20px",
+            backgroundColor: theme.palette.bgForm.black2,
+            borderRadius: "20px",
+            marginBottom: 1,
+          }}
         >
           <Stack direction="row" gap={0.5}>
             <LocalOffer />
@@ -155,11 +167,23 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
           </Stack>
 
           <Stack direction="row" gap={0.5}>
-            <LoadingButton variant="contained" color="success" onClick={handleApproveSelected} loading={approveOnHoldIsLoading || approveOnHoldIsFetching} startIcon={<Check />}>
+            <LoadingButton
+              variant="contained"
+              color="success"
+              onClick={handleApproveSelected}
+              loading={approveOnHoldIsLoading || approveOnHoldIsFetching}
+              startIcon={<Check />}
+            >
               Approve
             </LoadingButton>
 
-            <LoadingButton variant="contained" color="error" onClick={handleDisapproveSelected} loading={approveOnHoldIsLoading || approveOnHoldIsFetching} startIcon={<Close />}>
+            <LoadingButton
+              variant="contained"
+              color="error"
+              onClick={handleDisapproveSelected}
+              loading={approveOnHoldIsLoading || approveOnHoldIsFetching}
+              startIcon={<Close />}
+            >
               Disapprove
             </LoadingButton>
           </Stack>
@@ -169,10 +193,25 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
       {isScreenSmall ? (
         // Card
         <>
-          <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
+          <Stack
+            direction="row"
+            sx={{
+              width: "100%",
+              mb: 2,
+              justifyContent: "left",
+              alignItems: "center",
+              backgroundColor: "#2A2C4D",
+            }}
+          >
             <Checkbox
-              indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.onHoldTicket?.length || 0)}
-              checked={(data?.value?.onHoldTicket?.length || 0) > 0 && selectedTickets.length === (data?.value?.onHoldTicket?.length || 0)}
+              indeterminate={
+                selectedTickets.length > 0 &&
+                selectedTickets.length < (data?.value?.onHoldTicket?.length || 0)
+              }
+              checked={
+                (data?.value?.onHoldTicket?.length || 0) > 0 &&
+                selectedTickets.length === (data?.value?.onHoldTicket?.length || 0)
+              }
               onChange={handleSelectAll}
               inputProps={{ "aria-label": "select all tickets" }}
             />
@@ -187,7 +226,14 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                 const isSelected = selectedTickets.includes(item.ticketConcernId);
 
                 return (
-                  <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                  <Card
+                    key={index}
+                    sx={{
+                      backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
+                      borderRadius: "15px",
+                      borderColor: "#2D3748",
+                    }}
+                  >
                     <CardContent
                       sx={{
                         cursor: "pointer",
@@ -214,21 +260,64 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                         <Stack spacing={1} onClick={() => onViewAction(item)}>
                           <Stack mb={2}>
-                            <Typography sx={{ fontWeight: 500, fontSize: "17px", color: theme.palette.primary.main }}>{item.fullname}</Typography>
-                            <Typography sx={{ fontWeight: 500, fontSize: "14px", color: "#EDF2F7" }}>{item.department_Name}</Typography>
-                            <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.channel_Name}</Typography>
+                            <Typography
+                              sx={{ fontWeight: 500, fontSize: "17px", color: theme.palette.primary.main }}
+                            >
+                              {item.fullname}
+                            </Typography>
+                            <Typography sx={{ fontWeight: 500, fontSize: "14px", color: "#EDF2F7" }}>
+                              {item.department_Name}
+                            </Typography>
+                            <Typography
+                              sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}
+                            >
+                              {item.channel_Name}
+                            </Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{`${moment(item.requestedAt).format(
-                              "YYYY"
+                            <Typography
+                              sx={{
+                                fontWeight: 700,
+                                fontSize: "0.775rem",
+                                lineHeight: 1.57,
+                                color: "#D65DB1",
+                              }}
+                            >
+                              TICKET NUMBER:
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontWeight: 400,
+                                fontSize: "0.775rem",
+                                lineHeight: 1.57,
+                                color: theme.palette.text.main,
+                              }}
+                            >{`${moment(item.requestedAt).format(
+                              "YYYY",
                             )}-${item.ticketConcernId}`}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET DESCRIPTION:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
+                            <Typography
+                              sx={{
+                                fontWeight: 700,
+                                fontSize: "0.775rem",
+                                lineHeight: 1.57,
+                                color: "#D65DB1",
+                              }}
+                            >
+                              TICKET DESCRIPTION:
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontWeight: 400,
+                                fontSize: "0.775rem",
+                                lineHeight: 1.57,
+                                color: theme.palette.text.main,
+                                wordBreak: "break-word",
+                              }}
+                            >
                               {item.concern_Details?.split("\r\n").map((line, index) => (
                                 <span key={index}>
                                   {line}
@@ -239,7 +328,16 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TARGET DATE:</Typography>
+                            <Typography
+                              sx={{
+                                fontWeight: 700,
+                                fontSize: "0.775rem",
+                                lineHeight: 1.57,
+                                color: "#D65DB1",
+                              }}
+                            >
+                              TARGET DATE:
+                            </Typography>
                             <Chip
                               variant="filled"
                               size="30px"
@@ -262,7 +360,11 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
             {isError && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -288,7 +390,12 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
             )}
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              sx={{
+                color: "#A0AEC0",
+                fontWeight: 400,
+                background: "#1C2536",
+                borderRadius: "0px 0px 20px 20px",
+              }}
               rowsPerPageOptions={[100, 200, 500]}
               component="div"
               count={data?.value?.totalCount || 0}
@@ -316,8 +423,14 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     align="center"
                   >
                     <Checkbox
-                      indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.onHoldTicket?.length || 0)}
-                      checked={(data?.value?.onHoldTicket?.length || 0) > 0 && selectedTickets.length === (data?.value?.onHoldTicket?.length || 0)}
+                      indeterminate={
+                        selectedTickets.length > 0 &&
+                        selectedTickets.length < (data?.value?.onHoldTicket?.length || 0)
+                      }
+                      checked={
+                        (data?.value?.onHoldTicket?.length || 0) > 0 &&
+                        selectedTickets.length === (data?.value?.onHoldTicket?.length || 0)
+                      }
                       onChange={handleSelectAll}
                       inputProps={{ "aria-label": "select all tickets" }}
                     />{" "}
@@ -395,7 +508,10 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     const isSelected = selectedTickets.includes(item.ticketConcernId);
 
                     return (
-                      <TableRow key={item.ticketConcernId} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3 }}>
+                      <TableRow
+                        key={item.ticketConcernId}
+                        sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3 }}
+                      >
                         <TableCell
                           padding="checkbox"
                           sx={{
@@ -526,7 +642,11 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                 {isError && (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
-                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                      <img
+                        src={somethingWentWrong}
+                        alt="Something Went Wrong"
+                        className="something-went-wrong-table"
+                      />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
                       </Typography>
@@ -573,7 +693,12 @@ const OnHoldApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
       )}
 
       <OnHoldApprovalDialog data={viewOnHoldData} open={open} onClose={onDialogClose} />
-      <DisapproveSelectedDialog open={disapproveSelectedOpen} onClose={disapproveSelectedOnClose} selectedTickets={selectedTickets} setSelectedTickets={setSelectedTickets} />
+      <DisapproveSelectedDialog
+        open={disapproveSelectedOpen}
+        onClose={disapproveSelectedOnClose}
+        selectedTickets={selectedTickets}
+        setSelectedTickets={setSelectedTickets}
+      />
     </Stack>
   );
 };

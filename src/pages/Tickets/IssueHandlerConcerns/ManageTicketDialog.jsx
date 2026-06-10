@@ -108,7 +108,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -122,8 +122,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       SubCategoryId: [],
       CategoryConcern: null,
       Technicians: [],
-
       Notes: "",
+
+      ClosingDate: null,
+      BackdateRemarks: "",
     },
   });
 
@@ -473,6 +475,15 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   };
 
   const minDate = new moment().subtract(1, "days");
+  const closingDate = watch("ClosingDate");
+
+  const isClosingDateInvalid = closingDate
+    ? moment(closingDate).isBefore(minDate, "day") || moment(closingDate).isAfter(moment(), "day")
+    : true;
+
+  const today = new moment();
+  const isTodayAfterTarget = today.isAfter(data?.getForClosingTickets?.[0]?.backDate);
+  const isTodayAndTargetSame = today.isSame(data?.getForClosingTickets?.[0]?.backDate, "day");
 
   return (
     <>
@@ -867,6 +878,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 fullWidth
                                 // disablePortal
                                 disableClearable
+                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                 componentsProps={{
                                   popper: {
                                     sx: {
@@ -893,7 +905,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   fontSize: "14px",
                                 }}
                               >
-                                Closing Date:
+                                Backdate:
                               </Typography>
                               <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                             </Stack>
@@ -910,7 +922,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                         ? moment(newValue).format("YYYY-MM-DD")
                                         : null;
                                       field.onChange(formattedValue);
-                                      console.log("FormattedValue: ", newValue);
                                     }}
                                     slotProps={{
                                       textField: {
@@ -929,11 +940,12 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     minDate={minDate}
                                     error={!!errors.ClosingDate}
                                     helperText={errors.ClosingDate ? errors.ClosingDate.message : null}
-                                    // disabled={!watch("IssueHandler")}
+                                    disabled={
+                                      data?.getForClosingTickets?.[0]?.isApprove === true ? true : false
+                                    }
                                   />
                                 )}
                               />
-                              {errors.ClosingDate && <Typography>{errors.ClosingDate.message}</Typography>}
                             </LocalizationProvider>
                           </Stack>
 
@@ -944,7 +956,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   fontSize: "14px",
                                 }}
                               >
-                                Remarks:
+                                Backdate Remarks:
                               </Typography>
                               <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                             </Stack>
@@ -972,7 +984,12 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                         fontSize: "13px",
                                       },
                                     }}
-                                    disabled={!watch("ClosingDate")}
+                                    disabled={
+                                      !watch("ClosingDate") ||
+                                      data?.getForClosingTickets?.[0]?.isApprove === true
+                                        ? true
+                                        : false
+                                    }
                                     sx={{
                                       "& .disabled": {
                                         backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
@@ -1087,6 +1104,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     )
                                   }
                                   fullWidth
+                                  disabled={
+                                    data?.getForClosingTickets?.[0]?.isApprove === true ? true : false
+                                  }
                                   disablePortal
                                   disableClearable
                                   componentsProps={{
@@ -1356,8 +1376,13 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   !watch("resolution") ||
                   watch("CategoryId").length === 0 ||
                   watch("SubCategoryId").length === 0 ||
-                  (channelNameValidation === "HMU - IT Hardware Support"
-                    ? !watch("ClosingDate") || !!errors.ClosingDate || !watch("BackdateRemarks")
+                  (channelNameValidation === "HMU - IT Hardware Support" &&
+                  isTodayAfterTarget &&
+                  !isTodayAndTargetSame
+                    ? !watch("ClosingDate") ||
+                      !!errors.ClosingDate ||
+                      !watch("BackdateRemarks") ||
+                      isClosingDateInvalid
                     : false)
                 }
               >

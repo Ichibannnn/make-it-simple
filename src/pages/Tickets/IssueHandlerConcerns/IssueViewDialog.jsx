@@ -41,6 +41,7 @@ import TicketForTransferDialog from "./TicketForTransferDialog";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 import { toast } from "sonner";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import { useSelector } from "react-redux";
 
 const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
   const [attachments, setAttachments] = useState([]);
@@ -52,6 +53,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
 
   const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
@@ -589,51 +591,63 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                   </Stack>
 
                   {/* Closing Date with Remarks */}
-                  {(data?.ticket_Status === "" ||
-                    data?.ticket_Status === "For Closing Ticket" ||
-                    data?.ticket_Status === "Closed") && (
-                    <>
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ ml: 2 }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                          >
-                            Closed Date:
-                          </Typography>
-                        </Box>
+                  {(channelNameValidation === "HMU - IT Hardware Support" && data?.ticket_Status === "") ||
+                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                      data?.ticket_Status === "For Closing Ticket") ||
+                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                      data?.ticket_Status === "Closed") ||
+                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                      data?.ticket_Status === "For Confirmation" && (
+                        <>
+                          <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                            <Box sx={{ ml: 2 }}>
+                              <Typography
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  fontWeight: "500",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                Backdate:
+                              </Typography>
+                            </Box>
 
-                        <Box sx={{ ml: 2 }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
-                          >
-                            {data?.getForClosingTickets?.[0]?.backDate
-                              ? moment(data?.getForClosingTickets?.[0]?.backDate).format("LL")
-                              : "--"}
-                          </Typography>
-                        </Box>
-                      </Stack>
+                            <Box sx={{ ml: 2 }}>
+                              <Typography
+                                sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
+                              >
+                                {data?.getForClosingTickets?.[0]?.backDate
+                                  ? moment(data?.getForClosingTickets?.[0]?.backDate).format("LL")
+                                  : "--"}
+                              </Typography>
+                            </Box>
+                          </Stack>
 
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ ml: 2 }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                          >
-                            Remarks:
-                          </Typography>
-                        </Box>
+                          <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
+                            <Box sx={{ ml: 2 }}>
+                              <Typography
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  fontWeight: "500",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                Backdate Remarks:
+                              </Typography>
+                            </Box>
 
-                        <Box sx={{ ml: 2 }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
-                          >
-                            {data?.getForClosingTickets?.[0]?.backDateRemarks
-                              ? data?.getForClosingTickets?.[0]?.backDateRemarks
-                              : "--"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </>
-                  )}
+                            <Box sx={{ ml: 2 }}>
+                              <Typography
+                                sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
+                              >
+                                {data?.getForClosingTickets?.[0]?.backDateRemarks
+                                  ? data?.getForClosingTickets?.[0]?.backDateRemarks
+                                  : "--"}
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        </>
+                      ))}
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
@@ -1167,61 +1181,65 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                   </Stack>
 
                   {/* Closing Date with Remarks */}
-                  {(data?.ticket_Status === "" ||
-                    data?.ticket_Status === "For Closing Ticket" ||
-                    data?.ticket_Status === "Closed") && (
-                    <>
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography
-                            sx={{
-                              textAlign: "right",
-                              color: theme.palette.text.secondary,
-                              fontWeight: "500",
-                              fontSize: "14px",
-                            }}
-                          >
-                            Closed Date:
-                          </Typography>
-                        </Box>
-                        <Box sx={{ width: "10%" }} />
-                        <Box sx={{ width: "75%", ml: 2 }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                          >
-                            {data?.getForClosingTickets?.[0]?.backDate
-                              ? moment(data?.getForClosingTickets?.[0]?.backDate).format("LL")
-                              : "--"}
-                          </Typography>
-                        </Box>
-                      </Stack>
+                  {(channelNameValidation === "HMU - IT Hardware Support" && data?.ticket_Status === "") ||
+                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                      data?.ticket_Status === "For Closing Ticket") ||
+                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                      data?.ticket_Status === "Closed") ||
+                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                      data?.ticket_Status === "For Confirmation" && (
+                        <>
+                          <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                            <Box sx={{ width: "15%", ml: 2 }}>
+                              <Typography
+                                sx={{
+                                  textAlign: "right",
+                                  color: theme.palette.text.secondary,
+                                  fontWeight: "500",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                Backdate:
+                              </Typography>
+                            </Box>
+                            <Box sx={{ width: "10%" }} />
+                            <Box sx={{ width: "75%", ml: 2 }}>
+                              <Typography
+                                sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
+                              >
+                                {data?.getForClosingTickets?.[0]?.backDate
+                                  ? moment(data?.getForClosingTickets?.[0]?.backDate).format("LL")
+                                  : "--"}
+                              </Typography>
+                            </Box>
+                          </Stack>
 
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography
-                            sx={{
-                              textAlign: "right",
-                              color: theme.palette.text.secondary,
-                              fontWeight: "500",
-                              fontSize: "14px",
-                            }}
-                          >
-                            Remarks:
-                          </Typography>
-                        </Box>
-                        <Box sx={{ width: "10%" }} />
-                        <Box sx={{ width: "75%", ml: 2 }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                          >
-                            {data?.getForClosingTickets?.[0]?.backDateRemarks
-                              ? data?.getForClosingTickets?.[0]?.backDateRemarks
-                              : "--"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </>
-                  )}
+                          <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
+                            <Box sx={{ width: "15%", ml: 2 }}>
+                              <Typography
+                                sx={{
+                                  textAlign: "right",
+                                  color: theme.palette.text.secondary,
+                                  fontWeight: "500",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                Backdate Remarks:
+                              </Typography>
+                            </Box>
+                            <Box sx={{ width: "10%" }} />
+                            <Box sx={{ width: "75%", ml: 2 }}>
+                              <Typography
+                                sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
+                              >
+                                {data?.getForClosingTickets?.[0]?.backDateRemarks
+                                  ? data?.getForClosingTickets?.[0]?.backDateRemarks
+                                  : "--"}
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        </>
+                      ))}
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>

@@ -196,7 +196,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
     const result = await sweetAlertDialog({
       title: "Confirmation",
-      text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
+      text: `Requesting to close this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       confirmButtonText: "Yes",
     });
@@ -890,7 +890,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                     fontSize: "14px",
                                   }}
                                 >
-                                  Closing Date:
+                                  Backdate:
                                 </Typography>
                                 <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                               </Stack>
@@ -941,7 +941,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                     fontSize: "14px",
                                   }}
                                 >
-                                  Remarks:
+                                  Backdate Remarks:
                                 </Typography>
                                 <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                               </Stack>

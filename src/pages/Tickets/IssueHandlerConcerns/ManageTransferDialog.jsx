@@ -1,6 +1,29 @@
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  Add,
+  AttachFileOutlined,
+  CheckOutlined,
+  Close,
+  FiberManualRecord,
+  FileDownloadOutlined,
+  RemoveCircleOutline,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -12,7 +35,10 @@ import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useTransferIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+import {
+  useLazyGetDownloadAttachmentQuery,
+  useLazyGetViewAttachmentQuery,
+} from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import moment from "moment";
 
@@ -38,13 +64,23 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] =
+    useLazyGetChannelsQuery();
+  const [
+    getIssueHandler,
+    { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess },
+  ] = useLazyGetChannelsQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [manageTransferTickets, { isLoading: manageTransferTicketsIsLoading, isFetching: manageTransferTicketsIsFetching }] = useTransferIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
+  const [
+    manageTransferTickets,
+    { isLoading: manageTransferTicketsIsLoading, isFetching: manageTransferTicketsIsFetching },
+  ] = useTransferIssueHandlerTicketsMutation();
+  const [
+    deleteRequestorAttachment,
+    { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching },
+  ] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -76,7 +112,9 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
       file,
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
+    const uniqueNewFiles = fileNames.filter(
+      (newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name),
+    );
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -148,7 +186,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Edit tranfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Edit transfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -181,7 +219,10 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
         // Attachments
         const files = formData.AddTransferAttachments;
         for (let i = 0; i < files.length; i++) {
-          payload.append(`AddTransferAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+          payload.append(
+            `AddTransferAttachments[${i}].ticketAttachmentId`,
+            files[i].ticketAttachmentId || "",
+          );
           payload.append(`AddTransferAttachments[${i}].attachment`, files[i]);
         }
 
@@ -363,7 +404,14 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            <Stack id="closeticket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
+            <Stack
+              id="closeticket"
+              component="form"
+              direction="row"
+              gap={1}
+              sx={{ width: "100%", height: "100%" }}
+              onSubmit={handleSubmit(onSubmitAction)}
+            >
               <Stack sx={{ padding: 1, width: "100%" }}>
                 <Stack direction="row" gap={0.5} alignItems="center" mt={2}>
                   {/* TICKET DETAILS */}
@@ -383,7 +431,16 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
                 {isScreenSmall ? (
                   <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                    <Typography
+                      sx={{
+                        textAlign: "left",
+                        color: theme.palette.text.secondary,
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      Ticket Description:
+                    </Typography>
 
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -395,13 +452,28 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                     </Typography>
                   </Stack>
                 ) : (
-                  <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      border: "1px solid #2D3748",
+                      padding: 1,
+                      mt: 1,
+                    }}
+                  >
                     <Box sx={{ width: "20%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}
+                      >
+                        Ticket Description:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "5%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography
+                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
+                      >
                         {data?.concern_Description?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -432,7 +504,13 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                           value={value}
                           options={channelData?.value?.channel || []}
                           loading={channelIsLoading}
-                          renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Select Channel"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                            />
+                          )}
                           onOpen={() => {
                             if (!channelIsSuccess)
                               getChannel({
@@ -486,9 +564,19 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                           ref={ref}
                           size="small"
                           value={value}
-                          options={issueHandlerData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
+                          options={
+                            issueHandlerData?.value?.channel?.find(
+                              (item) => item.id === watch("ChannelId")?.id,
+                            )?.channelUsers || []
+                          }
                           loading={issueHandlerIsLoading}
-                          renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Issue Handler"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                            />
+                          )}
                           onOpen={() => {
                             if (!issueHandlerIsSuccess) getIssueHandler();
                           }}
@@ -560,14 +648,29 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                     </Typography>
 
                     {data?.getForTransferTickets?.[0]?.isApprove === false && (
-                      <Button size="small" variant="contained" color="warning" startIcon={<Add />} onClick={handleUploadButtonClick} sx={{ padding: "2px", borderRadius: "2px" }}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="warning"
+                        startIcon={<Add />}
+                        onClick={handleUploadButtonClick}
+                        sx={{ padding: "2px", borderRadius: "2px" }}
+                      >
                         <Typography sx={{ fontSize: "12px" }}>Add</Typography>
                       </Button>
                     )}
                   </Stack>
 
                   {attachments?.length === 0 ? (
-                    <Stack sx={{ flexDirection: "column", border: "1px solid #2D3748", minHeight: "195px", justifyContent: "center", alignItems: "center" }}>
+                    <Stack
+                      sx={{
+                        flexDirection: "column",
+                        border: "1px solid #2D3748",
+                        minHeight: "195px",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
                       <Stack direction="row" gap={0.5} justifyContent="center">
                         <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
                         <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
@@ -626,13 +729,19 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                                 sx={{
                                   fontSize: 11,
                                   fontWeight: 500,
-                                  color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                  color: !!fileName.ticketAttachmentId
+                                    ? theme.palette.success.main
+                                    : theme.palette.primary.main,
                                 }}
                               >
-                                {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                {!!fileName.ticketAttachmentId
+                                  ? "Attached file"
+                                  : "Uploaded the file successfully"}
                               </Typography>
 
-                              {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                              {!!fileName.ticketAttachmentId && (
+                                <CheckOutlined color="success" fontSize="small" />
+                              )}
                             </Box>
                           </Box>
 
@@ -721,7 +830,10 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                           const files = Array.from(event.target.files);
                           files[0].ticketAttachmentId = ticketAttachmentId;
 
-                          onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+                          onChange([
+                            ...files,
+                            ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
+                          ]);
 
                           setAttachments((prevFiles) => [
                             ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
@@ -738,7 +850,9 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
 
-                          const uniqueNewFiles = files.filter((item) => !value?.some((file) => file.name === item.name));
+                          const uniqueNewFiles = files.filter(
+                            (item) => !value?.some((file) => file.name === item.name),
+                          );
 
                           onChange([...value, ...uniqueNewFiles]);
                           fileInputRef.current.value = "";
@@ -774,7 +888,9 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
       {selectedImage && (
         <>
           <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-            <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+            <DialogContent sx={{ height: "auto" }}>
+              {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+            </DialogContent>
             <DialogActions>
               <Button onClick={handleViewClose}>Close</Button>
             </DialogActions>

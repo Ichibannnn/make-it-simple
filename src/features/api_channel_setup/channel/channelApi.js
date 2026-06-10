@@ -13,6 +13,15 @@ export const channelApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
       providesTags: tags,
     }),
 
+    getOnlyIssueHandler: builder.query({
+      query: (params) => ({
+        url: "channel/issuehandler",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     createChannel: builder.mutation({
       query: (body) => ({
         url: "channel",
@@ -73,6 +82,7 @@ export const channelApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndp
 export const {
   useGetChannelsQuery,
   useLazyGetChannelsQuery,
+  useLazyGetOnlyIssueHandlerQuery,
   useCreateChannelMutation,
   useCreateChannelValidationMutation,
   useUpdateChannelMutation,

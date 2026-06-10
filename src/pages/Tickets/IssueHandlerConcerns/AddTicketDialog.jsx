@@ -59,17 +59,12 @@ const AddTicketDialog = ({ open, onClose }) => {
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
-  console.log("UserId: ", userId);
-  console.log("UserDetails: ", userDetails);
-
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
     Concern: yup
       .array()
-      .of(
-        yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required"),
-      )
-      .min(1, "At least one concern is required"),
+      .of(yup.string().min(2, "Ticket must be at least 2 characters long").required("This field is required"))
+      .min(1, "At least one ticket is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
@@ -263,7 +258,7 @@ const AddTicketDialog = ({ open, onClose }) => {
       .unwrap()
       .then(() => {
         toast.success("Success!", {
-          description: "Concern added successfully!",
+          description: "Ticket added successfully!",
           duration: 1500,
         });
         dispatch(notificationApi.util.resetApiState());
@@ -728,9 +723,9 @@ const AddTicketDialog = ({ open, onClose }) => {
                   </Stack>
                 </Stack>
 
-                {/* CONCERN INFORMATION */}
+                {/* TICKET INFORMATION */}
                 <Typography sx={{ fontSize: "13px", color: theme.palette.primary.main, mt: 2 }}>
-                  Concern Details
+                  Ticket Details
                 </Typography>
 
                 <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
@@ -1091,7 +1086,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                           <TextField
                             inputRef={ref}
                             value={value}
-                            placeholder={`Concern #${index + 1}`}
+                            placeholder={`Ticket #${index + 1}`}
                             onChange={onChange}
                             error={!!errors.Concern?.[index]}
                             multiline
@@ -1127,7 +1122,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                       (err, idx) =>
                         err && (
                           <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
-                            Concern #{idx + 1}: {err.message}
+                            Ticket #{idx + 1}: {err.message}
                           </Typography>
                         ),
                     )}
@@ -1146,7 +1141,7 @@ const AddTicketDialog = ({ open, onClose }) => {
                         },
                       }}
                     >
-                      <Typography sx={{ fontSize: "11px" }}>Add Concern</Typography>
+                      <Typography sx={{ fontSize: "11px" }}>Add Ticket</Typography>
                     </Button>
                   </Stack>
                 </Stack>

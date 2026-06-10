@@ -1,5 +1,23 @@
-import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { Add, AttachFileOutlined, CheckOutlined, FiberManualRecord, GetAppOutlined } from "@mui/icons-material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import {
+  Add,
+  AttachFileOutlined,
+  CheckOutlined,
+  FiberManualRecord,
+  GetAppOutlined,
+} from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -23,16 +41,26 @@ import { useSelector } from "react-redux";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { useDeleteRequestorAttachmentMutation, useEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
+import {
+  useDeleteRequestorAttachmentMutation,
+  useEditRequestorConcernMutation,
+} from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetReceiverAttachmentQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
-import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+import {
+  useLazyGetDownloadAttachmentQuery,
+  useLazyGetViewAttachmentQuery,
+} from "../../../features/api_attachments/attachmentsApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import AssignDialogMenuAction from "../../Request/ReceiverConcernV2/AssignDialogMenuAction";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
-  Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
+  Concern: yup
+    .string()
+    .min(2, "Concern must be more than 1 character long")
+    .required("This field is required")
+    .label("Concern Details"),
   RequestAttachmentsFiles: yup.array().nullable(),
 
   ChannelId: yup.object().notRequired(),
@@ -59,10 +87,18 @@ const RejectDateDialog = ({ data, open, onClose }) => {
   const fileInputRef = useRef();
   // useSignalRConnection();
 
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
-  const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useEditRequestorConcernMutation();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] =
+    useLazyGetChannelsQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
+    useLazyGetCategoryQuery();
+  const [
+    getSubCategory,
+    { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess },
+  ] = useLazyGetSubCategoryArrayQuery();
+  const [
+    createEditReceiverConcern,
+    { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching },
+  ] = useEditRequestorConcernMutation();
   // const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
@@ -101,8 +137,12 @@ const RejectDateDialog = ({ data, open, onClose }) => {
       file,
     }));
 
-    const uniqueNewFiles = fileNames?.filter((newFile) => !attachments?.some((existingFile) => existingFile?.name === newFile?.name));
-    setAttachments((prevFiles) => (Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles]));
+    const uniqueNewFiles = fileNames?.filter(
+      (newFile) => !attachments?.some((existingFile) => existingFile?.name === newFile?.name),
+    );
+    setAttachments((prevFiles) =>
+      Array.isArray(prevFiles) ? [...prevFiles, ...uniqueNewFiles] : [...uniqueNewFiles],
+    );
   };
 
   const handleUploadButtonClick = () => {
@@ -121,7 +161,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
 
       setValue(
         "RequestAttachmentsFiles",
-        watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name)
+        watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -140,14 +180,12 @@ const RejectDateDialog = ({ data, open, onClose }) => {
           name: item.fileName,
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
           link: item.attachment,
-        }))
+        })),
       );
     } catch (error) {}
   };
 
   const handleViewImage = async (file) => {
-    console.log("View File:", file);
-
     setViewIsLoading(true);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
@@ -267,7 +305,10 @@ const RejectDateDialog = ({ data, open, onClose }) => {
 
     const subCategory = formData.SubCategoryId;
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(`AddRequestTicketSubCategory[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+      payload.append(
+        `AddRequestTicketSubCategory[${i}].ticketSubCategoryId`,
+        subCategory[i].ticketSubCategoryId || "",
+      );
       payload.append(`AddRequestTicketSubCategory[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
 
@@ -297,7 +338,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: "Approve this concern?",
+      text: `Are you sure you want to save changes to ticket ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -322,7 +363,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
           .unwrap()
           .then((response) => {
             toast.success("Success!", {
-              description: "Approve concern successfully!",
+              description: "Ticket updated successfully!",
               duration: 1500,
             });
 
@@ -403,7 +444,11 @@ const RejectDateDialog = ({ data, open, onClose }) => {
 
     if (selectedCategories.length > 0) {
       const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id))
+        selectedCategories.some((category) =>
+          subCategoryData?.value?.some(
+            (item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id,
+          ),
+        ),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -440,7 +485,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
             color: theme.palette.success.main,
           }}
         >
-          Concern Details
+          Ticket Details
         </DialogTitle>
 
         <Stack sx={{ width: "100%", height: "auto", mb: 4, borderRadius: "20px", padding: 2 }}>
@@ -540,7 +585,13 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           size="small"
                           value={value}
                           options={userDetails?.channels || []}
-                          renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Channel Name"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                            />
+                          )}
                           onChange={(_, value) => {
                             onChange(value);
                             setValue("CategoryId", []);
@@ -563,6 +614,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           }}
                           fullWidth
                           disableClearable
+                          disabled
                         />
                       );
                     }}
@@ -591,9 +643,19 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           ref={ref}
                           size="small"
                           value={value}
-                          options={categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []}
+                          options={
+                            categoryData?.value?.category?.filter(
+                              (item) => item.channelId === watch("ChannelId")?.channelId,
+                            ) || []
+                          }
                           loading={categoryIsLoading}
-                          renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Category"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                            />
+                          )}
                           onOpen={() => {
                             if (!categoryIsSuccess)
                               getCategory({
@@ -612,7 +674,9 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           }}
                           getOptionLabel={(option) => option.category_Description || ""}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
-                          getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
+                          getOptionDisabled={(option) =>
+                            watch("CategoryId").some((item) => item.id === option.id)
+                          }
                           sx={{
                             flex: 2,
                           }}
@@ -658,7 +722,13 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           value={value}
                           options={subCategoryData?.value || []}
                           loading={subCategoryIsLoading}
-                          renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Sub Category"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                            />
+                          )}
                           onOpen={() => {
                             if (!subCategoryIsSuccess) getSubCategory();
                           }}
@@ -666,8 +736,12 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                             onChange(value);
                           }}
                           getOptionLabel={(option) => option?.sub_Category_Description || ""}
-                          isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
-                          getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
+                          isOptionEqualToValue={(option, value) =>
+                            option?.subCategoryId === value?.subCategoryId
+                          }
+                          getOptionDisabled={(option) =>
+                            watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)
+                          }
                           noOptionsText={"No sub category available"}
                           sx={{
                             flex: 2,
@@ -786,7 +860,12 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                 </Stack>
 
                 {/* Attachments */}
-                <Stack padding={2} marginTop={3} gap={1.5} sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}>
+                <Stack
+                  padding={2}
+                  marginTop={3}
+                  gap={1.5}
+                  sx={{ border: "1px solid #2D3748", borderRadius: "20px" }}
+                >
                   <Stack direction="row" gap={1} alignItems="center" onDragOver={handleDragOver}>
                     <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
 
@@ -871,13 +950,19 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                                   sx={{
                                     fontSize: 13,
                                     fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    color: !!fileName.ticketAttachmentId
+                                      ? theme.palette.success.main
+                                      : theme.palette.primary.main,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  {!!fileName.ticketAttachmentId
+                                    ? "Attached file"
+                                    : "Uploaded the file successfully"}
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                {!!fileName.ticketAttachmentId && (
+                                  <CheckOutlined color="success" fontSize="small" />
+                                )}
                               </Box>
                             </Box>
 
@@ -912,7 +997,10 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                         if (ticketAttachmentId) {
                           const files = Array.from(event.target.files);
                           files[0].ticketAttachmentId = ticketAttachmentId;
-                          onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+                          onChange([
+                            ...files,
+                            ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
+                          ]);
 
                           setAttachments((prevFiles) => [
                             ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
@@ -929,7 +1017,9 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
 
-                          const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+                          const uniqueNewFiles = files.filter(
+                            (item) => !value.some((file) => file.name === item.name),
+                          );
 
                           onChange([...value, ...uniqueNewFiles]);
                           fileInputRef.current.value = "";
@@ -952,7 +1042,13 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                 type="submit"
                 variant="contained"
                 loading={isCreateEditReceiverConcernLoading || isCreateEditReceiverConcernFetching}
-                disabled={!watch("ChannelId") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || !watch("IssueHandler") || !watch("TargetDate")}
+                disabled={
+                  !watch("ChannelId") ||
+                  watch("CategoryId").length === 0 ||
+                  watch("SubCategoryId").length === 0 ||
+                  !watch("IssueHandler") ||
+                  !watch("TargetDate")
+                }
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,
@@ -960,7 +1056,7 @@ const RejectDateDialog = ({ data, open, onClose }) => {
                   },
                 }}
               >
-                Confirm
+                Save
               </LoadingButton>
             </DialogActions>
           </form>
@@ -970,7 +1066,9 @@ const RejectDateDialog = ({ data, open, onClose }) => {
         {selectedImage && (
           <>
             <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewImageClose}>
-              <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+              <DialogContent sx={{ height: "auto" }}>
+                {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+              </DialogContent>
               <DialogActions>
                 <Button onClick={handleViewImageClose}>Close</Button>
               </DialogActions>
