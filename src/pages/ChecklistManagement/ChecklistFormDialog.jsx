@@ -14,9 +14,11 @@ import {
 import {
   Add,
   ArrowBackOutlined,
+  ClearAllOutlined,
   CloseOutlined,
   Delete,
   DeleteOutlineOutlined,
+  DragHandleOutlined,
   FiberManualRecord,
   Save,
 } from "@mui/icons-material";
@@ -98,34 +100,35 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "unset" } }}>
-        {/* <form onSubmit={handleSubmit(onSubmitAction)}> */}
         <DialogContent>
           <Stack sx={checklistStyles.checklistDialogContent}>
-            {/* Header */}
-            <Stack sx={checklistStyles.checklistDialogHeader}>
-              <Stack>
-                <IconButton onClick={() => onCloseAction()}>
-                  <ArrowBackOutlined sx={checklistStyles.arrowButton} />
-                </IconButton>
-              </Stack>
-
-              <Stack gap={0} p={0}>
-                <Typography sx={checklistStyles.checklistHeaderText}>Checklist Form Builder</Typography>
-                <Typography color="text.secondary" sx={{ fontSize: "13px" }}>
-                  Create and manage your checklist
-                </Typography>
-              </Stack>
-            </Stack>
-
-            {/* Checklist Setup */}
             <Stack sx={checklistStyles.checklistBodyContainer}>
+              {/* Header */}
+              <Stack sx={checklistStyles.checklistDialogHeader}>
+                <Stack>
+                  <IconButton onClick={() => onCloseAction()}>
+                    <ArrowBackOutlined sx={checklistStyles.arrowButton} />
+                  </IconButton>
+                </Stack>
+
+                <Stack>
+                  <Typography sx={checklistStyles.checklistHeaderText}>Checklist Form Builder</Typography>
+                  <Typography color="text.secondary" sx={{ fontSize: "13px" }}>
+                    Create and manage your checklist
+                  </Typography>
+                </Stack>
+              </Stack>
+
               <Stack sx={checklistStyles.checklistSectionsContainer}>
+                {/* Checklist Content */}
                 <Stack sx={checklistStyles.checklistSectionContent}>
                   {/* Checklist Header   */}
                   <Stack sx={checklistStyles.checklistSectionHeader}>
                     <Stack>
-                      <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>Build your Checklist</Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: "12px", fontWeight: 400 }}>
+                      <Typography sx={{ fontSize: "20px", fontWeight: 600, letterSpacing: -0.5 }}>
+                        Build your Checklist
+                      </Typography>
+                      <Typography color="text.secondary" sx={{ fontSize: "13px" }}>
                         Let's start with the basic information for your checklist.
                       </Typography>
                     </Stack>
@@ -145,7 +148,7 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                     <Stack gap={0.5}>
                       <Stack sx={checklistStyles.checklistFormDescription}>
                         <FiberManualRecord color="error" sx={checklistStyles.dotIcon} />
-                        <Typography sx={checklistStyles.checklistFormText}>Checklist Name</Typography>
+                        <Typography sx={checklistStyles.checklistFormText}>CHECKLIST NAME</Typography>
                       </Stack>
 
                       <TextField
@@ -164,6 +167,7 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                     <Stack>
                       <Chip
                         variant="filled"
+                        icon={<DragHandleOutlined color="text.primary" />}
                         label={`Section 1`}
                         sx={{
                           ...checklistStyles.sectionChipStyle,
@@ -173,10 +177,10 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                       />
                     </Stack>
 
-                    <Stack gap={0.5} mt={1}>
+                    <Stack gap={0.5} mt={2}>
                       <Stack sx={checklistStyles.checklistFormDescription}>
-                        <Typography sx={checklistStyles.checklistFormText}>Section Title</Typography>
                         <FiberManualRecord color="error" sx={checklistStyles.dotIcon} />
+                        <Typography sx={checklistStyles.checklistFormText}>SECTION NAME</Typography>
                       </Stack>
 
                       <Stack sx={checklistStyles.sectionTextField}>
@@ -196,12 +200,56 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                     {/* Add Question */}
                     <Stack>
                       <Button
+                        size="small"
                         variant="contained"
                         startIcon={<Add />}
-                        sx={{ fontSize: "11px", padding: "6px 16px", mt: 2 }}
+                        sx={{ mt: 4, fontSize: "11px", padding: "6px 16px" }}
                       >
                         Add Question
                       </Button>
+                    </Stack>
+                  </Stack>
+
+                  <Stack sx={{ ...checklistStyles.checklistFormActions, width: "100%" }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={<Add />}
+                      sx={{ fontSize: "11px", padding: "6px 16px" }}
+                    >
+                      Add Section
+                    </Button>
+
+                    <Stack direction="row" gap={1}>
+                      <LoadingButton
+                        size="small"
+                        type="submit"
+                        variant="contained"
+                        loadingPosition="start"
+                        startIcon={<Save />}
+                        sx={{
+                          ":disabled": {
+                            backgroundColor: theme.palette.secondary.main,
+                            color: "black",
+                          },
+                          fontSize: "11px",
+                          padding: "6px 16px",
+                        }}
+                      >
+                        Save Checklist
+                      </LoadingButton>
+
+                      <LoadingButton
+                        size="small"
+                        variant="outlined"
+                        onClick={() => onCloseAction()}
+                        sx={{
+                          fontSize: "11px",
+                          padding: "6px 16px",
+                        }}
+                      >
+                        Cancel
+                      </LoadingButton>
                     </Stack>
                   </Stack>
                 </Stack>
@@ -210,7 +258,7 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
           </Stack>
         </DialogContent>
 
-        <DialogActions>
+        {/* <DialogActions>
           <LoadingButton
             type="submit"
             variant="contained"
@@ -230,8 +278,7 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
           <LoadingButton variant="outlined" onClick={() => onCloseAction()}>
             Cancel
           </LoadingButton>
-        </DialogActions>
-        {/* </form> */}
+        </DialogActions> */}
       </Dialog>
     </>
   );

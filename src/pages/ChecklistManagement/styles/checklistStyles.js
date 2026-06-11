@@ -89,18 +89,15 @@ export const checklistStyles = {
   },
 
   checklistDialogContent: {
-    mt: 1,
+    mt: 6,
     height: "100%",
     width: "100%",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
 
   checklistDialogHeader: {
-    width: "100%",
+    width: "47%",
     flexDirection: "row",
-    alignItems: "center",
-    // justifyContent: "space-between",
-    gap: 2,
   },
 
   checklistHeaderText: {
@@ -117,15 +114,14 @@ export const checklistStyles = {
   checklistBodyContainer: {
     width: "100%",
     height: "100%",
-    mt: 1,
     alignItems: "center",
   },
 
   checklistSectionsContainer: {
-    width: "50%",
-    height: "50%",
+    width: "47%",
+    height: "auto",
     bgcolor: "#1D293D",
-    mt: 4,
+    mt: 2,
     borderRadius: "12px",
     border: "1px solid #4b586f",
   },
@@ -153,9 +149,10 @@ export const checklistStyles = {
   },
 
   checklistFormText: {
-    fontSize: "14px",
-    // fontWeight: 600,
-    color: "#c9d1d9",
+    fontSize: "12px",
+    fontWeight: 500,
+    letterSpacing: 1,
+    color: "#EDF2F7",
   },
 
   inputProps: {
@@ -172,8 +169,7 @@ export const checklistStyles = {
 
   checklistSectionsContent: {
     mt: 2,
-    bgcolor: "#314158",
-    height: "100%",
+    bgcolor: "#1C2536",
     borderRadius: "12px",
     border: "1px solid #4b586f",
     padding: 2,
@@ -186,10 +182,8 @@ export const checklistStyles = {
     width: "fit-content",
     borderRadius: "4px",
     alignItems: "center",
-    borderRadius: 1,
     color: "#ffffffde",
     marginBottom: "8px",
-    // letterSpacing: 0.7,
   },
 
   sectionTextField: {
@@ -202,5 +196,12 @@ export const checklistStyles = {
     border: "1px solid #4b586f",
     borderRadius: "4px",
     padding: "4px",
+  },
+  checklistFormActions: {
+    mt: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // gap: 2,
+    width: "100%",
   },
 };
