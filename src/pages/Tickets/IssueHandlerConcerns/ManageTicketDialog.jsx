@@ -895,7 +895,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       </Stack>
                     </Stack>
 
-                    {channelNameValidation === "HMU - IT Hardware Support" &&
+                    {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.getForClosingTickets?.[0]?.backDate && (
                         <>
                           <Stack gap={0.5} sx={{ width: "100%" }}>
@@ -1376,7 +1376,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   !watch("resolution") ||
                   watch("CategoryId").length === 0 ||
                   watch("SubCategoryId").length === 0 ||
-                  (channelNameValidation === "HMU - IT Hardware Support" &&
+                  (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                   isTodayAfterTarget &&
                   !isTodayAndTargetSame
                     ? !watch("ClosingDate") ||

@@ -879,7 +879,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         />
                       </Stack>
 
-                      {channelNameValidation === "HMU - IT Hardware Support" &&
+                      {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                         isTodayAfterTarget &&
                         !isTodayAndTargetSame && (
                           <>
@@ -1304,7 +1304,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                 watch("CategoryId").length === 0 ||
                 watch("SubCategoryId").length === 0 ||
                 !watch("CategoryConcern") ||
-                (channelNameValidation === "HMU - IT Hardware Support" &&
+                (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                 isTodayAfterTarget &&
                 !isTodayAndTargetSame
                   ? !watch("ClosingDate") || !!errors.ClosingDate || !watch("BackdateRemarks")

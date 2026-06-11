@@ -591,12 +591,13 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                   </Stack>
 
                   {/* Closing Date with Remarks */}
-                  {(channelNameValidation === "HMU - IT Hardware Support" && data?.ticket_Status === "") ||
-                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                  {(channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
+                    data?.ticket_Status === "") ||
+                    (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.ticket_Status === "For Closing Ticket") ||
-                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                    (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.ticket_Status === "Closed") ||
-                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                    (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.ticket_Status === "For Confirmation" && (
                         <>
                           <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
@@ -1181,12 +1182,13 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                   </Stack>
 
                   {/* Closing Date with Remarks */}
-                  {(channelNameValidation === "HMU - IT Hardware Support" && data?.ticket_Status === "") ||
-                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                  {(channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
+                    data?.ticket_Status === "") ||
+                    (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.ticket_Status === "For Closing Ticket") ||
-                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                    (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.ticket_Status === "Closed") ||
-                    (channelNameValidation === "HMU - IT Hardware Support" &&
+                    (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                       data?.ticket_Status === "For Confirmation" && (
                         <>
                           <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>

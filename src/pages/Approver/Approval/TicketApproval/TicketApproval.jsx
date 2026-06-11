@@ -512,7 +512,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                             />
                           </Stack>
 
-                          {channelNameValidation === "HMU - IT Hardware Support" && (
+                          {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && (
                             <>
                               <Stack direction="row" gap={0.5} alignItems="center">
                                 <Typography
@@ -894,7 +894,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           onClick={() => onViewAction(item)}
                         >
                           <Stack gap={0.5} sx={{ width: "270px" }}>
-                            {channelNameValidation === "HMU - IT Hardware Support" && (
+                            {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && (
                               <>
                                 <Tooltip title={item?.resolution} placement="bottom-start">
                                   <Stack>

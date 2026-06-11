@@ -180,7 +180,9 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
     const today = moment().format("YYYY-MM-DD");
     const diff = moment(watch("TargetDate")).diff(today, "days");
 
-    setShowReason(channelNameValidation === "HMU - IT Hardware Support" ? diff > 3 : diff > 2);
+    setShowReason(
+      channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" ? diff > 3 : diff > 2,
+    );
   }, [watch("TargetDate")]);
 
   console.log("Channel: ", channelNameValidation);
@@ -431,7 +433,7 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
                       <Typography
                         sx={{ fontSize: "12px", color: theme.palette.warning.main, fontStyle: "italic" }}
                       >
-                        {`Note: Please input a reason if the target date is more than ${channelNameValidation === "HMU - IT Hardware Support" ? 3 : 2} days from today.`}
+                        {`Note: Please input a reason if the target date is more than ${channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" ? 3 : 2} days from today.`}
                       </Typography>
                     </Stack>
                   </Stack>
