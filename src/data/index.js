@@ -211,76 +211,80 @@ export const details = [
   },
 ];
 
-export const checklistData = [
-  {
-    id: 1,
-    title: "Store Checklist",
-    description: "Description1",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+export const checklistData = {
+  value: {
+    checklistManagement: [
+      {
+        id: 1,
+        title: "Store Checklist",
+        description: "Description1",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 2,
-    title: "Desktop Checklist",
-    description: "Description2",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+      {
+        id: 2,
+        title: "Desktop Checklist",
+        description: "Description2",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 3,
-    title: "Laptop Checklist",
-    description: "Description3",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+      {
+        id: 3,
+        title: "Laptop Checklist",
+        description: "Description3",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 4,
-    title: "Weighing Scale Checklist",
-    description: "Description4",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+      {
+        id: 4,
+        title: "Weighing Scale Checklist",
+        description: "Description4",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 5,
-    title: "Sample 5",
-    description: "Description5",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+      {
+        id: 5,
+        title: "Sample 5",
+        description: "Description5",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 6,
-    title: "Sample 6",
-    description: "Description6",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+      {
+        id: 6,
+        title: "Sample 6",
+        description: "Description6",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 7,
-    title: "Sample 7",
-    description: "Description7",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
-  },
+      {
+        id: 7,
+        title: "Sample 7",
+        description: "Description7",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
 
-  {
-    id: 8,
-    title: "Sample 8",
-    description: "Description8",
-    createdAt: "April 12, 2026",
-    modifiedAt: "April 12, 2026",
-    status: "Active",
+      {
+        id: 8,
+        title: "Sample 8",
+        description: "Description8",
+        createdAt: "April 12, 2026",
+        modifiedAt: "April 12, 2026",
+        isActive: true,
+      },
+    ],
   },
-];
+};

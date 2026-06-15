@@ -1,6 +1,13 @@
 import React, { useRef, useState } from "react";
 import { MoreVertOutlined } from "@mui/icons-material";
-import { Card, CardActionArea, CardContent, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 import moment from "moment";
 import Swal from "sweetalert2";
@@ -22,8 +29,16 @@ const ChecklistCards = ({ data }) => {
   const lottieRef = useRef();
   const isHovering = useRef(false);
 
-  const { open: checklistOpen, onToggle: checklistOnToggle, onClose: checklistOnClose } = useDisclosure();
-  const { open: editOpen, onToggle: editOnToggle, onClose: editOnClose } = useDisclosure();
+  const {
+    open: checklistOpen,
+    onToggle: checklistOnToggle,
+    onClose: checklistOnClose,
+  } = useDisclosure();
+  const {
+    open: editOpen,
+    onToggle: editOnToggle,
+    onClose: editOnClose,
+  } = useDisclosure();
   const [archiveChecklist] = useArchiveChecklistMutation();
 
   const TOTAL_FRAMES = 101;
@@ -43,11 +58,19 @@ const ChecklistCards = ({ data }) => {
 
   const handleEnterFrame = (e) => {
     // Stop at mid frame ONLY when hovering and playing forward
-    if (isHovering.current && e.direction === 1 && Math.floor(e.currentTime) >= MID_FRAME) {
+    if (
+      isHovering.current &&
+      e.direction === 1 &&
+      Math.floor(e.currentTime) >= MID_FRAME
+    ) {
       lottieRef.current.pause();
     }
     // Stop at frame 0 ONLY when not hovering and playing backward
-    if (!isHovering.current && e.direction === -1 && Math.floor(e.currentTime) <= 0) {
+    if (
+      !isHovering.current &&
+      e.direction === -1 &&
+      Math.floor(e.currentTime) <= 0
+    ) {
       lottieRef.current.pause();
     }
   };
@@ -111,7 +134,9 @@ const ChecklistCards = ({ data }) => {
           } catch (err) {
             console.log("Error", err);
             Swal.hideLoading();
-            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            Swal.showValidationMessage(
+              err?.data?.error?.message || "Something went wrong",
+            );
             return false; // keeps modal open
           }
         },
@@ -168,7 +193,9 @@ const ChecklistCards = ({ data }) => {
           } catch (err) {
             console.log("Error", err);
             Swal.hideLoading();
-            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            Swal.showValidationMessage(
+              err?.data?.error?.message || "Something went wrong",
+            );
             return false;
           }
         },
@@ -179,6 +206,8 @@ const ChecklistCards = ({ data }) => {
       });
     }
   };
+
+  console.log("Data:", data);
 
   return (
     <>
@@ -210,17 +239,23 @@ const ChecklistCards = ({ data }) => {
               </Stack>
 
               <Stack>
-                <Typography sx={checklistStyles.cardTitle}>{data?.title}</Typography>
+                <Typography sx={checklistStyles.cardTitle}>
+                  {data?.title}
+                </Typography>
 
                 <Stack direction="row" justifyContent="space-between">
                   <Stack mt={2}>
-                    <Typography sx={checklistStyles.cardDescription}>{data?.description}</Typography>
+                    <Typography sx={checklistStyles.cardDescription}>
+                      {data?.description}
+                    </Typography>
 
                     <Stack mt={1}>
                       <Typography
                         sx={{
                           ...checklistStyles.cardDetails,
-                          color: data?.isActive ? theme.palette.success.main : theme.palette.error.main,
+                          color: data?.isActive
+                            ? theme.palette.success.main
+                            : theme.palette.error.main,
                         }}
                       >
                         {data?.isActive ? "Active" : "Inactive"}
@@ -232,7 +267,11 @@ const ChecklistCards = ({ data }) => {
                   </Stack>
 
                   <Stack mt={2}>
-                    <ChecklistCardActions data={data} onArchive={onArchiveAction} onEdit={onEditAction} />
+                    <ChecklistCardActions
+                      data={data}
+                      onArchive={onArchiveAction}
+                      onEdit={onEditAction}
+                    />
                   </Stack>
                 </Stack>
               </Stack>
@@ -241,8 +280,16 @@ const ChecklistCards = ({ data }) => {
         </CardActionArea>
       </Card>
 
-      <CreateNewChecklistDialog data={editData} open={editOpen} onClose={editOnClose} />
-      <ChecklistFormDialog data={checklistData} open={checklistOpen} onClose={checklistOnClose} />
+      <CreateNewChecklistDialog
+        data={editData}
+        open={editOpen}
+        onClose={editOnClose}
+      />
+      <ChecklistFormDialog
+        data={checklistData}
+        open={checklistOpen}
+        onClose={checklistOnClose}
+      />
     </>
   );
 };

@@ -89,14 +89,14 @@ export const checklistStyles = {
   },
 
   checklistDialogContent: {
-    mt: 6,
+    mt: 4,
     height: "100%",
     width: "100%",
     justifyContent: "center",
   },
 
   checklistDialogHeader: {
-    width: "47%",
+    width: "65%",
     flexDirection: "row",
   },
 
@@ -118,17 +118,24 @@ export const checklistStyles = {
   },
 
   checklistSectionsContainer: {
-    width: "47%",
+    width: "65%",
     height: "auto",
     bgcolor: "#1D293D",
     mt: 2,
     borderRadius: "12px",
     border: "1px solid #4b586f",
+    flexDirection: "row",
   },
 
   checklistSectionContent: {
     width: "100%",
     p: 2,
+  },
+
+  boxStyling: {
+    height: "100%",
+    width: "20px",
+    backgroundColor: "#6E53A5",
   },
 
   checklistSectionHeader: {
@@ -149,8 +156,8 @@ export const checklistStyles = {
   },
 
   checklistFormText: {
-    fontSize: "12px",
-    fontWeight: 500,
+    fontSize: "10px",
+    fontWeight: 700,
     letterSpacing: 1,
     color: "#EDF2F7",
   },
@@ -203,5 +210,10 @@ export const checklistStyles = {
     justifyContent: "space-between",
     // gap: 2,
     width: "100%",
+  },
+  addQuestionButton: {
+    mt: 4,
+    fontSize: "11px",
+    padding: "6px 16px",
   },
 };
