@@ -34,6 +34,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import { checklistStyles } from "./styles/checklistStyles";
+import RichTextEditor from "../../components/RichTextEditor";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -101,7 +102,12 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={onClose}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={checklistStyles.checklistDialogContent}>
@@ -115,8 +121,13 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                   </Stack>
 
                   <Stack>
-                    <Typography sx={checklistStyles.checklistHeaderText}>Checklist Form Builder</Typography>
-                    <Typography color="text.secondary" sx={{ fontSize: "13px" }}>
+                    <Typography sx={checklistStyles.checklistHeaderText}>
+                      Checklist Form Builder
+                    </Typography>
+                    <Typography
+                      color="text.secondary"
+                      sx={{ fontSize: "13px" }}
+                    >
                       Create and manage your checklist
                     </Typography>
                   </Stack>
@@ -139,8 +150,12 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                         >
                           Build your Checklist
                         </Typography>
-                        <Typography color="text.secondary" sx={{ fontSize: "13px" }}>
-                          Let's start with the basic information for your checklist.
+                        <Typography
+                          color="text.secondary"
+                          sx={{ fontSize: "13px" }}
+                        >
+                          Let's start with the basic information for your
+                          checklist.
                         </Typography>
                       </Stack>
                     </Stack>
@@ -149,10 +164,16 @@ const CreateNewChecklistDialog = ({ data, open, onClose }) => {
                     <Stack mt={4} gap={2}>
                       <Stack gap={0.2}>
                         <Stack sx={checklistStyles.checklistFormDescription}>
-                          <Typography color="text.secondary" sx={checklistStyles.checklistFormText}>
+                          <Typography
+                            color="text.secondary"
+                            sx={checklistStyles.checklistFormText}
+                          >
                             CHECKLIST NAME
                           </Typography>
-                          <FiberManualRecord color="error" sx={checklistStyles.dotIcon} />
+                          <FiberManualRecord
+                            color="error"
+                            sx={checklistStyles.dotIcon}
+                          />
                         </Stack>
 
                         <TextField
@@ -275,7 +296,7 @@ const SectionItem = ({ control, sectionIndex, removeSection }) => {
         <Stack gap={0.5} direction="row">
           <IconButton sx={checklistStyles.sectionIconButton}>
             <DeleteOutline
-              color="inherit"
+              color="error"
               onClick={() => removeSection(sectionIndex)}
               sx={{ fontSize: "24px" }}
             />
@@ -289,7 +310,10 @@ const SectionItem = ({ control, sectionIndex, removeSection }) => {
 
       <Stack gap={0.2} mt={1}>
         <Stack sx={checklistStyles.checklistFormDescription}>
-          <Typography color="text.secondary" sx={checklistStyles.checklistFormText}>
+          <Typography
+            color="text.secondary"
+            sx={checklistStyles.checklistFormText}
+          >
             SECTION NAME
           </Typography>
           <FiberManualRecord color="error" sx={checklistStyles.dotIcon} />
@@ -299,13 +323,19 @@ const SectionItem = ({ control, sectionIndex, removeSection }) => {
           <Controller
             name={`sections.${sectionIndex}.sectionName`}
             control={control}
-            render={({ field }) => (
-              <TextField
-                size="small"
-                placeholder="Input Section Name"
-                InputProps={checklistStyles.inputProps}
-                InputLabelProps={checklistStyles.inputLabelProps}
-                sx={{ flex: 1 }}
+            render={({ field, fieldState }) => (
+              // <TextField
+              //   size="small"
+              //   placeholder="Input Section Name"
+              //   InputProps={checklistStyles.inputProps}
+              //   InputLabelProps={checklistStyles.inputLabelProps}
+              //   sx={{ flex: 1 }}
+              // />
+
+              <RichTextEditor
+                value={field.value}
+                onChange={field.onChange}
+                error={!!fieldState.error}
               />
             )}
           />
@@ -314,7 +344,10 @@ const SectionItem = ({ control, sectionIndex, removeSection }) => {
 
       {/* Questions */}
       <Stack mt={3}>
-        <Typography color="text.secondary" sx={checklistStyles.questionHeaderText}>
+        <Typography
+          color="text.secondary"
+          sx={checklistStyles.questionHeaderText}
+        >
           QUESTIONS
         </Typography>
         {questions.map((question, questionIndex) => (
@@ -349,7 +382,12 @@ const SectionItem = ({ control, sectionIndex, removeSection }) => {
   );
 };
 
-const QuestionItem = ({ control, sectionIndex, questionIndex, removeQuestion }) => {
+const QuestionItem = ({
+  control,
+  sectionIndex,
+  questionIndex,
+  removeQuestion,
+}) => {
   const {
     fields: types,
     append: appendType,
@@ -395,7 +433,10 @@ const QuestionItem = ({ control, sectionIndex, questionIndex, removeQuestion }) 
 
         {/* Types */}
         <Stack mt={3}>
-          <Typography color="text.secondary" sx={checklistStyles.questionHeaderText}>
+          <Typography
+            color="text.secondary"
+            sx={checklistStyles.questionHeaderText}
+          >
             QUESTION TYPE
           </Typography>
           {types.map((type, typeIndex) => (
@@ -430,11 +471,19 @@ const QuestionItem = ({ control, sectionIndex, questionIndex, removeQuestion }) 
   );
 };
 
-const TypeItem = ({ control, sectionIndex, questionIndex, typeIndex, removeType }) => {
+const TypeItem = ({
+  control,
+  sectionIndex,
+  questionIndex,
+  typeIndex,
+  removeType,
+}) => {
   return (
     <Stack>
       <Stack sx={checklistStyles.typeItemContainer}>
-        <Typography sx={checklistStyles.questionHeaderText}>{`${typeIndex + 1}.`}</Typography>
+        <Typography
+          sx={checklistStyles.questionHeaderText}
+        >{`${typeIndex + 1}.`}</Typography>
 
         <Stack sx={checklistStyles.questionDesc}>
           <Controller
