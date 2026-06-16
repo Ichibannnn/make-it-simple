@@ -120,7 +120,7 @@ export const checklistStyles = {
   checklistSectionsContainer: {
     width: "65%",
     height: "auto",
-    bgcolor: "#1D293D",
+    bgcolor: "#1b2234",
     mt: 2,
     borderRadius: "12px",
     border: "1px solid #4b586f",
@@ -145,6 +145,13 @@ export const checklistStyles = {
     justifyContent: "space-between",
   },
 
+  sectionDraggable: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
   checklistFormDescription: {
     flexDirection: "row",
     alignItems: "center",
@@ -159,7 +166,7 @@ export const checklistStyles = {
     fontSize: "10px",
     fontWeight: 700,
     letterSpacing: 1,
-    color: "#EDF2F7",
+    // color: "#c5c9cd",
   },
 
   inputProps: {
@@ -183,7 +190,7 @@ export const checklistStyles = {
   },
 
   sectionChipStyle: {
-    fontWeight: 500,
+    fontWeight: 700,
     fontSize: "11px",
     height: 20,
     width: "fit-content",
@@ -191,6 +198,7 @@ export const checklistStyles = {
     alignItems: "center",
     color: "#ffffffde",
     marginBottom: "8px",
+    background: "linear-gradient(117deg, #8B5CF6 56%, #91a1ed 100%)",
   },
 
   sectionTextField: {
@@ -211,9 +219,65 @@ export const checklistStyles = {
     // gap: 2,
     width: "100%",
   },
+
+  // Questions
+  questionItemContainer: {
+    mt: 1,
+    bgcolor: "#2b374f",
+    borderRadius: "12px",
+    border: "1px solid #4b586f",
+    padding: 2,
+    gap: 1,
+  },
+
+  questionHeaderText: {
+    fontSize: "10px",
+    fontWeight: 700,
+    letterSpacing: 1,
+    // color: "#EDF2F7",
+  },
+
+  questionDesc: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 1,
+  },
+
   addQuestionButton: {
     mt: 4,
-    fontSize: "11px",
+    // fontSize: "11px",
     padding: "6px 16px",
+  },
+
+  // Types
+  addTypeButton: {
+    mt: 4,
+    // fontSize: "11px",
+    padding: "6px 16px",
+  },
+
+  typeItemContainer: {
+    mt: 1,
+    bgcolor: "#1C2536",
+    borderRadius: "12px",
+    border: "1px solid #4b586f",
+    padding: 2,
+    gap: 1,
+  },
+
+  // Gradient button
+  gradientButton: {
+    background: "linear-gradient(117deg, #8B5CF6 56%, #91a1ed 100%)",
+    color: "#fff",
+    border: "none",
+    padding: "6px 16px",
+    "&:hover": {
+      background: "linear-gradient(135deg, #6a4de0, #b55ce8, #4d9de0)",
+      boxShadow: "0 4px 15px rgba(124, 92, 252, 0.4)",
+    },
+    "&:disabled": {
+      background: "linear-gradient(135deg, #4a3a7a, #7a4a8a, #3a6a9a)",
+      color: "rgba(255,255,255,0.4)",
+    },
   },
 };
