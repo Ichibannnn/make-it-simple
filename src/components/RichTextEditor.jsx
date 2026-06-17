@@ -25,7 +25,7 @@ export default function RichTextEditor({ value, onChange, error }) {
     <Box
       sx={{
         border: "1px solid",
-        borderColor: error ? "red" : "#555",
+        borderColor: error ? "red" : "#404d63",
         borderRadius: 1,
         p: 1,
         minHeight: 120,
