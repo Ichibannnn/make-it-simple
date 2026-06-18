@@ -17,14 +17,14 @@ const black = {
 // 161B22
 
 // black1: "#0E1320",
-// black2: "#161B22",
+// black2: "#1C2536",
 // black3: "#111927",
 
 const theme = createTheme({
   palette: {
     bgForm: {
       black1: "#0E1320",
-      black2: "#161B22",
+      black2: "#1C2536",
       black3: "#111927",
     },
     text: {
