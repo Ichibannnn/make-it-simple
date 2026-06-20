@@ -1,9 +1,17 @@
-import { Box, Typography, TextField, Switch, Divider, Button, IconButton, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Switch,
+  Divider,
+  Button,
+  IconButton,
+  MenuItem,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import TuneIcon from "@mui/icons-material/Tune";
-
 
 import {
   getChecklistColumns,
@@ -12,6 +20,7 @@ import {
   REQUIRE_WHEN,
   hasStatusColumn,
 } from "../../../constants/checklistDefaults";
+import SelectOptionsSource from "../../../components/SelectOptionSource";
 
 const inputSx = {
   "& .MuiOutlinedInput-root": {
@@ -43,7 +52,9 @@ function SectionLabel({ children }) {
 function PropRow({ label, children }) {
   return (
     <Box>
-      <Typography sx={{ fontSize: 11, color: "#8B949E", mb: 0.5 }}>{label}</Typography>
+      <Typography sx={{ fontSize: 11, color: "#8B949E", mb: 0.5 }}>
+        {label}
+      </Typography>
       {children}
     </Box>
   );
@@ -80,6 +91,7 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
   const isSection = field?.type === "section";
   const isChecklist = field?.type === "checklist";
   const isSignature = field?.type === "signature";
+  const isSelect = field?.type === "select";
 
   function update(key, value) {
     onUpdate({ ...field, [key]: value });
@@ -195,7 +207,26 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
 
           {/* Required toggle */}
           {!isSection && (
-            <ToggleRow label="Required" checked={!!field.required} onChange={(v) => update("required", v)} />
+            <ToggleRow
+              label="Required"
+              checked={!!field.required}
+              onChange={(v) => update("required", v)}
+            />
+          )}
+
+          {/* ── SELECT (DROPDOWN) SPECIFIC ── */}
+          {isSelect && (
+            <>
+              <Divider sx={{ borderColor: "#30363D" }} />
+              <SelectOptionsSource
+                currentOptions={field.options ?? []}
+                currentSourceId={field.optionSource ?? null}
+                onOptionsChange={(opts) => update("options", opts)}
+                onSourceChange={(srcId) => {
+                  onUpdate({ ...field, optionSource: srcId ?? undefined });
+                }}
+              />
+            </>
           )}
 
           {/* ── CHECKLIST SPECIFIC ── */}
@@ -242,7 +273,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                       fullWidth
                       size="small"
                       value={field.descriptionLabel || "DESCRIPTION"}
-                      onChange={(e) => update("descriptionLabel", e.target.value)}
+                      onChange={(e) =>
+                        update("descriptionLabel", e.target.value)
+                      }
                       sx={inputSx}
                     />
                   </PropRow>
@@ -272,7 +305,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                         Add
                       </Button>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                    >
                       {columns.map((col, i) => (
                         <Box
                           key={col.id}
@@ -298,7 +333,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                               fullWidth
                               placeholder="Column label"
                               value={col.label}
-                              onChange={(e) => updateCol(i, { label: e.target.value })}
+                              onChange={(e) =>
+                                updateCol(i, { label: e.target.value })
+                              }
                               sx={inputSx}
                             />
                             <IconButton
@@ -326,7 +363,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                               select
                               size="small"
                               value={col.type}
-                              onChange={(e) => updateCol(i, { type: e.target.value })}
+                              onChange={(e) =>
+                                updateCol(i, { type: e.target.value })
+                              }
                               sx={inputSx}
                               SelectProps={{
                                 MenuProps: {
@@ -340,7 +379,11 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                               }}
                             >
                               {COLUMN_TYPES.map((t) => (
-                                <MenuItem key={t.value} value={t.value} sx={{ fontSize: 12 }}>
+                                <MenuItem
+                                  key={t.value}
+                                  value={t.value}
+                                  sx={{ fontSize: 12 }}
+                                >
                                   {t.label}
                                 </MenuItem>
                               ))}
@@ -351,7 +394,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                                 select
                                 size="small"
                                 value={col.requireWhen || "optional"}
-                                onChange={(e) => updateCol(i, { requireWhen: e.target.value })}
+                                onChange={(e) =>
+                                  updateCol(i, { requireWhen: e.target.value })
+                                }
                                 sx={inputSx}
                                 SelectProps={{
                                   MenuProps: {
@@ -365,7 +410,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                                 }}
                               >
                                 {REQUIRE_WHEN.map((r) => {
-                                  const disabled = (r.value === "check" || r.value === "x") && !statusExists;
+                                  const disabled =
+                                    (r.value === "check" || r.value === "x") &&
+                                    !statusExists;
                                   return (
                                     <MenuItem
                                       key={r.value}
@@ -414,7 +461,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                       <Button
                         size="small"
                         startIcon={<AddIcon sx={{ fontSize: 13 }} />}
-                        onClick={() => update("rows", [...(field.rows || []), ""])}
+                        onClick={() =>
+                          update("rows", [...(field.rows || []), ""])
+                        }
                         sx={{
                           color: "#7C3AED",
                           fontSize: 10,
@@ -540,7 +589,12 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                       size="small"
                       type="number"
                       value={field.minSigners ?? 1}
-                      onChange={(e) => update("minSigners", Math.max(0, parseInt(e.target.value || "0", 10)))}
+                      onChange={(e) =>
+                        update(
+                          "minSigners",
+                          Math.max(0, parseInt(e.target.value || "0", 10)),
+                        )
+                      }
                       sx={inputSx}
                     />
                   </PropRow>
@@ -555,7 +609,9 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                   maxRows={8}
                   size="small"
                   value={(field.nameOptions || []).join("\n")}
-                  placeholder={"e.g.\nManalang, Jonaber Sydney L.\nMarcelo, Carl Justine S."}
+                  placeholder={
+                    "e.g.\nManalang, Jonaber Sydney L.\nMarcelo, Carl Justine S."
+                  }
                   onChange={(e) =>
                     update(
                       "nameOptions",

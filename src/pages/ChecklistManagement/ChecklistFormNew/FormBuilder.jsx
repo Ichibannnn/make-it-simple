@@ -1,83 +1,31 @@
-import { useState } from "react";
-import { Box, Dialog } from "@mui/material";
-import { Typography } from "@mui/material";
+import { useState, useCallback, useRef } from "react";
+import { Box, Dialog, Snackbar, Alert } from "@mui/material";
 
-import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { Typography } from "@mui/material";
 
 import BuilderTopBar from "./BuilderTopBar";
 import FieldPalette from "./FieldPalette";
 import FormCanvas from "./FormCanvas";
-
 import PropertiesPanel from "./PropertiesPanel";
 import FormRenderer from "./FormRenderer";
+import SaveFormDialog from "./SaveFormDialog";
 
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
-
 import { defaultChecklistColumns } from "../../../constants/checklistDefaults";
 import { serialize } from "../../../schema";
+import { useFormDraft } from "../../../hooks/useFormDraft";
 
-const INITIAL_FIELDS = [
-  { id: "f1", type: "section", label: "Basic Information" },
-  {
-    id: "f2",
-    type: "text",
-    label: "Requester Name",
-    required: true,
-    placeholder: "Input Name",
-  },
-  {
-    id: "f3",
-    type: "text",
-    label: "Contact Number",
-    required: false,
-    placeholder: "Optional",
-  },
-  { id: "f4", type: "select", label: "Company", required: true },
-  { id: "f5", type: "date", label: "Date", required: true },
-  { id: "f6", type: "section", label: "A. Software" },
-  {
-    id: "f7",
-    type: "checklist",
-    label: "Software Checklist",
-    rows: [
-      "Check Adobe Acrobat Reader",
-      "Check Date and Time",
-      "Check and Update Anti-Virus",
-      "Scan and Check Disk",
-      "Remove unnecessary files",
-    ],
-    columns: [
-      { id: "status", label: "STATUS", type: "status", requireWhen: "always" },
-      { id: "remarks", label: "REMARKS", type: "text", requireWhen: "x" },
-    ],
-  },
-  { id: "f8", type: "section", label: "B. Computer Hardware" },
-  {
-    id: "f9",
-    type: "checklist",
-    label: "Frontend PC",
-    rows: ["System Unit", "Monitor", "Keyboard & Mouse", "Barcode Scanner", "UPS/Battery"],
-    columns: [
-      { id: "status", label: "STATUS", type: "status", requireWhen: "always" },
-      { id: "asset", label: "ASSET TAG", type: "text", requireWhen: "check" },
-      { id: "remarks", label: "REMARKS", type: "text", requireWhen: "x" },
-    ],
-  },
-  { id: "f10", type: "section", label: "PMS Conducted By" },
-  {
-    id: "f11",
-    type: "signature",
-    label: "PMS Conducted By",
-    required: true,
-    multi: true,
-    signerLabel: "Technician",
-    addButtonLabel: "Add Technician",
-    nameOptions: ["Manalang, Jonaber Sydney L.", "Marcelo, Carl Justine S."],
-    digitalSig: true,
-    minSigners: 1,
-  },
-];
+// ── Default starting fields ──────────────────────────────────────────────────
+const INITIAL_FIELDS = [];
 
 let nextId = 200;
 
@@ -99,7 +47,9 @@ function DragOverlayContent({ item }) {
         gap: 1,
       }}
     >
-      <Typography sx={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>+ {item?.label}</Typography>
+      <Typography sx={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>
+        + {item?.label}
+      </Typography>
     </Box>
   );
 }
@@ -110,7 +60,65 @@ const FormBuilder = ({ data, open, onClose }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [mode, setMode] = useState("builder");
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // Save Form dialog state
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+
+  // Draft saved timestamp shown in top bar
+  const [draftSavedAt, setDraftSavedAt] = useState(null);
+
+  // Snackbar
+  const [snack, setSnack] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const showSnack = (message, severity = "success") =>
+    setSnack({ open: true, message, severity });
+
+  // Draft meta for localStorage
+  const draftMeta = {
+    title: data?.title || "Untitled Form",
+    description: data?.description || "",
+  };
+
+  const draftKey = data?.id || "new";
+
+  // ── LocalStorage draft hook ────────────────────────────────────────────────
+  const { clearDraft, hasDraft } = useFormDraft(
+    draftKey,
+    fields,
+    (hydratedFields) => {
+      setFields(hydratedFields);
+      showSnack("Draft restored from previous session.", "info");
+    },
+    draftMeta,
+  );
+
+  // Notify top bar after each auto-save (we piggyback on the hook's effect via
+  // a small wrapper that updates draftSavedAt whenever fields change).
+  const savedAtTimer = useRef(null);
+  const notifyDraftSaved = useCallback(() => {
+    clearTimeout(savedAtTimer.current);
+    savedAtTimer.current = setTimeout(() => {
+      setDraftSavedAt(new Date().toISOString());
+    }, 650); // slightly after the debounce in useFormDraft
+  }, []);
+
+  // Wrap setFields to trigger the saved-at notification
+  const updateFields = useCallback(
+    (updater) => {
+      setFields(updater);
+      notifyDraftSaved();
+    },
+    [notifyDraftSaved],
+  );
+
+  // ── DnD sensors ──────────────────────────────────────────────────────────
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   const selectedField = fields.find((f) => f.id === selectedId) ?? null;
 
@@ -154,12 +162,16 @@ const FormBuilder = ({ data, open, onClose }) => {
 
       const overId = String(over.id);
       if (overId === "canvas-droppable") {
-        setFields((prev) => [...prev, newField]);
+        updateFields((prev) => [...prev, newField]);
       } else {
         const overIndex = fields.findIndex((f) => f.id === overId);
-        setFields((prev) => {
+        updateFields((prev) => {
           const next = [...prev];
-          next.splice(overIndex >= 0 ? overIndex + 1 : prev.length, 0, newField);
+          next.splice(
+            overIndex >= 0 ? overIndex + 1 : prev.length,
+            0,
+            newField,
+          );
           return next;
         });
       }
@@ -167,7 +179,7 @@ const FormBuilder = ({ data, open, onClose }) => {
     } else {
       const overId = String(over.id);
       if (activeId !== overId) {
-        setFields((prev) => {
+        updateFields((prev) => {
           const oldIdx = prev.findIndex((f) => f.id === activeId);
           const newIdx = prev.findIndex((f) => f.id === overId);
           return arrayMove(prev, oldIdx, newIdx);
@@ -177,17 +189,67 @@ const FormBuilder = ({ data, open, onClose }) => {
   }
 
   function handleDelete(id) {
-    setFields((prev) => prev.filter((f) => f.id !== id));
+    updateFields((prev) => prev.filter((f) => f.id !== id));
     if (selectedId === id) setSelectedId(null);
   }
 
   function handleUpdate(updated) {
-    setFields((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
+    updateFields((prev) =>
+      prev.map((f) => (f.id === updated.id ? updated : f)),
+    );
+  }
+
+  function handleDiscardDraft() {
+    clearDraft();
+    setFields(INITIAL_FIELDS);
+    setDraftSavedAt(null);
+    showSnack("Draft discarded. Form reset to defaults.", "warning");
+  }
+
+  // ── Save Form (final) ─────────────────────────────────────────────────────
+  function handleSaveConfirm(validatedMeta) {
+    setSaveLoading(true);
+
+    // Simulate async persist (replace with API call)
+    setTimeout(() => {
+      const payload = serialize(fields, {
+        id: draftKey,
+        name: validatedMeta.title,
+        description: validatedMeta.description,
+        version: validatedMeta.version,
+      });
+
+      // Download as JSON
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${draftKey}-v${validatedMeta.version}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      // Clear the draft — it's now "saved"
+      clearDraft();
+      setDraftSavedAt(null);
+
+      setSaveLoading(false);
+      setSaveDialogOpen(false);
+      showSnack("Form saved successfully! JSON downloaded.", "success");
+    }, 800);
   }
 
   return (
     <>
-      <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={onClose}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -206,27 +268,17 @@ const FormBuilder = ({ data, open, onClose }) => {
           >
             <BuilderTopBar
               mode={mode}
-              onTogglePreview={() => setMode((m) => (m === "builder" ? "preview" : "builder"))}
-              onSave={() => {
-                const payload = serialize(fields, {
-                  id: "store-checklist",
-                  name: data.title,
-                });
-                const blob = new Blob([JSON.stringify(payload, null, 2)], {
-                  type: "application/json",
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${payload.form.id}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-              }}
+              onTogglePreview={() =>
+                setMode((m) => (m === "builder" ? "preview" : "builder"))
+              }
+              onSave={() => setSaveDialogOpen(true)}
               onClose={onClose}
+              onDiscardDraft={handleDiscardDraft}
               data={data}
+              draftSavedAt={draftSavedAt}
+              hasDraft={hasDraft()}
             />
+
             {mode === "builder" ? (
               <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
                 <FieldPalette />
@@ -254,6 +306,45 @@ const FormBuilder = ({ data, open, onClose }) => {
           </DragOverlay>
         </DndContext>
       </Dialog>
+
+      {/* ── Save Form dialog ── */}
+      <SaveFormDialog
+        open={saveDialogOpen}
+        onClose={() => setSaveDialogOpen(false)}
+        defaultMeta={{ title: data?.title, description: data?.description }}
+        fields={fields}
+        onConfirm={handleSaveConfirm}
+        loading={saveLoading}
+      />
+
+      {/* ── Snackbar notifications ── */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3500}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+          sx={{
+            bgcolor:
+              snack.severity === "success"
+                ? "#22C55E"
+                : snack.severity === "info"
+                  ? "#7C3AED"
+                  : snack.severity === "warning"
+                    ? "#F97316"
+                    : "#EF4444",
+            color: "#fff",
+            fontSize: 12,
+            "& .MuiAlert-icon": { color: "#fff" },
+          }}
+        >
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

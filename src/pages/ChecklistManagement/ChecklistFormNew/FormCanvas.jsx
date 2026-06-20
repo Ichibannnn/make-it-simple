@@ -1,10 +1,20 @@
 import { Box, Typography } from "@mui/material";
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import CanvasField from "./CanvasField";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 
-export default function FormCanvas({ fields, selectedId, onSelect, onDelete, onUpdate, data }) {
+export default function FormCanvas({
+  fields,
+  selectedId,
+  onSelect,
+  onDelete,
+  onUpdate,
+  data,
+}) {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas-droppable" });
 
   return (
@@ -41,14 +51,21 @@ export default function FormCanvas({ fields, selectedId, onSelect, onDelete, onU
             bgcolor: "#161B22",
           }}
         >
-          <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#E6EDF3", mb: 0.5 }}>
+          <Typography
+            sx={{ fontSize: 22, fontWeight: 700, color: "#E6EDF3", mb: 0.5 }}
+          >
             {data?.title}
           </Typography>
-          <Typography sx={{ fontSize: 13, color: "#8B949E" }}>{data?.description}</Typography>
+          <Typography sx={{ fontSize: 13, color: "#8B949E" }}>
+            {data?.description}
+          </Typography>
         </Box>
 
         {/* Drop zone */}
-        <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={fields.map((f) => f.id)}
+          strategy={verticalListSortingStrategy}
+        >
           <Box
             ref={setNodeRef}
             sx={{
@@ -83,7 +100,9 @@ export default function FormCanvas({ fields, selectedId, onSelect, onDelete, onU
                   transition: "all 0.2s ease",
                 }}
               >
-                <GridViewOutlinedIcon sx={{ fontSize: 44, color: isOver ? "#7C3AED" : "#30363D" }} />
+                <GridViewOutlinedIcon
+                  sx={{ fontSize: 44, color: isOver ? "#7C3AED" : "#30363D" }}
+                />
                 <Box sx={{ textAlign: "center" }}>
                   <Typography
                     sx={{
@@ -95,7 +114,9 @@ export default function FormCanvas({ fields, selectedId, onSelect, onDelete, onU
                   >
                     {isOver ? "Release to add field" : "Your form is empty"}
                   </Typography>
-                  <Typography sx={{ fontSize: 12, color: "#8B949E", opacity: 0.7 }}>
+                  <Typography
+                    sx={{ fontSize: 12, color: "#8B949E", opacity: 0.7 }}
+                  >
                     Drag a field from the left panel to start building
                   </Typography>
                 </Box>
