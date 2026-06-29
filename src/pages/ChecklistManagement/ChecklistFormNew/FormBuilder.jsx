@@ -12,12 +12,21 @@ import PropertiesPanel from "./PropertiesPanel";
 import FormRenderer from "./FormRenderer";
 import SaveFormDialog from "./SaveFormDialog";
 
-import { readDraft, writeDraft, clearDraft, hasDraft } from "./../../../hooks/useFormDraft";
+import {
+  readDraft,
+  writeDraft,
+  clearDraft,
+  hasDraft,
+  getMaxId,
+  getNewFormSessionKey,
+} from "./../../../hooks/useFormDraft";
 
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
 import { defaultChecklistColumns } from "../../../constants/checklistDefaults";
 import { serialize } from "../../../schema";
 
+// nextId is managed as a module-level variable that gets seeded lazily
+// inside the component from the persisted draft (see initNextId below).
 let nextId = 200;
 
 function DragOverlayContent({ item }) {
@@ -44,11 +53,21 @@ function DragOverlayContent({ item }) {
 }
 
 const FormBuilder = ({ data, open, onClose }) => {
-  const draftKey = data?.id || "new";
+  // Use a stable per-tab session key for unsaved forms so hard-refresh
+  // (Ctrl+Shift+R) within the same tab reloads the same draft, while a
+  // new tab always starts fresh and never clobbers another tab's work.
+  const draftKey = data?.id || getNewFormSessionKey();
   const draftMeta = { title: data?.title || "Untitled Form", description: data?.description || "" };
 
   // ── Initialize fields directly from localStorage — survives any refresh ──
-  const [fields, setFields] = useState(() => readDraft(draftKey) ?? []);
+  const [fields, setFields] = useState(() => {
+    const restored = readDraft(draftKey) ?? [];
+    // Seed nextId so new fields dragged in after a refresh never collide
+    // with ids that were already assigned before the refresh.
+    const maxSeen = getMaxId(draftKey);
+    if (maxSeen >= nextId) nextId = maxSeen + 1;
+    return restored;
+  });
 
   const [selectedId, setSelectedId] = useState(null);
   const [activeItem, setActiveItem] = useState(null);
