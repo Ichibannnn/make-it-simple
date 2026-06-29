@@ -890,9 +890,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                     fontSize: "14px",
                                   }}
                                 >
-                                  Backdate:
+                                  Backdate (Optional):
                                 </Typography>
-                                <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                                {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
                               </Stack>
 
                               <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -934,59 +934,61 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                               </LocalizationProvider>
                             </Stack>
 
-                            <Stack gap={0.5} sx={{ width: "100%" }}>
-                              <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                                <Typography
-                                  sx={{
-                                    fontSize: "14px",
+                            {watch("ClosingDate") && (
+                              <Stack gap={0.5} sx={{ width: "100%" }}>
+                                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                                  <Typography
+                                    sx={{
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    Backdate Remarks:
+                                  </Typography>
+                                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                                </Stack>
+
+                                <Controller
+                                  control={control}
+                                  name="BackdateRemarks"
+                                  render={({ field: { ref, value, onChange } }) => {
+                                    return (
+                                      <TextField
+                                        inputRef={ref}
+                                        size="medium"
+                                        value={value}
+                                        onChange={onChange}
+                                        autoComplete="off"
+                                        rows={2}
+                                        multiline
+                                        InputProps={{
+                                          style: {
+                                            fontSize: "13px",
+                                          },
+                                        }}
+                                        InputLabelProps={{
+                                          style: {
+                                            fontSize: "13px",
+                                          },
+                                        }}
+                                        disabled={!watch("ClosingDate")}
+                                        sx={{
+                                          "& .disabled": {
+                                            backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
+                                            cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
+                                          },
+                                        }}
+                                      />
+                                    );
                                   }}
-                                >
-                                  Backdate Remarks:
-                                </Typography>
-                                <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                                />
+
+                                {errors.BackdateRemarks && (
+                                  <Typography color="error" sx={{ fontSize: "12px" }}>
+                                    {errors.BackdateRemarks.message}
+                                  </Typography>
+                                )}
                               </Stack>
-
-                              <Controller
-                                control={control}
-                                name="BackdateRemarks"
-                                render={({ field: { ref, value, onChange } }) => {
-                                  return (
-                                    <TextField
-                                      inputRef={ref}
-                                      size="medium"
-                                      value={value}
-                                      onChange={onChange}
-                                      autoComplete="off"
-                                      rows={2}
-                                      multiline
-                                      InputProps={{
-                                        style: {
-                                          fontSize: "13px",
-                                        },
-                                      }}
-                                      InputLabelProps={{
-                                        style: {
-                                          fontSize: "13px",
-                                        },
-                                      }}
-                                      disabled={!watch("ClosingDate")}
-                                      sx={{
-                                        "& .disabled": {
-                                          backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
-                                          cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
-                                        },
-                                      }}
-                                    />
-                                  );
-                                }}
-                              />
-
-                              {errors.BackdateRemarks && (
-                                <Typography color="error" sx={{ fontSize: "12px" }}>
-                                  {errors.BackdateRemarks.message}
-                                </Typography>
-                              )}
-                            </Stack>
+                            )}
                           </>
                         )}
                     </Stack>
@@ -1304,11 +1306,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                 watch("CategoryId").length === 0 ||
                 watch("SubCategoryId").length === 0 ||
                 !watch("CategoryConcern") ||
-                (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
-                isTodayAfterTarget &&
-                !isTodayAndTargetSame
-                  ? !watch("ClosingDate") || !!errors.ClosingDate || !watch("BackdateRemarks")
-                  : false)
+                (watch("ClosingDate") && !watch("BackdateRemarks"))
+
+                // (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
+                // isTodayAfterTarget &&
+                // !isTodayAndTargetSame
+                //   ? !watch("ClosingDate") || !!errors.ClosingDate || !watch("BackdateRemarks")
+                //   : false)
               }
             >
               Submit

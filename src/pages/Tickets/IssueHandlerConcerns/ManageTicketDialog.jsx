@@ -905,9 +905,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   fontSize: "14px",
                                 }}
                               >
-                                Backdate:
+                                Backdate (Optional):
                               </Typography>
-                              <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                              {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
                             </Stack>
 
                             <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -1376,14 +1376,15 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                   !watch("resolution") ||
                   watch("CategoryId").length === 0 ||
                   watch("SubCategoryId").length === 0 ||
-                  (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
-                  isTodayAfterTarget &&
-                  !isTodayAndTargetSame
-                    ? !watch("ClosingDate") ||
-                      !!errors.ClosingDate ||
-                      !watch("BackdateRemarks") ||
-                      isClosingDateInvalid
-                    : false)
+                  (watch("ClosingDate") && !watch("BackdateRemarks"))
+                  // (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
+                  // isTodayAfterTarget &&
+                  // !isTodayAndTargetSame
+                  //   ? !watch("ClosingDate") ||
+                  //     !!errors.ClosingDate ||
+                  //     !watch("BackdateRemarks") ||
+                  //     isClosingDateInvalid
+                  //   : false)
                 }
               >
                 Save
