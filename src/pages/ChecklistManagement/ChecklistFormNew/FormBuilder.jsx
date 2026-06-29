@@ -1,16 +1,9 @@
 import { useState, useCallback, useRef } from "react";
 import { Box, Dialog, Snackbar, Alert } from "@mui/material";
-
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { Typography } from "@mui/material";
+
+import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 import BuilderTopBar from "./BuilderTopBar";
 import FieldPalette from "./FieldPalette";
@@ -19,13 +12,11 @@ import PropertiesPanel from "./PropertiesPanel";
 import FormRenderer from "./FormRenderer";
 import SaveFormDialog from "./SaveFormDialog";
 
+import { readDraft, writeDraft, clearDraft, hasDraft } from "./../../../hooks/useFormDraft";
+
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
 import { defaultChecklistColumns } from "../../../constants/checklistDefaults";
 import { serialize } from "../../../schema";
-import { useFormDraft } from "../../../hooks/useFormDraft";
-
-// ── Default starting fields ──────────────────────────────────────────────────
-const INITIAL_FIELDS = [];
 
 let nextId = 200;
 
@@ -47,79 +38,47 @@ function DragOverlayContent({ item }) {
         gap: 1,
       }}
     >
-      <Typography sx={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>
-        + {item?.label}
-      </Typography>
+      <Typography sx={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>+ {item?.label}</Typography>
     </Box>
   );
 }
 
 const FormBuilder = ({ data, open, onClose }) => {
-  const [fields, setFields] = useState(INITIAL_FIELDS);
+  const draftKey = data?.id || "new";
+  const draftMeta = { title: data?.title || "Untitled Form", description: data?.description || "" };
+
+  // ── Initialize fields directly from localStorage — survives any refresh ──
+  const [fields, setFields] = useState(() => readDraft(draftKey) ?? []);
+
   const [selectedId, setSelectedId] = useState(null);
   const [activeItem, setActiveItem] = useState(null);
   const [mode, setMode] = useState("builder");
-
-  // Save Form dialog state
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
-
-  // Draft saved timestamp shown in top bar
   const [draftSavedAt, setDraftSavedAt] = useState(null);
+  const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
-  // Snackbar
-  const [snack, setSnack] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  const showSnack = (message, severity = "success") => setSnack({ open: true, message, severity });
 
-  const showSnack = (message, severity = "success") =>
-    setSnack({ open: true, message, severity });
-
-  // Draft meta for localStorage
-  const draftMeta = {
-    title: data?.title || "Untitled Form",
-    description: data?.description || "",
-  };
-
-  const draftKey = data?.id || "new";
-
-  // ── LocalStorage draft hook ────────────────────────────────────────────────
-  const { clearDraft, hasDraft } = useFormDraft(
-    draftKey,
-    fields,
-    (hydratedFields) => {
-      setFields(hydratedFields);
-      showSnack("Draft restored from previous session.", "info");
-    },
-    draftMeta,
-  );
-
-  // Notify top bar after each auto-save (we piggyback on the hook's effect via
-  // a small wrapper that updates draftSavedAt whenever fields change).
-  const savedAtTimer = useRef(null);
-  const notifyDraftSaved = useCallback(() => {
-    clearTimeout(savedAtTimer.current);
-    savedAtTimer.current = setTimeout(() => {
-      setDraftSavedAt(new Date().toISOString());
-    }, 650); // slightly after the debounce in useFormDraft
-  }, []);
-
-  // Wrap setFields to trigger the saved-at notification
+  // ── Core updater — writes to localStorage immediately on every change ────
+  // This is the single source of truth for persistence. No debounce, no async.
+  // localStorage.setItem is synchronous so the data is always on disk before
+  // the function returns, making hard-refresh safe at any moment.
   const updateFields = useCallback(
     (updater) => {
-      setFields(updater);
-      notifyDraftSaved();
+      setFields((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        writeDraft(draftKey, next, draftMeta);
+        setDraftSavedAt(new Date().toISOString());
+        return next;
+      });
     },
-    [notifyDraftSaved],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draftKey],
   );
 
-  // ── DnD sensors ──────────────────────────────────────────────────────────
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-  );
-
+  // ── DnD ──────────────────────────────────────────────────────────────────
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const selectedField = fields.find((f) => f.id === selectedId) ?? null;
 
   function handleDragStart({ active }) {
@@ -164,14 +123,10 @@ const FormBuilder = ({ data, open, onClose }) => {
       if (overId === "canvas-droppable") {
         updateFields((prev) => [...prev, newField]);
       } else {
-        const overIndex = fields.findIndex((f) => f.id === overId);
         updateFields((prev) => {
+          const overIndex = prev.findIndex((f) => f.id === overId);
           const next = [...prev];
-          next.splice(
-            overIndex >= 0 ? overIndex + 1 : prev.length,
-            0,
-            newField,
-          );
+          next.splice(overIndex >= 0 ? overIndex + 1 : prev.length, 0, newField);
           return next;
         });
       }
@@ -194,23 +149,20 @@ const FormBuilder = ({ data, open, onClose }) => {
   }
 
   function handleUpdate(updated) {
-    updateFields((prev) =>
-      prev.map((f) => (f.id === updated.id ? updated : f)),
-    );
+    updateFields((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
   }
 
   function handleDiscardDraft() {
-    clearDraft();
-    setFields(INITIAL_FIELDS);
+    clearDraft(draftKey);
+    setFields([]);
     setDraftSavedAt(null);
-    showSnack("Draft discarded. Form reset to defaults.", "warning");
+    showSnack("Draft discarded. Canvas cleared.", "warning");
   }
 
   // ── Save Form (final) ─────────────────────────────────────────────────────
   function handleSaveConfirm(validatedMeta) {
     setSaveLoading(true);
 
-    // Simulate async persist (replace with API call)
     setTimeout(() => {
       const payload = serialize(fields, {
         id: draftKey,
@@ -219,10 +171,7 @@ const FormBuilder = ({ data, open, onClose }) => {
         version: validatedMeta.version,
       });
 
-      // Download as JSON
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {
-        type: "application/json",
-      });
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -232,8 +181,7 @@ const FormBuilder = ({ data, open, onClose }) => {
       a.remove();
       URL.revokeObjectURL(url);
 
-      // Clear the draft — it's now "saved"
-      clearDraft();
+      clearDraft(draftKey);
       setDraftSavedAt(null);
 
       setSaveLoading(false);
@@ -244,12 +192,7 @@ const FormBuilder = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog
-        fullScreen
-        open={open}
-        onClose={onClose}
-        PaperProps={{ style: { overflow: "auto" } }}
-      >
+      <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "auto" } }}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -268,15 +211,13 @@ const FormBuilder = ({ data, open, onClose }) => {
           >
             <BuilderTopBar
               mode={mode}
-              onTogglePreview={() =>
-                setMode((m) => (m === "builder" ? "preview" : "builder"))
-              }
+              onTogglePreview={() => setMode((m) => (m === "builder" ? "preview" : "builder"))}
               onSave={() => setSaveDialogOpen(true)}
               onClose={onClose}
               onDiscardDraft={handleDiscardDraft}
               data={data}
               draftSavedAt={draftSavedAt}
-              hasDraft={hasDraft()}
+              hasDraft={hasDraft(draftKey)}
             />
 
             {mode === "builder" ? (
@@ -307,7 +248,6 @@ const FormBuilder = ({ data, open, onClose }) => {
         </DndContext>
       </Dialog>
 
-      {/* ── Save Form dialog ── */}
       <SaveFormDialog
         open={saveDialogOpen}
         onClose={() => setSaveDialogOpen(false)}
@@ -317,7 +257,6 @@ const FormBuilder = ({ data, open, onClose }) => {
         loading={saveLoading}
       />
 
-      {/* ── Snackbar notifications ── */}
       <Snackbar
         open={snack.open}
         autoHideDuration={3500}
