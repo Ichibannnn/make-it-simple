@@ -25,6 +25,46 @@ export function getMaxId(draftKey) {
   }
 }
 
+// ── Last-opened checklist ────────────────────────────────────────────────────
+// sessionStorage key that tracks which checklist the user had open.
+// sessionStorage survives Ctrl+Shift+R (hard refresh within the same tab)
+// but is cleared when the tab is closed — perfect for "restore on refresh".
+const LAST_OPEN_KEY = "checklist-last-open";
+
+/**
+ * Call this whenever the user opens a FormBuilder so we know which
+ * checklist to auto-restore if the page is hard-refreshed.
+ *
+ * @param {string|number} id  — checklist id (data.id)
+ */
+export function rememberLastOpen(id) {
+  try {
+    sessionStorage.setItem(LAST_OPEN_KEY, String(id));
+  } catch {}
+}
+
+/**
+ * Returns the id that was last remembered, or null if none.
+ * Use this in ChecklistCards on mount to decide whether to auto-open.
+ */
+export function recallLastOpen() {
+  try {
+    return sessionStorage.getItem(LAST_OPEN_KEY) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Clear the last-open record (call when the user deliberately closes
+ * the builder or saves the form).
+ */
+export function forgetLastOpen() {
+  try {
+    sessionStorage.removeItem(LAST_OPEN_KEY);
+  } catch {}
+}
+
 /**
  * Return a stable session key for "new" (unsaved) forms.
  * We store a UUID in sessionStorage so that:

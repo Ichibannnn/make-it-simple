@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, IconButton, Stack, Typography } from "@mui/material";
 
@@ -16,6 +16,7 @@ import ChecklistCardActions from "./ChecklistCardActions";
 import CreateNewChecklistDialog from "./CreateNewChecklistDialog";
 import ChecklistFormDialog from "./ChecklistFormDialog";
 import FormBuilder from "./ChecklistFormNew/FormBuilder";
+import { recallLastOpen } from "../../hooks/useFormDraft";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -26,9 +27,28 @@ const ChecklistCards = ({ data }) => {
   const lottieRef = useRef();
   const isHovering = useRef(false);
 
-  const { open: checklistOpen, onToggle: checklistOnToggle, onClose: checklistOnClose } = useDisclosure();
+  const {
+    open: checklistOpen,
+    onOpen: checklistOnOpen,
+    onToggle: checklistOnToggle,
+    onClose: checklistOnClose,
+  } = useDisclosure();
   const { open: editOpen, onToggle: editOnToggle, onClose: editOnClose } = useDisclosure();
   const [archiveChecklist] = useArchiveChecklistMutation();
+
+  // ── Auto-restore on hard refresh ─────────────────────────────────────────
+  // If the user was editing THIS checklist when they hit Ctrl+Shift+R,
+  // sessionStorage still holds its id. We match it against data.id and
+  // re-open the builder immediately so the canvas is restored from the draft.
+  useEffect(() => {
+    const lastId = recallLastOpen();
+    if (lastId && String(data?.id) === String(lastId)) {
+      setChecklistData(data);
+      checklistOnOpen(); // idempotent — safe even if StrictMode runs this effect twice
+    }
+    // Only run once on mount — eslint-disable-next-line is intentional
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const TOTAL_FRAMES = 101;
   const MID_FRAME = TOTAL_FRAMES / 2;

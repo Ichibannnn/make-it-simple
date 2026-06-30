@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Box, Dialog, Snackbar, Alert } from "@mui/material";
 import { Typography } from "@mui/material";
 
@@ -19,6 +19,8 @@ import {
   hasDraft,
   getMaxId,
   getNewFormSessionKey,
+  rememberLastOpen,
+  forgetLastOpen,
 } from "./../../../hooks/useFormDraft";
 
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
@@ -62,6 +64,16 @@ const FormBuilder = ({ data, open, onClose }) => {
   // ── Initialize fields directly from localStorage — survives any refresh ──
   const [fields, setFields] = useState(() => {
     const restored = readDraft(draftKey) ?? [];
+
+    // TEMP DEBUG — remove once confirmed working
+    console.log("[FormBuilder mount]", {
+      dataId: data?.id,
+      draftKey,
+      open,
+      restoredCount: restored.length,
+      restored,
+    });
+
     // Seed nextId so new fields dragged in after a refresh never collide
     // with ids that were already assigned before the refresh.
     const maxSeen = getMaxId(draftKey);
@@ -78,6 +90,17 @@ const FormBuilder = ({ data, open, onClose }) => {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const showSnack = (message, severity = "success") => setSnack({ open: true, message, severity });
+
+  // ── Persist which checklist is open so a hard-refresh can restore it ──────
+  // When `open` becomes true (user clicked the card) we record data.id in
+  // sessionStorage. On next mount ChecklistCards reads this and re-opens the
+  // dialog automatically, which causes FormBuilder to mount with the correct
+  // data prop and draftKey, so readDraft() finds the saved fields.
+  useEffect(() => {
+    if (open && data?.id) {
+      rememberLastOpen(data.id);
+    }
+  }, [open, data?.id]);
 
   // ── Core updater — writes to localStorage immediately on every change ────
   // This is the single source of truth for persistence. No debounce, no async.
@@ -173,6 +196,7 @@ const FormBuilder = ({ data, open, onClose }) => {
 
   function handleDiscardDraft() {
     clearDraft(draftKey);
+    forgetLastOpen();
     setFields([]);
     setDraftSavedAt(null);
     showSnack("Draft discarded. Canvas cleared.", "warning");
@@ -201,6 +225,7 @@ const FormBuilder = ({ data, open, onClose }) => {
       URL.revokeObjectURL(url);
 
       clearDraft(draftKey);
+      forgetLastOpen();
       setDraftSavedAt(null);
 
       setSaveLoading(false);
