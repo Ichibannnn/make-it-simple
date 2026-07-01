@@ -306,32 +306,6 @@ const SectionItem = ({ control, sectionIndex, removeSection }) => {
             )}
           />
         </Stack>
-
-        {/* <Stack direction="row" gap={0.5} sx={{ mt: 0.5 }}>
-          <Tooltip title="Collapse section">
-            <IconButton size="small" sx={{ color: "#5f6368" }}>
-              <ExpandLessOutlined sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="More options">
-            <IconButton size="small" sx={{ color: "#5f6368" }}>
-              <MoreVertOutlined sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Delete section">
-            <IconButton
-              size="small"
-              onClick={() => removeSection(sectionIndex)}
-              sx={{
-                color: "#9e9e9e",
-                "&:hover": { color: "#d32f2f", backgroundColor: "#fde8e8" },
-              }}
-            >
-              <DeleteOutlineOutlined sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-        </Stack> */}
       </Stack>
 
       {/* Questions */}
