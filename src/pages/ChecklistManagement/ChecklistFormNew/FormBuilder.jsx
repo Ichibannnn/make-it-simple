@@ -55,24 +55,12 @@ function DragOverlayContent({ item }) {
 }
 
 const FormBuilder = ({ data, open, onClose }) => {
-  // Use a stable per-tab session key for unsaved forms so hard-refresh
-  // (Ctrl+Shift+R) within the same tab reloads the same draft, while a
-  // new tab always starts fresh and never clobbers another tab's work.
   const draftKey = data?.id || getNewFormSessionKey();
   const draftMeta = { title: data?.title || "Untitled Form", description: data?.description || "" };
 
   // ── Initialize fields directly from localStorage — survives any refresh ──
   const [fields, setFields] = useState(() => {
     const restored = readDraft(draftKey) ?? [];
-
-    // TEMP DEBUG — remove once confirmed working
-    console.log("[FormBuilder mount]", {
-      dataId: data?.id,
-      draftKey,
-      open,
-      restoredCount: restored.length,
-      restored,
-    });
 
     // Seed nextId so new fields dragged in after a refresh never collide
     // with ids that were already assigned before the refresh.
@@ -91,21 +79,12 @@ const FormBuilder = ({ data, open, onClose }) => {
 
   const showSnack = (message, severity = "success") => setSnack({ open: true, message, severity });
 
-  // ── Persist which checklist is open so a hard-refresh can restore it ──────
-  // When `open` becomes true (user clicked the card) we record data.id in
-  // sessionStorage. On next mount ChecklistCards reads this and re-opens the
-  // dialog automatically, which causes FormBuilder to mount with the correct
-  // data prop and draftKey, so readDraft() finds the saved fields.
   useEffect(() => {
     if (open && data?.id) {
       rememberLastOpen(data.id);
     }
   }, [open, data?.id]);
 
-  // ── Core updater — writes to localStorage immediately on every change ────
-  // This is the single source of truth for persistence. No debounce, no async.
-  // localStorage.setItem is synchronous so the data is always on disk before
-  // the function returns, making hard-refresh safe at any moment.
   const updateFields = useCallback(
     (updater) => {
       setFields((prev) => {
@@ -115,7 +94,6 @@ const FormBuilder = ({ data, open, onClose }) => {
         return next;
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [draftKey],
   );
 
@@ -201,6 +179,18 @@ const FormBuilder = ({ data, open, onClose }) => {
     setDraftSavedAt(null);
     showSnack("Draft discarded. Canvas cleared.", "warning");
   }
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const restored = readDraft(draftKey) ?? [];
+    const maxSeen = getMaxId(draftKey);
+    if (maxSeen >= nextId) nextId = maxSeen + 1;
+    setFields(restored);
+  }, [draftKey]);
 
   // ── Save Form (final) ─────────────────────────────────────────────────────
   function handleSaveConfirm(validatedMeta) {

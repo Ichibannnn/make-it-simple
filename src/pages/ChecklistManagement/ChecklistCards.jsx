@@ -24,6 +24,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 const ChecklistCards = ({ data }) => {
   const [checklistData, setChecklistData] = useState(null);
   const [editData, setEditData] = useState(null);
+
   const lottieRef = useRef();
   const isHovering = useRef(false);
 
@@ -36,18 +37,11 @@ const ChecklistCards = ({ data }) => {
   const { open: editOpen, onToggle: editOnToggle, onClose: editOnClose } = useDisclosure();
   const [archiveChecklist] = useArchiveChecklistMutation();
 
-  // ── Auto-restore on hard refresh ─────────────────────────────────────────
-  // If the user was editing THIS checklist when they hit Ctrl+Shift+R,
-  // sessionStorage still holds its id. We match it against data.id and
-  // re-open the builder immediately so the canvas is restored from the draft.
   useEffect(() => {
     const lastId = recallLastOpen();
     if (lastId && String(data?.id) === String(lastId)) {
-      setChecklistData(data);
-      checklistOnOpen(); // idempotent — safe even if StrictMode runs this effect twice
+      checklistOnOpen();
     }
-    // Only run once on mount — eslint-disable-next-line is intentional
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const TOTAL_FRAMES = 101;
@@ -70,6 +64,7 @@ const ChecklistCards = ({ data }) => {
     if (isHovering.current && e.direction === 1 && Math.floor(e.currentTime) >= MID_FRAME) {
       lottieRef.current.pause();
     }
+
     // Stop at frame 0 ONLY when not hovering and playing backward
     if (!isHovering.current && e.direction === -1 && Math.floor(e.currentTime) <= 0) {
       lottieRef.current.pause();
@@ -204,8 +199,6 @@ const ChecklistCards = ({ data }) => {
     }
   };
 
-  console.log("Data:", data);
-
   return (
     <>
       <Card
@@ -223,7 +216,7 @@ const ChecklistCards = ({ data }) => {
                     width: 150,
                     cursor: "pointer",
                   }}
-                  onClick={() => onChecklistAction(data)}
+                  onClick={onChecklistAction}
                 >
                   <Lottie
                     lottieRef={lottieRef}
@@ -251,6 +244,7 @@ const ChecklistCards = ({ data }) => {
                       >
                         {data?.isActive ? "Active" : "Inactive"}
                       </Typography>
+
                       <Typography
                         sx={checklistStyles.cardDetails}
                       >{`Created at: ${moment(data?.createdAt).format("LL")}`}</Typography>
@@ -268,11 +262,9 @@ const ChecklistCards = ({ data }) => {
       </Card>
 
       <CreateNewChecklistDialog data={editData} open={editOpen} onClose={editOnClose} />
-
       {/* <ChecklistFormDialog data={checklistData} open={checklistOpen} onClose={checklistOnClose} /> */}
-
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <FormBuilder data={checklistData} open={checklistOpen} onClose={checklistOnClose} />
+        <FormBuilder data={data} open={checklistOpen} onClose={checklistOnClose} />
       </LocalizationProvider>
     </>
   );

@@ -15,6 +15,7 @@ export function getMaxId(draftKey) {
     const parsed = JSON.parse(raw);
     const fields = Array.isArray(parsed.fields) ? parsed.fields : [];
     let max = 200;
+
     for (const f of fields) {
       const n = parseInt(String(f.id).replace(/^\D+/, ""), 10);
       if (!isNaN(n) && n > max) max = n;
@@ -59,6 +60,7 @@ export function recallLastOpen() {
  * Clear the last-open record (call when the user deliberately closes
  * the builder or saves the form).
  */
+
 export function forgetLastOpen() {
   try {
     sessionStorage.removeItem(LAST_OPEN_KEY);
@@ -73,9 +75,11 @@ export function forgetLastOpen() {
  *  - a brand-new tab starts with a fresh key and won't overwrite a draft
  *    that another tab is still working on
  */
+
 export function getNewFormSessionKey() {
   const SK = "checklist-new-session-id";
   let id = sessionStorage.getItem(SK);
+
   if (!id) {
     id = `new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     sessionStorage.setItem(SK, id);
@@ -91,7 +95,9 @@ export function getNewFormSessionKey() {
 export function readDraft(draftKey) {
   try {
     const raw = localStorage.getItem(`${DRAFT_PREFIX}${draftKey}`);
+
     if (!raw) return null;
+
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed.fields) && parsed.fields.length > 0) return parsed.fields;
   } catch {
