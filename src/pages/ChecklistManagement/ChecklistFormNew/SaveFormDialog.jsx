@@ -20,6 +20,8 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 
+import { saveFormDialogStyles as s } from "./styles/formStyle";
+
 // ── Yup schema ──────────────────────────────────────────────────────────────
 const saveSchema = yup.object({
   title: yup
@@ -41,21 +43,6 @@ const saveSchema = yup.object({
     )
     .required("Version is required"),
 });
-
-// ── Shared input sx ─────────────────────────────────────────────────────────
-const inputSx = {
-  "& .MuiOutlinedInput-root": {
-    fontSize: 13,
-    bgcolor: "rgba(255,255,255,0.02)",
-    "& fieldset": { borderColor: "#30363D" },
-    "&:hover fieldset": { borderColor: "#7C3AED" },
-    "&.Mui-focused fieldset": { borderColor: "#7C3AED" },
-  },
-  "& .MuiInputBase-input": { color: "#E6EDF3" },
-  "& .MuiFormHelperText-root": { color: "#EF4444", fontSize: 11 },
-  "& .MuiInputLabel-root": { color: "#8B949E", fontSize: 13 },
-  "& .MuiInputLabel-root.Mui-focused": { color: "#7C3AED" },
-};
 
 // ── Field count summary ──────────────────────────────────────────────────────
 function FieldSummary({ fields }) {
@@ -90,21 +77,13 @@ function FieldSummary({ fields }) {
   ];
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+    <Box sx={s.summaryChipsWrap}>
       {chips.map((c) => (
         <Chip
           key={c.label}
           label={c.label}
           size="small"
-          sx={{
-            height: 20,
-            fontSize: 10,
-            fontWeight: 600,
-            bgcolor: "rgba(255,255,255,0.04)",
-            color: c.color,
-            border: `1px solid ${c.color}44`,
-            "& .MuiChip-label": { px: 1 },
-          }}
+          sx={s.summaryChip(c.color)}
         />
       ))}
     </Box>
@@ -168,100 +147,39 @@ export default function SaveFormDialog({
       maxWidth="sm"
       fullWidth
       TransitionProps={{ onEnter: handleEnter }}
-      PaperProps={{
-        sx: {
-          bgcolor: "#161B22",
-          border: "1px solid #30363D",
-          borderRadius: 2,
-          backgroundImage: "none",
-        },
-      }}
+      PaperProps={{ sx: s.paper }}
     >
       {/* ── Header ── */}
-      <DialogTitle
-        sx={{
-          px: 3,
-          py: 2,
-          borderBottom: "1px solid #30363D",
-          display: "flex",
-          alignItems: "center",
-          gap: 1.5,
-        }}
-      >
-        <Box
-          sx={{
-            width: 32,
-            height: 32,
-            borderRadius: 1,
-            bgcolor: "rgba(124,58,237,0.15)",
-            border: "1px solid rgba(124,58,237,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <SaveOutlinedIcon sx={{ fontSize: 16, color: "#9D5CF6" }} />
+      <DialogTitle sx={s.title}>
+        <Box sx={s.titleIconBox}>
+          <SaveOutlinedIcon sx={s.titleIcon} />
         </Box>
 
-        <Box sx={{ flex: 1 }}>
-          <Typography sx={{ fontSize: 14, fontWeight: 700, color: "#E6EDF3" }}>
-            Save Form
-          </Typography>
-          <Typography sx={{ fontSize: 11, color: "#8B949E", mt: 0.25 }}>
+        <Box sx={s.titleTextWrap}>
+          <Typography sx={s.titleHeading}>Save Form</Typography>
+          <Typography sx={s.titleSub}>
             Review and confirm the form details before saving.
           </Typography>
         </Box>
 
-        <IconButton
-          size="small"
-          onClick={onClose}
-          sx={{ color: "#8B949E", p: 0.5, "&:hover": { color: "#E6EDF3" } }}
-        >
-          <CloseIcon sx={{ fontSize: 16 }} />
+        <IconButton size="small" onClick={onClose} sx={s.titleCloseBtn}>
+          <CloseIcon sx={s.titleCloseIcon} />
         </IconButton>
       </DialogTitle>
 
       {/* ── Body ── */}
-      <DialogContent
-        sx={{
-          px: 3,
-          py: 2.5,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2.5,
-        }}
-      >
+      <DialogContent sx={s.content}>
         {/* Field summary */}
         <Box>
-          <Typography
-            sx={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "#8B949E",
-              letterSpacing: "0.1em",
-              mb: 1,
-            }}
-          >
-            FORM SUMMARY
-          </Typography>
+          <Typography sx={s.sectionLabel}>FORM SUMMARY</Typography>
           <FieldSummary fields={fields} />
         </Box>
 
-        <Divider sx={{ borderColor: "#30363D" }} />
+        <Divider sx={s.divider} />
 
         {/* RHF fields */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Typography
-            sx={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "#8B949E",
-              letterSpacing: "0.1em",
-            }}
-          >
-            FORM DETAILS
-          </Typography>
+        <Box sx={s.fieldsWrap}>
+          <Typography sx={s.sectionLabelPlain}>FORM DETAILS</Typography>
 
           {/* Title */}
           <Controller
@@ -275,7 +193,7 @@ export default function SaveFormDialog({
                 size="small"
                 error={!!errors.title}
                 helperText={errors.title?.message}
-                sx={inputSx}
+                sx={s.input}
               />
             )}
           />
@@ -295,7 +213,7 @@ export default function SaveFormDialog({
                 maxRows={4}
                 error={!!errors.description}
                 helperText={errors.description?.message}
-                sx={inputSx}
+                sx={s.input}
               />
             )}
           />
@@ -316,34 +234,16 @@ export default function SaveFormDialog({
                   errors.version?.message ||
                   "Use semver format (major.minor.patch)"
                 }
-                sx={{
-                  ...inputSx,
-                  "& .MuiFormHelperText-root": {
-                    color: errors.version ? "#EF4444" : "#8B949E",
-                    fontSize: 11,
-                  },
-                }}
+                sx={s.versionInput(!!errors.version)}
               />
             )}
           />
         </Box>
 
         {/* Payload note */}
-        <Box
-          sx={{
-            p: 1.5,
-            borderRadius: 1,
-            bgcolor: "rgba(124,58,237,0.06)",
-            border: "1px solid rgba(124,58,237,0.2)",
-            display: "flex",
-            gap: 1,
-            alignItems: "flex-start",
-          }}
-        >
-          <CheckCircleOutlineIcon
-            sx={{ fontSize: 15, color: "#9D5CF6", mt: 0.15, flexShrink: 0 }}
-          />
-          <Typography sx={{ fontSize: 11, color: "#8B949E", lineHeight: 1.6 }}>
+        <Box sx={s.noteBox}>
+          <CheckCircleOutlineIcon sx={s.noteIcon} />
+          <Typography sx={s.noteText}>
             Saving will produce a versioned JSON payload using the canonical
             schema and clear the local draft. All field order and configuration
             will be preserved exactly as built.
@@ -352,25 +252,13 @@ export default function SaveFormDialog({
       </DialogContent>
 
       {/* ── Actions ── */}
-      <DialogActions
-        sx={{
-          px: 3,
-          py: 2,
-          borderTop: "1px solid #30363D",
-          gap: 1,
-        }}
-      >
+      <DialogActions sx={s.actions}>
         <LoadingButton
           variant="outlined"
           size="small"
           onClick={onClose}
           disabled={loading}
-          sx={{
-            borderColor: "#30363D",
-            color: "#8B949E",
-            fontSize: 12,
-            "&:hover": { borderColor: "#8B949E" },
-          }}
+          sx={s.cancelBtn}
         >
           Cancel
         </LoadingButton>
@@ -379,22 +267,11 @@ export default function SaveFormDialog({
           variant="contained"
           size="small"
           loading={loading}
-          loadingIndicator={
-            <CircularProgress size={14} sx={{ color: "#fff" }} />
-          }
-          startIcon={!loading && <SaveOutlinedIcon sx={{ fontSize: 15 }} />}
+          loadingIndicator={<CircularProgress size={14} sx={s.loadingSpinner} />}
+          startIcon={!loading && <SaveOutlinedIcon sx={s.saveStartIcon} />}
           onClick={handleSubmit(onSubmit)}
           disabled={!isValid}
-          sx={{
-            bgcolor: "#7C3AED",
-            fontSize: 12,
-            "&:hover": { bgcolor: "#6D28D9" },
-            "&.Mui-disabled": {
-              bgcolor: "rgba(124,58,237,0.3)",
-              color: "rgba(255,255,255,0.4)",
-            },
-            boxShadow: "0 0 12px rgba(124,58,237,0.4)",
-          }}
+          sx={s.saveBtn}
         >
           Save Form
         </LoadingButton>

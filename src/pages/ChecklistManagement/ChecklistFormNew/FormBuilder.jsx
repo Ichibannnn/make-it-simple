@@ -26,6 +26,7 @@ import {
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
 import { defaultChecklistColumns } from "../../../constants/checklistDefaults";
 import { serialize } from "../../../schema";
+import { formBuilderStyles as s } from "./styles/formStyle";
 
 // nextId is managed as a module-level variable that gets seeded lazily
 // inside the component from the persisted draft (see initNextId below).
@@ -33,23 +34,8 @@ let nextId = 200;
 
 function DragOverlayContent({ item }) {
   return (
-    <Box
-      sx={{
-        px: 2,
-        py: 1,
-        borderRadius: 1,
-        bgcolor: "#7C3AED",
-        color: "#fff",
-        fontSize: 12,
-        fontWeight: 600,
-        boxShadow: "0 8px 24px rgba(124,58,237,0.5)",
-        border: "1px solid rgba(255,255,255,0.2)",
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-      }}
-    >
-      <Typography sx={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>+ {item?.label}</Typography>
+    <Box sx={s.overlayPill}>
+      <Typography sx={s.overlayPillText}>+ {item?.label}</Typography>
     </Box>
   );
 }
@@ -69,12 +55,14 @@ const FormBuilder = ({ data, open, onClose }) => {
     return restored;
   });
 
+  const [mode, setMode] = useState("builder");
   const [selectedId, setSelectedId] = useState(null);
   const [activeItem, setActiveItem] = useState(null);
-  const [mode, setMode] = useState("builder");
+
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState(null);
+
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const showSnack = (message, severity = "success") => setSnack({ open: true, message, severity });
@@ -233,16 +221,7 @@ const FormBuilder = ({ data, open, onClose }) => {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100vh",
-              width: "100vw",
-              bgcolor: "#0D1117",
-              overflow: "hidden",
-            }}
-          >
+          <Box sx={s.root}>
             <BuilderTopBar
               mode={mode}
               onTogglePreview={() => setMode((m) => (m === "builder" ? "preview" : "builder"))}
@@ -255,7 +234,7 @@ const FormBuilder = ({ data, open, onClose }) => {
             />
 
             {mode === "builder" ? (
-              <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
+              <Box sx={s.body}>
                 <FieldPalette />
                 <FormCanvas
                   fields={fields}
@@ -301,19 +280,7 @@ const FormBuilder = ({ data, open, onClose }) => {
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
           severity={snack.severity}
           variant="filled"
-          sx={{
-            bgcolor:
-              snack.severity === "success"
-                ? "#22C55E"
-                : snack.severity === "info"
-                  ? "#7C3AED"
-                  : snack.severity === "warning"
-                    ? "#F97316"
-                    : "#EF4444",
-            color: "#fff",
-            fontSize: 12,
-            "& .MuiAlert-icon": { color: "#fff" },
-          }}
+          sx={s.alert(snack.severity)}
         >
           {snack.message}
         </Alert>

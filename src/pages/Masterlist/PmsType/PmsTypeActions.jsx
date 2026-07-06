@@ -6,18 +6,14 @@ import useDisclosure from "../../../hooks/useDisclosure";
 
 const PmsTypeActions = ({ data, onArchive, onUpdate }) => {
   const ref = useRef(null);
-
   const { open, onToggle } = useDisclosure();
 
-  const onArchiveAction = (data) => {
+  const handleArchive = () => {
     onToggle();
-    onArchive({
-      id: data.id,
-      isActive: data.isActive,
-    });
+    onArchive({ id: data.id, isActive: data.isActive });
   };
 
-  const onUpdateAction = (data) => {
+  const handleUpdate = () => {
     onToggle();
     onUpdate(data);
   };
@@ -30,7 +26,7 @@ const PmsTypeActions = ({ data, onArchive, onUpdate }) => {
 
       <Menu anchorEl={ref.current} open={open} onClose={onToggle}>
         {data?.isActive && (
-          <MenuItem onClick={() => onUpdateAction(data)}>
+          <MenuItem onClick={handleUpdate}>
             <ListItemIcon>
               <EditOutlined fontSize="small" />
             </ListItemIcon>
@@ -38,9 +34,8 @@ const PmsTypeActions = ({ data, onArchive, onUpdate }) => {
           </MenuItem>
         )}
 
-        <MenuItem onClick={() => onArchiveAction(data)}>
+        <MenuItem onClick={handleArchive}>
           <ListItemIcon>{data?.isActive ? <ArchiveOutlined fontSize="small" /> : <RestoreOutlined fontSize="small" />}</ListItemIcon>
-
           {data?.isActive ? "Archive" : "Restore"}
         </MenuItem>
       </Menu>

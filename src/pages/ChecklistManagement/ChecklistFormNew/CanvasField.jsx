@@ -10,26 +10,16 @@ import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
 
 import { TYPE_CHIP_LABEL } from "../../../constants/fieldTypes";
 import { getChecklistColumns } from "../../../constants/checklistDefaults";
+import { canvasFieldStyles as s } from "./styles/formStyle";
 
 const ADVANCED_TYPES = { checklist: true, signature: true };
 
 function ColPicker({ value = 1, onChange, icon: Icon, tooltip }) {
   return (
     <Tooltip title={tooltip} arrow placement="top">
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 0.5,
-          px: 0.75,
-          py: 0.25,
-          borderRadius: 1,
-          border: "1px solid #30363D",
-          bgcolor: "rgba(255,255,255,0.02)",
-        }}
-      >
-        <Icon sx={{ fontSize: 13, color: "#8B949E" }} />
-        <Box sx={{ display: "flex", gap: 0.25 }}>
+      <Box sx={s.colPickerWrap}>
+        <Icon sx={s.colPickerIcon} />
+        <Box sx={s.colPickerDots}>
           {[1, 2, 3, 4].map((n) => {
             const active = value === n;
             return (
@@ -39,26 +29,7 @@ function ColPicker({ value = 1, onChange, icon: Icon, tooltip }) {
                   e.stopPropagation();
                   onChange(n);
                 }}
-                sx={{
-                  width: 18,
-                  height: 18,
-                  borderRadius: 0.5,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  bgcolor: active ? "#7C3AED" : "transparent",
-                  color: active ? "#fff" : "#8B949E",
-                  border: "1px solid",
-                  borderColor: active ? "#7C3AED" : "#30363D",
-                  transition: "all 0.15s ease",
-                  "&:hover": {
-                    borderColor: "#7C3AED",
-                    color: active ? "#fff" : "#9D5CF6",
-                  },
-                }}
+                sx={s.colPickerCell(active)}
               >
                 {n}
               </Box>
@@ -81,56 +52,12 @@ function ChecklistPreview({ field }) {
   ].join(" ");
 
   return (
-    <Box
-      sx={{
-        mt: 1,
-        borderRadius: 1,
-        overflow: "hidden",
-        border: "1px solid #30363D",
-      }}
-    >
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: cols,
-          bgcolor: "rgba(255,255,255,0.04)",
-          borderBottom: "1px solid #30363D",
-          px: 1,
-          py: 0.5,
-          gap: 1,
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: 9,
-            fontWeight: 700,
-            color: "#8B949E",
-            letterSpacing: "0.08em",
-          }}
-        >
-          #
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: 9,
-            fontWeight: 700,
-            color: "#8B949E",
-            letterSpacing: "0.08em",
-          }}
-        >
-          {descriptionLabel}
-        </Typography>
+    <Box sx={s.previewContainer}>
+      <Box sx={s.previewHeaderRow(cols)}>
+        <Typography sx={s.previewHeaderCell}>#</Typography>
+        <Typography sx={s.previewHeaderCell}>{descriptionLabel}</Typography>
         {columns.map((col) => (
-          <Typography
-            key={col.id}
-            sx={{
-              fontSize: 9,
-              fontWeight: 700,
-              color: "#8B949E",
-              letterSpacing: "0.08em",
-              textAlign: col.type === "status" ? "center" : "left",
-            }}
-          >
+          <Typography key={col.id} sx={s.previewHeaderCol(col.type === "status")}>
             {col.label}
           </Typography>
         ))}
@@ -138,63 +65,25 @@ function ChecklistPreview({ field }) {
       {rows.slice(0, 3).map((row, i) => (
         <Box
           key={i}
-          sx={{
-            display: "grid",
-            gridTemplateColumns: cols,
-            px: 1,
-            py: 0.75,
-            borderBottom: i < Math.min(rows.length, 3) - 1 ? "1px solid #30363D" : "none",
-            alignItems: "center",
-            gap: 1,
-          }}
+          sx={s.previewRow(cols, i < Math.min(rows.length, 3) - 1)}
         >
-          <Typography sx={{ fontSize: 10, color: "#8B949E" }}>{i + 1}</Typography>
-          <Typography sx={{ fontSize: 11, color: "#E6EDF3" }}>{row}</Typography>
+          <Typography sx={s.previewRowNum}>{i + 1}</Typography>
+          <Typography sx={s.previewRowDesc}>{row}</Typography>
           {columns.map((col) => {
             if (col.type === "status") {
               return (
-                <Box key={col.id} sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
-                  <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 0.5,
-                      border: "1px solid #22C55E",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography sx={{ fontSize: 8, color: "#22C55E", fontWeight: 700 }}>✓</Typography>
+                <Box key={col.id} sx={s.previewStatusWrap}>
+                  <Box sx={s.previewStatusBox("#22C55E")}>
+                    <Typography sx={s.previewStatusMark("#22C55E")}>✓</Typography>
                   </Box>
-                  <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 0.5,
-                      border: "1px solid #EF4444",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography sx={{ fontSize: 8, color: "#EF4444", fontWeight: 700 }}>✗</Typography>
+                  <Box sx={s.previewStatusBox("#EF4444")}>
+                    <Typography sx={s.previewStatusMark("#EF4444")}>✗</Typography>
                   </Box>
                 </Box>
               );
             }
             return (
-              <Typography
-                key={col.id}
-                sx={{
-                  fontSize: 10,
-                  color: "#8B949E",
-                  fontStyle: "italic",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+              <Typography key={col.id} sx={s.previewColCell}>
                 {col.label}
               </Typography>
             );
@@ -202,20 +91,13 @@ function ChecklistPreview({ field }) {
         </Box>
       ))}
       {rows.length > 3 && (
-        <Box sx={{ px: 1, py: 0.5, bgcolor: "rgba(124,58,237,0.05)" }}>
-          <Typography sx={{ fontSize: 10, color: "#7C3AED" }}>+{rows.length - 3} more rows</Typography>
+        <Box sx={s.previewMoreWrap}>
+          <Typography sx={s.previewMoreText}>+{rows.length - 3} more rows</Typography>
         </Box>
       )}
       {rows.length === 0 && (
-        <Box sx={{ px: 1, py: 1.5 }}>
-          <Typography
-            sx={{
-              fontSize: 10,
-              color: "#8B949E",
-              textAlign: "center",
-              fontStyle: "italic",
-            }}
-          >
+        <Box sx={s.previewEmptyWrap}>
+          <Typography sx={s.previewEmptyText}>
             No rows yet — add rows in the properties panel
           </Typography>
         </Box>
@@ -228,71 +110,27 @@ function SignaturePreview({ field }) {
   const signerLabel = field.signerLabel || "Technician";
   const multi = field.multi !== false;
   return (
-    <Box
-      sx={{
-        mt: 1,
-        borderRadius: 1,
-        border: "1px solid #30363D",
-        p: 1.25,
-        bgcolor: "rgba(255,255,255,0.02)",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 1,
-        }}
-      >
-        <Typography sx={{ fontSize: 11, fontWeight: 700, color: "#E6EDF3" }}>{signerLabel} 1</Typography>
+    <Box sx={s.sigPreviewContainer}>
+      <Box sx={s.sigPreviewHeader}>
+        <Typography sx={s.sigPreviewSigner}>{signerLabel} 1</Typography>
         {multi && (
-          <Box
-            sx={{
-              px: 1,
-              py: 0.25,
-              borderRadius: 0.5,
-              bgcolor: "rgba(124,58,237,0.15)",
-              color: "#9D5CF6",
-              fontSize: 9,
-              fontWeight: 600,
-            }}
-          >
+          <Box sx={s.sigPreviewAddChip}>
             + {field.addButtonLabel || `Add ${signerLabel}`}
           </Box>
         )}
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
+      <Box sx={s.sigPreviewGrid}>
         <Box>
-          <Typography sx={{ fontSize: 9, color: "#8B949E", mb: 0.5 }}>Name</Typography>
-          <Box
-            sx={{
-              height: 28,
-              borderRadius: 0.5,
-              border: "1px solid #30363D",
-              display: "flex",
-              alignItems: "center",
-              px: 1,
-            }}
-          >
-            <Typography sx={{ fontSize: 10, color: "#8B949E", fontStyle: "italic" }}>Select name…</Typography>
+          <Typography sx={s.sigPreviewLabel}>Name</Typography>
+          <Box sx={s.sigPreviewNameBox}>
+            <Typography sx={s.sigPreviewNameText}>Select name…</Typography>
           </Box>
         </Box>
         <Box>
-          <Typography sx={{ fontSize: 9, color: "#8B949E", mb: 0.5 }}>E-Signature</Typography>
-          <Box
-            sx={{
-              height: 28,
-              borderRadius: 0.5,
-              border: "1px dashed #30363D",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 0.5,
-            }}
-          >
-            <DrawIcon sx={{ fontSize: 12, color: "#8B949E" }} />
-            <Typography sx={{ fontSize: 10, color: "#8B949E" }}>Sign</Typography>
+          <Typography sx={s.sigPreviewLabel}>E-Signature</Typography>
+          <Box sx={s.sigPreviewSignBox}>
+            <DrawIcon sx={s.sigPreviewDrawIcon} />
+            <Typography sx={s.sigPreviewSignText}>Sign</Typography>
           </Box>
         </Box>
       </Box>
@@ -319,75 +157,25 @@ export default function CanvasField({ field, isSelected, onSelect, onDelete, onU
         opacity: isDragging ? 0.35 : 1,
       }}
       onClick={onSelect}
-      sx={{
-        borderRadius: 1.5,
-        border: "1px solid",
-        borderColor: isSelected ? "#7C3AED" : isSection ? "transparent" : "#30363D",
-        borderLeft: isSection
-          ? "3px solid #7C3AED"
-          : isSelected
-            ? "3px solid #7C3AED"
-            : "3px solid transparent",
-        bgcolor: isSection
-          ? "rgba(124,58,237,0.08)"
-          : isSelected
-            ? "rgba(124,58,237,0.06)"
-            : "rgba(255,255,255,0.015)",
-        cursor: "pointer",
-        transition: "all 0.15s ease",
-        overflow: "hidden",
-        boxShadow: isSelected ? "0 0 0 1px rgba(124,58,237,0.4)" : "none",
-        "&:hover": {
-          borderColor: "#7C3AED",
-          bgcolor: isSection ? "rgba(124,58,237,0.1)" : "rgba(124,58,237,0.05)",
-        },
-      }}
+      sx={s.container(isSelected, isSection)}
     >
       {/* Row header */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          px: 2,
-          py: isSection ? 1.25 : 1.75,
-          flexWrap: "wrap",
-        }}
-      >
+      <Box sx={s.rowHeader(isSection)}>
         {/* Drag handle */}
         <Box
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-          sx={{
-            cursor: "grab",
-            color: "#30363D",
-            "&:hover": { color: "#8B949E" },
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-          }}
+          sx={s.dragHandle}
         >
-          <DragIndicatorIcon sx={{ fontSize: 16 }} />
+          <DragIndicatorIcon sx={s.dragIcon} />
         </Box>
 
         {/* Label */}
-        <Typography
-          sx={{
-            flex: 1,
-            minWidth: 0,
-            fontSize: isSection ? 13 : 14,
-            fontWeight: isSection ? 700 : 400,
-            color: isSection ? "#9D5CF6" : "#E6EDF3",
-            letterSpacing: isSection ? "0.04em" : 0,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
+        <Typography sx={s.label(isSection)}>
           {field.label}
           {field.required && (
-            <Box component="span" sx={{ color: "#F97316", ml: 0.25 }}>
+            <Box component="span" sx={s.requiredStar}>
               *
             </Box>
           )}
@@ -395,14 +183,7 @@ export default function CanvasField({ field, isSelected, onSelect, onDelete, onU
 
         {/* Section: column pickers */}
         {isSection && (
-          <Box
-            sx={{
-              display: "flex",
-              gap: 0.75,
-              alignItems: "center",
-              flexShrink: 0,
-            }}
-          >
+          <Box sx={s.sectionColsWrap}>
             <ColPicker
               value={field.desktopCols || 1}
               onChange={(v) => onUpdate({ ...field, desktopCols: v })}
@@ -423,16 +204,7 @@ export default function CanvasField({ field, isSelected, onSelect, onDelete, onU
           <Chip
             label={TYPE_CHIP_LABEL[field.type] || field.type}
             size="small"
-            sx={{
-              height: 18,
-              fontSize: 9,
-              fontWeight: 600,
-              flexShrink: 0,
-              bgcolor: isAdvanced ? "rgba(124,58,237,0.15)" : "rgba(255,255,255,0.05)",
-              color: isAdvanced ? "#9D5CF6" : "#8B949E",
-              border: `1px solid ${isAdvanced ? "rgba(124,58,237,0.3)" : "#30363D"}`,
-              "& .MuiChip-label": { px: 0.75 },
-            }}
+            sx={s.typeChip(isAdvanced)}
           />
         )}
 
@@ -443,25 +215,20 @@ export default function CanvasField({ field, isSelected, onSelect, onDelete, onU
             e.stopPropagation();
             onDelete();
           }}
-          sx={{
-            color: "#30363D",
-            "&:hover": { color: "#EF4444", bgcolor: "rgba(239,68,68,0.08)" },
-            p: 0.25,
-            flexShrink: 0,
-          }}
+          sx={s.deleteBtn}
         >
-          <DeleteOutlineIcon sx={{ fontSize: 15 }} />
+          <DeleteOutlineIcon sx={s.deleteIcon} />
         </IconButton>
       </Box>
 
       {/* Expanded previews for advanced types */}
       {isChecklist && isSelected && (
-        <Box sx={{ px: 1.5, pb: 1.5 }}>
+        <Box sx={s.previewWrap}>
           <ChecklistPreview field={field} />
         </Box>
       )}
       {isSignature && isSelected && (
-        <Box sx={{ px: 1.5, pb: 1.5 }}>
+        <Box sx={s.previewWrap}>
           <SignaturePreview field={field} />
         </Box>
       )}

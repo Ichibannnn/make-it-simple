@@ -13,25 +13,14 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 import dayjs from "dayjs";
 import { getChecklistColumns, isColumnRequired } from "../../../constants/checklistDefaults";
-
-const inputSx = {
-  "& .MuiOutlinedInput-root": {
-    fontSize: 13,
-    bgcolor: "rgba(255,255,255,0.02)",
-    "& fieldset": { borderColor: "#30363D" },
-    "&:hover fieldset": { borderColor: "#7C3AED" },
-    "&.Mui-focused fieldset": { borderColor: "#7C3AED" },
-  },
-  "& .MuiInputBase-input": { color: "#E6EDF3" },
-  "& .MuiSelect-icon": { color: "#8B949E" },
-};
+import { formRendererStyles as s, pickerSlotProps } from "./styles/formStyle";
 
 function FieldLabel({ text, required }) {
   return (
-    <Typography sx={{ fontSize: 12, fontWeight: 500, color: "#E6EDF3", mb: 0.75 }}>
+    <Typography sx={s.fieldLabel}>
       {text}
       {required && (
-        <Box component="span" sx={{ color: "#F97316", ml: 0.5 }}>
+        <Box component="span" sx={s.requiredStar}>
           *
         </Box>
       )}
@@ -41,63 +30,11 @@ function FieldLabel({ text, required }) {
 
 function SectionRender({ field }) {
   return (
-    <Box
-      sx={{
-        mt: 2,
-        mb: 1,
-        pb: 1,
-        borderBottom: "2px solid rgba(124,58,237,0.4)",
-      }}
-    >
-      <Typography
-        sx={{
-          fontSize: 13,
-          fontWeight: 700,
-          color: "#9D5CF6",
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}
-      >
-        {field.label}
-      </Typography>
+    <Box sx={s.sectionWrap}>
+      <Typography sx={s.sectionText}>{field.label}</Typography>
     </Box>
   );
 }
-
-const pickerSlotProps = (error) => ({
-  textField: {
-    fullWidth: true,
-    size: "small",
-    error: !!error,
-    helperText: error,
-    sx: inputSx,
-  },
-  popper: {
-    sx: {
-      "& .MuiPaper-root": {
-        bgcolor: "#161B22",
-        border: "1px solid #30363D",
-        color: "#E6EDF3",
-      },
-      "& .MuiPickersDay-root": { color: "#E6EDF3" },
-      "& .MuiPickersDay-root.Mui-selected": {
-        bgcolor: "#7C3AED",
-        "&:hover": { bgcolor: "#6D28D9" },
-      },
-      "& .MuiPickersDay-root:hover": { bgcolor: "rgba(124,58,237,0.2)" },
-      "& .MuiPickersCalendarHeader-label": { color: "#E6EDF3" },
-      "& .MuiPickersArrowSwitcher-button": { color: "#8B949E" },
-      "& .MuiDayCalendar-weekDayLabel": { color: "#8B949E" },
-      "& .MuiPickersYear-yearButton.Mui-selected": { bgcolor: "#7C3AED" },
-      "& .MuiPickersMonth-monthButton.Mui-selected": { bgcolor: "#7C3AED" },
-      "& .MuiClock-pin, & .MuiClockPointer-root, & .MuiClockPointer-thumb": {
-        bgcolor: "#7C3AED",
-      },
-      "& .MuiClockPointer-thumb": { borderColor: "#7C3AED" },
-      "& .MuiClockNumber-root.Mui-selected": { bgcolor: "#7C3AED" },
-    },
-  },
-});
 
 function TextRender({ field, value, onChange, error }) {
   if (field.type === "date") {
@@ -140,7 +77,7 @@ function TextRender({ field, value, onChange, error }) {
         type={field.type === "number" ? "number" : "text"}
         error={!!error}
         helperText={error}
-        sx={inputSx}
+        sx={s.input}
       />
     </Box>
   );
@@ -159,11 +96,11 @@ function SelectRender({ field, value, onChange, error }) {
         onChange={(e) => onChange(e.target.value)}
         error={!!error}
         helperText={error}
-        sx={inputSx}
+        sx={s.input}
         SelectProps={{
           MenuProps: {
             PaperProps: {
-              sx: { bgcolor: "#161B22", border: "1px solid #30363D", mt: 0.5 },
+              sx: s.selectMenuPaper,
             },
           },
         }}
@@ -172,7 +109,7 @@ function SelectRender({ field, value, onChange, error }) {
           <em style={{ color: "#8B949E" }}>Select…</em>
         </MenuItem>
         {options.map((opt, i) => (
-          <MenuItem key={i} value={opt} sx={{ fontSize: 13, color: "#E6EDF3" }}>
+          <MenuItem key={i} value={opt} sx={s.selectMenuItem}>
             {opt}
           </MenuItem>
         ))}
@@ -187,17 +124,9 @@ function StatusButton({ value, target, onChange, color }) {
     <IconButton
       size="small"
       onClick={() => onChange(active ? null : target)}
-      sx={{
-        width: 28,
-        height: 28,
-        borderRadius: 1,
-        border: `1.5px solid ${color}`,
-        bgcolor: active ? color : "transparent",
-        color: active ? "#fff" : color,
-        "&:hover": { bgcolor: active ? color : `${color}22` },
-      }}
+      sx={s.statusButton(color, active)}
     >
-      {target === "check" ? <CheckIcon sx={{ fontSize: 16 }} /> : <CloseIcon sx={{ fontSize: 16 }} />}
+      {target === "check" ? <CheckIcon sx={s.statusIcon} /> : <CloseIcon sx={s.statusIcon} />}
     </IconButton>
   );
 }
@@ -223,57 +152,13 @@ function ChecklistRender({ field, value, onChange, errors }) {
   return (
     <Box>
       <FieldLabel text={field.label} required={field.required} />
-      <Box
-        sx={{
-          borderRadius: 1.5,
-          overflow: "hidden",
-          border: "1px solid #30363D",
-        }}
-      >
+      <Box sx={s.checklistContainer}>
         {/* Header row */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: gridCols,
-            bgcolor: "rgba(255,255,255,0.04)",
-            borderBottom: "1px solid #30363D",
-            px: 1.5,
-            py: 1,
-            gap: 1.5,
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "#8B949E",
-              letterSpacing: "0.08em",
-            }}
-          >
-            #
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "#8B949E",
-              letterSpacing: "0.08em",
-            }}
-          >
-            {descriptionLabel}
-          </Typography>
+        <Box sx={s.checklistHeaderRow(gridCols)}>
+          <Typography sx={s.checklistHeaderCell}>#</Typography>
+          <Typography sx={s.checklistHeaderCell}>{descriptionLabel}</Typography>
           {columns.map((col) => (
-            <Typography
-              key={col.id}
-              sx={{
-                fontSize: 10,
-                fontWeight: 700,
-                color: "#8B949E",
-                letterSpacing: "0.08em",
-                textAlign: col.type === "status" ? "center" : "left",
-              }}
-            >
+            <Typography key={col.id} sx={s.checklistHeaderCol(col.type === "status")}>
               {col.label}
             </Typography>
           ))}
@@ -286,19 +171,10 @@ function ChecklistRender({ field, value, onChange, errors }) {
           return (
             <Box
               key={i}
-              sx={{
-                display: "grid",
-                gridTemplateColumns: gridCols,
-                px: 1.5,
-                py: 1,
-                gap: 1.5,
-                alignItems: "center",
-                borderBottom: i < rows.length - 1 ? "1px solid #30363D" : "none",
-                bgcolor: rowErr ? "rgba(239,68,68,0.04)" : "transparent",
-              }}
+              sx={s.checklistRow(gridCols, i < rows.length - 1, !!rowErr)}
             >
-              <Typography sx={{ fontSize: 11, color: "#8B949E" }}>{i + 1}</Typography>
-              <Typography sx={{ fontSize: 13, color: "#E6EDF3" }}>{rowLabel}</Typography>
+              <Typography sx={s.checklistRowNum}>{i + 1}</Typography>
+              <Typography sx={s.checklistRowDesc}>{rowLabel}</Typography>
 
               {columns.map((col) => {
                 const cellVal = r[col.id];
@@ -307,14 +183,7 @@ function ChecklistRender({ field, value, onChange, errors }) {
 
                 if (col.type === "status") {
                   return (
-                    <Box
-                      key={col.id}
-                      sx={{
-                        display: "flex",
-                        gap: 0.5,
-                        justifyContent: "center",
-                      }}
-                    >
+                    <Box key={col.id} sx={s.checklistStatusWrap}>
                       <StatusButton
                         value={cellVal}
                         target="check"
@@ -340,14 +209,7 @@ function ChecklistRender({ field, value, onChange, errors }) {
                     value={cellVal || ""}
                     onChange={(e) => setRow(i, { [col.id]: e.target.value })}
                     error={hasErr}
-                    sx={{
-                      ...inputSx,
-                      "& .MuiInputBase-input": {
-                        ...inputSx["& .MuiInputBase-input"],
-                        py: 0.5,
-                        fontSize: 12,
-                      },
-                    }}
+                    sx={s.checklistCell}
                   />
                 );
               })}
@@ -362,55 +224,24 @@ function ChecklistRender({ field, value, onChange, errors }) {
 function SignerCard({ index, signerLabel, value, names, showDigital, onChange, onRemove, canRemove, error }) {
   const cur = value || {};
   return (
-    <Box
-      sx={{
-        p: 2,
-        borderRadius: 1.5,
-        border: "1px solid #30363D",
-        bgcolor: "rgba(255,255,255,0.02)",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 1.5,
-        }}
-      >
-        <Typography sx={{ fontSize: 13, fontWeight: 700, color: "#E6EDF3" }}>
+    <Box sx={s.signerCard}>
+      <Box sx={s.signerHeader}>
+        <Typography sx={s.signerTitle}>
           {signerLabel} {index + 1}
         </Typography>
         {canRemove && (
-          <IconButton
-            size="small"
-            onClick={onRemove}
-            sx={{
-              color: "#EF4444",
-              "&:hover": { bgcolor: "rgba(239,68,68,0.1)" },
-              p: 0.5,
-            }}
-          >
-            <DeleteOutlineIcon sx={{ fontSize: 18 }} />
+          <IconButton size="small" onClick={onRemove} sx={s.signerRemoveBtn}>
+            <DeleteOutlineIcon sx={s.signerRemoveIcon} />
           </IconButton>
         )}
       </Box>
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: showDigital ? "1fr 1fr" : "1fr 1fr",
-          },
-          gap: 2,
-        }}
-      >
+      <Box sx={s.signerGrid(showDigital)}>
         {/* Name dropdown */}
         <Box>
-          <Typography sx={{ fontSize: 11, color: "#8B949E", mb: 0.5 }}>
+          <Typography sx={s.signerPropLabel}>
             Name
-            <Box component="span" sx={{ color: "#F97316", ml: 0.25 }}>
+            <Box component="span" sx={s.requiredStarSm}>
               *
             </Box>
           </Typography>
@@ -421,15 +252,11 @@ function SignerCard({ index, signerLabel, value, names, showDigital, onChange, o
             value={cur.name || ""}
             onChange={(e) => onChange({ ...cur, name: e.target.value })}
             error={!!error?.name}
-            sx={inputSx}
+            sx={s.input}
             SelectProps={{
               MenuProps: {
                 PaperProps: {
-                  sx: {
-                    bgcolor: "#161B22",
-                    border: "1px solid #30363D",
-                    mt: 0.5,
-                  },
+                  sx: s.signerNameMenuPaper,
                 },
               },
             }}
@@ -438,7 +265,7 @@ function SignerCard({ index, signerLabel, value, names, showDigital, onChange, o
               <em style={{ color: "#8B949E" }}>Select name…</em>
             </MenuItem>
             {(names || []).map((opt, i) => (
-              <MenuItem key={i} value={opt} sx={{ fontSize: 13, color: "#E6EDF3" }}>
+              <MenuItem key={i} value={opt} sx={s.signerMenuItem}>
                 {opt}
               </MenuItem>
             ))}
@@ -447,45 +274,25 @@ function SignerCard({ index, signerLabel, value, names, showDigital, onChange, o
 
         {/* E-Signature */}
         <Box>
-          <Typography sx={{ fontSize: 11, color: "#8B949E", mb: 0.5 }}>
+          <Typography sx={s.signerPropLabel}>
             E-Signature
-            <Box component="span" sx={{ color: "#F97316", ml: 0.25 }}>
+            <Box component="span" sx={s.requiredStarSm}>
               *
             </Box>
           </Typography>
           <Box
             onClick={() => onChange({ ...cur, eSig: !cur.eSig })}
-            sx={{
-              height: 56,
-              borderRadius: 1,
-              border: `1.5px dashed ${cur.eSig ? "#22C55E" : error?.eSig ? "#EF4444" : "#30363D"}`,
-              bgcolor: cur.eSig ? "rgba(34,197,94,0.06)" : "transparent",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 1,
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-              "&:hover": { borderColor: "#7C3AED" },
-            }}
+            sx={s.eSigBox(cur.eSig, !!error?.eSig)}
           >
             {cur.eSig ? (
               <>
-                <CheckCircleOutlineIcon sx={{ fontSize: 18, color: "#22C55E" }} />
-                <Typography
-                  sx={{
-                    color: "#22C55E",
-                    fontFamily: '"Brush Script MT", cursive',
-                    fontSize: 22,
-                  }}
-                >
-                  Signed
-                </Typography>
+                <CheckCircleOutlineIcon sx={s.eSigSignedIcon} />
+                <Typography sx={s.eSigSignedText}>Signed</Typography>
               </>
             ) : (
               <>
-                <DrawIcon sx={{ fontSize: 16, color: "#8B949E" }} />
-                <Typography sx={{ fontSize: 11, color: "#8B949E" }}>Click to sign</Typography>
+                <DrawIcon sx={s.eSigDrawIcon} />
+                <Typography sx={s.eSigHintText}>Click to sign</Typography>
               </>
             )}
           </Box>
@@ -493,21 +300,11 @@ function SignerCard({ index, signerLabel, value, names, showDigital, onChange, o
 
         {/* Digital Signature (optional column) */}
         {showDigital && (
-          <Box sx={{ gridColumn: "1 / -1" }}>
-            <Typography sx={{ fontSize: 11, color: "#8B949E", mb: 0.5 }}>Digital Signature</Typography>
-            <Box
-              sx={{
-                height: 56,
-                borderRadius: 1,
-                border: "1.5px dashed #30363D",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 1,
-              }}
-            >
-              <DrawIcon sx={{ fontSize: 16, color: "#8B949E" }} />
-              <Typography sx={{ fontSize: 11, color: "#8B949E" }}>Digital signature</Typography>
+          <Box sx={s.digitalCol}>
+            <Typography sx={s.signerPropLabel}>Digital Signature</Typography>
+            <Box sx={s.digitalBox}>
+              <DrawIcon sx={s.eSigDrawIcon} />
+              <Typography sx={s.eSigHintText}>Digital signature</Typography>
             </Box>
           </Box>
         )}
@@ -544,43 +341,27 @@ function SignatureRender({ field, value, onChange, errors }) {
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 1,
-        }}
-      >
+      <Box sx={s.signatureHeader}>
         <FieldLabel text={field.label} required={field.required} />
         {multi && (
           <Button
             size="small"
-            startIcon={<AddIcon sx={{ fontSize: 15 }} />}
+            startIcon={<AddIcon sx={s.signatureAddIcon} />}
             onClick={addSigner}
-            sx={{
-              bgcolor: "#7C3AED",
-              color: "#fff",
-              fontSize: 12,
-              textTransform: "none",
-              px: 1.5,
-              py: 0.5,
-              "&:hover": { bgcolor: "#6D28D9" },
-              boxShadow: "0 0 8px rgba(124,58,237,0.4)",
-            }}
+            sx={s.signatureAddBtn}
           >
             {addLabel}
           </Button>
         )}
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-        {signers.map((s, i) => (
+      <Box sx={s.signersWrap}>
+        {signers.map((sig, i) => (
           <SignerCard
             key={i}
             index={i}
             signerLabel={signerLabel}
-            value={s}
+            value={sig}
             names={names}
             showDigital={showDigital}
             onChange={(v) => updateSigner(i, v)}
@@ -671,30 +452,11 @@ export default function FormRenderer({ fields }) {
 
   if (submitted) {
     return (
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: "#0D1117",
-        }}
-      >
-        <Box
-          sx={{
-            maxWidth: 480,
-            textAlign: "center",
-            p: 5,
-            borderRadius: 2,
-            border: "1px solid rgba(34,197,94,0.3)",
-            bgcolor: "rgba(34,197,94,0.05)",
-          }}
-        >
-          <CheckCircleOutlineIcon sx={{ fontSize: 56, color: "#22C55E", mb: 2 }} />
-          <Typography sx={{ fontSize: 18, fontWeight: 700, color: "#E6EDF3", mb: 1 }}>
-            Form submitted successfully
-          </Typography>
-          <Typography sx={{ fontSize: 13, color: "#8B949E", mb: 3 }}>
+      <Box sx={s.successWrap}>
+        <Box sx={s.successCard}>
+          <CheckCircleOutlineIcon sx={s.successIcon} />
+          <Typography sx={s.successTitle}>Form submitted successfully</Typography>
+          <Typography sx={s.successSub}>
             This is a preview — your responses are not saved.
           </Typography>
           <Button
@@ -705,11 +467,7 @@ export default function FormRenderer({ fields }) {
               setValues({});
               setErrors({});
             }}
-            sx={{
-              borderColor: "#30363D",
-              color: "#8B949E",
-              "&:hover": { borderColor: "#7C3AED" },
-            }}
+            sx={s.fillAgainBtn}
           >
             Fill Again
           </Button>
@@ -719,73 +477,23 @@ export default function FormRenderer({ fields }) {
   }
 
   return (
-    <Box sx={{ flex: 1, overflowY: "auto", bgcolor: "#0D1117" }}>
-      <Box
-        sx={{
-          maxWidth: 960,
-          width: "100%",
-          mx: "auto",
-          px: 3,
-          py: 3,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2.5,
-        }}
-      >
+    <Box sx={s.scroll}>
+      <Box sx={s.inner}>
         {/* Form header */}
-        <Box
-          sx={{
-            p: 2.5,
-            borderRadius: 2,
-            border: "1px solid #30363D",
-            bgcolor: "#161B22",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 0.5,
-            }}
-          >
-            <Typography sx={{ fontSize: 18, fontWeight: 700, color: "#E6EDF3" }}>
-              PMS Store Checklist
-            </Typography>
+        <Box sx={s.headerCard}>
+          <Box sx={s.headerTop}>
+            <Typography sx={s.headerTitle}>PMS Store Checklist</Typography>
             <Chip
               label={`${filledCount}/${fillableCount} filled · ${pct}%`}
               size="small"
-              sx={{
-                height: 22,
-                fontSize: 11,
-                fontWeight: 600,
-                bgcolor: "rgba(124,58,237,0.12)",
-                color: "#9D5CF6",
-                border: "1px solid rgba(124,58,237,0.3)",
-              }}
+              sx={s.headerChip}
             />
           </Box>
-          <Typography sx={{ fontSize: 12, color: "#8B949E" }}>
+          <Typography sx={s.headerSub}>
             Preview mode — fill out the form to test it.
           </Typography>
-          <Box
-            sx={{
-              mt: 1.5,
-              height: 4,
-              bgcolor: "#30363D",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                height: "100%",
-                width: `${pct}%`,
-                bgcolor: "#7C3AED",
-                transition: "width 0.25s ease",
-                boxShadow: "0 0 8px rgba(124,58,237,0.5)",
-              }}
-            />
+          <Box sx={s.progressTrack}>
+            <Box sx={s.progressBar(pct)} />
           </Box>
         </Box>
 
@@ -810,27 +518,12 @@ export default function FormRenderer({ fields }) {
             return (
               <Box key={g.section?.id || `g${gi}`}>
                 {g.section && <SectionRender field={g.section} />}
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: `repeat(${mobileCols}, minmax(0, 1fr))`,
-                      md: `repeat(${desktopCols}, minmax(0, 1fr))`,
-                    },
-                    gap: 2,
-                    mt: g.section ? 1.5 : 0,
-                  }}
-                >
+                <Box sx={s.groupGrid(mobileCols, desktopCols, !!g.section)}>
                   {g.items.map((field) => {
                     const Renderer = RENDERERS[field.type] || TextRender;
                     const fullRow = field.type === "checklist" || field.type === "signature";
                     return (
-                      <Box
-                        key={field.id}
-                        sx={{
-                          gridColumn: fullRow ? "1 / -1" : "auto",
-                        }}
-                      >
+                      <Box key={field.id} sx={s.groupItem(fullRow)}>
                         <Renderer
                           field={field}
                           value={values[field.id]}
@@ -848,8 +541,8 @@ export default function FormRenderer({ fields }) {
         })()}
 
         {/* Submit */}
-        <Divider sx={{ borderColor: "#30363D", my: 1 }} />
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
+        <Divider sx={s.divider} />
+        <Box sx={s.submitRow}>
           <Button
             variant="outlined"
             size="small"
@@ -857,12 +550,7 @@ export default function FormRenderer({ fields }) {
               setValues({});
               setErrors({});
             }}
-            sx={{
-              borderColor: "#30363D",
-              color: "#8B949E",
-              fontSize: 12,
-              "&:hover": { borderColor: "#EF4444", color: "#EF4444" },
-            }}
+            sx={s.clearBtn}
           >
             Clear
           </Button>
@@ -870,12 +558,7 @@ export default function FormRenderer({ fields }) {
             variant="contained"
             size="small"
             onClick={handleSubmit}
-            sx={{
-              bgcolor: "#7C3AED",
-              fontSize: 12,
-              "&:hover": { bgcolor: "#6D28D9" },
-              boxShadow: "0 0 12px rgba(124,58,237,0.4)",
-            }}
+            sx={s.submitBtn}
           >
             Submit
           </Button>

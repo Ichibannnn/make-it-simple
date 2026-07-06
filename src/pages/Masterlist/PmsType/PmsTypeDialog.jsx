@@ -1,15 +1,15 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Stack, TextField } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { useEffect } from "react";
-import { Save } from "@mui/icons-material";
+import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { toast } from "sonner";
-import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useAddEditPmsTypeMutation } from "../../../features/api masterlist/pms-type/pmsTypeApi";
+import { pmsTypeStyles as sx } from "./styles/pmsTypeStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -17,7 +17,9 @@ const schema = yup.object().shape({
 });
 
 const PmsTypeDialog = ({ data, open, onClose }) => {
-  const [addEditPmsType, { isLoading: addEditPmsTypeIsLoading, isFetching: addEditPmsTypeIsFetching }] = useAddEditPmsTypeMutation();
+  const [addEditPmsType, { isLoading }] = useAddEditPmsTypeMutation();
+
+  const isEditMode = Boolean(data?.id);
 
   const {
     handleSubmit,
@@ -46,86 +48,39 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     onClose();
   };
 
-  const onSubmitAction = (formData) => {
-    console.log("Form Data: ", formData);
+  const onSubmitAction = async (formData) => {
+    // Add and edit hit the same endpoint; the only difference is whether an id is sent.
+    const entry = isEditMode ? { id: data.id, name: formData.name } : { name: formData.name };
 
-    if (formData.id) {
-      const editPayload = {
-        typeNames: [
-          {
-            id: data.id,
-            name: formData?.name,
-          },
-        ],
-      };
-
-      addEditPmsType(editPayload)
-        .unwrap()
-        .then(() => {
-          toast.success("Success!", {
-            description: "Updated PMS type! ",
-            duration: 1500,
-          });
-          reset();
-          onClose();
-        })
-        .catch((error) => {
-          console.log("error: ", error);
-          toast.error("Error!", {
-            description: error.data.error.message,
-            duration: 1500,
-          });
-        });
-    } else {
-      const addPayload = {
-        typeNames: [
-          {
-            name: formData?.name,
-          },
-        ],
-      };
-
-      addEditPmsType(addPayload)
-        .unwrap()
-        .then(() => {
-          toast.success("Success!", {
-            description: "PMS type added successsfully!",
-            duration: 1500,
-          });
-          reset();
-          onClose();
-        })
-        .catch((error) => {
-          console.log("error: ", error);
-          toast.error("Error!", {
-            description: error.data.error.message,
-            duration: 1500,
-          });
-        });
+    try {
+      await addEditPmsType({ typeNames: [entry] }).unwrap();
+      toast.success("Success!", {
+        description: isEditMode ? "PMS Type updated successfully!" : "PMS Type added successfully!",
+        duration: 1500,
+      });
+      onCloseAction();
+    } catch (error) {
+      toast.error("Error!", {
+        description: error?.data?.error?.message || "Something went wrong",
+        duration: 1500,
+      });
     }
   };
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#48BB78",
-          }}
-        >
-          {data ? "Edit PMS Type" : "Add PMS Type"}
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
+        <DialogTitle sx={sx.dialogTitle}>
+          {isEditMode ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
+          {isEditMode ? "Edit PMS Type" : "Add PMS Type"}
         </DialogTitle>
+        <Typography sx={sx.dialogSubtitle}>
+          {isEditMode ? "Update the details of this PMS type." : "Create a new PMS type for scheduling."}
+        </Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
-            <Stack sx={{ padding: "5px", gap: 1.5 }}>
+            <Stack sx={sx.dialogStack}>
               <TextField
                 {...register("name")}
                 variant="outlined"
@@ -143,16 +98,11 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
-              loading={addEditPmsTypeIsLoading || addEditPmsTypeIsFetching}
+              loading={isLoading}
               loadingPosition="start"
               startIcon={<Save />}
               disabled={!watch("name")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              sx={sx.disabledSaveButton}
             >
               Save
             </LoadingButton>

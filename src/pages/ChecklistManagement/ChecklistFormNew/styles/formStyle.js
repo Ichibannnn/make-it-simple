@@ -1,1 +1,1101 @@
-// BuilderTopBar.jsx
+// ─────────────────────────────────────────────────────────────────────────────
+// Centralized styles for the Checklist Form Builder (ChecklistFormNew).
+//
+// Every inline `sx` block used across the builder's JSX lives here so the
+// component markup stays lean and the design tokens stay in one place.
+// Static styles are plain objects; styles that depend on props/state are
+// exposed as functions that return the sx object.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Shared color palette (GitHub-dark inspired + violet accent)
+export const C = {
+  bg: "#0D1117",
+  surface: "#161B22",
+  border: "#30363D",
+  text: "#E6EDF3",
+  muted: "#8B949E",
+  primary: "#7C3AED",
+  primaryHover: "#6D28D9",
+  primaryLight: "#9D5CF6",
+  success: "#22C55E",
+  danger: "#EF4444",
+  warning: "#F97316",
+  white: "#fff",
+};
+
+// ── BuilderTopBar.jsx ────────────────────────────────────────────────────────
+export const topBarStyles = {
+  container: {
+    height: 56,
+    display: "flex",
+    alignItems: "center",
+    px: 2,
+    gap: 1.5,
+    borderBottom: `1px solid ${C.border}`,
+    bgcolor: C.surface,
+    flexShrink: 0,
+    zIndex: 10,
+  },
+  backBtn: { color: C.muted, "&:hover": { color: C.text } },
+  divider: { width: "1px", height: 20, bgcolor: C.border, flexShrink: 0 },
+  titleWrap: { display: "flex", alignItems: "center", gap: 1, flexShrink: 0 },
+  title: { fontWeight: 700, fontSize: 14, color: C.text, whiteSpace: "nowrap" },
+  editBtn: { color: C.muted, p: 0.25 },
+  editIcon: { fontSize: 14 },
+  chip: (isPreview) => ({
+    height: 20,
+    fontSize: 10,
+    fontWeight: 600,
+    flexShrink: 0,
+    bgcolor: isPreview ? "rgba(34,197,94,0.12)" : "rgba(249,115,22,0.12)",
+    color: isPreview ? C.success : C.warning,
+    border: `1px solid ${isPreview ? "rgba(34,197,94,0.3)" : "rgba(249,115,22,0.3)"}`,
+    "& .MuiChip-label": { px: 1 },
+  }),
+  savedWrap: { display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 },
+  savedIcon: { fontSize: 13, color: C.success },
+  savedText: { fontSize: 11, color: C.success, whiteSpace: "nowrap" },
+  spacer: { flex: 1 },
+  discardIcon: { fontSize: 14 },
+  discardBtn: {
+    color: C.muted,
+    fontSize: 11,
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+    "&:hover": { color: C.danger },
+  },
+  toggleIcon: { fontSize: 15 },
+  toggleBtn: {
+    borderColor: C.border,
+    color: C.muted,
+    fontSize: 12,
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+    "&:hover": { borderColor: C.primary, color: C.text },
+  },
+  saveIcon: { fontSize: 15 },
+  saveBtn: {
+    bgcolor: C.primary,
+    fontSize: 12,
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+    "&:hover": { bgcolor: C.primaryHover },
+    boxShadow: "0 0 12px rgba(124,58,237,0.4)",
+  },
+};
+
+// ── CanvasField.jsx ──────────────────────────────────────────────────────────
+export const canvasFieldStyles = {
+  // ColPicker
+  colPickerWrap: {
+    display: "flex",
+    alignItems: "center",
+    gap: 0.5,
+    px: 0.75,
+    py: 0.25,
+    borderRadius: 1,
+    border: `1px solid ${C.border}`,
+    bgcolor: "rgba(255,255,255,0.02)",
+  },
+  colPickerIcon: { fontSize: 13, color: C.muted },
+  colPickerDots: { display: "flex", gap: 0.25 },
+  colPickerCell: (active) => ({
+    width: 18,
+    height: 18,
+    borderRadius: 0.5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 10,
+    fontWeight: 700,
+    cursor: "pointer",
+    bgcolor: active ? C.primary : "transparent",
+    color: active ? C.white : C.muted,
+    border: "1px solid",
+    borderColor: active ? C.primary : C.border,
+    transition: "all 0.15s ease",
+    "&:hover": {
+      borderColor: C.primary,
+      color: active ? C.white : C.primaryLight,
+    },
+  }),
+
+  // ChecklistPreview
+  previewContainer: {
+    mt: 1,
+    borderRadius: 1,
+    overflow: "hidden",
+    border: `1px solid ${C.border}`,
+  },
+  previewHeaderRow: (cols) => ({
+    display: "grid",
+    gridTemplateColumns: cols,
+    bgcolor: "rgba(255,255,255,0.04)",
+    borderBottom: `1px solid ${C.border}`,
+    px: 1,
+    py: 0.5,
+    gap: 1,
+  }),
+  previewHeaderCell: {
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.08em",
+  },
+  previewHeaderCol: (isStatus) => ({
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.08em",
+    textAlign: isStatus ? "center" : "left",
+  }),
+  previewRow: (cols, hasBorder) => ({
+    display: "grid",
+    gridTemplateColumns: cols,
+    px: 1,
+    py: 0.75,
+    borderBottom: hasBorder ? `1px solid ${C.border}` : "none",
+    alignItems: "center",
+    gap: 1,
+  }),
+  previewRowNum: { fontSize: 10, color: C.muted },
+  previewRowDesc: { fontSize: 11, color: C.text },
+  previewStatusWrap: { display: "flex", gap: 0.5, justifyContent: "center" },
+  previewStatusBox: (color) => ({
+    width: 16,
+    height: 16,
+    borderRadius: 0.5,
+    border: `1px solid ${color}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }),
+  previewStatusMark: (color) => ({ fontSize: 8, color, fontWeight: 700 }),
+  previewColCell: {
+    fontSize: 10,
+    color: C.muted,
+    fontStyle: "italic",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  previewMoreWrap: { px: 1, py: 0.5, bgcolor: "rgba(124,58,237,0.05)" },
+  previewMoreText: { fontSize: 10, color: C.primary },
+  previewEmptyWrap: { px: 1, py: 1.5 },
+  previewEmptyText: {
+    fontSize: 10,
+    color: C.muted,
+    textAlign: "center",
+    fontStyle: "italic",
+  },
+
+  // SignaturePreview
+  sigPreviewContainer: {
+    mt: 1,
+    borderRadius: 1,
+    border: `1px solid ${C.border}`,
+    p: 1.25,
+    bgcolor: "rgba(255,255,255,0.02)",
+  },
+  sigPreviewHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mb: 1,
+  },
+  sigPreviewSigner: { fontSize: 11, fontWeight: 700, color: C.text },
+  sigPreviewAddChip: {
+    px: 1,
+    py: 0.25,
+    borderRadius: 0.5,
+    bgcolor: "rgba(124,58,237,0.15)",
+    color: C.primaryLight,
+    fontSize: 9,
+    fontWeight: 600,
+  },
+  sigPreviewGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 },
+  sigPreviewLabel: { fontSize: 9, color: C.muted, mb: 0.5 },
+  sigPreviewNameBox: {
+    height: 28,
+    borderRadius: 0.5,
+    border: `1px solid ${C.border}`,
+    display: "flex",
+    alignItems: "center",
+    px: 1,
+  },
+  sigPreviewNameText: { fontSize: 10, color: C.muted, fontStyle: "italic" },
+  sigPreviewSignBox: {
+    height: 28,
+    borderRadius: 0.5,
+    border: `1px dashed ${C.border}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 0.5,
+  },
+  sigPreviewDrawIcon: { fontSize: 12, color: C.muted },
+  sigPreviewSignText: { fontSize: 10, color: C.muted },
+
+  // CanvasField shell
+  container: (isSelected, isSection) => ({
+    borderRadius: 1.5,
+    border: "1px solid",
+    borderColor: isSelected ? C.primary : isSection ? "transparent" : C.border,
+    borderLeft: isSection
+      ? `3px solid ${C.primary}`
+      : isSelected
+        ? `3px solid ${C.primary}`
+        : "3px solid transparent",
+    bgcolor: isSection
+      ? "rgba(124,58,237,0.08)"
+      : isSelected
+        ? "rgba(124,58,237,0.06)"
+        : "rgba(255,255,255,0.015)",
+    cursor: "pointer",
+    transition: "all 0.15s ease",
+    overflow: "hidden",
+    boxShadow: isSelected ? "0 0 0 1px rgba(124,58,237,0.4)" : "none",
+    "&:hover": {
+      borderColor: C.primary,
+      bgcolor: isSection ? "rgba(124,58,237,0.1)" : "rgba(124,58,237,0.05)",
+    },
+  }),
+  rowHeader: (isSection) => ({
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
+    px: 2,
+    py: isSection ? 1.25 : 1.75,
+    flexWrap: "wrap",
+  }),
+  dragHandle: {
+    cursor: "grab",
+    color: C.border,
+    "&:hover": { color: C.muted },
+    flexShrink: 0,
+    display: "flex",
+    alignItems: "center",
+  },
+  dragIcon: { fontSize: 16 },
+  label: (isSection) => ({
+    flex: 1,
+    minWidth: 0,
+    fontSize: isSection ? 13 : 14,
+    fontWeight: isSection ? 700 : 400,
+    color: isSection ? C.primaryLight : C.text,
+    letterSpacing: isSection ? "0.04em" : 0,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  }),
+  requiredStar: { color: C.warning, ml: 0.25 },
+  sectionColsWrap: {
+    display: "flex",
+    gap: 0.75,
+    alignItems: "center",
+    flexShrink: 0,
+  },
+  typeChip: (isAdvanced) => ({
+    height: 18,
+    fontSize: 9,
+    fontWeight: 600,
+    flexShrink: 0,
+    bgcolor: isAdvanced ? "rgba(124,58,237,0.15)" : "rgba(255,255,255,0.05)",
+    color: isAdvanced ? C.primaryLight : C.muted,
+    border: `1px solid ${isAdvanced ? "rgba(124,58,237,0.3)" : C.border}`,
+    "& .MuiChip-label": { px: 0.75 },
+  }),
+  deleteBtn: {
+    color: C.border,
+    "&:hover": { color: C.danger, bgcolor: "rgba(239,68,68,0.08)" },
+    p: 0.25,
+    flexShrink: 0,
+  },
+  deleteIcon: { fontSize: 15 },
+  previewWrap: { px: 1.5, pb: 1.5 },
+};
+
+// ── FieldPalette.jsx ─────────────────────────────────────────────────────────
+export const fieldPaletteStyles = {
+  card: (isAdvanced, isDragging) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 0.75,
+    py: 1.5,
+    px: 1,
+    borderRadius: 1.5,
+    border: "1px solid",
+    borderColor: isAdvanced ? "rgba(124,58,237,0.35)" : C.border,
+    bgcolor: isAdvanced ? "rgba(124,58,237,0.07)" : "rgba(255,255,255,0.02)",
+    cursor: "grab",
+    opacity: isDragging ? 0.35 : 1,
+    transition: "all 0.15s ease",
+    userSelect: "none",
+    "&:hover": {
+      borderColor: C.primary,
+      bgcolor: "rgba(124,58,237,0.12)",
+      transform: "translateY(-1px)",
+      boxShadow: "0 4px 12px rgba(124,58,237,0.2)",
+    },
+    "&:active": { cursor: "grabbing" },
+  }),
+  cardIcon: (isAdvanced) => ({
+    fontSize: 20,
+    color: isAdvanced ? C.primaryLight : C.muted,
+  }),
+  cardLabel: {
+    fontSize: 10,
+    color: C.muted,
+    textAlign: "center",
+    lineHeight: 1.2,
+    fontWeight: 500,
+  },
+  container: {
+    width: 220,
+    flexShrink: 0,
+    borderRight: `1px solid ${C.border}`,
+    bgcolor: C.surface,
+    overflowY: "auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: 0,
+  },
+  headerWrap: { px: 2, pt: 2, pb: 1 },
+  headerText: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.1em",
+  },
+  group: { px: 2, pb: 2 },
+  groupTitle: {
+    fontSize: 9,
+    fontWeight: 600,
+    color: C.muted,
+    letterSpacing: "0.12em",
+    mb: 1,
+    opacity: 0.7,
+  },
+  grid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.75 },
+  divider: { borderColor: C.border, mt: 2 },
+  footer: { px: 2, py: 2, mt: "auto", borderTop: `1px solid ${C.border}` },
+  footerText: {
+    fontSize: 10,
+    color: C.muted,
+    lineHeight: 1.5,
+    textAlign: "center",
+  },
+};
+
+// ── FormBuilder.jsx ──────────────────────────────────────────────────────────
+export const formBuilderStyles = {
+  overlayPill: {
+    px: 2,
+    py: 1,
+    borderRadius: 1,
+    bgcolor: C.primary,
+    color: C.white,
+    fontSize: 12,
+    fontWeight: 600,
+    boxShadow: "0 8px 24px rgba(124,58,237,0.5)",
+    border: "1px solid rgba(255,255,255,0.2)",
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
+  },
+  overlayPillText: { fontSize: 12, fontWeight: 600, color: C.white },
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100vh",
+    width: "100vw",
+    bgcolor: C.bg,
+    overflow: "hidden",
+  },
+  body: { display: "flex", flex: 1, overflow: "hidden" },
+  alert: (severity) => ({
+    bgcolor:
+      severity === "success"
+        ? C.success
+        : severity === "info"
+          ? C.primary
+          : severity === "warning"
+            ? C.warning
+            : C.danger,
+    color: C.white,
+    fontSize: 12,
+    "& .MuiAlert-icon": { color: C.white },
+  }),
+};
+
+// ── FormCanvas.jsx ───────────────────────────────────────────────────────────
+export const formCanvasStyles = {
+  scroll: {
+    flex: 1,
+    overflowY: "auto",
+    bgcolor: C.bg,
+    display: "flex",
+    flexDirection: "column",
+  },
+  inner: {
+    maxWidth: 960,
+    width: "100%",
+    mx: "auto",
+    px: 3,
+    py: 3,
+    display: "flex",
+    flexDirection: "column",
+    gap: 0,
+    flex: 1,
+  },
+  titleCard: {
+    mb: 2.5,
+    p: 2.5,
+    borderRadius: 2,
+    border: `1px solid ${C.border}`,
+    bgcolor: C.surface,
+  },
+  title: { fontSize: 22, fontWeight: 700, color: C.text, mb: 0.5 },
+  description: { fontSize: 13, color: C.muted },
+  dropZone: (isOver, isEmpty) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: 0.75,
+    flex: 1,
+    minHeight: 300,
+    borderRadius: 2,
+    transition: "all 0.15s ease",
+    ...(isOver &&
+      isEmpty && {
+        border: `2px dashed ${C.primary}`,
+        bgcolor: "rgba(124,58,237,0.05)",
+        p: 2,
+      }),
+  }),
+  emptyState: (isOver) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+    py: 10,
+    border: "2px dashed",
+    borderColor: isOver ? C.primary : C.border,
+    borderRadius: 2,
+    bgcolor: isOver ? "rgba(124,58,237,0.05)" : "transparent",
+    transition: "all 0.2s ease",
+  }),
+  emptyIcon: (isOver) => ({ fontSize: 44, color: isOver ? C.primary : C.border }),
+  emptyTextWrap: { textAlign: "center" },
+  emptyTitle: (isOver) => ({
+    fontSize: 14,
+    fontWeight: 600,
+    color: isOver ? C.primaryLight : C.muted,
+    mb: 0.5,
+  }),
+  emptySub: { fontSize: 12, color: C.muted, opacity: 0.7 },
+  dropIndicator: (isOver) => ({
+    mt: 0.5,
+    py: 1.5,
+    border: "2px dashed",
+    borderColor: isOver ? C.primary : C.border,
+    borderRadius: 1.5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    bgcolor: isOver ? "rgba(124,58,237,0.05)" : "transparent",
+    transition: "all 0.15s ease",
+  }),
+  dropIndicatorText: (isOver) => ({
+    fontSize: 11,
+    color: isOver ? C.primaryLight : C.muted,
+    opacity: isOver ? 1 : 0.5,
+  }),
+};
+
+// ── FormRenderer.jsx ─────────────────────────────────────────────────────────
+const rendererInput = {
+  "& .MuiOutlinedInput-root": {
+    fontSize: 13,
+    bgcolor: "rgba(255,255,255,0.02)",
+    "& fieldset": { borderColor: C.border },
+    "&:hover fieldset": { borderColor: C.primary },
+    "&.Mui-focused fieldset": { borderColor: C.primary },
+  },
+  "& .MuiInputBase-input": { color: C.text },
+  "& .MuiSelect-icon": { color: C.muted },
+};
+
+const pickerPopperSx = {
+  "& .MuiPaper-root": {
+    bgcolor: C.surface,
+    border: `1px solid ${C.border}`,
+    color: C.text,
+  },
+  "& .MuiPickersDay-root": { color: C.text },
+  "& .MuiPickersDay-root.Mui-selected": {
+    bgcolor: C.primary,
+    "&:hover": { bgcolor: C.primaryHover },
+  },
+  "& .MuiPickersDay-root:hover": { bgcolor: "rgba(124,58,237,0.2)" },
+  "& .MuiPickersCalendarHeader-label": { color: C.text },
+  "& .MuiPickersArrowSwitcher-button": { color: C.muted },
+  "& .MuiDayCalendar-weekDayLabel": { color: C.muted },
+  "& .MuiPickersYear-yearButton.Mui-selected": { bgcolor: C.primary },
+  "& .MuiPickersMonth-monthButton.Mui-selected": { bgcolor: C.primary },
+  "& .MuiClock-pin, & .MuiClockPointer-root, & .MuiClockPointer-thumb": {
+    bgcolor: C.primary,
+  },
+  "& .MuiClockPointer-thumb": { borderColor: C.primary },
+  "& .MuiClockNumber-root.Mui-selected": { bgcolor: C.primary },
+};
+
+export const pickerSlotProps = (error) => ({
+  textField: {
+    fullWidth: true,
+    size: "small",
+    error: !!error,
+    helperText: error,
+    sx: rendererInput,
+  },
+  popper: { sx: pickerPopperSx },
+});
+
+export const formRendererStyles = {
+  input: rendererInput,
+  checklistCell: {
+    ...rendererInput,
+    "& .MuiInputBase-input": {
+      ...rendererInput["& .MuiInputBase-input"],
+      py: 0.5,
+      fontSize: 12,
+    },
+  },
+
+  // FieldLabel
+  fieldLabel: { fontSize: 12, fontWeight: 500, color: C.text, mb: 0.75 },
+  requiredStar: { color: C.warning, ml: 0.5 },
+  requiredStarSm: { color: C.warning, ml: 0.25 },
+
+  // SectionRender
+  sectionWrap: {
+    mt: 2,
+    mb: 1,
+    pb: 1,
+    borderBottom: "2px solid rgba(124,58,237,0.4)",
+  },
+  sectionText: {
+    fontSize: 13,
+    fontWeight: 700,
+    color: C.primaryLight,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+  },
+
+  // Select menu
+  selectMenuPaper: { bgcolor: C.surface, border: `1px solid ${C.border}`, mt: 0.5 },
+  selectMenuItem: { fontSize: 13, color: C.text },
+
+  // StatusButton
+  statusButton: (color, active) => ({
+    width: 28,
+    height: 28,
+    borderRadius: 1,
+    border: `1.5px solid ${color}`,
+    bgcolor: active ? color : "transparent",
+    color: active ? C.white : color,
+    "&:hover": { bgcolor: active ? color : `${color}22` },
+  }),
+  statusIcon: { fontSize: 16 },
+
+  // ChecklistRender
+  checklistContainer: {
+    borderRadius: 1.5,
+    overflow: "hidden",
+    border: `1px solid ${C.border}`,
+  },
+  checklistHeaderRow: (cols) => ({
+    display: "grid",
+    gridTemplateColumns: cols,
+    bgcolor: "rgba(255,255,255,0.04)",
+    borderBottom: `1px solid ${C.border}`,
+    px: 1.5,
+    py: 1,
+    gap: 1.5,
+    alignItems: "center",
+  }),
+  checklistHeaderCell: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.08em",
+  },
+  checklistHeaderCol: (isStatus) => ({
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.08em",
+    textAlign: isStatus ? "center" : "left",
+  }),
+  checklistRow: (cols, hasBorder, hasErr) => ({
+    display: "grid",
+    gridTemplateColumns: cols,
+    px: 1.5,
+    py: 1,
+    gap: 1.5,
+    alignItems: "center",
+    borderBottom: hasBorder ? `1px solid ${C.border}` : "none",
+    bgcolor: hasErr ? "rgba(239,68,68,0.04)" : "transparent",
+  }),
+  checklistRowNum: { fontSize: 11, color: C.muted },
+  checklistRowDesc: { fontSize: 13, color: C.text },
+  checklistStatusWrap: { display: "flex", gap: 0.5, justifyContent: "center" },
+
+  // SignerCard
+  signerCard: {
+    p: 2,
+    borderRadius: 1.5,
+    border: `1px solid ${C.border}`,
+    bgcolor: "rgba(255,255,255,0.02)",
+  },
+  signerHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mb: 1.5,
+  },
+  signerTitle: { fontSize: 13, fontWeight: 700, color: C.text },
+  signerRemoveBtn: {
+    color: C.danger,
+    "&:hover": { bgcolor: "rgba(239,68,68,0.1)" },
+    p: 0.5,
+  },
+  signerRemoveIcon: { fontSize: 18 },
+  signerGrid: (showDigital) => ({
+    display: "grid",
+    gridTemplateColumns: {
+      xs: "1fr",
+      md: showDigital ? "1fr 1fr" : "1fr 1fr",
+    },
+    gap: 2,
+  }),
+  signerPropLabel: { fontSize: 11, color: C.muted, mb: 0.5 },
+  signerNameMenuPaper: {
+    bgcolor: C.surface,
+    border: `1px solid ${C.border}`,
+    mt: 0.5,
+  },
+  signerMenuItem: { fontSize: 13, color: C.text },
+  eSigBox: (signed, hasError) => ({
+    height: 56,
+    borderRadius: 1,
+    border: `1.5px dashed ${signed ? C.success : hasError ? C.danger : C.border}`,
+    bgcolor: signed ? "rgba(34,197,94,0.06)" : "transparent",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 1,
+    cursor: "pointer",
+    transition: "all 0.15s ease",
+    "&:hover": { borderColor: C.primary },
+  }),
+  eSigSignedIcon: { fontSize: 18, color: C.success },
+  eSigSignedText: {
+    color: C.success,
+    fontFamily: '"Brush Script MT", cursive',
+    fontSize: 22,
+  },
+  eSigDrawIcon: { fontSize: 16, color: C.muted },
+  eSigHintText: { fontSize: 11, color: C.muted },
+  digitalCol: { gridColumn: "1 / -1" },
+  digitalBox: {
+    height: 56,
+    borderRadius: 1,
+    border: `1.5px dashed ${C.border}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 1,
+  },
+
+  // SignatureRender
+  signatureHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mb: 1,
+  },
+  signatureAddBtn: {
+    bgcolor: C.primary,
+    color: C.white,
+    fontSize: 12,
+    textTransform: "none",
+    px: 1.5,
+    py: 0.5,
+    "&:hover": { bgcolor: C.primaryHover },
+    boxShadow: "0 0 8px rgba(124,58,237,0.4)",
+  },
+  signatureAddIcon: { fontSize: 15 },
+  signersWrap: { display: "flex", flexDirection: "column", gap: 1.5 },
+
+  // Submitted screen
+  successWrap: {
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    bgcolor: C.bg,
+  },
+  successCard: {
+    maxWidth: 480,
+    textAlign: "center",
+    p: 5,
+    borderRadius: 2,
+    border: "1px solid rgba(34,197,94,0.3)",
+    bgcolor: "rgba(34,197,94,0.05)",
+  },
+  successIcon: { fontSize: 56, color: C.success, mb: 2 },
+  successTitle: { fontSize: 18, fontWeight: 700, color: C.text, mb: 1 },
+  successSub: { fontSize: 13, color: C.muted, mb: 3 },
+  fillAgainBtn: {
+    borderColor: C.border,
+    color: C.muted,
+    "&:hover": { borderColor: C.primary },
+  },
+
+  // Main preview layout
+  scroll: { flex: 1, overflowY: "auto", bgcolor: C.bg },
+  inner: {
+    maxWidth: 960,
+    width: "100%",
+    mx: "auto",
+    px: 3,
+    py: 3,
+    display: "flex",
+    flexDirection: "column",
+    gap: 2.5,
+  },
+  headerCard: {
+    p: 2.5,
+    borderRadius: 2,
+    border: `1px solid ${C.border}`,
+    bgcolor: C.surface,
+  },
+  headerTop: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mb: 0.5,
+  },
+  headerTitle: { fontSize: 18, fontWeight: 700, color: C.text },
+  headerChip: {
+    height: 22,
+    fontSize: 11,
+    fontWeight: 600,
+    bgcolor: "rgba(124,58,237,0.12)",
+    color: C.primaryLight,
+    border: "1px solid rgba(124,58,237,0.3)",
+  },
+  headerSub: { fontSize: 12, color: C.muted },
+  progressTrack: {
+    mt: 1.5,
+    height: 4,
+    bgcolor: C.border,
+    borderRadius: 2,
+    overflow: "hidden",
+  },
+  progressBar: (pct) => ({
+    height: "100%",
+    width: `${pct}%`,
+    bgcolor: C.primary,
+    transition: "width 0.25s ease",
+    boxShadow: "0 0 8px rgba(124,58,237,0.5)",
+  }),
+  groupGrid: (mobileCols, desktopCols, hasSection) => ({
+    display: "grid",
+    gridTemplateColumns: {
+      xs: `repeat(${mobileCols}, minmax(0, 1fr))`,
+      md: `repeat(${desktopCols}, minmax(0, 1fr))`,
+    },
+    gap: 2,
+    mt: hasSection ? 1.5 : 0,
+  }),
+  groupItem: (fullRow) => ({ gridColumn: fullRow ? "1 / -1" : "auto" }),
+  divider: { borderColor: C.border, my: 1 },
+  submitRow: { display: "flex", justifyContent: "flex-end", gap: 1.5 },
+  clearBtn: {
+    borderColor: C.border,
+    color: C.muted,
+    fontSize: 12,
+    "&:hover": { borderColor: C.danger, color: C.danger },
+  },
+  submitBtn: {
+    bgcolor: C.primary,
+    fontSize: 12,
+    "&:hover": { bgcolor: C.primaryHover },
+    boxShadow: "0 0 12px rgba(124,58,237,0.4)",
+  },
+};
+
+// ── PropertiesPanel.jsx ──────────────────────────────────────────────────────
+const panelInput = {
+  "& .MuiOutlinedInput-root": {
+    fontSize: 12,
+    "& fieldset": { borderColor: C.border },
+    "&:hover fieldset": { borderColor: C.primary },
+    "&.Mui-focused fieldset": { borderColor: C.primary },
+    bgcolor: "rgba(255,255,255,0.02)",
+  },
+  "& .MuiInputBase-input": { color: C.text, py: 0.75, px: 1.25 },
+};
+
+export const propertiesPanelStyles = {
+  input: panelInput,
+  sectionLabel: {
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.1em",
+    mb: 1,
+  },
+  propRowLabel: { fontSize: 11, color: C.muted, mb: 0.5 },
+  toggleRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  toggleLabel: { fontSize: 12, color: C.muted },
+  toggleSwitch: {
+    "& .MuiSwitch-switchBase.Mui-checked": { color: C.primary },
+    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      bgcolor: C.primary,
+    },
+  },
+  panel: {
+    width: 272,
+    flexShrink: 0,
+    borderLeft: `1px solid ${C.border}`,
+    bgcolor: C.surface,
+    display: "flex",
+    flexDirection: "column",
+    overflowY: "auto",
+    transition: "width 0.2s ease",
+  },
+  header: {
+    px: 2,
+    py: 1.5,
+    borderBottom: `1px solid ${C.border}`,
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
+    flexShrink: 0,
+  },
+  headerIcon: { fontSize: 15, color: C.primary },
+  headerTitle: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.text,
+    flex: 1,
+    letterSpacing: "0.06em",
+  },
+  closeBtn: { color: C.muted, p: 0.25, "&:hover": { color: C.text } },
+  closeIcon: { fontSize: 15 },
+  emptyWrap: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 1.5,
+    p: 3,
+    opacity: 0.5,
+  },
+  emptyIcon: { fontSize: 32, color: C.border },
+  emptyText: {
+    fontSize: 12,
+    color: C.muted,
+    textAlign: "center",
+    lineHeight: 1.5,
+  },
+  body: { p: 2, display: "flex", flexDirection: "column", gap: 2, flex: 1 },
+  divider: { borderColor: C.border },
+  listHeaderRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mb: 1,
+  },
+  addBtn: {
+    color: C.primary,
+    fontSize: 10,
+    textTransform: "none",
+    p: 0.25,
+    minWidth: 0,
+  },
+  addIcon: { fontSize: 13 },
+  colList: { display: "flex", flexDirection: "column", gap: 1 },
+  colCard: {
+    p: 1,
+    borderRadius: 1,
+    border: `1px solid ${C.border}`,
+    bgcolor: "rgba(255,255,255,0.02)",
+    display: "flex",
+    flexDirection: "column",
+    gap: 0.75,
+  },
+  colTopRow: { display: "flex", alignItems: "center", gap: 0.5 },
+  colDelBtn: {
+    color: C.border,
+    "&:hover": { color: C.danger },
+    p: 0.25,
+    flexShrink: 0,
+  },
+  colDelIcon: { fontSize: 15 },
+  colGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.75 },
+  menuPaper: { bgcolor: C.surface, border: `1px solid ${C.border}` },
+  menuItem: { fontSize: 12 },
+  emptyListText: {
+    fontSize: 11,
+    color: C.muted,
+    textAlign: "center",
+    py: 1.5,
+    fontStyle: "italic",
+  },
+  rowsList: { display: "flex", flexDirection: "column", gap: 0.5 },
+  rowItem: { display: "flex", alignItems: "center", gap: 0.5 },
+  rowNum: {
+    fontSize: 10,
+    color: C.muted,
+    width: 16,
+    textAlign: "center",
+    flexShrink: 0,
+  },
+  applyWrap: { mt: "auto", pt: 1 },
+  applyBtn: {
+    bgcolor: C.primary,
+    "&:hover": { bgcolor: C.primaryHover },
+    fontSize: 12,
+    boxShadow: "0 0 12px rgba(124,58,237,0.3)",
+  },
+};
+
+// ── SaveFormDialog.jsx ───────────────────────────────────────────────────────
+const dialogInput = {
+  "& .MuiOutlinedInput-root": {
+    fontSize: 13,
+    bgcolor: "rgba(255,255,255,0.02)",
+    "& fieldset": { borderColor: C.border },
+    "&:hover fieldset": { borderColor: C.primary },
+    "&.Mui-focused fieldset": { borderColor: C.primary },
+  },
+  "& .MuiInputBase-input": { color: C.text },
+  "& .MuiFormHelperText-root": { color: C.danger, fontSize: 11 },
+  "& .MuiInputLabel-root": { color: C.muted, fontSize: 13 },
+  "& .MuiInputLabel-root.Mui-focused": { color: C.primary },
+};
+
+export const saveFormDialogStyles = {
+  input: dialogInput,
+  summaryChipsWrap: { display: "flex", flexWrap: "wrap", gap: 0.75 },
+  summaryChip: (color) => ({
+    height: 20,
+    fontSize: 10,
+    fontWeight: 600,
+    bgcolor: "rgba(255,255,255,0.04)",
+    color,
+    border: `1px solid ${color}44`,
+    "& .MuiChip-label": { px: 1 },
+  }),
+  paper: {
+    bgcolor: C.surface,
+    border: `1px solid ${C.border}`,
+    borderRadius: 2,
+    backgroundImage: "none",
+  },
+  title: {
+    px: 3,
+    py: 2,
+    borderBottom: `1px solid ${C.border}`,
+    display: "flex",
+    alignItems: "center",
+    gap: 1.5,
+  },
+  titleIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 1,
+    bgcolor: "rgba(124,58,237,0.15)",
+    border: "1px solid rgba(124,58,237,0.3)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  titleIcon: { fontSize: 16, color: C.primaryLight },
+  titleTextWrap: { flex: 1 },
+  titleHeading: { fontSize: 14, fontWeight: 700, color: C.text },
+  titleSub: { fontSize: 11, color: C.muted, mt: 0.25 },
+  titleCloseBtn: { color: C.muted, p: 0.5, "&:hover": { color: C.text } },
+  titleCloseIcon: { fontSize: 16 },
+  content: {
+    px: 3,
+    py: 2.5,
+    display: "flex",
+    flexDirection: "column",
+    gap: 2.5,
+  },
+  sectionLabel: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.1em",
+    mb: 1,
+  },
+  sectionLabelPlain: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.muted,
+    letterSpacing: "0.1em",
+  },
+  divider: { borderColor: C.border },
+  fieldsWrap: { display: "flex", flexDirection: "column", gap: 2 },
+  versionInput: (hasError) => ({
+    ...dialogInput,
+    "& .MuiFormHelperText-root": {
+      color: hasError ? C.danger : C.muted,
+      fontSize: 11,
+    },
+  }),
+  noteBox: {
+    p: 1.5,
+    borderRadius: 1,
+    bgcolor: "rgba(124,58,237,0.06)",
+    border: "1px solid rgba(124,58,237,0.2)",
+    display: "flex",
+    gap: 1,
+    alignItems: "flex-start",
+  },
+  noteIcon: { fontSize: 15, color: C.primaryLight, mt: 0.15, flexShrink: 0 },
+  noteText: { fontSize: 11, color: C.muted, lineHeight: 1.6 },
+  actions: { px: 3, py: 2, borderTop: `1px solid ${C.border}`, gap: 1 },
+  cancelBtn: {
+    borderColor: C.border,
+    color: C.muted,
+    fontSize: 12,
+    "&:hover": { borderColor: C.muted },
+  },
+  loadingSpinner: { color: C.white },
+  saveStartIcon: { fontSize: 15 },
+  saveBtn: {
+    bgcolor: C.primary,
+    fontSize: 12,
+    "&:hover": { bgcolor: C.primaryHover },
+    "&.Mui-disabled": {
+      bgcolor: "rgba(124,58,237,0.3)",
+      color: "rgba(255,255,255,0.4)",
+    },
+    boxShadow: "0 0 12px rgba(124,58,237,0.4)",
+  },
+};

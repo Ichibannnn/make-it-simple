@@ -14,6 +14,8 @@ import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import CloudDoneOutlinedIcon from "@mui/icons-material/CloudDoneOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 
+import { topBarStyles as s } from "./styles/formStyle";
+
 export default function BuilderTopBar({
   mode = "builder",
   onTogglePreview,
@@ -32,84 +34,35 @@ export default function BuilderTopBar({
     : null;
 
   return (
-    <Box
-      sx={{
-        height: 56,
-        display: "flex",
-        alignItems: "center",
-        px: 2,
-        gap: 1.5,
-        borderBottom: "1px solid #30363D",
-        bgcolor: "#161B22",
-        flexShrink: 0,
-        zIndex: 10,
-      }}
-    >
-      <IconButton
-        size="small"
-        onClick={onClose}
-        sx={{ color: "#8B949E", "&:hover": { color: "#E6EDF3" } }}
-      >
+    <Box sx={s.container}>
+      <IconButton size="small" onClick={onClose} sx={s.backBtn}>
         <ArrowBackIcon fontSize="small" />
       </IconButton>
 
-      <Box
-        sx={{ width: "1px", height: 20, bgcolor: "#30363D", flexShrink: 0 }}
-      />
+      <Box sx={s.divider} />
 
-      <Box
-        sx={{ display: "flex", alignItems: "center", gap: 1, flexShrink: 0 }}
-      >
-        <Typography
-          sx={{
-            fontWeight: 700,
-            fontSize: 14,
-            color: "#E6EDF3",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {data.title}
-        </Typography>
-        <IconButton size="small" sx={{ color: "#8B949E", p: 0.25 }}>
-          <EditOutlinedIcon sx={{ fontSize: 14 }} />
+      <Box sx={s.titleWrap}>
+        <Typography sx={s.title}>{data.title}</Typography>
+        <IconButton size="small" sx={s.editBtn}>
+          <EditOutlinedIcon sx={s.editIcon} />
         </IconButton>
       </Box>
 
       <Chip
         label={isPreview ? "Preview Mode" : "Draft"}
         size="small"
-        sx={{
-          height: 20,
-          fontSize: 10,
-          fontWeight: 600,
-          flexShrink: 0,
-          bgcolor: isPreview ? "rgba(34,197,94,0.12)" : "rgba(249,115,22,0.12)",
-          color: isPreview ? "#22C55E" : "#F97316",
-          border: `1px solid ${isPreview ? "rgba(34,197,94,0.3)" : "rgba(249,115,22,0.3)"}`,
-          "& .MuiChip-label": { px: 1 },
-        }}
+        sx={s.chip(isPreview)}
       />
 
       {/* Draft saved indicator */}
       {savedLabel && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 0.5,
-            flexShrink: 0,
-          }}
-        >
-          <CloudDoneOutlinedIcon sx={{ fontSize: 13, color: "#22C55E" }} />
-          <Typography
-            sx={{ fontSize: 11, color: "#22C55E", whiteSpace: "nowrap" }}
-          >
-            {savedLabel}
-          </Typography>
+        <Box sx={s.savedWrap}>
+          <CloudDoneOutlinedIcon sx={s.savedIcon} />
+          <Typography sx={s.savedText}>{savedLabel}</Typography>
         </Box>
       )}
 
-      <Box sx={{ flex: 1 }} />
+      <Box sx={s.spacer} />
 
       {/* Discard draft button — only when a draft exists */}
       {hasDraft && (
@@ -118,14 +71,8 @@ export default function BuilderTopBar({
             variant="text"
             size="small"
             onClick={onDiscardDraft}
-            startIcon={<DeleteOutlineIcon sx={{ fontSize: 14 }} />}
-            sx={{
-              color: "#8B949E",
-              fontSize: 11,
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              "&:hover": { color: "#EF4444" },
-            }}
+            startIcon={<DeleteOutlineIcon sx={s.discardIcon} />}
+            sx={s.discardBtn}
           >
             Discard Draft
           </Button>
@@ -138,19 +85,12 @@ export default function BuilderTopBar({
         onClick={onTogglePreview}
         startIcon={
           isPreview ? (
-            <EditNoteOutlinedIcon sx={{ fontSize: 15 }} />
+            <EditNoteOutlinedIcon sx={s.toggleIcon} />
           ) : (
-            <VisibilityOutlinedIcon sx={{ fontSize: 15 }} />
+            <VisibilityOutlinedIcon sx={s.toggleIcon} />
           )
         }
-        sx={{
-          borderColor: "#30363D",
-          color: "#8B949E",
-          fontSize: 12,
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-          "&:hover": { borderColor: "#7C3AED", color: "#E6EDF3" },
-        }}
+        sx={s.toggleBtn}
       >
         {isPreview ? "Back to Editor" : "Preview"}
       </Button>
@@ -159,15 +99,8 @@ export default function BuilderTopBar({
         variant="contained"
         size="small"
         onClick={onSave}
-        startIcon={<SaveOutlinedIcon sx={{ fontSize: 15 }} />}
-        sx={{
-          bgcolor: "#7C3AED",
-          fontSize: 12,
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-          "&:hover": { bgcolor: "#6D28D9" },
-          boxShadow: "0 0 12px rgba(124,58,237,0.4)",
-        }}
+        startIcon={<SaveOutlinedIcon sx={s.saveIcon} />}
+        sx={s.saveBtn}
       >
         Save Form
       </Button>

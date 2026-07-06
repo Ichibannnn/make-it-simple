@@ -1,8 +1,7 @@
-import { Badge, Box, Collapse, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Badge, Box, Collapse, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { ExpandLess, ExpandMore, MenuOpen } from "@mui/icons-material";
 
-import { theme } from "../theme/theme";
 import { getMenuIcon } from "./GetIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { setSidebar } from "../features/sidebar/sidebarSlice";
@@ -12,11 +11,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useGetNotificationQuery } from "../features/api_notification/notificationApi";
 
 import helpDeskLogo from "../assets/images/helpdesk_icon.png";
+import { sidebarStyles as sx } from "./styles/sidebarStyles";
 
 const Sidebar = () => {
   const isVisible = useSelector((state) => state.sidebar.isVisible);
   const hideSidebar = useMediaQuery("(max-width: 1639px)");
   const [drawerOpen, setDrawerOpen] = useState(isVisible);
+  const [collapsed, setCollapsed] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -37,6 +38,7 @@ const Sidebar = () => {
   return (
     <>
       {hideSidebar && drawerOpen ? (
+        // Mobile: temporary drawer is always full-width (no collapse rail).
         <Drawer
           anchor="left"
           open={isVisible}
@@ -45,34 +47,10 @@ const Sidebar = () => {
             keepMounted: true,
           }}
         >
-          <Stack
-            sx={{
-              height: "100%",
-              backgroundColor: theme.palette.bgForm.black2,
-              width: "280px",
-              overflow: "auto",
-            }}
-          >
-            <SidebarHeader />
-            <SidebarList />
-            <SidebarFooter />
-          </Stack>
+          <SidebarContent collapsed={false} />
         </Drawer>
       ) : (
-        isVisible && (
-          <Stack
-            sx={{
-              height: "100%",
-              backgroundColor: theme.palette.bgForm.black2,
-              width: "280px",
-              overflow: "auto",
-            }}
-          >
-            <SidebarHeader />
-            <SidebarList />
-            <SidebarFooter />
-          </Stack>
-        )
+        isVisible && <SidebarContent collapsed={collapsed} onToggleCollapse={() => setCollapsed((prev) => !prev)} />
       )}
     </>
   );
@@ -80,49 +58,60 @@ const Sidebar = () => {
 
 export default Sidebar;
 
-const SidebarHeader = () => {
+// Single source of truth for the panel — used by both the fixed and drawer variants.
+const SidebarContent = ({ collapsed, onToggleCollapse }) => (
+  <Stack sx={sx.container(collapsed)}>
+    <SidebarHeader collapsed={collapsed} onToggleCollapse={onToggleCollapse} />
+    <SidebarList collapsed={collapsed} onExpand={() => collapsed && onToggleCollapse?.()} />
+  </Stack>
+);
+
+const SidebarHeader = ({ collapsed, onToggleCollapse }) => {
   return (
-    <Stack
-      sx={{
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "24px 24px 10px 24px",
-        marginTop: 3,
-        gap: "5px",
-      }}
-    >
-      <img src={helpDeskLogo} alt="dotek-icon" width="74" height="50" className="logo-sidebar" />
+    <>
+      {onToggleCollapse && (
+        <Stack sx={sx.toggleRow(collapsed)}>
+          <Tooltip title={collapsed ? "Expand" : "Collapse"} placement="right" arrow>
+            <IconButton onClick={onToggleCollapse} sx={sx.toggleButton} size="small">
+              <MenuOpen sx={sx.toggleIcon(collapsed)} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      )}
 
-      <Stack direction="row" gap={0.5} mt={0.5}>
-        <Typography
-          sx={{
-            fontSize: ".9rem",
-            fontWeight: "700",
-            color: "#EDF2F7",
-            lineHeight: "1.2",
-            letterSpacing: 1,
-          }}
-        >
-          MIS
-        </Typography>
+      <Stack sx={sx.header(collapsed)}>
+        <img
+          src={helpDeskLogo}
+          alt="MIS Helpdesk"
+          width={collapsed ? "46" : "74"}
+          height={collapsed ? "31" : "50"}
+          className="logo-sidebar"
+        />
 
-        <Typography
-          sx={{
-            fontSize: ".9rem",
-            fontWeight: "400",
-            color: "#EDF2F7",
-            lineHeight: "1.2",
-            letterSpacing: 1,
-          }}
-        >
-          HELPDESK
-        </Typography>
+        {!collapsed && (
+          <Stack sx={sx.brandRow}>
+            <Typography sx={sx.brandMis}>MIS</Typography>
+            <Typography sx={sx.brandHelpdesk}>HELPDESK</Typography>
+          </Stack>
+        )}
       </Stack>
-    </Stack>
+
+      <Divider sx={sx.headerDivider(collapsed)} />
+    </>
   );
 };
 
-const SidebarList = () => {
+// Wraps a nav button in a right-side tooltip only while the rail is collapsed.
+const NavTooltip = ({ collapsed, title, children }) =>
+  collapsed ? (
+    <Tooltip title={title} placement="right" arrow>
+      {children}
+    </Tooltip>
+  ) : (
+    children
+  );
+
+const SidebarList = ({ collapsed, onExpand }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -382,123 +371,75 @@ const SidebarList = () => {
 
   return (
     <Stack>
-      <List
-        sx={{
-          marginTop: "35px",
-          marginLeft: "6px",
-          marginRight: "17px",
-          padding: "0px",
-        }}
-      >
+      {!collapsed && <Typography sx={sx.sectionLabel}>MENU</Typography>}
+
+      <List sx={sx.list}>
         {sidebarMenu
           .filter((item) => userPermission?.includes(item.name))
           .map((item, i) => (
             <Fragment key={i}>
               {item.sub?.length ? (
-                <ListItemButton onClick={item.onToggle} selected={item.path === pathname}>
-                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    primaryTypographyProps={{
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      lineHeight: "24px",
-                      mb: "2px",
+                <NavTooltip collapsed={collapsed} title={item.name}>
+                  <ListItemButton
+                    onClick={() => {
+                      onExpand(); // in the rail, opening a group expands the sidebar first
+                      item.onToggle();
                     }}
-                  />
+                    selected={item.path === pathname}
+                    sx={sx.navButton(collapsed)}
+                  >
+                    <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
 
-                  {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
-                    <Badge color="error" variant="dot">
-                      {item.open ? <ExpandLess /> : <ExpandMore />}
-                    </Badge>
-                  ) : item.open ? (
-                    <ExpandLess />
-                  ) : (
-                    <ExpandMore />
-                  )}
-                </ListItemButton>
+                    {!collapsed && (
+                      <>
+                        <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />
+
+                        {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
+                          <Badge color="error" variant="dot">
+                            {item.open ? <ExpandLess sx={sx.chevron} /> : <ExpandMore sx={sx.chevron} />}
+                          </Badge>
+                        ) : item.open ? (
+                          <ExpandLess sx={sx.chevron} />
+                        ) : (
+                          <ExpandMore sx={sx.chevron} />
+                        )}
+                      </>
+                    )}
+                  </ListItemButton>
+                </NavTooltip>
               ) : (
-                <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname}>
-                  <ListItemIcon>{getMenuIcon(item.icon)}</ListItemIcon>
-
-                  <ListItemText
-                    primary={item.name}
-                    primaryTypographyProps={{
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      lineHeight: "24px",
-                      mb: "2px",
-                    }}
-                  />
-                </ListItemButton>
+                <NavTooltip collapsed={collapsed} title={item.name}>
+                  <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname} sx={sx.navButton(collapsed)}>
+                    <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
+                    {!collapsed && <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />}
+                  </ListItemButton>
+                </NavTooltip>
               )}
 
-              {item.sub?.filter((subItem) => userPermission.includes(subItem.name)).length > 0 && (
-                <Collapse
-                  in={item.open}
-                  timeout="auto"
-                  unmountOnExit
-                  sx={{
-                    maxHeight: item.open ? "250px" : "0",
-                    overflowY: "auto",
-                    transition: "max-height 0.3s ease-in-out",
-                  }}
-                >
-                  <List
-                    sx={{
-                      marginTop: "4px",
-                      marginBottom: "4px",
-                      marginLeft: "25px",
-                      marginRight: "2px",
-                      padding: "0px",
-                      maxHeight: "500px", // Set max height
-                      overflowY: "auto", // Enable vertical scrolling
-                    }}
-                  >
+              {!collapsed && item.sub?.filter((subItem) => userPermission.includes(subItem.name)).length > 0 && (
+                <Collapse in={item.open} timeout="auto" unmountOnExit>
+                  <List sx={sx.subList}>
                     {item.sub
                       .filter((subItem) => userPermission.includes(subItem.name))
                       .map((subItem, j) => (
-                        <ListItemButton key={j} onClick={() => navigate(subItem.path)} selected={subItem.path === pathname} sx={{ padding: "2px" }}>
-                          {/* <ListItemIcon>{getSubMenuIcon(subItem.icon)}</ListItemIcon> */}
-
+                        <ListItemButton key={j} onClick={() => navigate(subItem.path)} selected={subItem.path === pathname} sx={sx.subButton}>
                           <ListItemText
                             primary={
                               (subItem?.name === "Tickets" && openNotification) || (subItem?.name === "Approval" && ticketApprovalNotification) ? (
-                                <Box sx={{ display: "flex", width: "100%", alignItems: "center", gap: 0.5 }}>
-                                  <Typography
-                                    sx={{
-                                      fontSize: "14px",
-                                      fontWeight: 600,
-                                      lineHeight: "24px",
-                                    }}
-                                  >
-                                    {subItem.name}
-                                  </Typography>
+                                <Box sx={sx.subBadgeRow}>
+                                  <Typography sx={sx.subText}>{subItem.name}</Typography>
 
                                   <Badge
                                     color="error"
                                     badgeContent={subItem?.name === "Tickets" ? openNotification : ticketApprovalNotification}
-                                    sx={{
-                                      "& .MuiBadge-badge": {
-                                        left: 92,
-                                        top: 1,
-                                        fontSize: "0.65rem",
-                                        fontWeight: 400,
-                                      },
-                                    }}
+                                    sx={sx.subBadge}
                                   />
                                 </Box>
                               ) : (
                                 subItem.name
                               )
                             }
-                            primaryTypographyProps={{
-                              fontSize: "14px",
-                              fontWeight: "600",
-                              lineHeight: "24px",
-                              mb: "2px",
-                              marginLeft: "35px",
-                            }}
+                            primaryTypographyProps={sx.subText}
                           />
                         </ListItemButton>
                       ))}
@@ -510,8 +451,4 @@ const SidebarList = () => {
       </List>
     </Stack>
   );
-};
-
-const SidebarFooter = () => {
-  return <div>{/* Footer */}</div>;
 };
