@@ -16,10 +16,8 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { CheckCircle, CloseOutlined, NotificationsNoneOutlined, NotificationsOffOutlined, Password } from "@mui/icons-material";
 
 import { theme } from "../theme/theme";
@@ -34,7 +32,6 @@ import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUserDetails } from "../features/user_management_api/user/userSlice";
-import { toggleSidebar } from "../features/sidebar/sidebarSlice";
 import useDisclosure from "../hooks/useDisclosure";
 
 import useSignalRConnection from "../hooks/useSignalRConnection";
@@ -53,8 +50,6 @@ import { Controller, useForm } from "react-hook-form";
 import { ParameterContext } from "../context/ParameterContext";
 
 const Header = () => {
-  const hideMenu = useMediaQuery("(max-width: 1639px)");
-
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const notificationOpen = Boolean(notificationAnchor);
@@ -153,9 +148,6 @@ const Header = () => {
       });
   };
 
-  const toggleSidebarHandler = () => {
-    dispatch(toggleSidebar());
-  };
 
   const toggleChangePasswordHandler = () => {
     changePasswordOnToggle();
@@ -182,13 +174,8 @@ const Header = () => {
         paddingRight: "16px",
       }}
     >
-      <Box>
-        {hideMenu && (
-          <IconButton onClick={toggleSidebarHandler} aria-label="Toggle sidebar">
-            <MenuOutlinedIcon />
-          </IconButton>
-        )}
-      </Box>
+      <Box />
+
 
       <Box>
         <Box

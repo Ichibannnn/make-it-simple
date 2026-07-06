@@ -1,10 +1,9 @@
-import { Badge, Box, Collapse, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
-import { ExpandLess, ExpandMore, MenuOpen } from "@mui/icons-material";
+import { Badge, Box, Collapse, Divider, Grow, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Paper, Popper, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { ExpandMore, MenuOpen } from "@mui/icons-material";
 
-import { getMenuIcon } from "./GetIcon";
-import { useDispatch, useSelector } from "react-redux";
-import { setSidebar } from "../features/sidebar/sidebarSlice";
+import { getMenuIcon, getSubMenuIcon } from "./GetIcon";
+import { useSelector } from "react-redux";
 
 import useDisclosure from "../hooks/useDisclosure";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -14,46 +13,17 @@ import helpDeskLogo from "../assets/images/helpdesk_icon.png";
 import { sidebarStyles as sx } from "./styles/sidebarStyles";
 
 const Sidebar = () => {
-  const isVisible = useSelector((state) => state.sidebar.isVisible);
-  const hideSidebar = useMediaQuery("(max-width: 1639px)");
-  const [drawerOpen, setDrawerOpen] = useState(isVisible);
-  const [collapsed, setCollapsed] = useState(false);
+  // A single always-visible collapsible rail for every screen size. Small screens
+  // default to the collapsed rail; larger screens default to the expanded panel.
+  const isSmallScreen = useMediaQuery("(max-width: 1639px)");
+  const [collapsed, setCollapsed] = useState(isSmallScreen);
 
-  const dispatch = useDispatch();
-
-  // Sync drawerOpen state with isVisible from Redux store
+  // Re-sync the default when the viewport crosses the breakpoint.
   useEffect(() => {
-    setDrawerOpen(isVisible);
-  }, [isVisible]);
+    setCollapsed(isSmallScreen);
+  }, [isSmallScreen]);
 
-  useEffect(() => {
-    dispatch(setSidebar(!hideSidebar));
-  }, [dispatch, hideSidebar]);
-
-  const handleDrawerToggle = (open) => {
-    setDrawerOpen(open);
-    dispatch(setSidebar(open));
-  };
-
-  return (
-    <>
-      {hideSidebar && drawerOpen ? (
-        // Mobile: temporary drawer is always full-width (no collapse rail).
-        <Drawer
-          anchor="left"
-          open={isVisible}
-          onClose={() => handleDrawerToggle(false)}
-          ModalProps={{
-            keepMounted: true,
-          }}
-        >
-          <SidebarContent collapsed={false} />
-        </Drawer>
-      ) : (
-        isVisible && <SidebarContent collapsed={collapsed} onToggleCollapse={() => setCollapsed((prev) => !prev)} />
-      )}
-    </>
-  );
+  return <SidebarContent collapsed={collapsed} onToggleCollapse={() => setCollapsed((prev) => !prev)} />;
 };
 
 export default Sidebar;
@@ -80,20 +50,21 @@ const SidebarHeader = ({ collapsed, onToggleCollapse }) => {
       )}
 
       <Stack sx={sx.header(collapsed)}>
-        <img
+        <Box
+          component="img"
           src={helpDeskLogo}
           alt="MIS Helpdesk"
-          width={collapsed ? "46" : "74"}
-          height={collapsed ? "31" : "50"}
           className="logo-sidebar"
+          sx={sx.logo(collapsed)}
         />
 
-        {!collapsed && (
+        {/* Kept mounted so it can fade/collapse smoothly in both directions */}
+        <Box sx={sx.brandWrap(collapsed)}>
           <Stack sx={sx.brandRow}>
             <Typography sx={sx.brandMis}>MIS</Typography>
             <Typography sx={sx.brandHelpdesk}>HELPDESK</Typography>
           </Stack>
-        )}
+        </Box>
       </Stack>
 
       <Divider sx={sx.headerDivider(collapsed)} />
@@ -110,6 +81,111 @@ const NavTooltip = ({ collapsed, title, children }) =>
   ) : (
     children
   );
+
+// Resolves the notification count a given sub-item should surface (0 when none).
+const subBadgeCount = (name, openNotification, ticketApprovalNotification) => {
+  if (name === "Tickets") return openNotification;
+  if (name === "Approval") return ticketApprovalNotification;
+  return 0;
+};
+
+// A single sub-menu row (icon + label + optional notification badge). Shared by the
+// expanded tree and the collapsed hover flyout so both stay in sync.
+const SubMenuItem = ({ subItem, selected, onClick, openNotification, ticketApprovalNotification }) => {
+  const badgeCount = subBadgeCount(subItem?.name, openNotification, ticketApprovalNotification);
+
+  return (
+    <ListItemButton onClick={onClick} selected={selected} sx={sx.subButton}>
+      <ListItemIcon sx={sx.subIcon}>{getSubMenuIcon(subItem.icon)}</ListItemIcon>
+      <ListItemText
+        primary={
+          badgeCount ? (
+            <Box sx={sx.subBadgeRow}>
+              <Typography sx={sx.subText}>{subItem.name}</Typography>
+              <Box component="span" sx={sx.subCount}>
+                {badgeCount > 99 ? "99+" : badgeCount}
+              </Box>
+            </Box>
+          ) : (
+            subItem.name
+          )
+        }
+        primaryTypographyProps={sx.subText}
+      />
+    </ListItemButton>
+  );
+};
+
+// Collapsed rail: hovering (or focusing) a parent icon reveals a flyout with its
+// sub-items so they can be picked without expanding the whole sidebar first.
+const CollapsedGroup = ({ item, subs, pathname, navigate, onExpand, openNotification, ticketApprovalNotification }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const closeTimer = useRef();
+  const open = Boolean(anchorEl);
+
+  const hasNotif = (item.name === "Ticketing" && openNotification) || (item.name === "Approver" && ticketApprovalNotification);
+
+  const openFlyout = (e) => {
+    clearTimeout(closeTimer.current);
+    setAnchorEl(e.currentTarget);
+  };
+  const scheduleClose = () => {
+    closeTimer.current = setTimeout(() => setAnchorEl(null), 140);
+  };
+
+  // Keep the group's expanded/collapsed state in sync so it stays open once the
+  // rail is expanded again (onToggle also closes the other groups).
+  const ensureGroupOpen = () => {
+    if (!item.open) item.onToggle();
+  };
+
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+
+  return (
+    <Box onMouseEnter={openFlyout} onMouseLeave={scheduleClose} onFocus={openFlyout} onBlur={scheduleClose}>
+      <ListItemButton
+        onClick={() => {
+          ensureGroupOpen();
+          onExpand();
+        }}
+        selected={item.path === pathname}
+        sx={sx.navButton(true)}
+      >
+        <ListItemIcon sx={sx.navIcon(true)}>
+          <Badge color="error" variant="dot" invisible={!hasNotif}>
+            {getMenuIcon(item.icon)}
+          </Badge>
+        </ListItemIcon>
+      </ListItemButton>
+
+      <Popper open={open} anchorEl={anchorEl} placement="right-start" transition sx={sx.flyoutPopper} modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}>
+        {({ TransitionProps }) => (
+          <Grow {...TransitionProps} style={{ transformOrigin: "left top" }} timeout={180}>
+            <Paper elevation={8} sx={sx.flyoutPaper} onMouseEnter={() => clearTimeout(closeTimer.current)} onMouseLeave={scheduleClose}>
+              <Typography sx={sx.flyoutHeader}>{item.name}</Typography>
+              <List sx={sx.flyoutList}>
+                {subs.map((subItem, j) => (
+                  <SubMenuItem
+                    key={j}
+                    subItem={subItem}
+                    selected={subItem.path === pathname}
+                    onClick={() => {
+                      ensureGroupOpen();
+                      navigate(subItem.path);
+                      setAnchorEl(null);
+                    }}
+                    openNotification={openNotification}
+                    ticketApprovalNotification={ticketApprovalNotification}
+                  />
+                ))}
+              </List>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </Box>
+  );
+};
 
 const SidebarList = ({ collapsed, onExpand }) => {
   const navigate = useNavigate();
@@ -306,11 +382,13 @@ const SidebarList = ({ collapsed, onExpand }) => {
           id: 1,
           name: "Approval",
           path: "/approver/approval",
+          icon: "FactCheckOutlined",
         },
         {
           id: 2,
           name: "View Tickets",
           path: "/approver/view-tickets",
+          icon: "VisibilityOutlined",
         },
       ],
     },
@@ -376,78 +454,83 @@ const SidebarList = ({ collapsed, onExpand }) => {
       <List sx={sx.list}>
         {sidebarMenu
           .filter((item) => userPermission?.includes(item.name))
-          .map((item, i) => (
-            <Fragment key={i}>
-              {item.sub?.length ? (
-                <NavTooltip collapsed={collapsed} title={item.name}>
-                  <ListItemButton
-                    onClick={() => {
-                      onExpand(); // in the rail, opening a group expands the sidebar first
-                      item.onToggle();
-                    }}
-                    selected={item.path === pathname}
-                    sx={sx.navButton(collapsed)}
-                  >
-                    <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
+          .map((item, i) => {
+            const visibleSubs = item.sub?.filter((subItem) => userPermission.includes(subItem.name)) ?? [];
+            const hasSubs = visibleSubs.length > 0;
 
-                    {!collapsed && (
-                      <>
-                        <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />
+            // Collapsed rail + a group with children → hover flyout to pick sub-items.
+            if (collapsed && hasSubs) {
+              return (
+                <CollapsedGroup
+                  key={i}
+                  item={item}
+                  subs={visibleSubs}
+                  pathname={pathname}
+                  navigate={navigate}
+                  onExpand={onExpand}
+                  openNotification={openNotification}
+                  ticketApprovalNotification={ticketApprovalNotification}
+                />
+              );
+            }
 
-                        {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
-                          <Badge color="error" variant="dot">
-                            {item.open ? <ExpandLess sx={sx.chevron} /> : <ExpandMore sx={sx.chevron} />}
-                          </Badge>
-                        ) : item.open ? (
-                          <ExpandLess sx={sx.chevron} />
-                        ) : (
-                          <ExpandMore sx={sx.chevron} />
-                        )}
-                      </>
-                    )}
-                  </ListItemButton>
-                </NavTooltip>
-              ) : (
-                <NavTooltip collapsed={collapsed} title={item.name}>
-                  <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname} sx={sx.navButton(collapsed)}>
-                    <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
-                    {!collapsed && <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />}
-                  </ListItemButton>
-                </NavTooltip>
-              )}
+            return (
+              <Fragment key={i}>
+                {hasSubs ? (
+                  <NavTooltip collapsed={collapsed} title={item.name}>
+                    <ListItemButton
+                      onClick={() => {
+                        onExpand(); // in the rail, opening a group expands the sidebar first
+                        item.onToggle();
+                      }}
+                      selected={item.path === pathname}
+                      sx={sx.navButton(collapsed)}
+                    >
+                      <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
 
-              {!collapsed && item.sub?.filter((subItem) => userPermission.includes(subItem.name)).length > 0 && (
-                <Collapse in={item.open} timeout="auto" unmountOnExit>
-                  <List sx={sx.subList}>
-                    {item.sub
-                      .filter((subItem) => userPermission.includes(subItem.name))
-                      .map((subItem, j) => (
-                        <ListItemButton key={j} onClick={() => navigate(subItem.path)} selected={subItem.path === pathname} sx={sx.subButton}>
-                          <ListItemText
-                            primary={
-                              (subItem?.name === "Tickets" && openNotification) || (subItem?.name === "Approval" && ticketApprovalNotification) ? (
-                                <Box sx={sx.subBadgeRow}>
-                                  <Typography sx={sx.subText}>{subItem.name}</Typography>
+                      {!collapsed && (
+                        <>
+                          <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />
 
-                                  <Badge
-                                    color="error"
-                                    badgeContent={subItem?.name === "Tickets" ? openNotification : ticketApprovalNotification}
-                                    sx={sx.subBadge}
-                                  />
-                                </Box>
-                              ) : (
-                                subItem.name
-                              )
-                            }
-                            primaryTypographyProps={sx.subText}
-                          />
-                        </ListItemButton>
+                          {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
+                            <Badge color="error" variant="dot">
+                              <ExpandMore sx={sx.chevron(item.open)} />
+                            </Badge>
+                          ) : (
+                            <ExpandMore sx={sx.chevron(item.open)} />
+                          )}
+                        </>
+                      )}
+                    </ListItemButton>
+                  </NavTooltip>
+                ) : (
+                  <NavTooltip collapsed={collapsed} title={item.name}>
+                    <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname} sx={sx.navButton(collapsed)}>
+                      <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
+                      {!collapsed && <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />}
+                    </ListItemButton>
+                  </NavTooltip>
+                )}
+
+                {!collapsed && hasSubs && (
+                  <Collapse in={item.open} timeout={260} unmountOnExit>
+                    <List sx={sx.subList}>
+                      {visibleSubs.map((subItem, j) => (
+                        <SubMenuItem
+                          key={j}
+                          subItem={subItem}
+                          selected={subItem.path === pathname}
+                          onClick={() => navigate(subItem.path)}
+                          openNotification={openNotification}
+                          ticketApprovalNotification={ticketApprovalNotification}
+                        />
                       ))}
-                  </List>
-                </Collapse>
-              )}
-            </Fragment>
-          ))}
+                    </List>
+                  </Collapse>
+                )}
+              </Fragment>
+            );
+          })}
       </List>
     </Stack>
   );

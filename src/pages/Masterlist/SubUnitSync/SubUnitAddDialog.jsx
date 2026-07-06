@@ -1,18 +1,18 @@
 import { Autocomplete, Dialog, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { useEffect } from "react";
-import { CloseOutlined, Save } from "@mui/icons-material";
+import { AddCircleOutline, CloseOutlined, EditOutlined, Save } from "@mui/icons-material";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
 
 import { useCreateEditSubUnitMutation } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   subUnitId: yup.string().nullable(),
@@ -113,7 +113,7 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
 
   return (
     <div>
-      <Dialog fullWidth maxWidth="sm" open={open} PaperProps={{ style: { overflow: "unset" } }}>
+      <Dialog fullWidth maxWidth="sm" open={open} PaperProps={{ sx: sx.dialogPaper }}>
         <IconButton
           aria-label="close"
           onClick={onCloseAction}
@@ -130,17 +130,15 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
         <DialogContent>
           <Stack direction="column" sx={{ padding: "5px" }}>
             <Stack>
-              <Stack direction="row" gap={0.5}>
-                <Typography
-                  sx={{
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    color: "#48BB78",
-                  }}
-                >
-                  Sub Unit Form
+              <Stack direction="row" gap={1} alignItems="center" justifyContent="center" sx={{ paddingTop: 1 }}>
+                {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
+                <Typography sx={{ fontSize: "20px", fontWeight: 700, color: "#48BB78" }}>
+                  {data ? "Edit Sub Unit" : "Add Sub Unit"}
                 </Typography>
               </Stack>
+              <Typography sx={sx.dialogSubtitle}>
+                {data ? "Update the details of this sub unit." : "Create a new sub unit."}
+              </Typography>
 
               <form onSubmit={handleSubmit(onSubmitSubUnitForm)}>
                 <Stack sx={{ marginTop: 3, padding: "5px", gap: 1.5 }}>
@@ -234,12 +232,7 @@ const SubUnitAddDialog = ({ data, setData, open, onClose }) => {
                     loadingPosition="start"
                     loading={isSubUnitLoading || isSubUnitFetching}
                     disabled={!watch("unitId") || !watch("subUnit_Code") || !watch("subUnit_Name") || (!data ? !watch("locations") : false)}
-                    sx={{
-                      ":disabled": {
-                        backgroundColor: theme.palette.secondary.main,
-                        color: "black",
-                      },
-                    }}
+                    sx={sx.disabledSaveButton}
                     size="small"
                   >
                     Save

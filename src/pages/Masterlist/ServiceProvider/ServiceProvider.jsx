@@ -22,9 +22,8 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
@@ -36,10 +35,19 @@ import { ListOfChannels } from "./ListOfChannels";
 import { ServiceProviderDialog } from "./ServiceProviderDialog";
 import { ServiceProviderActions } from "./ServiceProviderActions";
 import { useArchiveServiceProviderMutation, useGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
+
+const STATUS_TABS = [
+  { value: "", label: "All" },
+  { value: "true", label: "Active" },
+  { value: "false", label: "Archived" },
+];
+
+const TABLE_COLUMNS = ["LINE NO.", "SERVICE PROVIDER", "CHANNELS", "STATUS", "ACTIONS"];
 
 const ServiceProvider = () => {
-  const theming = useTheme();
-  const isMobile = useMediaQuery(theming.breakpoints.down("sm"));
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
@@ -50,7 +58,6 @@ const ServiceProvider = () => {
 
   const [editData, setEditData] = useState(null);
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetServiceProviderQuery({
@@ -62,9 +69,12 @@ const ServiceProvider = () => {
 
   const [archiveServiceProvider] = useArchiveServiceProviderMutation();
 
-  const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
-  };
+  const rows = data?.value?.serviceProvider ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
+
+  const onPageNumberChange = (_, page) => setPageNumber(page + 1);
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
@@ -211,146 +221,72 @@ const ServiceProvider = () => {
   }, [searchValue]);
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        backgroundColor: theme.palette.bgForm.black1,
-        color: "#fff",
-        padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
-      }}
-    >
-      <Stack>
+    <Stack sx={sx.pageContainer}>
+      <Stack sx={sx.pageHeader}>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
-            <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>Service Provider</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button variant="contained" size="large" color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
-                Add
-              </Button>
-            </Stack>
+          <Stack sx={sx.titleGroup}>
+            <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
+              Service Provider
+            </Typography>
+            <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
+          <Typography sx={sx.pageSubtitle}>Manage service providers and their channels</Typography>
         </Stack>
+
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+          Add
+        </Button>
       </Stack>
 
-      <Stack
-        sx={{
-          backgroundColor: theme.palette.bgForm.black3,
-          borderRadius: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs
-            value={status}
-            onChange={onStatusChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              ".MuiTab-root": {
-                minWidth: isMobile ? "80px" : "120px",
-                fontSize: { xs: "10px", sm: "12px", md: "14px" },
-              },
-              ".MuiTabs-scrollButtons": {
-                color: "#fff",
-                "&.Mui-disabled": {
-                  opacity: 0.3,
-                },
-              },
-            }}
-          >
-            <Tab
-              value=""
-              label="All"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="true"
-              label="Active"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="false"
-              label="Archived"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-          </Tabs>
-        </Stack>
+      <Stack sx={sx.contentContainer}>
+        <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto" sx={sx.tabs}>
+          {STATUS_TABS.map((tab) => (
+            <Tab key={tab.label} value={tab.value} label={tab.label} sx={sx.tab} />
+          ))}
+        </Tabs>
 
-        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
+        <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
           <OutlinedInput
-            flex="1"
-            placeholder="Search category"
-            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+            placeholder="Search service provider"
+            startAdornment={<Search sx={sx.searchIcon} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            sx={{
-              flex: 1,
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
-            }}
+            sx={sx.searchInput}
           />
         </Stack>
 
         {isSmallScreen ? (
-          // Card-Based Layout for Small Screens
           <Stack spacing={2}>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.serviceProvider?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+            {hasRows &&
+              rows.map((item, index) => (
+                <Card key={item.id} sx={sx.card}>
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography variant="body2" color="text.secondary">
                           LINE NO. {index + 1}
                         </Typography>
-
                         <Chip
                           label={item.isActive ? "ACTIVE" : "INACTIVE"}
                           size="small"
-                          sx={{
-                            fontSize: "10px",
-                            backgroundColor: item.isActive ? "#112C32" : "#2D2823",
-                            borderRadius: "none",
-                            color: item.isActive ? "#10B981" : "#D27D0E",
-                          }}
+                          sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }}
                         />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SERVICE PROVIDER:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                          {item.serviceProviderName ? item.serviceProviderName : "-"}
-                        </Typography>
+                        <Typography sx={sx.cardLabel}>SERVICE PROVIDER:</Typography>
+                        <Typography sx={sx.cardValue}>{item.serviceProviderName ? item.serviceProviderName : "-"}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNELS:</Typography>
-                        <ListOfChannels serviceProvider={item.serviceProvider} />
+                        <Typography sx={sx.cardLabel}>CHANNELS:</Typography>
+                        <ListOfChannels serviceChannel={item.serviceChannel} />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                        <Typography sx={sx.cardLabel}>ACTION:</Typography>
                         <ServiceProviderActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                       </Stack>
                     </Stack>
@@ -359,7 +295,7 @@ const ServiceProvider = () => {
               ))}
 
             {isError && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+              <Stack sx={sx.feedbackContainer}>
                 <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
@@ -367,17 +303,17 @@ const ServiceProvider = () => {
               </Stack>
             )}
 
-            {(isLoading || isFetching) && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isBusy && (
+              <Stack sx={sx.feedbackContainer}>
                 <CircularProgress />
-                <Typography variant="h5" color="#EDF2F7">
+                <Typography variant="h5" sx={sx.feedbackText}>
                   Please wait...
                 </Typography>
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.category?.length && !isLoading && !isFetching && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isEmpty && (
+              <Stack sx={sx.feedbackContainer}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
                   No records found.
@@ -386,12 +322,12 @@ const ServiceProvider = () => {
             )}
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              sx={sx.paginationMobile}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />
@@ -399,134 +335,40 @@ const ServiceProvider = () => {
         ) : (
           <>
             <TableContainer>
-              <Table sx={{ borderBottom: "none", fontSize: { xs: "10px", sm: "12px", md: "14px" } }}>
+              <Table sx={sx.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      LINE NO.
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      SERVICE PROVIDER
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      CHANNELS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      STATUS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ACTIONS
-                    </TableCell>
+                    {TABLE_COLUMNS.map((column) => (
+                      <TableCell
+                        key={column}
+                        sx={sx.headCell}
+                        align={column === "SERVICE PROVIDER" || column === "CHANNELS" ? "left" : "center"}
+                      >
+                        {column}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
-                    data?.value?.serviceProvider?.map((item) => (
+                  {hasRows &&
+                    rows.map((item, i) => (
                       <TableRow key={item.id}>
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          {item.id}
+                        <TableCell sx={sx.bodyCell} align="center">
+                          {i + 1}
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.serviceProviderName ? item.serviceProviderName : "-"}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
+                        <TableCell sx={sx.bodyCell}>{item.serviceProviderName ? item.serviceProviderName : "-"}</TableCell>
+                        <TableCell sx={sx.bodyCell}>
                           <ListOfChannels serviceChannel={item.serviceChannel} />
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           <Chip
                             variant="filled"
-                            size="30px"
-                            sx={{
-                              fontSize: "13px",
-                              backgroundColor: item.isActive ? "#112C32" : "#2D2823",
-                              color: item.isActive ? "#10B981" : "#D27D0E",
-                              fontWeight: 800,
-                            }}
+                            size="small"
+                            sx={sx.statusChip(item.isActive)}
                             label={item.isActive ? "ACTIVE" : "INACTIVE"}
                           />
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} onArchive={onArchiveAction} />
                         </TableCell>
                       </TableRow>
@@ -534,31 +376,36 @@ const ServiceProvider = () => {
 
                   {isError && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {(isLoading || isFetching) && (
+                  {isBusy && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <CircularProgress />
-                        <Typography variant="h5" color="#EDF2F7">
+                        <Typography variant="h5" sx={sx.feedbackText}>
                           Please wait...
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.serviceProvider.length && !isLoading && !isFetching && (
+                  {isEmpty && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
+                        <img
+                          src={noRecordsFound}
+                          alt="No Records Found"
+                          className="norecords-found-table"
+                          style={{ width: "100%", maxWidth: "300px" }}
+                        />
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
                       </TableCell>
@@ -569,12 +416,12 @@ const ServiceProvider = () => {
             </TableContainer>
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              sx={sx.pagination}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />

@@ -1,15 +1,15 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 
 import { useCreateEditCategoryConcernMutation } from "../../../features/api masterlist/category_concern/categoryConcernApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -98,25 +98,18 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#48BB78",
-          }}
-        >
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
+        <DialogTitle sx={sx.dialogTitle}>
+          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
           {data ? "Edit Concern Category" : "Add Concern Category"}
         </DialogTitle>
+        <Typography sx={sx.dialogSubtitle}>
+          {data ? "Update the details of this concern category." : "Create a new concern category."}
+        </Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
-            <Stack sx={{ padding: "5px", gap: 1.5 }}>
+            <Stack sx={sx.dialogStack}>
               <TextField
                 {...register("concernCategory")}
                 variant="outlined"
@@ -138,12 +131,7 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
               loadingPosition="start"
               startIcon={<Save />}
               disabled={!watch("concernCategory")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              sx={sx.disabledSaveButton}
             >
               Save
             </LoadingButton>

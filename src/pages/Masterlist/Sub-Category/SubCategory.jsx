@@ -18,12 +18,12 @@ import {
   Tabs,
   Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { theme } from "../../../theme/theme";
 import { useEffect, useState } from "react";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
@@ -35,13 +35,22 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { SubCategoryDialog } from "./SubCategoryDialog";
 import { SubCategoryActions } from "./SubCategoryActions";
 
-import {
-  useArchiveSubCategoryMutation,
-  useGetSubCategoryQuery,
-} from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useArchiveSubCategoryMutation, useGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { sweetAlertDialog } from "../../../hooks/useSweetAlertDialog";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
-const Category = () => {
+const STATUS_TABS = [
+  { value: "", label: "All" },
+  { value: "true", label: "Active" },
+  { value: "false", label: "Archived" },
+];
+
+const TABLE_COLUMNS = ["LINE NO.", "CATEGORY", "SUB CATEGORY NAME", "STATUS", "ACTIONS"];
+
+const SubCategory = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -51,22 +60,23 @@ const Category = () => {
 
   const [editData, setEditData] = useState(null);
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } =
-    useGetSubCategoryQuery({
-      Status: status,
-      Search: search,
-      PageNumber: pageNumber,
-      PageSize: pageSize,
-    });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSubCategoryQuery({
+    Status: status,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
   const [archiveSubCategory] = useArchiveSubCategoryMutation();
 
-  const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
-  };
+  const rows = data?.value?.subCategory ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
+
+  const onPageNumberChange = (_, page) => setPageNumber(page + 1);
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
@@ -91,7 +101,6 @@ const Category = () => {
         text: "This will move the sub category to the archived tab.",
         icon: "warning",
         confirmButtonText: "Archive",
-        // showLoaderOnConfirm: true,
 
         onConfirm: async () => {
           Swal.getConfirmButton().innerHTML = "Archiving...";
@@ -110,65 +119,6 @@ const Category = () => {
             });
         },
       });
-
-      // Swal.fire({
-      //   title: "Are you sure?",
-      //   text: "This will move the sub category to the archived tab.",
-      //   icon: "warning",
-      //   color: "white",
-      //   showCancelButton: true,
-      //   background: "#111927",
-      //   confirmButtonColor: "#9e77ed",
-      //   cancelButtonColor: "#1C2536",
-      //   heightAuto: false,
-      //   allowOutsideClick: false,
-      //   width: "30em",
-      //   customClass: {
-      //     container: "custom-container",
-      //     title: "custom-title",
-      //     htmlContainer: "custom-text",
-      //     icon: "custom-icon",
-      //     confirmButton: "custom-confirm-btn",
-      //     cancelButton: "custom-cancel-btn",
-      //   },
-      //   preConfirm: async () => {
-      //     try {
-      //       Swal.getConfirmButton().innerHTML = `
-      //       <div class="mui-btn-content">
-      //        <span class="mui-spinner"></span>
-      //        <span class="mui-label">Archiving...</span>
-      //       </div>
-      //       `;
-      //       Swal.getConfirmButton().disabled = true;
-
-      //       await archiveSubCategory(data.id)
-      //         .unwrap()
-      //         .then(() => {
-      //           toast.success("Success!", {
-      //             description: "Sub Category archived successfully!",
-      //           });
-      //         })
-      //         .catch((error) => {
-      //           toast.error("Error!", {
-      //             description: error.data.error.message,
-      //           });
-      //         });
-
-      //       return true; // resolves success
-      //     } catch (err) {
-      //       console.log("Error", err);
-      //       Swal.hideLoading();
-      //       Swal.showValidationMessage(
-      //         err?.data?.error?.message || "Something went wrong",
-      //       );
-      //       return false; // keeps modal open
-      //     }
-      //   },
-      // }).then((result) => {
-      //   if (result.isConfirmed) {
-      //     Swal.close();
-      //   }
-      // });
     } else {
       Swal.fire({
         title: "Are you sure?",
@@ -217,9 +167,7 @@ const Category = () => {
           } catch (err) {
             console.log("Error", err);
             Swal.hideLoading();
-            Swal.showValidationMessage(
-              err?.data?.error?.message || "Something went wrong",
-            );
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
             return false;
           }
         },
@@ -249,215 +197,73 @@ const Category = () => {
   }, [status]);
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        backgroundColor: theme.palette.bgForm.black1,
-        color: "#fff",
-        padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
-      }}
-    >
-      <Stack>
+    <Stack sx={sx.pageContainer}>
+      <Stack sx={sx.pageHeader}>
         <Stack>
-          <Stack
-            width="100%"
-            justifyContent="space-between"
-            sx={{ flexDirection: isSmallScreen ? "column" : "row" }}
-          >
-            <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>
-                Sub Category
-              </Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button
-                variant="contained"
-                size="large"
-                color="primary"
-                startIcon={<AddOutlined />}
-                onClick={onToggle}
-              >
-                Add
-              </Button>
-            </Stack>
+          <Stack sx={sx.titleGroup}>
+            <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
+              Sub Category
+            </Typography>
+            <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
+          <Typography sx={sx.pageSubtitle}>Manage sub categories</Typography>
         </Stack>
+
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+          Add
+        </Button>
       </Stack>
 
-      <Stack
-        sx={{
-          backgroundColor: theme.palette.bgForm.black3,
-          borderRadius: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs
-            value={status}
-            onChange={onStatusChange}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            <Tab
-              value=""
-              label="All"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="true"
-              label="Active"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="false"
-              label="Archived"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-          </Tabs>
-        </Stack>
+      <Stack sx={sx.contentContainer}>
+        <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto" sx={sx.tabs}>
+          {STATUS_TABS.map((tab) => (
+            <Tab key={tab.label} value={tab.value} label={tab.label} sx={sx.tab} />
+          ))}
+        </Tabs>
 
-        <Divider
-          variant="fullWidth"
-          sx={{ background: "#2D3748", marginTop: "1px" }}
-        />
+        <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ marginTop: "10px", padding: "20px" }}
-          gap={4}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
           <OutlinedInput
-            flex="1"
             placeholder="Search sub category"
-            startAdornment={
-              <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
-            }
+            startAdornment={<Search sx={sx.searchIcon} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            sx={{
-              flex: 1,
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-            }}
+            sx={sx.searchInput}
           />
         </Stack>
 
         {isSmallScreen ? (
-          // Card-Based Layout for Small Screens
           <Stack spacing={2}>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.subCategory?.map((item, index) => (
-                <Card
-                  key={item.id}
-                  sx={{
-                    backgroundColor: theme.palette.bgForm.black3,
-                    borderRadius: "15px",
-                    borderColor: "#2D3748",
-                  }}
-                >
+            {hasRows &&
+              rows.map((item, index) => (
+                <Card key={item.id} sx={sx.card}>
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography variant="body2" color="text.secondary">
                           LINE NO. {index + 1}
                         </Typography>
-
                         <Chip
                           label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                           size="small"
-                          sx={{
-                            fontSize: "10px",
-                            backgroundColor: item.is_Active
-                              ? "#112C32"
-                              : "#2D2823",
-                            borderRadius: "none",
-                            color: item.is_Active ? "#10B981" : "#D27D0E",
-                          }}
+                          sx={{ ...sx.statusChip(item.is_Active), ...sx.cardChip }}
                         />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{
-                            fontWeight: 700,
-                            fontSize: "0.875rem",
-                            lineHeight: 1.57,
-                            color: "#D65DB1",
-                          }}
-                        >
-                          CATEGORY:
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontWeight: 400,
-                            fontSize: "0.875rem",
-                            lineHeight: 1.57,
-                            color: theme.palette.text.main,
-                          }}
-                        >
-                          {item.category_Description}
-                        </Typography>
+                        <Typography sx={sx.cardLabel}>CATEGORY:</Typography>
+                        <Typography sx={sx.cardValue}>{item.category_Description}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{
-                            fontWeight: 700,
-                            fontSize: "0.875rem",
-                            lineHeight: 1.57,
-                            color: "#D65DB1",
-                          }}
-                        >
-                          SUB CATEGORY:
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontWeight: 400,
-                            fontSize: "0.875rem",
-                            lineHeight: 1.57,
-                            color: theme.palette.text.main,
-                          }}
-                        >
-                          {" "}
-                          {item.subCategory_Description}
-                        </Typography>
+                        <Typography sx={sx.cardLabel}>SUB CATEGORY:</Typography>
+                        <Typography sx={sx.cardValue}>{item.subCategory_Description}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{
-                            fontWeight: 700,
-                            fontSize: "0.875rem",
-                            lineHeight: 1.57,
-                            color: "#D65DB1",
-                          }}
-                        >
-                          ACTION:
-                        </Typography>
-                        <SubCategoryActions
-                          data={item}
-                          status={status}
-                          onArchive={onArchiveAction}
-                          onUpdate={onEditAction}
-                        />
+                        <Typography sx={sx.cardLabel}>ACTION:</Typography>
+                        <SubCategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -465,34 +271,26 @@ const Category = () => {
               ))}
 
             {isError && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+              <Stack sx={sx.feedbackContainer}>
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
               </Stack>
             )}
 
-            {(isLoading || isFetching) && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isBusy && (
+              <Stack sx={sx.feedbackContainer}>
                 <CircularProgress />
-                <Typography variant="h5" color="#EDF2F7">
+                <Typography variant="h5" sx={sx.feedbackText}>
                   Please wait...
                 </Typography>
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.subCategory?.length && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img
-                  src={noRecordsFound}
-                  alt="No Records Found"
-                  className="norecords-found-table"
-                />
+            {isEmpty && (
+              <Stack sx={sx.feedbackContainer}>
+                <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
                   No records found.
                 </Typography>
@@ -500,17 +298,12 @@ const Category = () => {
             )}
 
             <TablePagination
-              sx={{
-                color: "#A0AEC0",
-                fontWeight: 400,
-                background: "#1C2536",
-                borderRadius: "0px 0px 20px 20px",
-              }}
+              sx={sx.paginationMobile}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />
@@ -518,219 +311,97 @@ const Category = () => {
         ) : (
           <>
             <TableContainer>
-              <Table sx={{ borderBottom: "none" }}>
+              <Table sx={sx.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      LINE NO.
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      CATEGORY
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      SUB CATEGORY NAME
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      STATUS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ACTIONS
-                    </TableCell>
+                    {TABLE_COLUMNS.map((column) => (
+                      <TableCell
+                        key={column}
+                        sx={sx.headCell}
+                        align={column === "CATEGORY" || column === "SUB CATEGORY NAME" ? "left" : "center"}
+                      >
+                        {column}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
-                    data?.value?.subCategory?.map((item) => (
+                  {hasRows &&
+                    rows.map((item, index) => (
                       <TableRow key={item.id}>
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          {item.id}
+                        <TableCell sx={sx.bodyCell} align="center">
+                          {index + 1}
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.category_Description}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.subCategory_Description}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell}>{item.category_Description}</TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.subCategory_Description}</TableCell>
+                        <TableCell sx={sx.bodyCell} align="center">
                           <Chip
                             variant="filled"
-                            size="30px"
-                            sx={{
-                              fontSize: "13px",
-                              backgroundColor: item.is_Active
-                                ? "#112C32"
-                                : "#2D2823",
-                              color: item.is_Active ? "#10B981" : "#D27D0E",
-                              fontWeight: 800,
-                            }}
+                            size="small"
+                            sx={sx.statusChip(item.is_Active)}
                             label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                           />
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          <SubCategoryActions
-                            data={item}
-                            status={status}
-                            onArchive={onArchiveAction}
-                            onUpdate={onEditAction}
-                          />
+                        <TableCell sx={sx.bodyCell} align="center">
+                          <SubCategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                         </TableCell>
                       </TableRow>
                     ))}
 
                   {isError && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {(isLoading || isFetching) && (
+                  {isBusy && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <CircularProgress />
-                        <Typography variant="h5" color="#EDF2F7">
+                        <Typography variant="h5" sx={sx.feedbackText}>
                           Please wait...
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {isSuccess &&
-                    !data?.value?.subCategory.length &&
-                    !isLoading &&
-                    !isFetching && (
-                      <TableRow>
-                        <TableCell colSpan={7} align="center">
-                          <img
-                            src={noRecordsFound}
-                            alt="No Records Found"
-                            className="norecords-found-table"
-                          />
-                          <Typography
-                            variant="h5"
-                            color="#EDF2F7"
-                            marginLeft={2}
-                          >
-                            No records found.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
+                  {isEmpty && (
+                    <TableRow>
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
+                          No records found.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              sx={sx.pagination}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />
           </>
         )}
 
-        <SubCategoryDialog
-          data={editData}
-          open={open}
-          onClose={onDialogClose}
-        />
+        <SubCategoryDialog data={editData} open={open} onClose={onDialogClose} />
       </Stack>
     </Stack>
   );
 };
 
-export default Category;
+export default SubCategory;

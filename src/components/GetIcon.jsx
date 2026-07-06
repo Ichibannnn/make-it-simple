@@ -5,14 +5,25 @@ import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
 import {
   AssessmentOutlined,
   AttachFileOutlined,
+  AutoAwesomeMotionOutlined,
   BallotOutlined,
   BuildCircleOutlined,
+  BusinessOutlined,
+  CategoryOutlined,
   ConfirmationNumberOutlined,
+  ContactsOutlined,
   CreditScoreOutlined,
+  DiscountOutlined,
   DynamicFeedOutlined,
   EqualizerOutlined,
+  FactCheckOutlined,
   FolderOutlined,
+  GroupsOutlined,
+  HubOutlined,
+  ManageAccountsOutlined,
   NumbersOutlined,
+  PermIdentityOutlined,
+  VisibilityOutlined,
 } from "@mui/icons-material";
 
 export const getMenuIcon = (iconName) => {
@@ -36,27 +47,24 @@ export const getMenuIcon = (iconName) => {
 
 export const getSubMenuIcon = (iconName) => {
   const iconMap = {
-    // // User Management
-    // PermIdentityOutlinedIcon: <PermIdentityOutlinedIcon />,
-    // ManageAccountsOutlinedIcon: <ManageAccountsOutlinedIcon />,
-    // // Masterlist
-    // BusinessOutlinedIcon: <BusinessOutlinedIcon />,
-    // LanOutlined: <LanOutlined />,
-    // DomainAddOutlined: <DomainAddOutlined />,
-    // AccountTreeOutlined: <AccountTreeOutlined />,
-    // ListOutlined: <ListOutlined />,
-    // RoomOutlined: <RoomOutlined />,
-    // CategoryOutlined: <CategoryOutlined />,
-    // AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined />,
-    // // Request
-    // ConfirmationNumberOutlined: <ConfirmationNumberOutlined />,
-    // BookmarkAddOutlined: <BookmarkAddOutlined />,
-    // DiscountOutlined: <DiscountOutlined />,
-    // // Channel Setup
-    // ContactsOutlined: <ContactsOutlined />,
-    // HubOutlined: <HubOutlined />,
-    // GroupsOutlined: <GroupsOutlined />,
+    // User Management
+    PermIdentityOutlinedIcon: <PermIdentityOutlined fontSize="small" />,
+    ManageAccountsOutlinedIcon: <ManageAccountsOutlined fontSize="small" />,
+    // Masterlist
+    BusinessOutlinedIcon: <BusinessOutlined fontSize="small" />,
+    HubOutlined: <HubOutlined fontSize="small" />,
+    CategoryOutlined: <CategoryOutlined fontSize="small" />,
+    AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined fontSize="small" />,
+    ContactsOutlined: <ContactsOutlined fontSize="small" />,
+    GroupsOutlined: <GroupsOutlined fontSize="small" />,
+    // Requestor / Receiver
+    DiscountOutlined: <DiscountOutlined fontSize="small" />,
+    // Ticketing
+    ConfirmationNumberOutlined: <ConfirmationNumberOutlined fontSize="small" />,
+    // Approver
+    FactCheckOutlined: <FactCheckOutlined fontSize="small" />,
+    VisibilityOutlined: <VisibilityOutlined fontSize="small" />,
   };
 
-  return iconMap[iconName] || <IcecreamOutlinedIcon />;
+  return iconMap[iconName] || <NumbersOutlined fontSize="small" />;
 };

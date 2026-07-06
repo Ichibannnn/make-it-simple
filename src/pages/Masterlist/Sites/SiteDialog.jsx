@@ -3,21 +3,21 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormLabel,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
-import { Save } from "@mui/icons-material";
+import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { toast } from "sonner";
-import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useAddEditSitesMutation } from "../../../features/api masterlist/sites/sitesApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -29,6 +29,8 @@ const SiteDialog = ({ data, open, onClose }) => {
     addEditSite,
     { isLoading: addEditSiteIsLoading, isFetching: addEditSiteIsFetching },
   ] = useAddEditSitesMutation();
+
+  const isEditMode = Boolean(data?.id);
 
   const {
     handleSubmit,
@@ -118,30 +120,18 @@ const SiteDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog
-        fullWidth
-        maxWidth="xs"
-        open={open}
-        PaperProps={{ style: { overflow: "unset" } }}
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#48BB78",
-          }}
-        >
-          {data ? "Edit Site" : "Add Site"}
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
+        <DialogTitle sx={sx.dialogTitle}>
+          {isEditMode ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
+          {isEditMode ? "Edit Site" : "Add Site"}
         </DialogTitle>
+        <Typography sx={sx.dialogSubtitle}>
+          {isEditMode ? "Update the details of this site." : "Create a new site location."}
+        </Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
-            <Stack sx={{ padding: "5px", gap: 1.5 }}>
+            <Stack sx={sx.dialogStack}>
               <TextField
                 {...register("name")}
                 variant="outlined"
@@ -163,12 +153,7 @@ const SiteDialog = ({ data, open, onClose }) => {
               loadingPosition="start"
               startIcon={<Save />}
               disabled={!watch("name")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              sx={sx.disabledSaveButton}
             >
               Save
             </LoadingButton>

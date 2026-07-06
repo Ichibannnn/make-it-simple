@@ -1,16 +1,16 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Stack, TextField } from "@mui/material";
+import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { useEffect } from "react";
-import { Save } from "@mui/icons-material";
+import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { toast } from "sonner";
-import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useCreateEditCategoryMutation } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -110,25 +110,18 @@ export const CategoryDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#48BB78",
-          }}
-        >
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
+        <DialogTitle sx={sx.dialogTitle}>
+          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
           {data ? "Edit Category" : "Add Category"}
         </DialogTitle>
+        <Typography sx={sx.dialogSubtitle}>
+          {data ? "Update the details of this category." : "Create a new category."}
+        </Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
-            <Stack sx={{ padding: "5px", gap: 1.5 }}>
+            <Stack sx={sx.dialogStack}>
               <Controller
                 control={control}
                 name="channelId"
@@ -177,12 +170,7 @@ export const CategoryDialog = ({ data, open, onClose }) => {
               loadingPosition="start"
               startIcon={<Save />}
               disabled={!watch("category_Description") || !watch("channelId")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              sx={sx.disabledSaveButton}
             >
               Save
             </LoadingButton>

@@ -1,17 +1,16 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Stack, TextField } from "@mui/material";
+import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
-import { Save } from "@mui/icons-material";
+import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useCreateEditServiceProviderMutation, useServiceProviderValidationMutation } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -130,25 +129,18 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#48BB78",
-          }}
-        >
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
+        <DialogTitle sx={sx.dialogTitle}>
+          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
           {data ? "Edit Service Provider" : "Add Service Provider"}
         </DialogTitle>
+        <Typography sx={sx.dialogSubtitle}>
+          {data ? "Update this service provider and its channels." : "Create a new service provider."}
+        </Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
-            <Stack sx={{ padding: "5px", gap: 1.5 }}>
+            <Stack sx={sx.dialogStack}>
               <Controller
                 control={control}
                 name="serviceProviderName"
@@ -212,12 +204,7 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
               loadingPosition="start"
               startIcon={<Save />}
               disabled={!watch("serviceProviderName") || !watch("channelId")?.length}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              sx={sx.disabledSaveButton}
             >
               Save
             </LoadingButton>

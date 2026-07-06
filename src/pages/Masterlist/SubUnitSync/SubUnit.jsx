@@ -18,12 +18,12 @@ import {
   Tabs,
   Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Search, SyncOutlined, AddOutlined, Sync, Add } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
@@ -38,8 +38,20 @@ import SubActions from "./SubActions";
 
 import { useArchiveSubUnitMutation, useGetSubUnitQuery, useSyncSubUnitMutation } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetSubUnitsQuery } from "../../../features/ymir/ymirApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
+
+const STATUS_TABS = [
+  { value: "", label: "All" },
+  { value: "true", label: "Active" },
+  { value: "false", label: "Archived" },
+];
+
+const TABLE_COLUMNS = ["LINE NO.", "UNIT", "SUB UNIT CODE", "SUB UNIT NAME", "STATUS", "ORIGIN", "ACTIONS"];
 
 const SubUnit = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -47,7 +59,6 @@ const SubUnit = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
   const { open: addSubUnitOpen, onToggle: addSubUnitOnToggle, onClose: addSubUnitOnClose } = useDisclosure();
 
@@ -64,9 +75,12 @@ const SubUnit = () => {
 
   const [archiveSubUnit] = useArchiveSubUnitMutation();
 
-  const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
-  };
+  const rows = data?.value?.subUnit ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
+
+  const onPageNumberChange = (_, page) => setPageNumber(page + 1);
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
@@ -222,180 +236,111 @@ const SubUnit = () => {
   }, [searchValue]);
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        backgroundColor: theme.palette.bgForm.black1,
-        color: "#fff",
-        padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
-      }}
-    >
-      <Stack>
+    <Stack sx={sx.pageContainer}>
+      <Stack sx={sx.pageHeader}>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
-            <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>Sub Unit</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1} gap={1}>
-              <LoadingButton
-                variant="contained"
-                size="small"
-                color="primary"
-                startIcon={<SyncOutlined />}
-                loadingPosition="start"
-                onClick={() => onSyncSubUnits()}
-                loading={isSubUnitLoading || isSubUnitFetching || isSubUnitSyncLoading || isSubUnitSyncFetching}
-                sx={{
-                  ":disabled": {
-                    backgroundColor: theme.palette.primary.main,
-                    color: "black",
-                  },
-                }}
-              >
-                Sync Sub Unit
-              </LoadingButton>
-
-              <LoadingButton
-                variant="outlined"
-                size="small"
-                color="primary"
-                startIcon={<AddOutlined />}
-                loadingPosition="start"
-                onClick={() => onAddSubUnitAction()}
-                sx={{
-                  ":disabled": {
-                    backgroundColor: theme.palette.secondary.main,
-                    color: "black",
-                  },
-                }}
-              >
-                Add Sub Unit
-              </LoadingButton>
-            </Stack>
+          <Stack sx={sx.titleGroup}>
+            <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
+              Sub Unit
+            </Typography>
+            <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
+          <Typography sx={sx.pageSubtitle}>Sync or manually manage sub units</Typography>
+        </Stack>
+
+        <Stack sx={sx.headerActions}>
+          <LoadingButton
+            variant="contained"
+            size="large"
+            startIcon={<SyncOutlined />}
+            loadingPosition="start"
+            onClick={() => onSyncSubUnits()}
+            loading={isSubUnitLoading || isSubUnitFetching || isSubUnitSyncLoading || isSubUnitSyncFetching}
+            sx={sx.syncButton}
+          >
+            Sync Sub Unit
+          </LoadingButton>
+
+          <LoadingButton
+            variant="outlined"
+            size="large"
+            startIcon={<AddOutlined />}
+            loadingPosition="start"
+            onClick={() => onAddSubUnitAction()}
+            sx={sx.secondaryButton}
+          >
+            Add Sub Unit
+          </LoadingButton>
         </Stack>
       </Stack>
 
-      <Stack
-        sx={{
-          backgroundColor: theme.palette.bgForm.black3,
-          borderRadius: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto">
-            <Tab
-              value=""
-              label="All"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="true"
-              label="Active"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="false"
-              label="Archived"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-          </Tabs>
-        </Stack>
+      <Stack sx={sx.contentContainer}>
+        <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto" sx={sx.tabs}>
+          {STATUS_TABS.map((tab) => (
+            <Tab key={tab.label} value={tab.value} label={tab.label} sx={sx.tab} />
+          ))}
+        </Tabs>
 
-        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
+        <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={2}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={2}>
           <OutlinedInput
-            flex="1"
             placeholder="Search sub unit"
-            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+            startAdornment={<Search sx={sx.searchIcon} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            sx={{
-              flex: 1,
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-            }}
+            sx={sx.searchInput}
           />
         </Stack>
 
         {isSmallScreen ? (
-          // Card-Based Layout for Small Screens
           <Stack spacing={2}>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.subUnit?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+            {hasRows &&
+              rows.map((item, index) => (
+                <Card key={item.id} sx={sx.card}>
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography variant="body2" color="text.secondary">
                           LINE NO. {index + 1}
                         </Typography>
-
                         <Chip
                           label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                           size="small"
-                          sx={{
-                            fontSize: "10px",
-                            backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                            borderRadius: "none",
-                            color: item.is_Active ? "#10B981" : "#D27D0E",
-                          }}
+                          sx={{ ...sx.statusChip(item.is_Active), ...sx.cardChip }}
                         />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>UNIT:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                        <Typography sx={sx.cardLabel}>UNIT:</Typography>
+                        <Typography sx={sx.cardValue}>
                           {item.unit_Code} - {item.unit_Name}
                         </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB UNIT CODE:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.subUnit_Code}</Typography>
+                        <Typography sx={sx.cardLabel}>SUB UNIT CODE:</Typography>
+                        <Typography sx={sx.cardValue}>{item.subUnit_Code}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB UNIT NAME:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.subUnit_Name}</Typography>
+                        <Typography sx={sx.cardLabel}>SUB UNIT NAME:</Typography>
+                        <Typography sx={sx.cardValue}>{item.subUnit_Name}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ORIGIN:</Typography>
+                        <Typography sx={sx.cardLabel}>ORIGIN:</Typography>
                         <Chip
                           variant="filled"
-                          size="30px"
+                          size="small"
                           icon={item.subUnit_No === null ? <Add color="warning" /> : <Sync color="success" />}
-                          sx={{
-                            fontSize: "12px",
-                            backgroundColor: theme.palette.bgForm.black1,
-                            color: theme.palette.text.main,
-                            fontWeight: 800,
-                          }}
+                          sx={sx.originChip}
                           label={item.subUnit_No === null ? "Manual" : "Syncing"}
                         />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                        <Typography sx={sx.cardLabel}>ACTION:</Typography>
                         <SubActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                       </Stack>
                     </Stack>
@@ -404,7 +349,7 @@ const SubUnit = () => {
               ))}
 
             {isError && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+              <Stack sx={sx.feedbackContainer}>
                 <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
@@ -412,17 +357,17 @@ const SubUnit = () => {
               </Stack>
             )}
 
-            {(isLoading || isFetching) && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isBusy && (
+              <Stack sx={sx.feedbackContainer}>
                 <CircularProgress />
-                <Typography variant="h5" color="#EDF2F7">
+                <Typography variant="h5" sx={sx.feedbackText}>
                   Please wait...
                 </Typography>
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.subUnit?.length && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isEmpty && (
+              <Stack sx={sx.feedbackContainer}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
                   No records found.
@@ -431,12 +376,12 @@ const SubUnit = () => {
             )}
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              sx={sx.paginationMobile}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />
@@ -444,236 +389,89 @@ const SubUnit = () => {
         ) : (
           <>
             <TableContainer>
-              <Table sx={{ borderBottom: "none" }}>
+              <Table sx={sx.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      LINE NO.
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      UNIT
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      SUB UNIT CODE
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      SUB UNIT NAME
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      STATUS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ORIGIN
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ACTIONS
-                    </TableCell>
+                    {TABLE_COLUMNS.map((column) => (
+                      <TableCell
+                        key={column}
+                        sx={sx.headCell}
+                        align={column === "UNIT" || column === "SUB UNIT NAME" ? "left" : "center"}
+                      >
+                        {column}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
-                    data?.value?.subUnit?.map((item, index) => (
+                  {hasRows &&
+                    rows.map((item, index) => (
                       <TableRow key={item.id}>
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           {index + 1}
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
+                        <TableCell sx={sx.bodyCell}>
                           {item.unit_Code} - {item.unit_Name}
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           {item.subUnit_Code}
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.subUnit_Name}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell}>{item.subUnit_Name}</TableCell>
+                        <TableCell sx={sx.bodyCell} align="center">
                           <Chip
                             variant="filled"
-                            size="30px"
-                            sx={{
-                              fontSize: "13px",
-                              backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                              color: item.is_Active ? "#10B981" : "#D27D0E",
-                              fontWeight: 800,
-                            }}
-                            // color={item.is_Active ? "success" : "warning"}
+                            size="small"
+                            sx={sx.statusChip(item.is_Active)}
                             label={item.is_Active ? "ACTIVE" : "INACTIVE"}
                           />
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           <Chip
                             variant="filled"
-                            size="30px"
+                            size="small"
                             icon={item.subUnit_No === null ? <Add color="warning" /> : <Sync color="success" />}
-                            sx={{
-                              fontSize: "12px",
-                              backgroundColor: theme.palette.bgForm.black1,
-                              color: theme.palette.text.main,
-                              fontWeight: 800,
-                            }}
+                            sx={sx.originChip}
                             label={item.subUnit_No === null ? "Manual" : "Syncing"}
                           />
                         </TableCell>
-
                         {item.subUnit_No === null ? (
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          >
+                          <TableCell sx={sx.bodyCell} align="center">
                             <SubActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                           </TableCell>
                         ) : (
-                          <TableCell
-                            sx={{
-                              color: "#EDF2F7",
-                              fontSize: "14px",
-                              fontWeight: 500,
-                            }}
-                            align="center"
-                          ></TableCell>
+                          <TableCell sx={sx.bodyCell} align="center"></TableCell>
                         )}
                       </TableRow>
                     ))}
 
                   {isError && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {(isLoading || isFetching) && (
+                  {isBusy && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <CircularProgress />
-                        <Typography variant="h5" color="#EDF2F7">
+                        <Typography variant="h5" sx={sx.feedbackText}>
                           Please wait...
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.subUnit.length && !isLoading && !isFetching && (
+                  {isEmpty && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
                       </TableCell>
@@ -684,12 +482,12 @@ const SubUnit = () => {
             </TableContainer>
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              sx={sx.pagination}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />

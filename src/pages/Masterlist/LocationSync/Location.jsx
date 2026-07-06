@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
+  Chip,
   CircularProgress,
   OutlinedInput,
   Stack,
@@ -14,12 +15,12 @@ import {
   TableRow,
   Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Search, SyncOutlined } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { LoadingButton } from "@mui/lab";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
@@ -33,15 +34,20 @@ import { useGetLocationQuery, useSyncLocationMutation } from "../../../features/
 
 import LocationSubUnit from "./LocationSubUnit";
 import { LocationErrorDialog } from "./LocationErrorDialog";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
+
+const TABLE_COLUMNS = ["LINE NO.", "LOCATION CODE", "LOCATION NAME", "SUB UNITS"];
 
 const Location = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetLocationQuery({
@@ -54,9 +60,12 @@ const Location = () => {
   const [getLocations, { isLoading: isLocationLoading, isFetching: isLocationFetching }] = useLazyGetLocationsQuery();
   const [syncLocations, { error: errorData, isLoading: isLocationSyncLoading, isFetching: isLocationSyncFetching }] = useSyncLocationMutation();
 
-  const onPageNumberChange = (_, page) => {
-    setPageNumber(page + 1);
-  };
+  const rows = data?.value?.location ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
+
+  const onPageNumberChange = (_, page) => setPageNumber(page + 1);
 
   const onPageSizeChange = (e) => {
     setPageSize(e.target.value);
@@ -117,98 +126,65 @@ const Location = () => {
   }, [searchValue]);
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        backgroundColor: theme.palette.bgForm.black1,
-        color: "#fff",
-        padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
-      }}
-    >
-      <Stack>
+    <Stack sx={sx.pageContainer}>
+      <Stack sx={sx.pageHeader}>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
-            <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>Location</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <LoadingButton
-                variant="contained"
-                size="large"
-                color="primary"
-                startIcon={<SyncOutlined />}
-                loadingPosition="start"
-                onClick={() => onSyncLocations()}
-                loading={isLocationLoading || isLocationFetching || isLocationSyncLoading || isLocationSyncFetching}
-                sx={{
-                  ":disabled": {
-                    backgroundColor: theme.palette.primary.main,
-                    color: "black",
-                  },
-                }}
-              >
-                Sync Location
-              </LoadingButton>
-            </Stack>
+          <Stack sx={sx.titleGroup}>
+            <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
+              Location
+            </Typography>
+            <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
+          <Typography sx={sx.pageSubtitle}>Sync and view locations</Typography>
         </Stack>
+
+        <LoadingButton
+          variant="contained"
+          size="large"
+          startIcon={<SyncOutlined />}
+          loadingPosition="start"
+          onClick={() => onSyncLocations()}
+          loading={isLocationLoading || isLocationFetching || isLocationSyncLoading || isLocationSyncFetching}
+          sx={sx.syncButton}
+        >
+          Sync Location
+        </LoadingButton>
       </Stack>
 
-      <Stack
-        sx={{
-          backgroundColor: theme.palette.bgForm.black3,
-          borderRadius: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+      <Stack sx={sx.contentContainer}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
           <OutlinedInput
-            flex="1"
             placeholder="Search location"
-            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+            startAdornment={<Search sx={sx.searchIcon} />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            sx={{
-              flex: 1,
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-            }}
+            sx={sx.searchInput}
           />
         </Stack>
 
         {isSmallScreen ? (
-          // Card-Based Layout for Small Screens
           <Stack spacing={2}>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.location?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+            {hasRows &&
+              rows.map((item, index) => (
+                <Card key={item.id} sx={sx.card}>
                   <CardContent>
                     <Stack spacing={1}>
+                      <Typography variant="body2" color="text.secondary">
+                        LINE NO. {index + 1}
+                      </Typography>
+
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography variant="body2" color="text.secondary">
-                          LINE NO. {index + 1}
-                        </Typography>
+                        <Typography sx={sx.cardLabel}>LOCATION CODE:</Typography>
+                        <Typography sx={sx.cardValue}>{item.location_Code}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>LOCATION CODE:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.location_Code}</Typography>
+                        <Typography sx={sx.cardLabel}>LOCATION NAME:</Typography>
+                        <Typography sx={sx.cardValue}>{item.location_Name}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>LOCATION NAME:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.location_Name}</Typography>
-                      </Stack>
-
-                      <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB UNITS:</Typography>
+                        <Typography sx={sx.cardLabel}>SUB UNITS:</Typography>
                         <LocationSubUnit subUnits={item.subUnits} />
                       </Stack>
                     </Stack>
@@ -217,7 +193,7 @@ const Location = () => {
               ))}
 
             {isError && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+              <Stack sx={sx.feedbackContainer}>
                 <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
@@ -225,17 +201,17 @@ const Location = () => {
               </Stack>
             )}
 
-            {(isLoading || isFetching) && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isBusy && (
+              <Stack sx={sx.feedbackContainer}>
                 <CircularProgress />
-                <Typography variant="h5" color="#EDF2F7">
+                <Typography variant="h5" sx={sx.feedbackText}>
                   Please wait...
                 </Typography>
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.location?.length && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isEmpty && (
+              <Stack sx={sx.feedbackContainer}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
                   No records found.
@@ -244,12 +220,12 @@ const Location = () => {
             )}
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              sx={sx.paginationMobile}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />
@@ -257,100 +233,27 @@ const Location = () => {
         ) : (
           <>
             <TableContainer>
-              <Table sx={{ borderBottom: "none" }}>
+              <Table sx={sx.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      LINE NO.
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      LOCATION CODE
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      LOCATION NAME
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      SUB UNITS
-                    </TableCell>
+                    {TABLE_COLUMNS.map((column) => (
+                      <TableCell key={column} sx={sx.headCell} align={column === "LINE NO." ? "center" : "left"}>
+                        {column}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
-                    data?.value?.location?.map((item, index) => (
+                  {hasRows &&
+                    rows.map((item, index) => (
                       <TableRow key={item.location_No}>
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           {index + 1}
                         </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.location_Code}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.location_Name}
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
+                        <TableCell sx={sx.bodyCell}>{item.location_Code}</TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.location_Name}</TableCell>
+                        <TableCell sx={sx.bodyCell}>
                           <LocationSubUnit subUnits={item.subUnits} />
                         </TableCell>
                       </TableRow>
@@ -358,31 +261,31 @@ const Location = () => {
 
                   {isError && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {(isLoading || isFetching) && (
+                  {isBusy && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <CircularProgress />
-                        <Typography variant="h5" color="#EDF2F7">
+                        <Typography variant="h5" sx={sx.feedbackText}>
                           Please wait...
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.location.length && !isLoading && !isFetching && (
+                  {isEmpty && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
                       </TableCell>
@@ -393,12 +296,12 @@ const Location = () => {
             </TableContainer>
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              sx={sx.pagination}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 5}
-              page={data?.value?.currentPage - 1 || 0}
+              page={(data?.value?.currentPage || 1) - 1}
               onPageChange={onPageNumberChange}
               onRowsPerPageChange={onPageSizeChange}
             />

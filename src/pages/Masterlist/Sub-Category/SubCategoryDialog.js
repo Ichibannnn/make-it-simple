@@ -1,9 +1,8 @@
-import { Autocomplete, Box, Divider, Drawer, FormLabel, Stack, TextField, Typography } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 import { useEffect } from "react";
 
 import * as yup from "yup";
-import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
@@ -11,6 +10,7 @@ import { LoadingButton } from "@mui/lab";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useCreateEditSubCategoryMutation } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { toast } from "sonner";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -110,115 +110,76 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Drawer anchor="right" open={open} onClose={onClose}>
-        <Stack sx={{ padding: 3 }}>
-          <Typography
-            sx={{
-              fontWeight: "bold",
-            }}
-          >
-            Sub Category Form
-          </Typography>
-        </Stack>
-
-        <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
+      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
+        <DialogTitle sx={sx.dialogTitle}>
+          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
+          {data ? "Edit Sub Category" : "Add Sub Category"}
+        </DialogTitle>
+        <Typography sx={sx.dialogSubtitle}>
+          {data ? "Update the details of this sub category." : "Create a new sub category."}
+        </Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
-          <Box sx={{ width: "300px", padding: 2, minHeight: "790px" }}>
-            <Stack sx={{ marginTop: 3, gap: 2 }}>
-              <Stack sx={{ width: "100%", gap: 1 }}>
-                <FormLabel
-                  sx={{
-                    color: theme.palette.text.main,
-                    fontSize: "15px",
-                    fontWeight: 500,
-                    lineHeight: "1.4375em",
-                  }}
-                >
-                  Category
-                </FormLabel>
-
-                <Controller
-                  control={control}
-                  name="categoryId"
-                  render={({ field: { ref, value, onChange } }) => {
-                    return (
-                      <Autocomplete
-                        ref={ref}
-                        size="small"
-                        value={value}
-                        options={categoryData?.value?.category || []}
-                        loading={categoryIsLoading}
-                        renderInput={(params) => <TextField {...params} />}
-                        onOpen={() => {
-                          if (!categoryIsSuccess)
-                            getCategory({
-                              Status: true,
-                            });
-                        }}
-                        onChange={(_, value) => onChange(value)}
-                        getOptionLabel={(option) => option.category_Description}
-                        isOptionEqualToValue={(option, value) => option.categoryId === value.categoryId}
-                        sx={{
-                          flex: 2,
-                        }}
-                        fullWidth
-                        disablePortal
-                      />
-                    );
-                  }}
-                />
-              </Stack>
-
-              <Stack sx={{ gap: 1 }}>
-                <FormLabel
-                  sx={{
-                    color: theme.palette.text.main,
-                    fontSize: "15px",
-                    fontWeight: 500,
-                    lineHeight: "1.4375em",
-                  }}
-                >
-                  Sub Category
-                </FormLabel>
-
-                <TextField
-                  {...register("subCategory_Description")}
-                  size="small"
-                  variant="outlined"
-                  helperText={errors?.subCategory_Description?.message}
-                  error={!!errors?.subCategory_Description?.message}
-                  sx={{ borderColor: "primary" }}
-                  fullWidth
-                  autoComplete="off"
-                />
-              </Stack>
-            </Stack>
-
-            <Stack direction="row" justifyContent="right" alignItems="center" sx={{ paddingTop: 2, gap: 1 }}>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                loading={createEditSubCategoryIsLoading || createEditSubCategoryIsFetching}
-                loadingPosition="start"
-                startIcon={<Save />}
-                disabled={!watch("categoryId") || !watch("subCategory_Description")}
-                sx={{
-                  ":disabled": {
-                    backgroundColor: theme.palette.secondary.main,
-                    color: "black",
-                  },
+          <DialogContent>
+            <Stack sx={sx.dialogStack}>
+              <Controller
+                control={control}
+                name="categoryId"
+                render={({ field: { ref, value, onChange } }) => {
+                  return (
+                    <Autocomplete
+                      ref={ref}
+                      value={value}
+                      options={categoryData?.value?.category || []}
+                      loading={categoryIsLoading}
+                      renderInput={(params) => <TextField {...params} label="Category" />}
+                      onOpen={() => {
+                        if (!categoryIsSuccess)
+                          getCategory({
+                            Status: true,
+                          });
+                      }}
+                      onChange={(_, value) => onChange(value)}
+                      getOptionLabel={(option) => option.category_Description}
+                      isOptionEqualToValue={(option, value) => option.categoryId === value.categoryId}
+                      fullWidth
+                      disablePortal
+                    />
+                  );
                 }}
-              >
-                Save
-              </LoadingButton>
-              <LoadingButton variant="outlined" onClick={onCloseAction}>
-                Close
-              </LoadingButton>
+              />
+
+              <TextField
+                {...register("subCategory_Description")}
+                variant="outlined"
+                label="Sub Category"
+                helperText={errors?.subCategory_Description?.message}
+                error={!!errors?.subCategory_Description?.message}
+                sx={{ borderColor: "primary" }}
+                fullWidth
+                autoComplete="off"
+              />
             </Stack>
-          </Box>
+          </DialogContent>
+
+          <DialogActions>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={createEditSubCategoryIsLoading || createEditSubCategoryIsFetching}
+              loadingPosition="start"
+              startIcon={<Save />}
+              disabled={!watch("categoryId") || !watch("subCategory_Description")}
+              sx={sx.disabledSaveButton}
+            >
+              Save
+            </LoadingButton>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              Close
+            </LoadingButton>
+          </DialogActions>
         </form>
-      </Drawer>
+      </Dialog>
     </>
   );
 };
