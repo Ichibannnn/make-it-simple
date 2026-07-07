@@ -122,7 +122,7 @@ const theme = createTheme({
         input: {
           "&.MuiOutlinedInput-input.Mui-disabled": {
             color: "red",
-            "-webkit-text-fill-color": "#97a0ab",
+            WebkitTextFillColor: "#97a0ab",
           },
         },
       },

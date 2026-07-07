@@ -1,4 +1,21 @@
-import { Badge, Box, Collapse, Divider, Grow, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Paper, Popper, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Badge,
+  Box,
+  Collapse,
+  Divider,
+  Grow,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Popper,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { ExpandMore, MenuOpen } from "@mui/icons-material";
 
@@ -118,12 +135,22 @@ const SubMenuItem = ({ subItem, selected, onClick, openNotification, ticketAppro
 
 // Collapsed rail: hovering (or focusing) a parent icon reveals a flyout with its
 // sub-items so they can be picked without expanding the whole sidebar first.
-const CollapsedGroup = ({ item, subs, pathname, navigate, onExpand, openNotification, ticketApprovalNotification }) => {
+const CollapsedGroup = ({
+  item,
+  subs,
+  pathname,
+  navigate,
+  onExpand,
+  openNotification,
+  ticketApprovalNotification,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const closeTimer = useRef();
   const open = Boolean(anchorEl);
 
-  const hasNotif = (item.name === "Ticketing" && openNotification) || (item.name === "Approver" && ticketApprovalNotification);
+  const hasNotif =
+    (item.name === "Ticketing" && openNotification) ||
+    (item.name === "Approver" && ticketApprovalNotification);
 
   const openFlyout = (e) => {
     clearTimeout(closeTimer.current);
@@ -158,10 +185,22 @@ const CollapsedGroup = ({ item, subs, pathname, navigate, onExpand, openNotifica
         </ListItemIcon>
       </ListItemButton>
 
-      <Popper open={open} anchorEl={anchorEl} placement="right-start" transition sx={sx.flyoutPopper} modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}>
+      <Popper
+        open={open}
+        anchorEl={anchorEl}
+        placement="right-start"
+        transition
+        sx={sx.flyoutPopper}
+        modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}
+      >
         {({ TransitionProps }) => (
           <Grow {...TransitionProps} style={{ transformOrigin: "left top" }} timeout={180}>
-            <Paper elevation={8} sx={sx.flyoutPaper} onMouseEnter={() => clearTimeout(closeTimer.current)} onMouseLeave={scheduleClose}>
+            <Paper
+              elevation={8}
+              sx={sx.flyoutPaper}
+              onMouseEnter={() => clearTimeout(closeTimer.current)}
+              onMouseLeave={scheduleClose}
+            >
               <Typography sx={sx.flyoutHeader}>{item.name}</Typography>
               <List sx={sx.flyoutList}>
                 {subs.map((subItem, j) => (
@@ -196,12 +235,36 @@ const SidebarList = ({ collapsed, onExpand }) => {
   const openNotification = notificationData?.value?.openTicketNotif || 0;
   const ticketApprovalNotification = notificationData?.value?.forApprovalClosingNotif || 0;
 
-  const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
-  const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
-  const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
-  const { open: receiverOpen, onToggle: receiverOnToggle, onClose: receiverOnClose } = useDisclosure(!!pathname.match(/receiver/gi));
-  const { open: ticketingOpen, onToggle: ticketingOnToggle, onClose: ticketingOnClose } = useDisclosure(!!pathname.match(/ticketing/gi));
-  const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
+  const {
+    open: userManagementOpen,
+    onToggle: userManagementOnToggle,
+    onClose: userManagementOnClose,
+  } = useDisclosure(!!pathname.match(/user-management/gi));
+  const {
+    open: masterListOpen,
+    onToggle: masterListOnToggle,
+    onClose: masterlistOnClose,
+  } = useDisclosure(!!pathname.match(/masterlist/gi));
+  const {
+    open: requestOpen,
+    onToggle: requestOnToggle,
+    onClose: requestOnClose,
+  } = useDisclosure(!!pathname.match(/requestor/gi));
+  const {
+    open: receiverOpen,
+    onToggle: receiverOnToggle,
+    onClose: receiverOnClose,
+  } = useDisclosure(!!pathname.match(/receiver/gi));
+  const {
+    open: ticketingOpen,
+    onToggle: ticketingOnToggle,
+    onClose: ticketingOnClose,
+  } = useDisclosure(!!pathname.match(/ticketing/gi));
+  const {
+    open: approverOpen,
+    onToggle: approverOnToggle,
+    onClose: approverOnClose,
+  } = useDisclosure(!!pathname.match(/approver/gi));
 
   const sidebarMenu = [
     {
@@ -492,7 +555,8 @@ const SidebarList = ({ collapsed, onExpand }) => {
                         <>
                           <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />
 
-                          {(item?.name === "Ticketing" && openNotification) || (item?.name === "Approver" && ticketApprovalNotification) ? (
+                          {(item?.name === "Ticketing" && openNotification) ||
+                          (item?.name === "Approver" && ticketApprovalNotification) ? (
                             <Badge color="error" variant="dot">
                               <ExpandMore sx={sx.chevron(item.open)} />
                             </Badge>
@@ -505,7 +569,11 @@ const SidebarList = ({ collapsed, onExpand }) => {
                   </NavTooltip>
                 ) : (
                   <NavTooltip collapsed={collapsed} title={item.name}>
-                    <ListItemButton onClick={() => navigate(item.path)} selected={item.path === pathname} sx={sx.navButton(collapsed)}>
+                    <ListItemButton
+                      onClick={() => navigate(item.path)}
+                      selected={item.path === pathname}
+                      sx={sx.navButton(collapsed)}
+                    >
                       <ListItemIcon sx={sx.navIcon(collapsed)}>{getMenuIcon(item.icon)}</ListItemIcon>
                       {!collapsed && <ListItemText primary={item.name} primaryTypographyProps={sx.navText} />}
                     </ListItemButton>
