@@ -78,7 +78,6 @@ const Header = () => {
   };
 
   const menuHandler = (event) => {
-    console.log("Event: ", event);
     setAnchorEl(event.currentTarget);
   };
 

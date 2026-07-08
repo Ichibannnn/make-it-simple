@@ -25,7 +25,10 @@ const schema = yup.object().shape({
 });
 
 const ApproveTransferTicket = ({ data, open, onClose }) => {
-  const [approveTransferTicket, { isLoading: approveTransferTicketIsLoading, isFetching: approveTransferTicketIsFetching }] = useApproveTransferTicketMutation();
+  const [
+    approveTransferTicket,
+    { isLoading: approveTransferTicketIsLoading, isFetching: approveTransferTicketIsFetching },
+  ] = useApproveTransferTicketMutation();
 
   const dispatch = useDispatch();
   // useSignalRConnection();
@@ -139,7 +142,7 @@ const ApproveTransferTicket = ({ data, open, onClose }) => {
             color: theme.palette.success.main,
           }}
         >
-          {`Tranfer Ticket Number: ${data?.ticketConcernId}`}
+          {`Transfer Ticket Number: ${data?.ticketConcernId}`}
         </DialogTitle>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>

@@ -1,4 +1,12 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Stack, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormLabel,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { useEffect } from "react";
 import { Save } from "@mui/icons-material";
 
@@ -17,7 +25,10 @@ const schema = yup.object().shape({
 });
 
 const SiteDialog = ({ data, open, onClose }) => {
-  const [addEditSite, { isLoading: addEditSiteIsLoading, isFetching: addEditSiteIsFetching }] = useAddEditSitesMutation();
+  const [
+    addEditSite,
+    { isLoading: addEditSiteIsLoading, isFetching: addEditSiteIsFetching },
+  ] = useAddEditSitesMutation();
 
   const {
     handleSubmit,
@@ -107,7 +118,12 @@ const SiteDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ style: { overflow: "unset" } }}>
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={open}
+        PaperProps={{ style: { overflow: "unset" } }}
+      >
         <DialogTitle
           sx={{
             display: "flex",

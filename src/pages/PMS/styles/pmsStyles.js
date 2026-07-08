@@ -46,6 +46,7 @@ export const pmsStyles = {
     lineHeight: "1.4375rem",
     borderRadius: "3px",
     fontSize: "13px",
+    // width: "100%",
   },
   tableSearch: {
     flex: "auto",
@@ -136,6 +137,7 @@ export const pmsStyles = {
     height: "100%",
     justifyContent: "space-between",
   },
+
   calendarContainer: {
     width: {
       xs: "100%",
@@ -143,13 +145,14 @@ export const pmsStyles = {
     },
     height: "100%",
     backgroundColor: theme.palette.bgForm.black3,
+    padding: 1,
   },
   calendarHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
   },
   calendarButtonContainer: {
-    direction: "row",
     gap: 0.5,
     mb: 1,
     flexDirection: "row",
@@ -167,6 +170,26 @@ export const pmsStyles = {
   calendarLinkContent: {
     fontSize: "11px",
     fontWeight: 600,
+  },
+  searchAndTabContainer: {
+    width: {
+      xs: "100%",
+      md: "70%",
+    },
+    flexDirection: "row",
+    alignItems: "end",
+    gap: 1,
+  },
+
+  skeletonHeader: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  skeletonBody: {
+    width: "100%",
+    height: "100%",
   },
 
   // PMS Reminder
@@ -200,8 +223,8 @@ export const pmsStyles = {
     color: theme.palette.text.secondary,
   },
   reminderStoresContainer: {
-    spacing: 1,
-    maxHeight: "420px",
+    spacing: 5,
+    maxHeight: "425px",
     overflow: "auto",
   },
   reminderStackContent: {
@@ -210,14 +233,9 @@ export const pmsStyles = {
     width: "100%",
     backgroundColor: theme.palette.bgForm.black2,
   },
-  reminderStoreHeaderContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    mb: 1,
-  },
   reminderStoreHeader: {
     fontSize: "13px",
-    fontWeight: 800,
+    fontWeight: 500,
   },
   reminderStoreStatus: {
     fontSize: "13px",
@@ -241,13 +259,17 @@ export const pmsStyles = {
   },
   reminderSkeletonContainer: {
     spacing: 1,
-    height: "420px",
+    height: "490px",
     // backgroundColor: theme.palette.bgForm.black2,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
   skeletonStyle: {
     backgroundColor: theme.palette.bgForm.black2,
+    width: 420,
+    // flex: 1,
+    overflow: "auto",
   },
   reminderNoStoreContainer: {
     spacing: 1,
@@ -255,5 +277,171 @@ export const pmsStyles = {
     backgroundColor: theme.palette.bgForm.black2,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  stackIndicator: {
+    width: "6px",
+  },
+
+  chipStyle: {
+    fontWeight: 500,
+    fontSize: "11px",
+    height: 18,
+    borderRadius: "8px",
+    width: "85px",
+    color: "#ffffffde",
+    "& .MuiChip-icon": {
+      color: "#ffffffde",
+      marginLeft: "6px",
+    },
+    "& .MuiChip-label": {
+      paddingLeft: "8px",
+    },
+    marginBottom: 0.5,
+  },
+
+  chipDateStyle: {
+    fontWeight: 500,
+    fontSize: "11px",
+    height: 18,
+    borderRadius: "8px",
+    width: "197px",
+    alignItems: "center",
+    borderRadius: 1,
+    color: "#ffffffde",
+    "& .MuiChip-icon": {
+      color: "#ffffffde",
+      marginLeft: "3px",
+    },
+    "& .MuiChip-label": {
+      paddingLeft: "8px",
+    },
+    marginBottom: 0.5,
+  },
+
+  chipIconStyle: {
+    fontSize: 13,
+    color: "#ffffffde",
+  },
+
+  skeletonContainer: {
+    height: "100%",
+  },
+
+  // Store Visits Dialog
+  dialogHeaderContainer: {
+    borderBottom: "2px solid #4b586f",
+  },
+  dialogHeaderText: {
+    padding: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dialogHeaderDate: {
+    fontSize: "13px",
+    color: theme.palette.text.secondary,
+  },
+  storeContainer: {
+    padding: 2,
+    backgroundColor: theme.palette.bgForm.black2,
+    border: "2px solid #4b586f",
+    borderRadius: "12px",
+  },
+  storeStackDirection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  storeStackName: {
+    fontSize: "13px",
+    fontWeight: 700,
+  },
+  storeStackStatus: {
+    fontSize: "13px",
+    fontWeight: 700,
+  },
+  storeStackArea: {
+    fontSize: "12px",
+    color: theme.palette.text.secondary,
+  },
+  reschedButton: {
+    borderRadius: "5px",
+    fontSize: "0.7rem",
+    padding: "2px 6px",
+    minWidth: "unset",
+  },
+  completionText: {
+    fontSize: "12px",
+    marginTop: 1,
+  },
+  noStoreVisitContainer: {
+    height: "320px",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // Reschedule Dialog
+  rescheduleHeaderStack: {
+    padding: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  currentScheduleContainer: {
+    paddingRight: 4,
+    paddingLeft: 4,
+    paddingTop: 4,
+    maxHeight: "400px",
+  },
+  currentScheduleBorder: {
+    overflow: "auto",
+    border: "1px solid #4b586f",
+    borderRadius: "7px",
+    padding: 2,
+    mb: 1,
+  },
+  currentScheduleText: {
+    fontSize: "12px",
+    fontWeight: 700,
+    color: theme.palette.text.secondary,
+  },
+  currentScheduleName: {
+    fontSize: "13px",
+    fontWeight: 800,
+  },
+  currentScheduleArea: {
+    fontSize: "12px",
+  },
+  newRescheduleRemarksStack: {
+    paddingRight: 4,
+    paddingLeft: 4,
+    paddingTop: 2,
+    gap: 2,
+  },
+  newRescheduleRemarks: {
+    width: "100%",
+  },
+  newReschedContainer: {
+    alignItems: "center",
+    gap: 0.5,
+    flexDirection: "row",
+  },
+  datePicker: {
+    textField: {
+      variant: "outlined",
+      sx: {
+        "& .MuiInputBase-input": {
+          padding: "8.5px 14px",
+        },
+        "& .MuiOutlinedInput-root": {
+          fontSize: "13px",
+        },
+      },
+    },
+  },
+  dialogActions: {
+    width: "100%",
+    padding: 2,
+    flexDirection: "row",
+    gap: 1,
   },
 };

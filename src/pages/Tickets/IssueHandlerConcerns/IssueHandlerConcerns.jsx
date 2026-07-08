@@ -112,18 +112,47 @@ const IssueHandlerConcerns = () => {
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
   const [resumeIssueHandlerTickets] = useResumeIssueHandlerTicketsMutation();
   const [cancelClosingTickets] = useCancelClosingIssueHandlerTicketsMutation();
-  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] = useConfirmConcernMutation();
+  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] =
+    useConfirmConcernMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
   const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
-  const { open: manageHoldTicketOpen, onToggle: manageHoldTicketOnToggle, onClose: manageHoldTicketOnClose } = useDisclosure();
-  const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
-  const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
-  const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
-  const { open: rejectTransferOpen, onToggle: rejectTransferOnToggle, onClose: rejectTransferOnClose } = useDisclosure();
-  const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
-  const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
+  const {
+    open: manageHoldTicketOpen,
+    onToggle: manageHoldTicketOnToggle,
+    onClose: manageHoldTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: closeTicketOpen,
+    onToggle: closeTicketOnToggle,
+    onClose: closeTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: manageTicketOpen,
+    onToggle: manageTicketOnToggle,
+    onClose: manageTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: transferTicketOpen,
+    onToggle: transferTicketOnToggle,
+    onClose: transferTicketOnClose,
+  } = useDisclosure();
+  const {
+    open: rejectTransferOpen,
+    onToggle: rejectTransferOnToggle,
+    onClose: rejectTransferOnClose,
+  } = useDisclosure();
+  const {
+    open: manageTransferOpen,
+    onToggle: manageTransferOnToggle,
+    onClose: manageTransferOnClose,
+  } = useDisclosure();
+  const {
+    open: approveTransferOpen,
+    onToggle: approveTransferOnToggle,
+    onClose: approveTransferOnClose,
+  } = useDisclosure();
   const { open: printTicketOpen, onClose: printTicketOnClose } = useDisclosure();
   const { open: rejectDateOpen, onToggle: rejectDateOnToggle, onClose: rejectDateOnClose } = useDisclosure();
 
@@ -267,7 +296,11 @@ const IssueHandlerConcerns = () => {
           const description = form.getTextField("description");
           const resolution = form.getTextField("resolution");
 
-          const supportTechFields = [form.getTextField("support_tech_one"), form.getTextField("support_tech_two"), form.getTextField("support_tech_three")];
+          const supportTechFields = [
+            form.getTextField("support_tech_one"),
+            form.getTextField("support_tech_two"),
+            form.getTextField("support_tech_three"),
+          ];
 
           const issue_handler = form.getTextField("issue_handler");
           const ticket_number = form.getTextField("ticket_number");
@@ -666,7 +699,9 @@ const IssueHandlerConcerns = () => {
   };
 
   const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+    setSelectedTickets((prevSelected) =>
+      prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item],
+    );
   };
 
   const onDialogClose = () => {
@@ -1145,8 +1180,12 @@ const IssueHandlerConcerns = () => {
                   }}
                 >
                   <Checkbox
-                    indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length}
-                    checked={selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length}
+                    indeterminate={
+                      selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length
+                    }
+                    checked={
+                      selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length
+                    }
                     onChange={handleSelectAll}
                     inputProps={{ "aria-label": "select all tickets" }}
                   />
@@ -1315,7 +1354,13 @@ const IssueHandlerConcerns = () => {
                                 <Chip
                                   variant="filled"
                                   size="small"
-                                  icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
+                                  icon={
+                                    item?.closed_At !== null ? (
+                                      <CalendarMonthOutlined fontSize="small" color="primary" />
+                                    ) : (
+                                      ""
+                                    )
+                                  }
                                   label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
                                   sx={{
                                     fontSize: "12px",
@@ -1370,7 +1415,12 @@ const IssueHandlerConcerns = () => {
                                     size="small"
                                     label={item.remarks ? item.remarks : ""}
                                     sx={{
-                                      backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                      backgroundColor:
+                                        item.remarks === null
+                                          ? "transparent"
+                                          : item.remarks === "Ticket Closed"
+                                            ? "#00913c"
+                                            : theme.palette.error.main,
                                       color: "#ffffff",
                                       borderRadius: "none",
                                       maxWidth: "300px",
@@ -1400,40 +1450,40 @@ const IssueHandlerConcerns = () => {
                                     item.ticket_Status === "Pending Request"
                                       ? "Pending Request"
                                       : item.ticket_Status === "Open Ticket"
-                                      ? "Open"
-                                      : item.ticket_Status === "For Transfer"
-                                      ? "For Transfer"
-                                      : item.ticket_Status === "For On-Hold"
-                                      ? "Hold Approval"
-                                      : item.ticket_Status === "On-Hold"
-                                      ? "On-Hold"
-                                      : item.ticket_Status === "For Closing Ticket"
-                                      ? "For Closing"
-                                      : item.ticket_Status === "For Confirmation"
-                                      ? "For Confirmation"
-                                      : item.ticket_Status === "Closed"
-                                      ? "Closed"
-                                      : ""
+                                        ? "Open"
+                                        : item.ticket_Status === "For Transfer"
+                                          ? "For Transfer"
+                                          : item.ticket_Status === "For On-Hold"
+                                            ? "Hold Approval"
+                                            : item.ticket_Status === "On-Hold"
+                                              ? "On-Hold"
+                                              : item.ticket_Status === "For Closing Ticket"
+                                                ? "For Closing"
+                                                : item.ticket_Status === "For Confirmation"
+                                                  ? "For Confirmation"
+                                                  : item.ticket_Status === "Closed"
+                                                    ? "Closed"
+                                                    : ""
                                   }
                                   sx={{
                                     backgroundColor:
                                       item.ticket_Status === "Pending Request"
                                         ? "#F58900"
                                         : item.ticket_Status === "Open Ticket"
-                                        ? "#ec9d29"
-                                        : item.ticket_Status === "For Transfer"
-                                        ? "#ff7043"
-                                        : item.ticket_Status === "For On-Hold"
-                                        ? "#ffb74d"
-                                        : item.ticket_Status === "On-Hold"
-                                        ? "#ff6d00"
-                                        : item.ticket_Status === "For Closing Ticket"
-                                        ? "#3A96FA"
-                                        : item.ticket_Status === "For Confirmation"
-                                        ? "#009688"
-                                        : item.ticket_Status === "Closed"
-                                        ? "#00913c"
-                                        : "transparent",
+                                          ? "#ec9d29"
+                                          : item.ticket_Status === "For Transfer"
+                                            ? "#ff7043"
+                                            : item.ticket_Status === "For On-Hold"
+                                              ? "#ffb74d"
+                                              : item.ticket_Status === "On-Hold"
+                                                ? "#ff6d00"
+                                                : item.ticket_Status === "For Closing Ticket"
+                                                  ? "#3A96FA"
+                                                  : item.ticket_Status === "For Confirmation"
+                                                    ? "#009688"
+                                                    : item.ticket_Status === "Closed"
+                                                      ? "#00913c"
+                                                      : "transparent",
                                     color: "#ffffffde",
                                     borderRadius: "20px",
                                   }}
@@ -1467,7 +1517,10 @@ const IssueHandlerConcerns = () => {
                                   }
                                   sx={{
                                     fontSize: "12px",
-                                    backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
+                                    backgroundColor:
+                                      item?.closed_Status === "On-Time" || item?.closed_Status === "Delay"
+                                        ? theme.palette.bgForm.black1
+                                        : "transparent",
                                     color: theme.palette.text.main,
                                     fontWeight: 800,
                                   }}
@@ -1546,7 +1599,11 @@ const IssueHandlerConcerns = () => {
 
                 {isError && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                    <img
+                      src={somethingWentWrong}
+                      alt="Something Went Wrong"
+                      className="something-went-wrong-table"
+                    />
                     <Typography variant="h6" color="error" align="center">
                       Something went wrong.
                     </Typography>
@@ -1610,8 +1667,13 @@ const IssueHandlerConcerns = () => {
                           align="center"
                         >
                           <Checkbox
-                            indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length}
-                            checked={selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length}
+                            indeterminate={
+                              selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length
+                            }
+                            checked={
+                              selectableTickets.length > 0 &&
+                              selectedTickets.length === selectableTickets.length
+                            }
                             onChange={handleSelectAll}
                             inputProps={{ "aria-label": "select all tickets" }}
                           />
@@ -1867,7 +1929,14 @@ const IssueHandlerConcerns = () => {
 
                               <TableCell onClick={() => onViewAction(item)}>
                                 <Stack sx={{ width: "200px" }}>
-                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                  <Typography
+                                    sx={{
+                                      color: "#EDF2F7",
+                                      fontSize: "12px",
+                                      fontWeight: 500,
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
                                     {item.concern_Description
                                       ? item.concern_Description?.split("\r\n").map((line, index) => (
                                           <span key={index}>
@@ -2004,7 +2073,12 @@ const IssueHandlerConcerns = () => {
                                       size="small"
                                       label={item.remarks ? item.remarks : ""}
                                       sx={{
-                                        backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
+                                        backgroundColor:
+                                          item.remarks === null
+                                            ? "transparent"
+                                            : item.remarks === "Ticket Closed"
+                                              ? "#00913c"
+                                              : theme.palette.error.main,
                                         color: "#ffffff",
                                         borderRadius: "none",
                                         maxWidth: "300px",
@@ -2022,7 +2096,11 @@ const IssueHandlerConcerns = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                     "&:hover": {
-                                      background: ticketStatus === "Closed" && item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? "" : "",
+                                      background:
+                                        ticketStatus === "Closed" &&
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time"
+                                          ? ""
+                                          : "",
                                       color: "#EDF2F7",
                                     },
                                   }}
@@ -2035,40 +2113,40 @@ const IssueHandlerConcerns = () => {
                                       item.ticket_Status === "Pending Request"
                                         ? "Pending Request"
                                         : item.ticket_Status === "Open Ticket"
-                                        ? "Open"
-                                        : item.ticket_Status === "For Transfer"
-                                        ? "For Transfer"
-                                        : item.ticket_Status === "For On-Hold"
-                                        ? "Hold Approval"
-                                        : item.ticket_Status === "On-Hold"
-                                        ? "On-Hold"
-                                        : item.ticket_Status === "For Closing Ticket"
-                                        ? "For Closing"
-                                        : item.ticket_Status === "For Confirmation"
-                                        ? "For Confirmation"
-                                        : item.ticket_Status === "Closed"
-                                        ? "Closed"
-                                        : ""
+                                          ? "Open"
+                                          : item.ticket_Status === "For Transfer"
+                                            ? "For Transfer"
+                                            : item.ticket_Status === "For On-Hold"
+                                              ? "Hold Approval"
+                                              : item.ticket_Status === "On-Hold"
+                                                ? "On-Hold"
+                                                : item.ticket_Status === "For Closing Ticket"
+                                                  ? "For Closing"
+                                                  : item.ticket_Status === "For Confirmation"
+                                                    ? "For Confirmation"
+                                                    : item.ticket_Status === "Closed"
+                                                      ? "Closed"
+                                                      : ""
                                     }
                                     sx={{
                                       backgroundColor:
                                         item.ticket_Status === "Pending Request"
                                           ? "#F58900"
                                           : item.ticket_Status === "Open Ticket"
-                                          ? "#ec9d29"
-                                          : item.ticket_Status === "For Transfer"
-                                          ? "#ff7043"
-                                          : item.ticket_Status === "For On-Hold"
-                                          ? "#ffb74d"
-                                          : item.ticket_Status === "On-Hold"
-                                          ? "#ff6d00"
-                                          : item.ticket_Status === "For Closing Ticket"
-                                          ? "#3A96FA"
-                                          : item.ticket_Status === "For Confirmation"
-                                          ? "#009688"
-                                          : item.ticket_Status === "Closed"
-                                          ? "#00913c"
-                                          : "transparent",
+                                            ? "#ec9d29"
+                                            : item.ticket_Status === "For Transfer"
+                                              ? "#ff7043"
+                                              : item.ticket_Status === "For On-Hold"
+                                                ? "#ffb74d"
+                                                : item.ticket_Status === "On-Hold"
+                                                  ? "#ff6d00"
+                                                  : item.ticket_Status === "For Closing Ticket"
+                                                    ? "#3A96FA"
+                                                    : item.ticket_Status === "For Confirmation"
+                                                      ? "#009688"
+                                                      : item.ticket_Status === "Closed"
+                                                        ? "#00913c"
+                                                        : "transparent",
                                       color: "#ffffffde",
                                       borderRadius: "20px",
                                     }}
@@ -2098,7 +2176,8 @@ const IssueHandlerConcerns = () => {
                                     sx={{
                                       fontSize: "12px",
                                       backgroundColor:
-                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" || item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ||
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
                                           ? theme.palette.bgForm.black1
                                           : "transparent",
                                       color: theme.palette.text.main,
@@ -2174,7 +2253,11 @@ const IssueHandlerConcerns = () => {
                     {isError && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                          <img
+                            src={somethingWentWrong}
+                            alt="Something Went Wrong"
+                            className="something-went-wrong-table"
+                          />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
                           </Typography>
@@ -2196,7 +2279,11 @@ const IssueHandlerConcerns = () => {
                     {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                          <img
+                            src={noRecordsFound}
+                            alt="No Records Found"
+                            className="norecords-found-table"
+                          />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.
                           </Typography>
@@ -2241,7 +2328,12 @@ const IssueHandlerConcerns = () => {
         )}
 
         {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
+        <IssueHandlerClosingDialog
+          data={closeTicketData}
+          open={closeTicketOpen}
+          onClose={onDialogClose}
+          viewOnClose={viewOnClose}
+        />
 
         <RejectDateDialog
           data={rejectDateData}
@@ -2288,7 +2380,13 @@ const IssueHandlerConcerns = () => {
           />
         )}
 
-        {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
+        {rejectTransferOpen && (
+          <RejectTransfer
+            data={transferTicketData}
+            open={rejectTransferOpen}
+            onClose={rejectTransferOnClose}
+          />
+        )}
 
         {holdTicketOpen && (
           <IssueHandlerHoldDialog

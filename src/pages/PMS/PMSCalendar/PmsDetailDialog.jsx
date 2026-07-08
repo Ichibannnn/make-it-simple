@@ -1,10 +1,21 @@
-import { Close, FiberManualRecord, TodayOutlined } from "@mui/icons-material";
-import { Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { CalendarTodayOutlined, Close, FiberManualRecord, TodayOutlined } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 import moment from "moment";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
 
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -13,11 +24,25 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { Controller, useForm } from "react-hook-form";
 
+import { global } from "../../../styles/global";
+import { pmsStyles } from "../styles/pmsStyles";
+import { LoadingButton } from "@mui/lab";
+import { useReschedulePmsMutation } from "../../../features/api_pms/pms_calendar/pmsCalendarApi";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { pmsReminderParamsApi } from "../../../features/api_pms/pms_reminder/pmsReminderApi";
+
 const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
   const [getRescheduleData, setGetRescheduleData] = useState(null);
-  const filteredData = data?.pms?.filter((item) => moment(item?.date).format("YYYY-MM-DD") === getDate);
 
-  const { open: openScheduleDialog, onToggle: onToggleScheduleDialog, onClose: onCloseScheduleDialog } = useDisclosure();
+  const filteredData = data?.value?.pms?.filter(
+    (item) => moment(item?.date).format("YYYY-MM-DD") === getDate,
+  );
+  const {
+    open: openScheduleDialog,
+    onToggle: onToggleScheduleDialog,
+    onClose: onCloseScheduleDialog,
+  } = useDisclosure();
 
   const onReschedule = (item) => {
     setGetRescheduleData(item);
@@ -38,41 +63,45 @@ const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
           onClose();
         }}
         disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
-        PaperProps={{ style: { overflow: "auto", border: "2px solid #4b586f" } }}
+        sx={pmsStyles.dialog}
+        PaperProps={{ style: { ...global.paperDialog } }}
       >
-        <DialogContent sx={{ padding: 0 }}>
-          <Stack sx={{ borderBottom: "2px solid #4b586f" }}>
-            <Stack p={2} direction="row" justifyContent="space-between">
+        <DialogContent sx={global.dialogContent}>
+          <Stack sx={pmsStyles.dialogHeaderContainer}>
+            <Stack sx={pmsStyles.dialogHeaderText}>
               <Stack>
-                <Typography sx={{ fontWeight: 600 }}>Store Visits</Typography>
-                <Typography color="gray" sx={{ fontSize: "13px" }}>
+                <Typography fontWeight={600}>Store Visits</Typography>
+                <Typography color="gray" sx={pmsStyles.dialogHeaderDate}>
                   {moment(getDate).format("dddd, MMMM D, YYYY")}
                 </Typography>
               </Stack>
 
-              <Stack direction="row" gap={0.5} alignItems="center">
-                <IconButton onClick={onClose}>
-                  <Close />
-                </IconButton>
-              </Stack>
+              <IconButton onClick={onClose}>
+                <Close />
+              </IconButton>
             </Stack>
           </Stack>
 
           {filteredData?.length > 0 ? (
             <Stack p={4} gap={1}>
               {filteredData.map((item, i) => (
-                <Stack key={i} sx={{ p: 2, backgroundColor: theme.palette.bgForm.black2, border: "2px solid #4b586f", borderRadius: "12px" }}>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography sx={{ fontSize: "13px", fontWeight: 800 }}>{item?.store}</Typography>
+                <Stack key={i} sx={pmsStyles.storeContainer}>
+                  <Stack sx={pmsStyles.storeStackDirection}>
+                    <Typography sx={pmsStyles.storeStackName}>{item?.name}</Typography>
 
-                    <Typography sx={{ fontSize: "13px", color: item?.status === "Done" ? theme.palette.success.main : theme.palette.warning.main, fontWeight: 700 }}>
+                    <Typography
+                      sx={{
+                        ...pmsStyles.storeStackStatus,
+                        color:
+                          item?.status === "Done" ? theme.palette.success.main : theme.palette.warning.main,
+                      }}
+                    >
                       {item.status}
                     </Typography>
                   </Stack>
 
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{item.area}</Typography>
+                  <Stack sx={pmsStyles.storeStackDirection}>
+                    <Typography sx={pmsStyles.storeStackArea}>{item.area}</Typography>
 
                     {item?.status === "Pending" && (
                       <Button
@@ -80,27 +109,22 @@ const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
                         color="accent"
                         startIcon={<TodayOutlined />}
                         onClick={() => onReschedule(item)}
-                        sx={{
-                          borderRadius: "5px",
-                          fontSize: "0.7rem",
-                          padding: "2px 6px",
-                          minWidth: "unset",
-                        }}
+                        sx={pmsStyles.reschedButton}
                       >
                         Resched
                       </Button>
                     )}
                   </Stack>
 
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>{`PMS: ${item.completion}`}</Typography>
+                  <Stack sx={pmsStyles.storeStackDirection}>
+                    <Typography sx={pmsStyles.completionText}>{`PMS: ${item.completion}`}</Typography>
                   </Stack>
                 </Stack>
               ))}
             </Stack>
           ) : (
             <Stack>
-              <Stack sx={{ height: "320px", justifyContent: "center", alignItems: "center" }}>
+              <Stack sx={pmsStyles.noStoreVisitContainer}>
                 <img src={noStore} alt="No Store Found" className="nostore-illustration" />
                 <Typography color="gray" align="center">
                   No store scheduled for this date
@@ -111,7 +135,12 @@ const PmsDetailDialog = ({ data, getDate, open, onClose }) => {
         </DialogContent>
       </Dialog>
 
-      <PmsScheduleDialog data={getRescheduleData} openScheduleDialog={openScheduleDialog} onCloseScheduleDialog={onCloseScheduleDialog} />
+      <PmsScheduleDialog
+        data={getRescheduleData}
+        openScheduleDialog={openScheduleDialog}
+        onCloseStoreVisitDialog={onClose}
+        onCloseScheduleDialog={onCloseScheduleDialog}
+      />
     </>
   );
 };
@@ -123,14 +152,19 @@ const schema = yup.object().shape({
   Remarks: yup.string().required().label("Reason"),
 });
 
-const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) => {
+const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseStoreVisitDialog, onCloseScheduleDialog }) => {
+  const [reschedulePms, { isLoading: reschedulePmsIsLoading, isFetching: reschedulePmsIsFetching }] =
+    useReschedulePmsMutation();
+
+  const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
@@ -141,8 +175,35 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) 
   });
 
   const onCloseAction = () => {
-    reset();
+    reset({
+      Remarks: "",
+    });
     onCloseScheduleDialog();
+  };
+
+  const onRescheduleSubmit = async (formData) => {
+    const payload = new FormData();
+
+    payload.append("pmsId", data?.id);
+    payload.append("ScheduleDate", moment(formData.RescheduleDate).format("YYYY-MM-DD"));
+    payload.append("Remarks", formData.Remarks);
+
+    // console.log("Payload Entries: ", [...payload.entries()]);
+
+    await reschedulePms(payload)
+      .unwrap()
+      .then(() => {
+        toast.success("Success!", {
+          description: "PMS rescheduled!",
+          duration: 1500,
+        });
+        dispatch(pmsReminderParamsApi.util.invalidateTags(["PMS Reminder"]));
+        onCloseStoreVisitDialog();
+        onCloseScheduleDialog();
+      })
+      .catch((error) => {
+        console.log("Error: ", error);
+      });
   };
 
   return (
@@ -159,124 +220,137 @@ const PmsScheduleDialog = ({ data, openScheduleDialog, onCloseScheduleDialog }) 
           onCloseScheduleDialog();
         }}
         disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
-        PaperProps={{ style: { overflow: "auto", border: "2px solid #4b586f" } }}
+        sx={pmsStyles.dialog}
+        PaperProps={{ style: { ...global.paperDialog } }}
       >
-        <DialogContent sx={{ padding: 0 }}>
-          <Stack sx={{ borderBottom: "2px solid #4b586f" }}>
-            <Stack p={2} direction="row" justifyContent="space-between" alignItems="center">
-              <Stack>
-                <Typography sx={{ fontWeight: 600 }}>Reschedule Store Visit</Typography>
-              </Stack>
-
-              <Stack direction="row" gap={0.5} alignItems="center">
-                <IconButton onClick={onCloseScheduleDialog}>
+        <form onSubmit={handleSubmit(onRescheduleSubmit)}>
+          <DialogContent sx={global.dialogContent}>
+            <Stack sx={pmsStyles.dialogHeaderContainer}>
+              <Stack sx={pmsStyles.rescheduleHeaderStack}>
+                <Typography fontWeight={600}>Reschedule Store Visit</Typography>
+                <IconButton onClick={onCloseAction}>
                   <Close />
                 </IconButton>
               </Stack>
             </Stack>
-          </Stack>
 
-          <Stack pr={4} pl={4} pt={4} sx={{ maxHeight: "400px" }}>
-            <Stack p={2} sx={{ overflow: "auto", border: "1px solid #4b586f", borderRadius: "7px" }}>
-              <Typography sx={{ fontSize: "12px", fontWeight: 700, color: theme.palette.text.secondary }}>Current Schedule</Typography>
-              <Typography sx={{ fontSize: "13px", fontWeight: 800 }}>{data?.store}</Typography>
-              <Typography sx={{ fontSize: "12px" }}>{data?.area}</Typography>
-            </Stack>
-          </Stack>
+            <Stack sx={pmsStyles.currentScheduleContainer}>
+              <Stack sx={pmsStyles.currentScheduleBorder}>
+                <Typography sx={pmsStyles.currentScheduleText}>Current Schedule</Typography>
+                <Typography sx={pmsStyles.currentScheduleName}>{data?.name}</Typography>
+                <Typography sx={pmsStyles.currentScheduleArea}>{data?.area}</Typography>
+                {/* <Typography
+                  sx={pmsStyles.currentScheduleArea}
+                >{`Scheduled Date: ${moment(data?.date).format("MM-DD-YYYY")}`}</Typography> */}
 
-          <Stack pr={4} pl={4} pt={2} gap={2}>
-            <Stack sx={{ width: "100%" }}>
-              <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                <Typography sx={{ fontSize: "13px" }}>New Reschedule Date</Typography>
-                <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                <Box mt={0.5}>
+                  <Chip
+                    icon={<CalendarTodayOutlined sx={pmsStyles.chipIconStyle} />}
+                    variant="filled"
+                    label={`Scheduled Date: ${moment(data?.date).format("MM-DD-YYYY")}`}
+                    sx={{
+                      ...pmsStyles.chipDateStyle,
+                      backgroundColor: theme.palette.warning.main,
+                    }}
+                  />
+                </Box>
               </Stack>
-              <LocalizationProvider dateAdapter={AdapterMoment}>
+            </Stack>
+
+            <Stack sx={pmsStyles.newRescheduleRemarksStack}>
+              <Stack sx={pmsStyles.newRescheduleRemarks}>
+                <Stack sx={pmsStyles.newReschedContainer}>
+                  <Typography sx={{ fontSize: "13px" }}>New Reschedule Date</Typography>
+                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                </Stack>
+
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <Controller
+                    control={control}
+                    name="RescheduleDate"
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value ? moment(field.value) : null}
+                        onChange={(newValue) => {
+                          const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                          field.onChange(formattedValue);
+                        }}
+                        minDate={new moment()}
+                        slotProps={pmsStyles.datePicker}
+                        error={!!errors.RescheduleDate}
+                        helperText={errors.RescheduleDate ? errors.RescheduleDate.message : null}
+                      />
+                    )}
+                  />
+                  {errors.RescheduleDate && <Typography>{errors.RescheduleDate.message}</Typography>}
+                </LocalizationProvider>
+              </Stack>
+
+              <Stack sx={pmsStyles.newRescheduleRemarks}>
+                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                  <Typography sx={{ fontSize: "13px" }}>Remarks</Typography>
+                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                </Stack>
+
                 <Controller
                   control={control}
-                  name="RescheduleDate"
-                  render={({ field }) => (
-                    <DatePicker
-                      value={field.value ? moment(field.value) : null}
-                      onChange={(newValue) => {
-                        const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
-                        field.onChange(formattedValue);
-                      }}
-                      slotProps={{
-                        textField: {
-                          variant: "outlined",
-                          sx: {
-                            "& .MuiInputBase-input": {
-                              padding: "8.5px 14px",
-                            },
-                            "& .MuiOutlinedInput-root": {
-                              fontSize: "13px",
-                            },
+                  name="Remarks"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <TextField
+                        inputRef={ref}
+                        size="medium"
+                        value={value}
+                        placeholder="Add Remarks"
+                        onChange={onChange}
+                        sx={{
+                          width: "100%",
+                        }}
+                        InputProps={{
+                          style: {
+                            fontSize: "13px",
                           },
-                        },
-                      }}
-                      minDate={new moment()}
-                      error={!!errors.RescheduleDate}
-                      helperText={errors.RescheduleDate ? errors.RescheduleDate.message : null}
-                    />
-                  )}
+                        }}
+                        InputLabelProps={{
+                          style: {
+                            fontSize: "13px",
+                          },
+                        }}
+                        autoComplete="off"
+                        rows={3}
+                        multiline
+                      />
+                    );
+                  }}
                 />
-                {errors.RescheduleDate && <Typography>{errors.RescheduleDate.message}</Typography>}
-              </LocalizationProvider>
-            </Stack>
-
-            <Stack sx={{ width: "100%" }}>
-              <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                <Typography sx={{ fontSize: "13px" }}>Remarks</Typography>
-                <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
               </Stack>
-
-              <Controller
-                control={control}
-                name="Remarks"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="medium"
-                      value={value}
-                      placeholder="Add Remarks"
-                      onChange={onChange}
-                      sx={{
-                        width: "100%",
-                      }}
-                      InputProps={{
-                        style: {
-                          fontSize: "13px",
-                        },
-                      }}
-                      InputLabelProps={{
-                        style: {
-                          fontSize: "13px",
-                        },
-                      }}
-                      autoComplete="off"
-                      rows={3}
-                      multiline
-                    />
-                  );
-                }}
-              />
             </Stack>
-          </Stack>
-        </DialogContent>
+          </DialogContent>
 
-        <DialogActions>
-          <Stack sx={{ width: "100%", padding: 2 }} direction="row" gap={1}>
-            <Button variant="contained" color="primary" fullWidth>
-              Confirm Schedule
-            </Button>
+          <DialogActions>
+            <Stack sx={pmsStyles.dialogActions}>
+              <LoadingButton
+                variant="outlined"
+                onClick={onCloseAction}
+                // disabled={!isValid || reschedulePmsIsLoading || reschedulePmsIsFetching}
+                fullWidth
+              >
+                Cancel
+              </LoadingButton>
 
-            <Button variant="outlined" onClick={onCloseAction} fullWidth>
-              Cancel
-            </Button>
-          </Stack>
-        </DialogActions>
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                color="primary"
+                disabled={!isValid || reschedulePmsIsLoading || reschedulePmsIsFetching}
+                loading={reschedulePmsIsLoading || reschedulePmsIsFetching}
+                fullWidth
+              >
+                Confirm Schedule
+              </LoadingButton>
+            </Stack>
+          </DialogActions>
+        </form>
       </Dialog>
     </>
   );

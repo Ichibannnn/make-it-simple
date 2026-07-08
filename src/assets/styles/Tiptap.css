@@ -1,0 +1,79 @@
+.tiptap-link {
+  color: #1a73e8;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tiptap-link:hover {
+  color: #0d47a1;
+}
+
+/* Tiptap ProseMirror root */
+.ProseMirror {
+  outline: none;
+  font-size: 14px;
+  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  color: #5f6368;
+  line-height: 1.6;
+  min-height: 40px;
+}
+
+.ProseMirror p {
+  margin: 0 0 4px;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 20px;
+  margin: 4px 0;
+}
+
+.ProseMirror li {
+  margin: 2px 0;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #673ab7;
+  padding-left: 10px;
+  color: #5f6368;
+  font-style: italic;
+  margin: 6px 0;
+}
+
+.ProseMirror h1 {
+  font-size: 20px;
+  font-weight: 500;
+  color: #202124;
+  margin: 0 0 6px;
+}
+
+.ProseMirror h2 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #202124;
+  margin: 0 0 4px;
+}
+
+.ProseMirror mark {
+  background-color: #fff3cd;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #bbb;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Selection */
+.ProseMirror ::selection {
+  background: #c2e0ff;
+}

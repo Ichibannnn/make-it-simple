@@ -21,7 +21,14 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { CalendarMonthOutlined, Check, FlashOn, LocalOffer, Search, SwapVertOutlined } from "@mui/icons-material";
+import {
+  CalendarMonthOutlined,
+  Check,
+  FlashOn,
+  LocalOffer,
+  Search,
+  SwapVertOutlined,
+} from "@mui/icons-material";
 
 import { useState } from "react";
 import moment from "moment";
@@ -91,11 +98,20 @@ const NewReceiverConcern = () => {
     Ascending: ascending,
   });
 
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
-  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetFilteredDepartmentQuery();
-  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetFilteredLocationQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
+    useLazyGetCategoryQuery();
+  const [
+    getDepartment,
+    { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess },
+  ] = useLazyGetFilteredDepartmentQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] =
+    useLazyGetFilteredLocationQuery();
 
-  const { open: viewConcernDetailsOpen, onToggle: viewConcernDetailsOnToggle, onClose: viewConcernDetailsOnClose } = useDisclosure();
+  const {
+    open: viewConcernDetailsOpen,
+    onToggle: viewConcernDetailsOnToggle,
+    onClose: viewConcernDetailsOnClose,
+  } = useDisclosure();
   const { open: addTicketOpen, onClose: addTicketOnClose } = useDisclosure();
   const { open: takeTicketOpen, onToggle: takeTicketOnToggle, onClose: takeTicketOnClose } = useDisclosure();
 
@@ -120,17 +136,32 @@ const NewReceiverConcern = () => {
     };
 
     setSelectedIds((prevSelected) => {
-      const exists = prevSelected.some((id) => id.ticketConcernId === concernAndTicketNo.ticketConcernId && id.requestConcernId === concernAndTicketNo.requestConcernId);
+      const exists = prevSelected.some(
+        (id) =>
+          id.ticketConcernId === concernAndTicketNo.ticketConcernId &&
+          id.requestConcernId === concernAndTicketNo.requestConcernId,
+      );
 
       if (exists) {
-        return prevSelected.filter((id) => !(id.ticketConcernId === concernAndTicketNo.ticketConcernId && id.requestConcernId === concernAndTicketNo.requestConcernId));
+        return prevSelected.filter(
+          (id) =>
+            !(
+              id.ticketConcernId === concernAndTicketNo.ticketConcernId &&
+              id.requestConcernId === concernAndTicketNo.requestConcernId
+            ),
+        );
       } else {
         return [...prevSelected, concernAndTicketNo];
       }
     });
   };
 
-  const isSelected = (item) => selectedIds.some((id) => id.ticketConcernId === item?.ticketRequestConcerns[0]?.ticketConcernId && id.requestConcernId === item?.requestConcernId);
+  const isSelected = (item) =>
+    selectedIds.some(
+      (id) =>
+        id.ticketConcernId === item?.ticketRequestConcerns[0]?.ticketConcernId &&
+        id.requestConcernId === item?.requestConcernId,
+    );
 
   const takeTicketHandler = () => {
     takeTicketOnToggle();
@@ -148,7 +179,11 @@ const NewReceiverConcern = () => {
       }}
     >
       <Stack>
-        <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
+        <Stack
+          width="100%"
+          justifyContent="space-between"
+          sx={{ flexDirection: isScreenSmall ? "column" : "row" }}
+        >
           <Typography variant={isScreenSmall ? "h5" : "h4"}>Concerns</Typography>
           <Stack justifyItems="space-between" direction="row" marginTop={1}></Stack>
         </Stack>
@@ -214,9 +249,18 @@ const NewReceiverConcern = () => {
                     <Autocomplete
                       ref={ref}
                       value={value}
-                      options={categoryData?.value?.category?.filter((item) => item.channelId === userChannelId) || []}
+                      options={
+                        categoryData?.value?.category?.filter((item) => item.channelId === userChannelId) ||
+                        []
+                      }
                       loading={categoryIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Category"
+                          sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                        />
+                      )}
                       onOpen={() => {
                         if (!categoryIsSuccess)
                           getCategory({
@@ -245,7 +289,13 @@ const NewReceiverConcern = () => {
                       value={value}
                       options={departmentData?.value?.onecharging || []}
                       loading={departmentIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Department" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Department"
+                          sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                        />
+                      )}
                       onOpen={() => {
                         if (!departmentIsSuccess)
                           getDepartment({
@@ -274,7 +324,13 @@ const NewReceiverConcern = () => {
                       value={value}
                       options={locationData?.value?.onecharging || []}
                       loading={locationIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Location" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Location"
+                          sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                        />
+                      )}
                       onOpen={() => {
                         if (!locationIsSuccess)
                           getLocation({
@@ -304,7 +360,14 @@ const NewReceiverConcern = () => {
                   !isFetching &&
                   data?.value?.requestConcern?.map((item, index) => {
                     return (
-                      <Card key={index} sx={{ backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                      <Card
+                        key={index}
+                        sx={{
+                          backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
+                          borderRadius: "15px",
+                          borderColor: "#2D3748",
+                        }}
+                      >
                         <CardContent
                           sx={{
                             cursor: "pointer",
@@ -327,36 +390,84 @@ const NewReceiverConcern = () => {
                               <Checkbox
                                 checked={isSelected(item)}
                                 onChange={() => handleSelectTicket(item)}
-                                inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
+                                inputProps={{
+                                  "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}`,
+                                }}
                               />
                             </Stack>
 
                             <Stack spacing={1} onClick={() => onViewAction(item)}>
                               <Stack mb={2}>
                                 <Stack direction="row" gap={0.5} alignItems="center">
-                                  <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>{item.fullName}</Typography>
+                                  <Typography sx={{ fontWeight: 500, fontSize: "17px", color: "#EDF2F7" }}>
+                                    {item.fullName}
+                                  </Typography>
 
                                   {item.severity === "Urgent" && <FlashOn color="warning" />}
                                 </Stack>
 
-                                <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 500,
+                                    fontSize: "12px",
+                                    color: theme.palette.text.secondary,
+                                  }}
+                                >
                                   {item.department_Code} - {item.department_Name}{" "}
                                 </Typography>
-                                <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 500,
+                                    fontSize: "12px",
+                                    color: theme.palette.text.secondary,
+                                  }}
+                                >
                                   {item.location_Code} - {item.location_Name}
                                 </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  TICKET NUMBER:
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 400,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: theme.palette.text.main,
+                                  }}
+                                >
                                   {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}
                                 </Typography>
                               </Stack>
 
                               <Stack direction="row">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CONCERN: </Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  CONCERN:{" "}
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 400,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: theme.palette.text.main,
+                                  }}
+                                >
                                   {item.concern.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
@@ -367,26 +478,89 @@ const NewReceiverConcern = () => {
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>SERVICE PROVIDER:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.serviceProviderName}</Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  SERVICE PROVIDER:
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 400,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: theme.palette.text.main,
+                                  }}
+                                >
+                                  {item.serviceProviderName}
+                                </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CHANNEL:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  CHANNEL:
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 400,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: theme.palette.text.main,
+                                  }}
+                                >
                                   {item.channel_Name ? item.channel_Name : "--"}
                                 </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CATEGORY:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {item?.getRequestTicketCategories?.length !== 0 ? item.getRequestTicketCategories?.map((item) => item.category_Description).join(", ") : "--"}
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  CATEGORY:
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 400,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: theme.palette.text.main,
+                                  }}
+                                >
+                                  {item?.getRequestTicketCategories?.length !== 0
+                                    ? item.getRequestTicketCategories
+                                        ?.map((item) => item.category_Description)
+                                        .join(", ")
+                                    : "--"}
                                 </Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  DATE CREATED:
+                                </Typography>
                                 <Chip
                                   variant="filled"
                                   size="30px"
@@ -402,7 +576,16 @@ const NewReceiverConcern = () => {
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE NEEDED:</Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  DATE NEEDED:
+                                </Typography>
                                 <Chip
                                   variant="filled"
                                   size="30px"
@@ -418,8 +601,26 @@ const NewReceiverConcern = () => {
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>CREATED BY:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.added_By}</Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: "#D65DB1",
+                                  }}
+                                >
+                                  CREATED BY:
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 400,
+                                    fontSize: "0.775rem",
+                                    lineHeight: 1.57,
+                                    color: theme.palette.text.main,
+                                  }}
+                                >
+                                  {item.added_By}
+                                </Typography>
                               </Stack>
                             </Stack>
                           </Stack>
@@ -430,7 +631,11 @@ const NewReceiverConcern = () => {
 
                 {isError && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                    <img
+                      src={somethingWentWrong}
+                      alt="Something Went Wrong"
+                      className="something-went-wrong-table"
+                    />
                     <Typography variant="h6" align="center">
                       Something went wrong.
                     </Typography>
@@ -456,7 +661,12 @@ const NewReceiverConcern = () => {
                 )}
 
                 <TablePagination
-                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  sx={{
+                    color: "#A0AEC0",
+                    fontWeight: 400,
+                    background: "#1C2536",
+                    borderRadius: "0px 0px 20px 20px",
+                  }}
                   rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
                   component="div"
                   count={data?.value?.totalCount || 0}
@@ -616,11 +826,15 @@ const NewReceiverConcern = () => {
                                   <Checkbox
                                     checked={isSelected(item)}
                                     onChange={() => handleSelectTicket(item)}
-                                    inputProps={{ "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}` }}
+                                    inputProps={{
+                                      "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}`,
+                                    }}
                                   />
                                 </Stack>
                                 {item.severity === "Urgent" && <FlashOn color="warning" />}
-                                <Typography sx={{ fontSize: "12px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}</Typography>
+                                <Typography
+                                  sx={{ fontSize: "12px" }}
+                                >{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}</Typography>
                               </Stack>
                             </TableCell>
 
@@ -662,7 +876,14 @@ const NewReceiverConcern = () => {
 
                             <TableCell onClick={() => onViewAction(item)}>
                               <Stack sx={{ width: "200px" }}>
-                                <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
+                                <Typography
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    wordBreak: "break-word",
+                                  }}
+                                >
                                   {item.concern
                                     ? item.concern?.split("\r\n").map((line, index) => (
                                         <span key={index}>
@@ -717,7 +938,11 @@ const NewReceiverConcern = () => {
                               }}
                               onClick={() => onViewAction(item)}
                             >
-                              {item?.getRequestTicketCategories?.length !== 0 ? item.getRequestTicketCategories?.map((item) => item.category_Description).join(", ") : "--"}
+                              {item?.getRequestTicketCategories?.length !== 0
+                                ? item.getRequestTicketCategories
+                                    ?.map((item) => item.category_Description)
+                                    .join(", ")
+                                : "--"}
                             </TableCell>
 
                             <TableCell
@@ -732,7 +957,7 @@ const NewReceiverConcern = () => {
                               }}
                               onClick={() => onViewAction(item)}
                             >
-                              {moment(item.created_At).format("LL")}
+                              {moment(item.created_At).format("LL hh:mma")}
                             </TableCell>
 
                             <TableCell
@@ -771,7 +996,11 @@ const NewReceiverConcern = () => {
                     {isError && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                          <img
+                            src={somethingWentWrong}
+                            alt="Something Went Wrong"
+                            className="something-went-wrong-table"
+                          />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
                           </Typography>
@@ -793,7 +1022,11 @@ const NewReceiverConcern = () => {
                     {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                          <img
+                            src={noRecordsFound}
+                            alt="No Records Found"
+                            className="norecords-found-table"
+                          />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.
                           </Typography>
@@ -805,7 +1038,12 @@ const NewReceiverConcern = () => {
               </TableContainer>
 
               <TablePagination
-                sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                sx={{
+                  color: "#A0AEC0",
+                  fontWeight: 400,
+                  background: "#1C2536",
+                  borderRadius: "0px 0px 20px 20px",
+                }}
                 rowsPerPageOptions={[100, 300, 500]}
                 component="div"
                 count={data?.value?.totalCount || 0}
@@ -817,9 +1055,23 @@ const NewReceiverConcern = () => {
             </>
           )}
 
-          {viewConcernDetailsOpen && <ViewConcernDetails data={concernDetails} setData={setConcernDetails} open={viewConcernDetailsOpen} onClose={viewConcernDetailsOnClose} />}
+          {viewConcernDetailsOpen && (
+            <ViewConcernDetails
+              data={concernDetails}
+              setData={setConcernDetails}
+              open={viewConcernDetailsOpen}
+              onClose={viewConcernDetailsOnClose}
+            />
+          )}
           {addTicketOpen && <ReceiverAddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-          {takeTicketOpen && <AssignTicketDrawer open={takeTicketOpen} onClose={takeTicketOnClose} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />}
+          {takeTicketOpen && (
+            <AssignTicketDrawer
+              open={takeTicketOpen}
+              onClose={takeTicketOnClose}
+              selectedIds={selectedIds}
+              setSelectedIds={setSelectedIds}
+            />
+          )}
         </Stack>
       </Stack>
     </Stack>

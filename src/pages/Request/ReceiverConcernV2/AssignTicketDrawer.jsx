@@ -1,4 +1,13 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { FiberManualRecord, Warning } from "@mui/icons-material";
 
 import * as yup from "yup";
@@ -38,6 +47,7 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
 
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
+  const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
 
   const dispatch = useDispatch();
 
@@ -46,7 +56,8 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
   // const attachments = useSelector((state) => state.attachment.attachments);
 
   const [getChannel, { data: channelData, isLoading: channelIsLoading }] = useLazyGetChannelsQuery();
-  const [takeTicket, { isLoading: takeTicketIsLoading, isFetching: takeTicketIsFetching }] = useTakeCherryPickTicketMutation();
+  const [takeTicket, { isLoading: takeTicketIsLoading, isFetching: takeTicketIsFetching }] =
+    useTakeCherryPickTicketMutation();
 
   const {
     control,
@@ -169,8 +180,12 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
     const today = moment().format("YYYY-MM-DD");
     const diff = moment(watch("TargetDate")).diff(today, "days");
 
-    setShowReason(diff > 2);
+    setShowReason(
+      channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" ? diff > 3 : diff > 2,
+    );
   }, [watch("TargetDate")]);
+
+  console.log("Channel: ", channelNameValidation);
 
   return (
     <>
@@ -231,7 +246,13 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
                           size="small"
                           value={value}
                           options={userDetails?.channels || []}
-                          renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Channel Name"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                            />
+                          )}
                           onChange={(_, value) => {
                             onChange(value);
                             setValue("CategoryId", []);
@@ -279,9 +300,19 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={channelData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.channelId)?.channelUsers || []}
+                            options={
+                              channelData?.value?.channel?.find(
+                                (item) => item.id === watch("ChannelId")?.channelId,
+                              )?.channelUsers || []
+                            }
                             loading={channelIsLoading}
-                            renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Issue Handler"
+                                sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                              />
+                            )}
                             onChange={(_, value) => {
                               onChange(value);
                             }}
@@ -399,8 +430,10 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
 
                     <Stack alignItems="center" direction="row" gap={0.5} mt={1}>
                       <Warning color="warning" sx={{ fontSize: "15px" }} />
-                      <Typography sx={{ fontSize: "12px", color: theme.palette.warning.main, fontStyle: "italic" }}>
-                        Note: Please input a reason if the target date is more than 2 days from today.
+                      <Typography
+                        sx={{ fontSize: "12px", color: theme.palette.warning.main, fontStyle: "italic" }}
+                      >
+                        {`Note: Please input a reason if the target date is more than ${channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" ? 3 : 2} days from today.`}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -409,7 +442,12 @@ const AssignTicketDrawer = ({ open, onClose, selectedIds, setSelectedIds }) => {
             </DialogContent>
 
             <DialogActions>
-              <LoadingButton size="small" variant="outlined" loading={takeTicketIsLoading || takeTicketIsFetching} onClick={onCloseAction}>
+              <LoadingButton
+                size="small"
+                variant="outlined"
+                loading={takeTicketIsLoading || takeTicketIsFetching}
+                onClick={onCloseAction}
+              >
                 Cancel
               </LoadingButton>
               <LoadingButton

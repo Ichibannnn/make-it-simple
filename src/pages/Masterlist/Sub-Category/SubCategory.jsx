@@ -94,7 +94,7 @@ const Category = () => {
         // showLoaderOnConfirm: true,
 
         onConfirm: async () => {
-          Swal.getConfirmButton().innerHTML = "Checking...";
+          Swal.getConfirmButton().innerHTML = "Archiving...";
 
           await archiveSubCategory(data.id)
             .unwrap()

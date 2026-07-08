@@ -1,6 +1,26 @@
 import { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, Check, Close, FiberManualRecord, GetAppOutlined } from "@mui/icons-material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  AccountCircleRounded,
+  AttachFileOutlined,
+  Check,
+  Close,
+  FiberManualRecord,
+  GetAppOutlined,
+} from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import * as yup from "yup";
@@ -15,7 +35,10 @@ import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
-import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
+import {
+  useLazyGetDownloadAttachmentQuery,
+  useLazyGetViewAttachmentQuery,
+} from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
@@ -45,8 +68,12 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
-  const [approveTransfer, { isLoading: approveTransferIsLoading, isFetching: approveTransferIsFetching }] = useApproveTransferMutation();
-  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
+  const [approveTransfer, { isLoading: approveTransferIsLoading, isFetching: approveTransferIsFetching }] =
+    useApproveTransferMutation();
+  const [
+    getIssueHandler,
+    { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess },
+  ] = useLazyGetChannelsQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
@@ -68,7 +95,8 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
   const onApproveAction = () => {
     const approvePayload = {
       transferTicketId: data?.transferTicketId,
-      target_Date: data?.approver_Level === 1 ? watch("targetDate") : moment(watch("targetDate")).format("YYYY-MM-DD"),
+      target_Date:
+        data?.approver_Level === 1 ? watch("targetDate") : moment(watch("targetDate")).format("YYYY-MM-DD"),
       transfer_To: watch("transfer_To")?.userId,
     };
 
@@ -125,7 +153,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           name: item.fileName,
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
           link: item.attachment,
-        }))
+        })),
       );
 
       setValue("transfer_To", {
@@ -232,7 +260,15 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
             <Stack direction="row" gap={1} alignItems="center">
               <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
               <Stack>
-                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>
+                <Typography
+                  sx={{
+                    fontSize: isScreenSmall ? "12px" : "14px",
+                    color: theme.palette.primary.main,
+                    fontStyle: "italic",
+                    letterSpacing: 1,
+                    fontWeight: 400,
+                  }}
+                >
                   for transfer approval:{" "}
                 </Typography>
                 <Typography
@@ -244,7 +280,11 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                 >
                   {data?.fullname}
                 </Typography>
-                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.text.secondary }}>{data?.channel_Name}</Typography>
+                <Typography
+                  sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.text.secondary }}
+                >
+                  {data?.channel_Name}
+                </Typography>
               </Stack>
             </Stack>
 
@@ -260,23 +300,45 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
               {/* CONCERN DETAILS */}
               {isScreenSmall ? (
                 <>
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                  <Stack
+                    sx={{
+                      width: "100%",
+                      padding: 1,
+                      border: "1px solid #2D3748",
+                      borderRadius: "20px 20px 0 0",
+                    }}
+                  >
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        Ticket Number:
+                      </Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${moment(data?.requestedAt).format("YYYY")}-${
-                        data?.ticketConcernId
-                      }`}</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
+                      >{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                     </Box>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        Ticket Description:
+                      </Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordBreak: "break-word" }}>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.main,
+                          fontWeight: "500",
+                          fontSize: "12px",
+                          wordBreak: "break-word",
+                        }}
+                      >
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -289,10 +351,21 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Transfer Remarks:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        Transfer Remarks:
+                      </Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px", wordBreak: "break-word" }}>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.main,
+                          fontWeight: "500",
+                          fontSize: "12px",
+                          wordBreak: "break-word",
+                        }}
+                      >
                         {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -305,16 +378,28 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        Channel:
+                      </Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        {data?.channel_Name}
+                      </Typography>
                     </Box>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Category:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        Category:
+                      </Typography>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
                       {data?.getTransferTicketCategories?.map((item, i) => (
@@ -336,9 +421,20 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                   </Stack>
 
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px " }}>
+                  <Stack
+                    sx={{
+                      width: "100%",
+                      padding: 1,
+                      border: "1px solid #2D3748",
+                      borderRadius: "0 0 20px 20px ",
+                    }}
+                  >
                     <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Sub Category:</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
+                      >
+                        Sub Category:
+                      </Typography>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
                       {data?.getTransferTicketSubCategories?.map((item, i) => (
@@ -362,25 +458,53 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                 </>
               ) : (
                 <>
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
+                  <Stack
+                    direction="row"
+                    sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}
+                  >
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Number:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "right",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Ticket Number:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${moment(data?.requestedAt).format("YYYY")}-${
-                        data?.ticketConcernId
-                      }`}</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
+                      >{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                     </Box>
                   </Stack>
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "right",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Ticket Description:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.main,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                          wordBreak: "break-word",
+                        }}
+                      >
                         {data?.concern_Details?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -393,11 +517,27 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Transfer Remarks:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "right",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Transfer Remarks:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.main,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                          wordBreak: "break-word",
+                        }}
+                      >
                         {data?.transfer_Remarks?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -410,17 +550,39 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "right",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Channel:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
+                      <Typography
+                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
+                      >
+                        {data?.channel_Name}
+                      </Typography>
                     </Box>
                   </Stack>
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "right",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Category:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
@@ -446,7 +608,16 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "right",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Sub Category:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
@@ -570,7 +741,7 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Tranferred to:
+                      Transferred to:
                     </Typography>
                     <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                   </Stack>
@@ -584,9 +755,19 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
                           ref={ref}
                           size="small"
                           value={value}
-                          options={issueHandlerData?.value?.channel?.find((item) => item.id === data?.transferChannelId)?.channelUsers || []}
+                          options={
+                            issueHandlerData?.value?.channel?.find(
+                              (item) => item.id === data?.transferChannelId,
+                            )?.channelUsers || []
+                          }
                           loading={issueHandlerIsLoading}
-                          renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Issue Handler"
+                              sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                            />
+                          )}
                           onOpen={() => {
                             if (!issueHandlerIsSuccess) getIssueHandler();
                           }}
@@ -700,13 +881,20 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
           </Stack>
         </DialogActions>
 
-        <TransferDisapproveDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} />
+        <TransferDisapproveDialog
+          data={disapproveData}
+          open={disapproveOpen}
+          onClose={disapproveOnClose}
+          approvalOnClose={onCloseHandler}
+        />
       </Dialog>
 
       {selectedImage && (
         <>
           <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-            <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+            <DialogContent sx={{ height: "auto" }}>
+              {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+            </DialogContent>
             <DialogActions>
               <Button onClick={handleViewClose}>Close</Button>
             </DialogActions>

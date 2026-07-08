@@ -12,9 +12,9 @@ const App = () => {
       <CssBaseline />
       <Toaster richColors position="top-right" closeButton />
       {/* <SignalRProvider> */}
-      <ParameterProvider>
-        <RouterProvider router={router} />
-      </ParameterProvider>
+      {/* <ParameterProvider> */}
+      <RouterProvider router={router} />
+      {/* </ParameterProvider> */}
       {/* </SignalRProvider> */}
     </ThemeProvider>
   );

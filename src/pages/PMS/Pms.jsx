@@ -1,4 +1,16 @@
-import { Autocomplete, Box, Button, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
 
 import { data } from "../../data";
@@ -40,12 +52,18 @@ const Pms = () => {
   const [defaultSite, setDefaultSite] = useState(null);
   const [defaultPmsType, setDefaultPmsType] = useState(null);
 
-  const { params, setSearch, setSiteId, setPmsTypeId } = usePmsCalendarParams();
+  const { params, setSearch, setSite, setPmsType } = usePmsCalendarParams();
+  const {
+    data: pmsCalendarData,
+    isLoading: pmsCalendarIsLoading,
+    isFetching: pmsCalendarIsFetching,
+    isError: pmsCalendarIsError,
+  } = useGetPmsCalendarQuery(params);
 
-  const { data: pmsCalendarData, isLoading: pmsCalendarIsLoading, isFetching: pmsCalendarIsFetching, isError: pmsCalendarIsError } = useGetPmsCalendarQuery(params);
-
-  const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
-  const [getPmsTypes, { data: pmsTypeData, isLoading: pmsTypeIsLoading, isSuccess: pmsTypeIsSuccess }] = useLazyGetActivePmsTypeQuery();
+  const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] =
+    useLazyGetActiveSitesQuery();
+  const [getPmsTypes, { data: pmsTypeData, isLoading: pmsTypeIsLoading, isSuccess: pmsTypeIsSuccess }] =
+    useLazyGetActivePmsTypeQuery();
 
   const onTabChange = (_, newValue) => {
     setActiveTab(newValue);
@@ -54,7 +72,14 @@ const Pms = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 1:
-        return <PmsCalendar data={pmsCalendarData} isLoading={pmsCalendarIsLoading} isFetching={pmsCalendarIsFetching} isError={pmsCalendarIsError} />;
+        return (
+          <PmsCalendar
+            data={pmsCalendarData}
+            isLoading={pmsCalendarIsLoading}
+            isFetching={pmsCalendarIsFetching}
+            isError={pmsCalendarIsError}
+          />
+        );
       case 2:
         return <PmsTable data={data} />;
       case 3:
@@ -70,10 +95,10 @@ const Pms = () => {
 
     if (siteData?.value?.sites?.length && pmsTypeData?.value?.type?.length) {
       setDefaultSite(siteData?.value?.sites?.[0]);
-      setSiteId(siteData?.value?.sites?.[0]?.id);
+      setSite(siteData?.value?.sites?.[0]?.name);
 
       setDefaultPmsType(pmsTypeData?.value?.type?.[0]);
-      setPmsTypeId(pmsTypeData?.value?.type?.[0]?.id);
+      setPmsType(pmsTypeData?.value?.type?.[0]?.name);
     }
   }, [getPmsTypes, getSites, siteData, pmsTypeData]);
 
@@ -106,7 +131,7 @@ const Pms = () => {
                 sx={pmsStyles.customSelect}
                 onChange={(e) => {
                   setDefaultSite(e.target.value);
-                  setSiteId(e.target.value.id);
+                  setSite(e.target.value.name);
                 }}
               >
                 {siteData?.value?.sites?.map((item, i) => (
@@ -125,7 +150,7 @@ const Pms = () => {
                 sx={pmsStyles.customSelect}
                 onChange={(e) => {
                   setDefaultPmsType(e.target.value);
-                  setPmsTypeId(e.target.value.id);
+                  setPmsType(e.target.value.name);
                 }}
               >
                 {pmsTypeData?.value?.type?.map((item, i) => (
@@ -137,21 +162,19 @@ const Pms = () => {
             </Box>
           </Stack>
 
-          <Stack sx={{ width: "40%" }}>
-            <Stack sx={{ width: "97.5%" }}>
-              <OutlinedInput
+          <Stack sx={pmsStyles.searchAndTabContainer}>
+            <Stack sx={{ width: { xs: 0, md: "56%" } }}>
+              {/* <OutlinedInput
                 // value={searchValue}
                 // onChange={(e) => dispatch(setSearchValue(e.target.value))}
                 size="small"
                 placeholder="Search store..."
                 startAdornment={<Search sx={global.searchIcon} />}
                 sx={pmsStyles.customSearch}
-              />
+              /> */}
             </Stack>
-          </Stack>
 
-          <Stack sx={{ width: "30%" }}>
-            <Stack>
+            <Stack sx={{ flex: 1 }}>
               <Tabs value={activeTab} onChange={onTabChange} variant="fullWidth" scrollButtons="auto">
                 {TAB_CONFIG.map(({ value, label }) => (
                   <Tab key={value} value={value} label={label} className="tabs-styling" sx={pmsStyles.customTab} />

@@ -1,6 +1,27 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import { Add, CheckOutlined, Close, FiberManualRecord, FileDownloadOutlined, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  Add,
+  CheckOutlined,
+  Close,
+  FiberManualRecord,
+  FileDownloadOutlined,
+  RemoveCircleOutline,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -12,8 +33,12 @@ import { theme } from "../../../theme/theme";
 
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
+import {
+  useLazyGetDownloadAttachmentQuery,
+  useLazyGetViewAttachmentQuery,
+} from "../../../features/api_attachments/attachmentsApi";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 const schema = yup.object().shape({
   id: yup.number(),
@@ -36,7 +61,10 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [holdIssueHandlerTickets, { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching }] = useHoldIssueHandlerTicketsMutation();
+  const [
+    holdIssueHandlerTickets,
+    { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching },
+  ] = useHoldIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -77,26 +105,51 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
       payload.append(`OnHoldAttachments[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
-    holdIssueHandlerTickets(payload)
-      .unwrap()
-      .then(() => {
-        toast.success("Success!", {
-          description: "Ticket submitted successfully!",
-          duration: 1500,
-        });
+    Swal.fire({
+      title: "Confirmation",
+      text: `Update on-hold changes to ticket ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // console.log("Payload Entries: ", [...payload.entries()]);
+        holdIssueHandlerTickets(payload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "On-Hold updated successfully!",
+              duration: 1500,
+            });
 
-        setAddAttachments([]);
-        reset();
-        onClose();
-      })
-      .catch((err) => {
-        console.log("Error", err);
-        toast.error("Error!", {
-          description: err.data.error.message,
-          duration: 1500,
-        });
-      });
+            setAddAttachments([]);
+            reset();
+            onClose();
+          })
+          .catch((err) => {
+            console.log("Error", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+    });
   };
 
   const handleAttachments = (event) => {
@@ -108,7 +161,9 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
       file: file,
     }));
 
-    const uniqueNewFiles = fileNames.filter((newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name));
+    const uniqueNewFiles = fileNames.filter(
+      (newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name),
+    );
 
     setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -139,7 +194,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
 
       setValue(
         "OnHoldAttachments",
-        watch("OnHoldAttachments").filter((file) => file.name !== fileNameToDelete.name)
+        watch("OnHoldAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -251,7 +306,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
             size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
             link: subItem.attachment,
           };
-        })
+        }),
       );
 
       setAddAttachments(
@@ -260,7 +315,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
           name: item.name,
           size: item.size,
           link: item.link,
-        }))
+        })),
       );
     }
   }, [data]);
@@ -304,7 +359,14 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
               </Stack>
             </Stack>
 
-            <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
+            <Stack
+              id="closeTicket"
+              component="form"
+              direction="row"
+              gap={1}
+              sx={{ width: "100%", height: "100%" }}
+              onSubmit={handleSubmit(onSubmitAction)}
+            >
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
                 <Stack direction="row" gap={0.5} alignItems="center">
@@ -322,7 +384,16 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
 
                 {isScreenSmall ? (
                   <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                    <Typography
+                      sx={{
+                        textAlign: "left",
+                        color: theme.palette.text.secondary,
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      Ticket Description:
+                    </Typography>
 
                     <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                       {data?.concern_Description?.split("\r\n").map((line, index) => (
@@ -334,13 +405,33 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                     </Typography>
                   </Stack>
                 ) : (
-                  <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      border: "1px solid #2D3748",
+                      padding: 1,
+                      mt: 1,
+                    }}
+                  >
                     <Box sx={{ width: "20%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                      <Typography
+                        sx={{
+                          textAlign: "left",
+                          color: theme.palette.text.secondary,
+                          fontWeight: "500",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Ticket Description:
+                      </Typography>
                     </Box>
                     <Box sx={{ width: "5%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
+                      <Typography
+                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
+                      >
                         {data?.concern_Description?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -416,7 +507,14 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                           Attachment:
                         </Typography>
 
-                        <Button size="small" variant="contained" color="warning" startIcon={<Add />} onClick={handleUploadButtonClick} sx={{ padding: "2px", borderRadius: "2px" }}>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="warning"
+                          startIcon={<Add />}
+                          onClick={handleUploadButtonClick}
+                          sx={{ padding: "2px", borderRadius: "2px" }}
+                        >
                           <Typography sx={{ fontSize: "12px" }}>Add</Typography>
                         </Button>
                       </Stack>
@@ -473,13 +571,19 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                                   sx={{
                                     fontSize: "14px",
                                     fontWeight: 500,
-                                    color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                    color: !!fileName.ticketAttachmentId
+                                      ? theme.palette.success.main
+                                      : theme.palette.primary.main,
                                   }}
                                 >
-                                  {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                  {!!fileName.ticketAttachmentId
+                                    ? "Attached file"
+                                    : "Uploaded the file successfully"}
                                 </Typography>
 
-                                {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
+                                {!!fileName.ticketAttachmentId && (
+                                  <CheckOutlined color="success" fontSize="small" />
+                                )}
                               </Box>
                             </Box>
 
@@ -560,7 +664,9 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
-                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+                            const uniqueNewFiles = files.filter(
+                              (item) => !value.some((file) => file.name === item.name),
+                            );
 
                             console.log("Controller Files: ", files);
 
@@ -588,14 +694,16 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose }) => {
               loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching}
               disabled={!watch("Reason")}
             >
-              Submit
+              Save
             </LoadingButton>
           </Stack>
         </DialogActions>
 
         {/* Dialog to view image */}
         <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-          <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
+          <DialogContent sx={{ height: "auto" }}>
+            {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+          </DialogContent>
           <DialogActions>
             <Button onClick={handleViewClose}>Close</Button>
           </DialogActions>

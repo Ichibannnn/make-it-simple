@@ -32,7 +32,10 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-import { useArchiveApproverMutation, useGetApproverQuery } from "../../../features/api_channel_setup/approver/approverApi";
+import {
+  useArchiveApproverMutation,
+  useGetApproverQuery,
+} from "../../../features/api_channel_setup/approver/approverApi";
 
 import ApproverActions from "./ApproverActions";
 import ApproverDialog from "./ApproverDialog";
@@ -204,13 +207,23 @@ const Approver = () => {
     >
       <Stack>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
+          <Stack
+            width="100%"
+            justifyContent="space-between"
+            sx={{ flexDirection: isSmallScreen ? "column" : "row" }}
+          >
             <Stack justifyItems="left">
               <Typography variant={isSmallScreen ? "h5" : "h4"}>Approver</Typography>
             </Stack>
 
             <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button variant="contained" size={isSmallScreen ? "small" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
+              <Button
+                variant="contained"
+                size={isSmallScreen ? "small" : "large"}
+                color="primary"
+                startIcon={<AddOutlined />}
+                onClick={onToggle}
+              >
                 Add
               </Button>
             </Stack>
@@ -256,7 +269,13 @@ const Approver = () => {
 
         <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ marginTop: "10px", padding: "20px" }}
+          gap={4}
+        >
           <OutlinedInput
             flex="1"
             placeholder="Search approver"
@@ -280,18 +299,40 @@ const Approver = () => {
               !isLoading &&
               !isFetching &&
               data?.value?.approver?.map((item) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+                <Card
+                  key={item.id}
+                  sx={{
+                    backgroundColor: theme.palette.bgForm.black3,
+                    borderRadius: "15px",
+                    borderColor: "#2D3748",
+                  }}
+                >
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>SUB UNIT:</Typography>
-                        <Typography sx={{ fontWeight: 400, fontSize: "0.875rem", lineHeight: 1.57, color: theme.palette.text.main }}>
+                        <Typography
+                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
+                        >
+                          SUB UNIT:
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 400,
+                            fontSize: "0.875rem",
+                            lineHeight: 1.57,
+                            color: theme.palette.text.main,
+                          }}
+                        >
                           {item.subUnit_Code} - {item.subUnit_Name}
                         </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
+                        <Typography
+                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
+                        >
+                          STATUS:
+                        </Typography>
                         <Chip
                           variant="filled"
                           size="30px"
@@ -306,8 +347,17 @@ const Approver = () => {
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
-                        <ApproverActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <Typography
+                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
+                        >
+                          ACTION:
+                        </Typography>
+                        <ApproverActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -316,7 +366,11 @@ const Approver = () => {
 
             {isError && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -342,7 +396,12 @@ const Approver = () => {
             )}
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+              sx={{
+                color: "#A0AEC0",
+                fontWeight: 400,
+                background: "#1C2536",
+                borderRadius: "0px 0px 20px 20px",
+              }}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
@@ -439,7 +498,12 @@ const Approver = () => {
                           }}
                           align="center"
                         >
-                          <ApproverActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                          <ApproverActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -447,7 +511,11 @@ const Approver = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           Something went wrong.
                         </Typography>
