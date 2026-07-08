@@ -2,7 +2,14 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Box, Dialog, Snackbar, Alert } from "@mui/material";
 import { Typography } from "@mui/material";
 
-import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
 import BuilderTopBar from "./BuilderTopBar";
@@ -26,6 +33,7 @@ import {
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
 import { defaultChecklistColumns } from "../../../constants/checklistDefaults";
 import { serialize } from "../../../schema";
+import { useSaveChecklistFormMutation } from "../../../features/api masterlist/checklist_management/checklistManagementApi";
 import { formBuilderStyles as s } from "./styles/formStyle";
 
 // nextId is managed as a module-level variable that gets seeded lazily
@@ -42,7 +50,10 @@ function DragOverlayContent({ item }) {
 
 const FormBuilder = ({ data, open, onClose }) => {
   const draftKey = data?.id || getNewFormSessionKey();
-  const draftMeta = { title: data?.title || "Untitled Form", description: data?.description || "" };
+  const draftMeta = {
+    title: data?.title || "Untitled Form",
+    description: data?.description || "",
+  };
 
   // ── Initialize fields directly from localStorage — survives any refresh ──
   const [fields, setFields] = useState(() => {
@@ -60,12 +71,19 @@ const FormBuilder = ({ data, open, onClose }) => {
   const [activeItem, setActiveItem] = useState(null);
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [saveLoading, setSaveLoading] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState(null);
 
-  const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const [saveChecklistForm, { isLoading: saveLoading }] =
+    useSaveChecklistFormMutation();
 
-  const showSnack = (message, severity = "success") => setSnack({ open: true, message, severity });
+  const [snack, setSnack] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const showSnack = (message, severity = "success") =>
+    setSnack({ open: true, message, severity });
 
   useEffect(() => {
     if (open && data?.id) {
@@ -86,7 +104,9 @@ const FormBuilder = ({ data, open, onClose }) => {
   );
 
   // ── DnD ──────────────────────────────────────────────────────────────────
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
   const selectedField = fields.find((f) => f.id === selectedId) ?? null;
 
   function handleDragStart({ active }) {
@@ -134,7 +154,11 @@ const FormBuilder = ({ data, open, onClose }) => {
         updateFields((prev) => {
           const overIndex = prev.findIndex((f) => f.id === overId);
           const next = [...prev];
-          next.splice(overIndex >= 0 ? overIndex + 1 : prev.length, 0, newField);
+          next.splice(
+            overIndex >= 0 ? overIndex + 1 : prev.length,
+            0,
+            newField,
+          );
           return next;
         });
       }
@@ -157,7 +181,9 @@ const FormBuilder = ({ data, open, onClose }) => {
   }
 
   function handleUpdate(updated) {
-    updateFields((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
+    updateFields((prev) =>
+      prev.map((f) => (f.id === updated.id ? updated : f)),
+    );
   }
 
   function handleDiscardDraft() {
@@ -181,40 +207,61 @@ const FormBuilder = ({ data, open, onClose }) => {
   }, [draftKey]);
 
   // ── Save Form (final) ─────────────────────────────────────────────────────
-  function handleSaveConfirm(validatedMeta) {
-    setSaveLoading(true);
+  async function handleSaveConfirm(validatedMeta) {
+    // Canonical, versioned form definition (flat builder state -> nested schema).
+    const payload = serialize(fields, {
+      id: draftKey,
+      name: validatedMeta.title,
+      description: validatedMeta.description,
+      version: validatedMeta.version,
+    });
 
-    setTimeout(() => {
-      const payload = serialize(fields, {
-        id: draftKey,
-        name: validatedMeta.title,
-        description: validatedMeta.description,
-        version: validatedMeta.version,
-      });
+    console.log("Save form payload:", payload);
 
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${draftKey}-v${validatedMeta.version}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    // ── Send to backend (POST) ──────────────────────────────────────────────
+    // try {
+    //   await saveChecklistForm(payload).unwrap();
 
-      clearDraft(draftKey);
-      forgetLastOpen();
-      setDraftSavedAt(null);
+    //   clearDraft(draftKey);
+    //   forgetLastOpen();
+    //   setDraftSavedAt(null);
 
-      setSaveLoading(false);
-      setSaveDialogOpen(false);
-      showSnack("Form saved successfully! JSON downloaded.", "success");
-    }, 800);
+    //   setSaveDialogOpen(false);
+    //   showSnack("Form saved successfully!", "success");
+    // } catch (err) {
+    //   showSnack(err?.data?.error?.message || "Failed to save form. Please try again.", "error");
+    // }
+
+    // ── Previous behavior: download the payload as a local JSON file ─────────
+    // Kept for reference / offline export. Uncomment to restore.
+    //
+    // const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    //   type: "application/json",
+    // });
+    // const url = URL.createObjectURL(blob);
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = `${draftKey}-v${validatedMeta.version}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+    // document.body.appendChild(a);
+    // a.click();
+    // a.remove();
+    // URL.revokeObjectURL(url);
+    //
+    // clearDraft(draftKey);
+    // forgetLastOpen();
+    // setDraftSavedAt(null);
+    // setSaveDialogOpen(false);
+    // showSnack("Form saved successfully! JSON downloaded.", "success");
   }
 
   return (
     <>
-      <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={onClose}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -224,7 +271,9 @@ const FormBuilder = ({ data, open, onClose }) => {
           <Box sx={s.root}>
             <BuilderTopBar
               mode={mode}
-              onTogglePreview={() => setMode((m) => (m === "builder" ? "preview" : "builder"))}
+              onTogglePreview={() =>
+                setMode((m) => (m === "builder" ? "preview" : "builder"))
+              }
               onSave={() => setSaveDialogOpen(true)}
               onClose={onClose}
               onDiscardDraft={handleDiscardDraft}
