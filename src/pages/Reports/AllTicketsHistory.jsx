@@ -279,8 +279,6 @@ const AllTicketsHistory = ({
                             fontSize: "12px",
                             fontWeight: 500,
                             width: "100px",
-                            overflowWrap: "break-word",
-                            wordBreak: "break-word",
                           }}
                         >
                           {item.concerns?.split("\r\n").map((line, index) => (

@@ -95,22 +95,33 @@ const Header = () => {
   };
 
   const logoutHandler = () => {
+    // One Login redirect when logging out
+    const oneRdfWindow = window.open("", "OneRDF_Portal");
     try {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
+      if (oneRdfWindow.location.href === "about:blank" || oneRdfWindow.location.href === "") {
+        oneRdfWindow.close();
+        window.location.href = "https://one.rdfmis.com/login";
+      } else {
+        window.close();
+      }
+    } catch (error) {
+      window.close();
+    }
 
-      // dispatch(notificationApi.util.resetApiState());
-      // dispatch(notificationMessageApi.util.resetApiState());
-      dispatch(concernApi.util.resetApiState());
-      dispatch(concernReceiverApi.util.resetApiState());
-      dispatch(concernIssueHandlerApi.util.resetApiState());
-      dispatch(ticketApprovalApi.util.resetApiState());
-      dispatch(closingTicketApi.util.resetApiState());
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
 
-      dispatch(signOut());
-      dispatch(clearUserDetails());
-      navigate("/login");
-    } catch (error) {}
+    // dispatch(notificationApi.util.resetApiState());
+    // dispatch(notificationMessageApi.util.resetApiState());
+    dispatch(concernApi.util.resetApiState());
+    dispatch(concernReceiverApi.util.resetApiState());
+    dispatch(concernIssueHandlerApi.util.resetApiState());
+    dispatch(ticketApprovalApi.util.resetApiState());
+    dispatch(closingTicketApi.util.resetApiState());
+
+    dispatch(signOut());
+    dispatch(clearUserDetails());
+    // navigate("/login");
   };
 
   const onNavigateAction = (data) => {

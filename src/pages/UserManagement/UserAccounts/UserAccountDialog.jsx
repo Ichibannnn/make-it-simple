@@ -59,7 +59,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         subUnitId: yup.object().required().label("Sub-Unit"),
         locationId: yup.object().required().label("Location"),
       }),
-    [storeCheckbox]
+    [storeCheckbox],
   );
 
   const {
@@ -385,7 +385,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                               .split(" ")
                               .map((item) => item.at(0))
                               .join("")
-                              .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase()
+                              .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase(),
                           );
 
                           onChange(value);
@@ -461,7 +461,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 control={control}
                 name="username"
                 render={({ field: { ref, value, onChange } }) => {
-                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth />;
+                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth disabled />;
                 }}
               />
             ) : (
@@ -474,6 +474,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 sx={{ borderColor: "primary", flex: 1 }}
                 autoComplete="off"
                 // onChange={(e) => storeUsernameHandler(e.target.value)}
+                disabled
               />
             )}
 
@@ -581,6 +582,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     fullWidth
                     disablePortal
                     disableClearable
+                    disabled
                   />
                 );
               }}

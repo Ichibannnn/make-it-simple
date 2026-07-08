@@ -191,43 +191,25 @@ const OnHoldTicketsHistory = ({
                       color: "#22B4BF",
                       fontSize: "12px",
                       fontWeight: 500,
+                      maxWidth: "400px",
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
                     }}
-                    align="center"
                   >
                     {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
-                  <Tooltip title={item?.concerns} placement="bottom-start">
-                    <TableCell
-                      sx={{
-                        color: "#EDF2F7",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        width: "400px",
-                        overflowWrap: "break-word",
-                        wordBreak: "break-word",
-                        whiteSpace: "normal",
-                      }}
-                    >
-                      {item.concerns?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </TableCell>
-                  </Tooltip>
-
                   <TableCell
-                    // className="ellipsis-styling"
                     sx={{
                       color: theme.palette.warning.main,
                       fontSize: "12px",
                       fontWeight: 500,
-                      width: "300px",
-                      overflowWrap: "break-word",
-                      wordBreak: "break-word",
-                      whiteSpace: "normal",
+                      "&:hover": {
+                        background: "",
+                        color: "#EDF2F7",
+                      },
                     }}
                   >
                     {item.reason}
