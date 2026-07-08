@@ -7,9 +7,9 @@ const Private = ({ Render }) => {
   const permissions = useSelector((state) => state?.user?.permissions);
 
   return !fullname || permissions?.length === 0 ? (
-    (window.location.href = "https://one.rdfmis.com/login")
+    <Navigate to="/login" />
   ) : (
-    // <Navigate to="/login" />
+    // (window.location.href = "https://one.rdfmis.com/login")
     <PermittedRoutes Render={Render} />
   );
 };
