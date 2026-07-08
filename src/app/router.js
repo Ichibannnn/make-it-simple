@@ -45,14 +45,14 @@ import Pms from "../pages/PMS/Pms";
 import ChecklistManagementPage from "../pages/ChecklistManagement/ChecklistManagementPage";
 
 export const router = createBrowserRouter([
-  // {
-  //   path: "/login",
-  //   element: (
-  //     <AuthRedirect>
-  //       <Login />
-  //     </AuthRedirect>
-  //   ),
-  // },
+  {
+    path: "/login",
+    element: (
+      <AuthRedirect>
+        <Login />
+      </AuthRedirect>
+    ),
+  },
 
   {
     path: "/redirect",
