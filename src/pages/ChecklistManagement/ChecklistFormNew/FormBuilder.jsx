@@ -2,19 +2,12 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Box, Dialog, Snackbar, Alert } from "@mui/material";
 import { Typography } from "@mui/material";
 
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
 import BuilderTopBar from "./BuilderTopBar";
 import FieldPalette from "./FieldPalette";
-import FormCanvas from "./FormCanvas";
+import FormCanvas, { CANCEL_DROP_ID } from "./FormCanvas";
 import PropertiesPanel from "./PropertiesPanel";
 import FormRenderer from "./FormRenderer";
 import SaveFormDialog from "./SaveFormDialog";
@@ -26,8 +19,6 @@ import {
   hasDraft,
   getMaxId,
   getNewFormSessionKey,
-  rememberLastOpen,
-  forgetLastOpen,
 } from "./../../../hooks/useFormDraft";
 
 import { FIELD_TYPE_MAP } from "../../../constants/fieldTypes";
@@ -73,8 +64,7 @@ const FormBuilder = ({ data, open, onClose }) => {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState(null);
 
-  const [saveChecklistForm, { isLoading: saveLoading }] =
-    useSaveChecklistFormMutation();
+  const [saveChecklistForm, { isLoading: saveLoading }] = useSaveChecklistFormMutation();
 
   const [snack, setSnack] = useState({
     open: false,
@@ -82,14 +72,7 @@ const FormBuilder = ({ data, open, onClose }) => {
     severity: "success",
   });
 
-  const showSnack = (message, severity = "success") =>
-    setSnack({ open: true, message, severity });
-
-  useEffect(() => {
-    if (open && data?.id) {
-      rememberLastOpen(data.id);
-    }
-  }, [open, data?.id]);
+  const showSnack = (message, severity = "success") => setSnack({ open: true, message, severity });
 
   const updateFields = useCallback(
     (updater) => {
@@ -104,11 +87,9 @@ const FormBuilder = ({ data, open, onClose }) => {
   );
 
   // ── DnD ──────────────────────────────────────────────────────────────────
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-  );
-  const selectedField = fields.find((f) => f.id === selectedId) ?? null;
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
+  const selectedField = fields.find((f) => f.id === selectedId) ?? null;
   function handleDragStart({ active }) {
     if (String(active.id).startsWith("palette-")) {
       const type = String(active.id).replace("palette-", "");
@@ -121,6 +102,9 @@ const FormBuilder = ({ data, open, onClose }) => {
   function handleDragEnd({ active, over }) {
     setActiveItem(null);
     if (!over) return;
+
+    // Released over the floating cancel target — abort without adding/moving.
+    if (String(over.id) === CANCEL_DROP_ID) return;
 
     const activeId = String(active.id);
 
@@ -154,11 +138,7 @@ const FormBuilder = ({ data, open, onClose }) => {
         updateFields((prev) => {
           const overIndex = prev.findIndex((f) => f.id === overId);
           const next = [...prev];
-          next.splice(
-            overIndex >= 0 ? overIndex + 1 : prev.length,
-            0,
-            newField,
-          );
+          next.splice(overIndex >= 0 ? overIndex + 1 : prev.length, 0, newField);
           return next;
         });
       }
@@ -180,15 +160,33 @@ const FormBuilder = ({ data, open, onClose }) => {
     if (selectedId === id) setSelectedId(null);
   }
 
+  function handleDuplicate(id) {
+    const original = fields.find((f) => f.id === id);
+    if (!original) return;
+
+    // Deep clone so nested arrays (rows, columns, nameOptions) are not shared
+    // between the original and the copy.
+    const copy = {
+      ...structuredClone(original),
+      id: `f${nextId++}`,
+      label: `${original.label} (Copy)`,
+    };
+
+    updateFields((prev) => {
+      const idx = prev.findIndex((f) => f.id === id);
+      const next = [...prev];
+      next.splice(idx >= 0 ? idx + 1 : prev.length, 0, copy);
+      return next;
+    });
+    setSelectedId(copy.id);
+  }
+
   function handleUpdate(updated) {
-    updateFields((prev) =>
-      prev.map((f) => (f.id === updated.id ? updated : f)),
-    );
+    updateFields((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
   }
 
   function handleDiscardDraft() {
     clearDraft(draftKey);
-    forgetLastOpen();
     setFields([]);
     setDraftSavedAt(null);
     showSnack("Draft discarded. Canvas cleared.", "warning");
@@ -200,6 +198,7 @@ const FormBuilder = ({ data, open, onClose }) => {
       isFirstRender.current = false;
       return;
     }
+
     const restored = readDraft(draftKey) ?? [];
     const maxSeen = getMaxId(draftKey);
     if (maxSeen >= nextId) nextId = maxSeen + 1;
@@ -223,7 +222,6 @@ const FormBuilder = ({ data, open, onClose }) => {
     //   await saveChecklistForm(payload).unwrap();
 
     //   clearDraft(draftKey);
-    //   forgetLastOpen();
     //   setDraftSavedAt(null);
 
     //   setSaveDialogOpen(false);
@@ -235,45 +233,38 @@ const FormBuilder = ({ data, open, onClose }) => {
     // ── Previous behavior: download the payload as a local JSON file ─────────
     // Kept for reference / offline export. Uncomment to restore.
     //
-    // const blob = new Blob([JSON.stringify(payload, null, 2)], {
-    //   type: "application/json",
-    // });
-    // const url = URL.createObjectURL(blob);
-    // const a = document.createElement("a");
-    // a.href = url;
-    // a.download = `${draftKey}-v${validatedMeta.version}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
-    // document.body.appendChild(a);
-    // a.click();
-    // a.remove();
-    // URL.revokeObjectURL(url);
-    //
-    // clearDraft(draftKey);
-    // forgetLastOpen();
-    // setDraftSavedAt(null);
-    // setSaveDialogOpen(false);
-    // showSnack("Form saved successfully! JSON downloaded.", "success");
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${draftKey}-v${validatedMeta.version}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    clearDraft(draftKey);
+    setDraftSavedAt(null);
+    setSaveDialogOpen(false);
+    showSnack("Form saved successfully! JSON downloaded.", "success");
   }
 
   return (
     <>
-      <Dialog
-        fullScreen
-        open={open}
-        onClose={onClose}
-        PaperProps={{ style: { overflow: "auto" } }}
-      >
+      <Dialog fullScreen open={open} onClose={onClose} PaperProps={{ style: { overflow: "auto" } }}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
+          onDragCancel={() => setActiveItem(null)}
         >
           <Box sx={s.root}>
             <BuilderTopBar
               mode={mode}
-              onTogglePreview={() =>
-                setMode((m) => (m === "builder" ? "preview" : "builder"))
-              }
+              onTogglePreview={() => setMode((m) => (m === "builder" ? "preview" : "builder"))}
               onSave={() => setSaveDialogOpen(true)}
               onClose={onClose}
               onDiscardDraft={handleDiscardDraft}
@@ -290,6 +281,7 @@ const FormBuilder = ({ data, open, onClose }) => {
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   onDelete={handleDelete}
+                  onDuplicate={handleDuplicate}
                   onUpdate={handleUpdate}
                   data={data}
                 />

@@ -1,25 +1,47 @@
 import { Box, Typography } from "@mui/material";
-import { useDroppable } from "@dnd-kit/core";
+import { useDroppable, useDndContext } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import CanvasField from "./CanvasField";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import { formCanvasStyles as s } from "./styles/formStyle";
+
+export const CANCEL_DROP_ID = "cancel-drop";
 
 export default function FormCanvas({
   fields,
   selectedId,
   onSelect,
   onDelete,
+  onDuplicate,
   onUpdate,
   data,
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas-droppable" });
+  const { active } = useDndContext();
+
+  // Floating "drop here to cancel" target. A click can't work mid-drag (the
+  // pointer is held down the whole time), so cancelling is done by releasing
+  // the dragged field over this zone — handled in FormBuilder's onDragEnd.
+  const { setNodeRef: setCancelRef, isOver: isOverCancel } = useDroppable({
+    id: CANCEL_DROP_ID,
+  });
 
   return (
     <Box sx={s.scroll}>
+      {/* Floating cancel-drag target — only while a field is being dragged */}
+      {active && (
+        <Box ref={setCancelRef} sx={s.cancelDropFab(isOverCancel)}>
+          <CloseIcon sx={s.cancelDropIcon(isOverCancel)} />
+          <Typography sx={s.cancelDropText(isOverCancel)}>
+            {isOverCancel ? "Release to cancel" : "Drop here to cancel"}
+          </Typography>
+        </Box>
+      )}
+
       {/* Canvas inner */}
       <Box sx={s.inner}>
         {/* Form title area */}
@@ -55,6 +77,7 @@ export default function FormCanvas({
                     isSelected={selectedId === field.id}
                     onSelect={() => onSelect(field.id)}
                     onDelete={() => onDelete(field.id)}
+                    onDuplicate={() => onDuplicate(field.id)}
                     onUpdate={onUpdate}
                   />
                 ))}

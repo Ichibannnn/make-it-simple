@@ -4,6 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
+import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 import DrawIcon from "@mui/icons-material/Draw";
 import DesktopWindowsOutlinedIcon from "@mui/icons-material/DesktopWindowsOutlined";
 import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
@@ -138,7 +139,7 @@ function SignaturePreview({ field }) {
   );
 }
 
-export default function CanvasField({ field, isSelected, onSelect, onDelete, onUpdate }) {
+export default function CanvasField({ field, isSelected, onSelect, onDelete, onDuplicate, onUpdate }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: field.id,
   });
@@ -208,17 +209,33 @@ export default function CanvasField({ field, isSelected, onSelect, onDelete, onU
           />
         )}
 
+        {/* Duplicate */}
+        <Tooltip title="Duplicate field" arrow placement="top">
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate();
+            }}
+            sx={s.duplicateBtn}
+          >
+            <ContentCopyOutlinedIcon sx={s.duplicateIcon} />
+          </IconButton>
+        </Tooltip>
+
         {/* Delete */}
-        <IconButton
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          sx={s.deleteBtn}
-        >
-          <DeleteOutlineIcon sx={s.deleteIcon} />
-        </IconButton>
+        <Tooltip title="Delete field" arrow placement="top">
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            sx={s.deleteBtn}
+          >
+            <DeleteOutlineIcon sx={s.deleteIcon} />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       {/* Expanded previews for advanced types */}

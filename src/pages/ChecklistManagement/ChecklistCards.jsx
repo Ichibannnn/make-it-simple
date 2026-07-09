@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, IconButton, Stack, Typography } from "@mui/material";
 
@@ -6,17 +6,18 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import Lottie from "lottie-react";
 import Folder from "../../assets/lotties/folder-yellow.json";
+
 import { toast } from "sonner";
 import { theme } from "../../theme/theme";
 import { checklistStyles } from "./styles/checklistStyles";
+
 import useDisclosure from "../../hooks/useDisclosure";
 import { useArchiveChecklistMutation } from "../../features/api masterlist/checklist_management/checklistManagementApi";
 
 import ChecklistCardActions from "./ChecklistCardActions";
-import CreateNewChecklistDialog from "./CreateNewChecklistDialog";
 import ChecklistFormDialog from "./ChecklistFormDialog";
 import FormBuilder from "./ChecklistFormNew/FormBuilder";
-import { recallLastOpen } from "../../hooks/useFormDraft";
+import CreateNewChecklistDialog from "./CreateNewChecklistDialog";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -30,19 +31,11 @@ const ChecklistCards = ({ data }) => {
 
   const {
     open: checklistOpen,
-    onOpen: checklistOnOpen,
     onToggle: checklistOnToggle,
     onClose: checklistOnClose,
   } = useDisclosure();
   const { open: editOpen, onToggle: editOnToggle, onClose: editOnClose } = useDisclosure();
   const [archiveChecklist] = useArchiveChecklistMutation();
-
-  useEffect(() => {
-    const lastId = recallLastOpen();
-    if (lastId && String(data?.id) === String(lastId)) {
-      checklistOnOpen();
-    }
-  }, []);
 
   const TOTAL_FRAMES = 101;
   const MID_FRAME = TOTAL_FRAMES / 2;

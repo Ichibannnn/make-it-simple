@@ -416,13 +416,6 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
               />
             </>
           )}
-
-          {/* Apply */}
-          <Box sx={s.applyWrap}>
-            <Button fullWidth variant="contained" size="small" sx={s.applyBtn}>
-              Apply Changes
-            </Button>
-          </Box>
         </Box>
       )}
     </Box>

@@ -305,6 +305,13 @@ export const canvasFieldStyles = {
     border: `1px solid ${isAdvanced ? "rgba(124,58,237,0.3)" : C.border}`,
     "& .MuiChip-label": { px: 0.75 },
   }),
+  duplicateBtn: {
+    color: C.border,
+    "&:hover": { color: C.primaryLight, bgcolor: "rgba(124,58,237,0.08)" },
+    p: 0.25,
+    flexShrink: 0,
+  },
+  duplicateIcon: { fontSize: 15 },
   deleteBtn: {
     color: C.border,
     "&:hover": { color: C.danger, bgcolor: "rgba(239,68,68,0.08)" },
@@ -432,6 +439,37 @@ export const formBuilderStyles = {
 
 // ── FormCanvas.jsx ───────────────────────────────────────────────────────────
 export const formCanvasStyles = {
+  cancelDropFab: (isOver) => ({
+    position: "fixed",
+    bottom: 28,
+    left: "50%",
+    transform: isOver ? "translateX(-50%) scale(1.05)" : "translateX(-50%)",
+    zIndex: 1400,
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
+    pl: 2,
+    pr: 2.25,
+    py: 1,
+    borderRadius: 5,
+    bgcolor: isOver ? C.danger : C.surface,
+    border: `1.5px ${isOver ? "solid" : "dashed"} ${isOver ? C.danger : C.border}`,
+    boxShadow: isOver
+      ? "0 8px 28px rgba(239,68,68,0.45)"
+      : "0 6px 20px rgba(0,0,0,0.4)",
+    transition: "all 0.15s ease",
+    pointerEvents: "none",
+  }),
+  cancelDropIcon: (isOver) => ({
+    fontSize: 18,
+    color: isOver ? C.white : C.muted,
+  }),
+  cancelDropText: (isOver) => ({
+    fontSize: 12,
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+    color: isOver ? C.white : C.muted,
+  }),
   scroll: {
     flex: 1,
     overflowY: "auto",
@@ -971,13 +1009,6 @@ export const propertiesPanelStyles = {
     width: 16,
     textAlign: "center",
     flexShrink: 0,
-  },
-  applyWrap: { mt: "auto", pt: 1 },
-  applyBtn: {
-    bgcolor: C.primary,
-    "&:hover": { bgcolor: C.primaryHover },
-    fontSize: 12,
-    boxShadow: "0 0 12px rgba(124,58,237,0.3)",
   },
 };
 
