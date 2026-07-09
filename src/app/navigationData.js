@@ -78,6 +78,11 @@ export const sidebarNavigationData = [
         name: "Sites",
         path: "/masterlist/sites",
       },
+      {
+        id: 11,
+        name: "Store List",
+        path: "/masterlist/store-list",
+      },
     ],
   },
   {

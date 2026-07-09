@@ -18,6 +18,7 @@ import OneCharging from "../pages/Masterlist/OneCharging/OneCharging";
 import NewApprover from "../pages/ChannelSetup/ApproverSetup/NewApprover";
 import PmsType from "../pages/Masterlist/PmsType/PmsType";
 import Sites from "../pages/Masterlist/Sites/Sites";
+import StoreList from "../pages/Masterlist/Stores/StoreList";
 
 import RequestsPage from "../pages/Request/RequestsPage";
 import ConcernTickets from "../pages/Request/ConcernTickets/ConcernTickets";
@@ -131,6 +132,10 @@ export const router = createBrowserRouter([
           {
             path: "/masterlist/sites",
             element: <Sites />,
+          },
+          {
+            path: "/masterlist/store-list",
+            element: <StoreList />,
           },
         ],
       },

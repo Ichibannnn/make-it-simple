@@ -288,3 +288,42 @@ export const checklistData = {
     ],
   },
 };
+
+export const storeListData = {
+  value: {
+    stores: [
+      {
+        id: 1,
+        storeName: "0086-FO002-NEPO",
+        region: "3110 - Region A",
+        area: "0321 - Area 1",
+        isActive: true,
+      },
+
+      {
+        id: 2,
+        storeName: "0090-FO09-DAU",
+        region: "3110 - Region A",
+        area: "0321 - Area 1",
+        isActive: true,
+      },
+
+      {
+        id: 3,
+        storeName: "0088-FO06-SINDALAN",
+        region: "3120 - Region B",
+        area: "0326 - Area 6",
+        isActive: true,
+      },
+
+      {
+        id: 4,
+        storeName: "0091-FO10-BULAON",
+        region: "3110 - Region A",
+        area: "0321 - Area 1",
+        isActive: false,
+      },
+    ],
+    totalCount: 4,
+  },
+};

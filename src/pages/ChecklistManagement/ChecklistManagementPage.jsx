@@ -1,11 +1,4 @@
-import {
-  Grid,
-  IconButton,
-  OutlinedInput,
-  Stack,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Grid, IconButton, OutlinedInput, Stack, Typography, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import { global } from "../../styles/global";
 import { theme } from "../../theme/theme";
@@ -32,8 +25,7 @@ const ChecklistManagementPage = () => {
     Search: search,
   };
 
-  const { data, isLoading, isFetching, isSuccess } =
-    useGetChecklistsQuery(queryParams);
+  const { data, isLoading, isFetching, isSuccess } = useGetChecklistsQuery(queryParams);
 
   const renderSkeleton = () => {
     const renderSkeletonRows = () => {
@@ -51,9 +43,7 @@ const ChecklistManagementPage = () => {
       <Stack mb={1}>
         <Stack justifyContent="space-between" sx={global.headerContainer}>
           <Stack>
-            <Typography variant={isScreenSmall ? "h5" : "h4"}>
-              Checklist Management
-            </Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>Checklist Management</Typography>
             <Typography color="text.secondary" fontSize="small"></Typography>
           </Stack>
           <Stack />
@@ -71,10 +61,7 @@ const ChecklistManagementPage = () => {
                 sx={checklistStyles.customSearch}
               />
 
-              <IconButton
-                onClick={() => setStatus(!status)}
-                title={!status ? "Active" : "Inactive"}
-              >
+              <IconButton onClick={() => setStatus(!status)} title={!status ? "Active" : "Inactive"}>
                 <Inventory sx={checklistStyles.icons} />
               </IconButton>
               {/* <IconButton>
@@ -90,7 +77,7 @@ const ChecklistManagementPage = () => {
                 <CreateCard />
               </Grid>
 
-              {/* {(isLoading || isFetching) && renderSkeleton()}
+              {(isLoading || isFetching) && renderSkeleton()}
 
               {isSuccess &&
                 !isLoading &&
@@ -99,13 +86,13 @@ const ChecklistManagementPage = () => {
                   <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
                     <ChecklistCards data={item} />
                   </Grid>
-                ))} */}
+                ))}
 
-              {checklistData?.value?.checklistManagement?.map((item, index) => (
+              {/* {checklistData?.value?.checklistManagement?.map((item, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
                   <ChecklistCards data={item} />
                 </Grid>
-              ))}
+              ))} */}
             </Grid>
           </Stack>
         </Stack>

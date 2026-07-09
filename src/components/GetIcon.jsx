@@ -6,6 +6,7 @@ import {
   AssessmentOutlined,
   AttachFileOutlined,
   AutoAwesomeMotionOutlined,
+  BackupTableOutlined,
   BallotOutlined,
   BuildCircleOutlined,
   BusinessOutlined,
@@ -23,6 +24,8 @@ import {
   ManageAccountsOutlined,
   NumbersOutlined,
   PermIdentityOutlined,
+  StorefrontOutlined,
+  StoreMallDirectoryOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
 
@@ -57,6 +60,9 @@ export const getSubMenuIcon = (iconName) => {
     AutoAwesomeMotionOutlined: <AutoAwesomeMotionOutlined fontSize="small" />,
     ContactsOutlined: <ContactsOutlined fontSize="small" />,
     GroupsOutlined: <GroupsOutlined fontSize="small" />,
+    StorefrontOutlined: <StorefrontOutlined fontSize="small" />,
+    StoreMallDirectoryOutlined: <StoreMallDirectoryOutlined fontSize="small" />,
+    BackupTableOutlined: <BackupTableOutlined fontSize="small" />,
     // Requestor / Receiver
     DiscountOutlined: <DiscountOutlined fontSize="small" />,
     // Ticketing
