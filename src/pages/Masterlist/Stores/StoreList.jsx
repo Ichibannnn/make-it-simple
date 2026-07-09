@@ -319,7 +319,6 @@ const StoreList = () => {
                       <TableCell sx={sx.bodyCell} align="center">
                         {index + 1}
                       </TableCell>
-
                       <TableCell sx={sx.bodyCell} align="center">
                         {item.region || "-"}
                       </TableCell>
