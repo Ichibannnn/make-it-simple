@@ -1,4 +1,10 @@
-import { ArchiveOutlined, EditOutlined, MoreHoriz, RefreshOutlined, RestoreOutlined } from "@mui/icons-material";
+import {
+  ArchiveOutlined,
+  EditOutlined,
+  MoreHoriz,
+  RefreshOutlined,
+  RestoreOutlined,
+} from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { useRef } from "react";
 
@@ -45,17 +51,19 @@ const UserAccountAction = ({ data, onReset, onArchive, onUpdate }) => {
           </MenuItem>
         )}
 
-        {/* {data?.is_Active && (
+        {data?.is_Active && (
           <MenuItem onClick={() => onResetAction(data)}>
             <ListItemIcon>
               <RefreshOutlined fontSize="small" />
             </ListItemIcon>
             Reset
           </MenuItem>
-        )} */}
+        )}
 
         <MenuItem onClick={() => onArchiveAction(data)}>
-          <ListItemIcon>{data?.is_Active ? <ArchiveOutlined fontSize="small" /> : <RestoreOutlined fontSize="small" />}</ListItemIcon>
+          <ListItemIcon>
+            {data?.is_Active ? <ArchiveOutlined fontSize="small" /> : <RestoreOutlined fontSize="small" />}
+          </ListItemIcon>
 
           {data?.is_Active ? "Archive" : "Restore"}
         </MenuItem>
