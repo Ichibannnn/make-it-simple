@@ -1,4 +1,17 @@
-import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,23 +34,45 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
-import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
+import {
+  useCreateUserMutation,
+  useUpdateUserMutation,
+} from "../../../features/user_management_api/user/userApi";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [storeCheckbox, setStoreCheckbox] = useState(false);
 
-  const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
-  const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
+  const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] =
+    useCreateUserMutation();
+  const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] =
+    useUpdateUserMutation();
 
-  const [getEmployees, { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess }] = useLazyGetEmployeesQuery();
-  const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] = useLazyGetRolesQuery();
-  const [getOneCharging, { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess }] = useLazyGetOneChargingQuery();
-  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
-  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
-  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
-  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
-  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
-  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+  const [
+    getEmployees,
+    { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess },
+  ] = useLazyGetEmployeesQuery();
+  const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] =
+    useLazyGetRolesQuery();
+  const [
+    getOneCharging,
+    { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess },
+  ] = useLazyGetOneChargingQuery();
+  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] =
+    useLazyGetCompanyQuery();
+  const [
+    getBusinessUnit,
+    { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess },
+  ] = useLazyGetBusinessUnitQuery();
+  const [
+    getDepartment,
+    { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess },
+  ] = useLazyGetDepartmentQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] =
+    useLazyGetUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] =
+    useLazyGetSubUnitQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] =
+    useLazyGetLocationWithPaginationQuery();
 
   const [warningData, setWarningData] = useState("");
 
@@ -47,7 +82,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   const schema = useMemo(
     () =>
       yup.object().shape({
-        empId: !storeCheckbox && !data?.is_Store === true ? yup.object().required().label() : yup.string().nullable(),
+        empId:
+          !storeCheckbox && !data?.is_Store === true
+            ? yup.object().required().label()
+            : yup.string().nullable(),
         fullname: yup.string().required().label("Fullname"),
         username: yup.string().required().label("Username"),
         userRoleId: yup.object().required().label("Role"),
@@ -173,7 +211,15 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         });
       }
     }
-  }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
+  }, [
+    data,
+    companyIsLoading,
+    businessUnitIsLoading,
+    departmentIsLoading,
+    unitIsLoading,
+    subUnitIsLoading,
+    locationIsLoading,
+  ]);
 
   const onSubmitHandler = (formData) => {
     console.log("FormData:", formData);
@@ -328,7 +374,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} PaperProps={{ style: { overflow: "auto" } }}>
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>{!data ? "Create User Account" : "Update User Account"}</DialogTitle>
+        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>
+          {!data ? "Create User Account" : "Update User Account"}
+        </DialogTitle>
 
         <DialogContent>
           <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={2} paddingTop={3}>
@@ -354,7 +402,13 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                   }}
                 />
 
-                <Typography sx={{ fontSize: "15px", fontStyle: "italic", color: storeCheckbox ? theme.palette.text.main : theme.palette.text.secondary }}>
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontStyle: "italic",
+                    color: storeCheckbox ? theme.palette.text.main : theme.palette.text.secondary,
+                  }}
+                >
                   Check if you want to create user for Store
                 </Typography>
               </Stack>
@@ -385,13 +439,16 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                               .split(" ")
                               .map((item) => item.at(0))
                               .join("")
-                              .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase(),
+                              .toLowerCase() +
+                              value?.general_info.last_name.split(" ").join("").toLowerCase(),
                           );
 
                           onChange(value);
                         }}
                         getOptionLabel={(option) => option?.general_info?.full_id_number}
-                        isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
+                        isOptionEqualToValue={(option, value) =>
+                          option.general_info.full_id_number === value.general_info.full_id_number
+                        }
                         disabled={data ? true : false}
                         sx={{
                           flex: 1,
@@ -461,7 +518,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 control={control}
                 name="username"
                 render={({ field: { ref, value, onChange } }) => {
-                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth disabled />;
+                  return (
+                    <TextField
+                      inputRef={ref}
+                      size="small"
+                      value={value}
+                      label="Username"
+                      onChange={onChange}
+                      autoComplete="off"
+                      fullWidth
+                      disabled
+                    />
+                  );
                 }}
               />
             ) : (
@@ -582,7 +650,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     fullWidth
                     disablePortal
                     disableClearable
-                    disabled
+                    // disabled
                   />
                 );
               }}
@@ -767,7 +835,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               type="submit"
               form="user"
               variant="contained"
-              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
+              loading={
+                isCreateUserIsLoading ||
+                isCreateUserIsFetching ||
+                isUpdateUserIsLoading ||
+                isUpdateUserIsFetching
+              }
               disabled={
                 // !watch("empId") ||
                 !watch("username") ||
@@ -787,7 +860,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               type="submit"
               form="user"
               variant="contained"
-              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
+              loading={
+                isCreateUserIsLoading ||
+                isCreateUserIsFetching ||
+                isUpdateUserIsLoading ||
+                isUpdateUserIsFetching
+              }
               disabled={
                 // !watch("empId") ||
                 !watch("username") ||
@@ -808,7 +886,13 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      <UserAccountWarningDialog data={data} payload={warningData} open={warningOpen} onClose={warningOnClose} userOnClose={onCloseHandler} />
+      <UserAccountWarningDialog
+        data={data}
+        payload={warningData}
+        open={warningOpen}
+        onClose={warningOnClose}
+        userOnClose={onCloseHandler}
+      />
     </>
   );
 };
