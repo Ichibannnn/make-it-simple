@@ -1,4 +1,13 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 import { useEffect } from "react";
 
@@ -19,8 +28,12 @@ const schema = yup.object().shape({
 });
 
 export const SubCategoryDialog = ({ data, open, onClose }) => {
-  const [createEditSubCategory, { isLoading: createEditSubCategoryIsLoading, isFetching: createEditSubCategoryIsFetching }] = useCreateEditSubCategoryMutation();
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [
+    createEditSubCategory,
+    { isLoading: createEditSubCategoryIsLoading, isFetching: createEditSubCategoryIsFetching },
+  ] = useCreateEditSubCategoryMutation();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
+    useLazyGetCategoryQuery();
 
   const {
     control,
@@ -115,6 +128,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
           {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
           {data ? "Edit Sub Category" : "Add Sub Category"}
         </DialogTitle>
+
         <Typography sx={sx.dialogSubtitle}>
           {data ? "Update the details of this sub category." : "Create a new sub category."}
         </Typography>
