@@ -1,7 +1,21 @@
 import { useEffect } from "react";
 import { useGetOnHoldTicketsQuery } from "../../features/api_reports/reportsApi";
 import { CalendarMonthOutlined, Search } from "@mui/icons-material";
-import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {
+  Chip,
+  OutlinedInput,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
@@ -64,7 +78,11 @@ const OnHoldTicketsHistory = ({
           mr={2}
         >
           <Stack>
-            <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>On-Hold Tickets Report</Typography>
+            <Typography
+              sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}
+            >
+              On-Hold Tickets Report
+            </Typography>
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
@@ -201,6 +219,25 @@ const OnHoldTicketsHistory = ({
                     {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
                   </TableCell>
 
+                  <Tooltip title={item?.concerns} placement="bottom-start">
+                    <TableCell
+                      className="ellipsis-styling"
+                      sx={{
+                        color: "#EDF2F7",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        width: "100px",
+                      }}
+                    >
+                      {item.concerns?.split("\r\n").map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </TableCell>
+                  </Tooltip>
+
                   <TableCell
                     sx={{
                       color: theme.palette.warning.main,
@@ -311,7 +348,11 @@ const OnHoldTicketsHistory = ({
             {isError && (
               <TableRow>
                 <TableCell colSpan={9} align="center">
-                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                  <img
+                    src={somethingWentWrong}
+                    alt="Something Went Wrong"
+                    className="something-went-wrong-table"
+                  />
                   <Typography variant="h5" color="#EDF2F9" marginLeft={2}>
                     Something went wrong.
                   </Typography>
