@@ -19,7 +19,7 @@ const UserAccountAction = ({ data, onReset, onArchive, onUpdate }) => {
   const onArchiveAction = (data) => {
     onToggle();
     onArchive({
-      id: data.id,
+      iListd: data.id,
       isActive: data.is_Active,
     });
   };
