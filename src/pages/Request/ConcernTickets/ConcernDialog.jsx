@@ -74,7 +74,11 @@ const ConcernDialog = ({ open, onClose }) => {
     Concern: yup
       .array()
       .of(
-        yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required"),
+        yup
+          .string()
+          .min(2, "Concern must be at least 2 characters long")
+          .trim()
+          .required("Concern cannot be empty or spaces only"),
       )
       .min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
@@ -255,8 +259,6 @@ const ConcernDialog = ({ open, onClose }) => {
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
-      console.log("i: ", i);
-
       payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, "");
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }
@@ -265,121 +267,121 @@ const ConcernDialog = ({ open, onClose }) => {
       payload.append(`RequestAttachmentsFiles[0].attachment`, "");
     }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+    console.log("Payload Entries: ", [...payload.entries()]);
 
-    if (formData?.Concern.length > 1) {
-      // Without Message Box
-      createEditRequestorConcern(payload)
-        .unwrap()
-        .then(() => {
-          toast.success("Success!", {
-            description: "Concern added successfully!",
-            duration: 1500,
-          });
-          dispatch(notificationApi.util.resetApiState());
-          dispatch(notificationMessageApi.util.resetApiState());
-          setIsLoading(false);
-          replace([{ value: "" }]);
-          setTimeout(() => {
-            reset({ Concern: [""] });
-          }, 0);
-          setAttachments([]);
-          onClose();
-        })
-        .catch((err) => {
-          console.log("Error: ", err);
-          toast?.error("Error!", {
-            description: err?.data?.error?.message,
-            duration: 1500,
-          });
-        });
-    } else {
-      // With Message Box
-      createEditRequestorConcern(payload)
-        .unwrap()
-        .then((res) => {
-          console.log("Response: ", res);
+    // if (formData?.Concern.length > 1) {
+    //   // Without Message Box
+    //   createEditRequestorConcern(payload)
+    //     .unwrap()
+    //     .then(() => {
+    //       toast.success("Success!", {
+    //         description: "Concern added successfully!",
+    //         duration: 1500,
+    //       });
+    //       dispatch(notificationApi.util.resetApiState());
+    //       dispatch(notificationMessageApi.util.resetApiState());
+    //       setIsLoading(false);
+    //       replace([{ value: "" }]);
+    //       setTimeout(() => {
+    //         reset({ Concern: [""] });
+    //       }, 0);
+    //       setAttachments([]);
+    //       onClose();
+    //     })
+    //     .catch((err) => {
+    //       console.log("Error: ", err);
+    //       toast?.error("Error!", {
+    //         description: err?.data?.error?.message,
+    //         duration: 1500,
+    //       });
+    //     });
+    // } else {
+    //   // With Message Box
+    //   createEditRequestorConcern(payload)
+    //     .unwrap()
+    //     .then((res) => {
+    //       console.log("Response: ", res);
 
-          Swal.fire({
-            title: "Success!",
-            html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
-              <span style="color: gray; font-size: 13px;">
-                Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId} 
-                and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you 
-                shortly to provide further assistance.
-              </span>
-              <br><br>
-              <span style="color: gray; font-size: 13px;">
-                Concern: ${res?.value?.concern}
-              </span>
-              `,
-            icon: "success",
-            color: "white",
-            showCancelButton: true,
-            background: "#111927",
-            confirmButtonColor: "#9e77ed",
-            confirmButtonText: `Copy`,
-            cancelButtonText: "Close",
-            cancelButtonColor: "#1C2536",
-            allowOutsideClick: false,
-            heightAuto: false,
-            width: "30em",
-            customClass: {
-              container: "custom-container",
-              title: "custom-title",
-              htmlContainer: "custom-text",
-              confirmButton: "custom-confirm-btn",
-              cancelButton: "custom-cancel-btn",
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              console.log("result: ", result);
+    //       Swal.fire({
+    //         title: "Success!",
+    //         html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
+    //           <span style="color: gray; font-size: 13px;">
+    //             Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId}
+    //             and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you
+    //             shortly to provide further assistance.
+    //           </span>
+    //           <br><br>
+    //           <span style="color: gray; font-size: 13px;">
+    //             Concern: ${res?.value?.concern}
+    //           </span>
+    //           `,
+    //         icon: "success",
+    //         color: "white",
+    //         showCancelButton: true,
+    //         background: "#111927",
+    //         confirmButtonColor: "#9e77ed",
+    //         confirmButtonText: `Copy`,
+    //         cancelButtonText: "Close",
+    //         cancelButtonColor: "#1C2536",
+    //         allowOutsideClick: false,
+    //         heightAuto: false,
+    //         width: "30em",
+    //         customClass: {
+    //           container: "custom-container",
+    //           title: "custom-title",
+    //           htmlContainer: "custom-text",
+    //           confirmButton: "custom-confirm-btn",
+    //           cancelButton: "custom-cancel-btn",
+    //         },
+    //       }).then((result) => {
+    //         if (result.isConfirmed) {
+    //           console.log("result: ", result);
 
-              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${
-                res?.value?.requestorDepartment
-              }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
-                res?.value?.ticketConcernId
-              } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
-                res?.value?.concern
-              }`;
+    //           const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${
+    //             res?.value?.requestorDepartment
+    //           }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
+    //             res?.value?.ticketConcernId
+    //           } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
+    //             res?.value?.concern
+    //           }`;
 
-              navigator.clipboard.writeText(ticketMessage).then(() => {
-                Swal.fire({
-                  title: "Copied!",
-                  icon: "success",
-                  color: "white",
-                  background: "#111927",
-                  text: `Copied to clipboard.`,
-                  timer: 2000,
-                  showConfirmButton: false,
-                  heightAuto: false,
-                  width: "30em",
-                  customClass: {
-                    container: "custom-container",
-                    title: "custom-title",
-                    htmlContainer: "custom-text",
-                    confirmButton: "custom-confirm-btn",
-                    cancelButton: "custom-cancel-btn",
-                  },
-                });
-              });
-            }
-          });
+    //           navigator.clipboard.writeText(ticketMessage).then(() => {
+    //             Swal.fire({
+    //               title: "Copied!",
+    //               icon: "success",
+    //               color: "white",
+    //               background: "#111927",
+    //               text: `Copied to clipboard.`,
+    //               timer: 2000,
+    //               showConfirmButton: false,
+    //               heightAuto: false,
+    //               width: "30em",
+    //               customClass: {
+    //                 container: "custom-container",
+    //                 title: "custom-title",
+    //                 htmlContainer: "custom-text",
+    //                 confirmButton: "custom-confirm-btn",
+    //                 cancelButton: "custom-cancel-btn",
+    //               },
+    //             });
+    //           });
+    //         }
+    //       });
 
-          dispatch(notificationApi.util.resetApiState());
-          dispatch(notificationMessageApi.util.resetApiState());
+    //       dispatch(notificationApi.util.resetApiState());
+    //       dispatch(notificationMessageApi.util.resetApiState());
 
-          setAttachments([]);
-          setIsLoading(false);
-          onCloseAction();
-        })
-        .catch((err) => {
-          toast.error("Error!", {
-            description: err.data.error.message,
-            duration: 1500,
-          });
-        });
-    }
+    //       setAttachments([]);
+    //       setIsLoading(false);
+    //       onCloseAction();
+    //     })
+    //     .catch((err) => {
+    //       toast.error("Error!", {
+    //         description: err.data.error.message,
+    //         duration: 1500,
+    //       });
+    //     });
+    // }
   };
 
   const handleAttachments = (event) => {
@@ -2182,7 +2184,8 @@ const ConcernDialog = ({ open, onClose }) => {
                 (watch("Request_Type") === "Rework" && !watch("BackJobId")) ||
                 (watch("IssueHandler") && !watch("TargetDate")) ||
                 (watch("IssueHandler") && !watch("ChannelId")) ||
-                errors.Concern
+                errors.Concern ||
+                watch("Concern")?.some((c) => !c?.trim())
               }
             >
               Submit

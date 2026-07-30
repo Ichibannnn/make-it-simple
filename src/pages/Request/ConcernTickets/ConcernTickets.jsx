@@ -988,7 +988,7 @@ const ConcernTickets = () => {
                                   onClick={() => onViewHistoryAction(item)}
                                 >
                                   <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
-                                    {item.concern.split("\r\n").map((line, index) => (
+                                    {item.concern?.split("\r\n").map((line, index) => (
                                       <span key={index}>
                                         {line}
                                         <br />
