@@ -104,7 +104,7 @@ const Login = () => {
               Sign in your Account
             </Typography>
             <Typography color="gray" fontSize="sm">
-              Tons
+              Management Information System
             </Typography>
             <LoginForm />
           </Stack>
