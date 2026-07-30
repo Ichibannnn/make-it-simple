@@ -269,119 +269,119 @@ const ConcernDialog = ({ open, onClose }) => {
 
     console.log("Payload Entries: ", [...payload.entries()]);
 
-    // if (formData?.Concern.length > 1) {
-    //   // Without Message Box
-    //   createEditRequestorConcern(payload)
-    //     .unwrap()
-    //     .then(() => {
-    //       toast.success("Success!", {
-    //         description: "Concern added successfully!",
-    //         duration: 1500,
-    //       });
-    //       dispatch(notificationApi.util.resetApiState());
-    //       dispatch(notificationMessageApi.util.resetApiState());
-    //       setIsLoading(false);
-    //       replace([{ value: "" }]);
-    //       setTimeout(() => {
-    //         reset({ Concern: [""] });
-    //       }, 0);
-    //       setAttachments([]);
-    //       onClose();
-    //     })
-    //     .catch((err) => {
-    //       console.log("Error: ", err);
-    //       toast?.error("Error!", {
-    //         description: err?.data?.error?.message,
-    //         duration: 1500,
-    //       });
-    //     });
-    // } else {
-    //   // With Message Box
-    //   createEditRequestorConcern(payload)
-    //     .unwrap()
-    //     .then((res) => {
-    //       console.log("Response: ", res);
+    if (formData?.Concern.length > 1) {
+      // Without Message Box
+      createEditRequestorConcern(payload)
+        .unwrap()
+        .then(() => {
+          toast.success("Success!", {
+            description: "Concern added successfully!",
+            duration: 1500,
+          });
+          dispatch(notificationApi.util.resetApiState());
+          dispatch(notificationMessageApi.util.resetApiState());
+          setIsLoading(false);
+          replace([{ value: "" }]);
+          setTimeout(() => {
+            reset({ Concern: [""] });
+          }, 0);
+          setAttachments([]);
+          onClose();
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
+          toast?.error("Error!", {
+            description: err?.data?.error?.message,
+            duration: 1500,
+          });
+        });
+    } else {
+      // With Message Box
+      createEditRequestorConcern(payload)
+        .unwrap()
+        .then((res) => {
+          console.log("Response: ", res);
 
-    //       Swal.fire({
-    //         title: "Success!",
-    //         html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
-    //           <span style="color: gray; font-size: 13px;">
-    //             Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId}
-    //             and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you
-    //             shortly to provide further assistance.
-    //           </span>
-    //           <br><br>
-    //           <span style="color: gray; font-size: 13px;">
-    //             Concern: ${res?.value?.concern}
-    //           </span>
-    //           `,
-    //         icon: "success",
-    //         color: "white",
-    //         showCancelButton: true,
-    //         background: "#111927",
-    //         confirmButtonColor: "#9e77ed",
-    //         confirmButtonText: `Copy`,
-    //         cancelButtonText: "Close",
-    //         cancelButtonColor: "#1C2536",
-    //         allowOutsideClick: false,
-    //         heightAuto: false,
-    //         width: "30em",
-    //         customClass: {
-    //           container: "custom-container",
-    //           title: "custom-title",
-    //           htmlContainer: "custom-text",
-    //           confirmButton: "custom-confirm-btn",
-    //           cancelButton: "custom-cancel-btn",
-    //         },
-    //       }).then((result) => {
-    //         if (result.isConfirmed) {
-    //           console.log("result: ", result);
+          Swal.fire({
+            title: "Success!",
+            html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
+              <span style="color: gray; font-size: 13px;">
+                Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId}
+                and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you
+                shortly to provide further assistance.
+              </span>
+              <br><br>
+              <span style="color: gray; font-size: 13px;">
+                Concern: ${res?.value?.concern}
+              </span>
+              `,
+            icon: "success",
+            color: "white",
+            showCancelButton: true,
+            background: "#111927",
+            confirmButtonColor: "#9e77ed",
+            confirmButtonText: `Copy`,
+            cancelButtonText: "Close",
+            cancelButtonColor: "#1C2536",
+            allowOutsideClick: false,
+            heightAuto: false,
+            width: "30em",
+            customClass: {
+              container: "custom-container",
+              title: "custom-title",
+              htmlContainer: "custom-text",
+              confirmButton: "custom-confirm-btn",
+              cancelButton: "custom-cancel-btn",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              console.log("result: ", result);
 
-    //           const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${
-    //             res?.value?.requestorDepartment
-    //           }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
-    //             res?.value?.ticketConcernId
-    //           } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
-    //             res?.value?.concern
-    //           }`;
+              const ticketMessage = `Fresh Morning, ${res?.value?.requestorName}, ${
+                res?.value?.requestorDepartment
+              }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
+                res?.value?.ticketConcernId
+              } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
+                res?.value?.concern
+              }`;
 
-    //           navigator.clipboard.writeText(ticketMessage).then(() => {
-    //             Swal.fire({
-    //               title: "Copied!",
-    //               icon: "success",
-    //               color: "white",
-    //               background: "#111927",
-    //               text: `Copied to clipboard.`,
-    //               timer: 2000,
-    //               showConfirmButton: false,
-    //               heightAuto: false,
-    //               width: "30em",
-    //               customClass: {
-    //                 container: "custom-container",
-    //                 title: "custom-title",
-    //                 htmlContainer: "custom-text",
-    //                 confirmButton: "custom-confirm-btn",
-    //                 cancelButton: "custom-cancel-btn",
-    //               },
-    //             });
-    //           });
-    //         }
-    //       });
+              navigator.clipboard.writeText(ticketMessage).then(() => {
+                Swal.fire({
+                  title: "Copied!",
+                  icon: "success",
+                  color: "white",
+                  background: "#111927",
+                  text: `Copied to clipboard.`,
+                  timer: 2000,
+                  showConfirmButton: false,
+                  heightAuto: false,
+                  width: "30em",
+                  customClass: {
+                    container: "custom-container",
+                    title: "custom-title",
+                    htmlContainer: "custom-text",
+                    confirmButton: "custom-confirm-btn",
+                    cancelButton: "custom-cancel-btn",
+                  },
+                });
+              });
+            }
+          });
 
-    //       dispatch(notificationApi.util.resetApiState());
-    //       dispatch(notificationMessageApi.util.resetApiState());
+          dispatch(notificationApi.util.resetApiState());
+          dispatch(notificationMessageApi.util.resetApiState());
 
-    //       setAttachments([]);
-    //       setIsLoading(false);
-    //       onCloseAction();
-    //     })
-    //     .catch((err) => {
-    //       toast.error("Error!", {
-    //         description: err.data.error.message,
-    //         duration: 1500,
-    //       });
-    //     });
-    // }
+          setAttachments([]);
+          setIsLoading(false);
+          onCloseAction();
+        })
+        .catch((err) => {
+          toast.error("Error!", {
+            description: err.data.error.message,
+            duration: 1500,
+          });
+        });
+    }
   };
 
   const handleAttachments = (event) => {
