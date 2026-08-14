@@ -87,11 +87,6 @@ const ServiceLevelAgreement = ({
             >
               SLA Report
             </Typography>
-            <Typography
-              sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}
-            >
-              SLA Report
-            </Typography>
           </Stack>
 
           <Stack>
