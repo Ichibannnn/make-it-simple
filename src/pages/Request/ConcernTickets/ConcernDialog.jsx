@@ -74,7 +74,11 @@ const ConcernDialog = ({ open, onClose }) => {
     Concern: yup
       .array()
       .of(
-        yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required"),
+        yup
+          .string()
+          .min(2, "Concern must be at least 2 characters long")
+          .trim()
+          .required("Concern cannot be empty or spaces only"),
       )
       .min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
@@ -255,8 +259,6 @@ const ConcernDialog = ({ open, onClose }) => {
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
-      console.log("i: ", i);
-
       payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, "");
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }
@@ -304,8 +306,8 @@ const ConcernDialog = ({ open, onClose }) => {
             title: "Success!",
             html: `Fresh Morning, ${res?.value?.requestorName}, ${res?.value?.requestorDepartment}.<br><br>
               <span style="color: gray; font-size: 13px;">
-                Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId} 
-                and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you 
+                Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${res?.value?.ticketConcernId}
+                and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you
                 shortly to provide further assistance.
               </span>
               <br><br>
@@ -2182,7 +2184,8 @@ const ConcernDialog = ({ open, onClose }) => {
                 (watch("Request_Type") === "Rework" && !watch("BackJobId")) ||
                 (watch("IssueHandler") && !watch("TargetDate")) ||
                 (watch("IssueHandler") && !watch("ChannelId")) ||
-                errors.Concern
+                errors.Concern ||
+                watch("Concern")?.some((c) => !c?.trim())
               }
             >
               Submit

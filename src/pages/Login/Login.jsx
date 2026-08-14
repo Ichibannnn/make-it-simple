@@ -1,6 +1,19 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { Box, Container, Dialog, DialogContent, Grid, IconButton, InputAdornment, Paper, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Container,
+  Dialog,
+  DialogContent,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { CheckCircle, CloseOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { theme } from "../../theme/theme";
@@ -47,7 +60,13 @@ const Login = () => {
         overflow: "hidden",
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={hideLoginForm ? 0 : -5} mt={10} sx={{ width: "100%", justifyContent: "center" }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={hideLoginForm ? 0 : -5}
+        mt={10}
+        sx={{ width: "100%", justifyContent: "center" }}
+      >
         <Paper
           elevation={6}
           className="paper-color"
@@ -92,7 +111,14 @@ const Login = () => {
         </Paper>
       </Stack>
 
-      <Box zIndex="1" borderRadius="10px 0 0 10px" mt={6} flexDirection="column" display="flex" justifyContent="center">
+      <Box
+        zIndex="1"
+        borderRadius="10px 0 0 10px"
+        mt={6}
+        flexDirection="column"
+        display="flex"
+        justifyContent="center"
+      >
         <Box justifyContent="center" display="flex">
           <img src={misLogo} alt="logo" loading="lazy" style={{ width: "10%", height: "100%" }} />
         </Box>
@@ -239,7 +265,12 @@ const LoginForm = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton sx={{ color: "gray" }} onClick={showPasswordHandler} edge="end" aria-label="toggle password visibility">
+                      <IconButton
+                        sx={{ color: "gray" }}
+                        onClick={showPasswordHandler}
+                        edge="end"
+                        aria-label="toggle password visibility"
+                      >
                         {showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>
@@ -274,7 +305,12 @@ const LoginForm = () => {
           />
         )}
 
-        <ChangePassword open={open} onClose={onClose} changePasswordDetails={changePasswordDetails} getPassword={getPassword} />
+        <ChangePassword
+          open={open}
+          onClose={onClose}
+          changePasswordDetails={changePasswordDetails}
+          getPassword={getPassword}
+        />
       </Container>
     </>
   );
@@ -409,7 +445,11 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {changePasswordDetails?.value?.username === watch("current_Password") ? <CheckCircle color="success" /> : ""}
+                            {changePasswordDetails?.value?.username === watch("current_Password") ? (
+                              <CheckCircle color="success" />
+                            ) : (
+                              ""
+                            )}
                           </InputAdornment>
                         ),
                       }}
@@ -435,7 +475,9 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                            {watch("new_Password") === watch("confirm_Password") &&
+                            watch("new_Password") !== null &&
+                            watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -465,7 +507,9 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? (
+                            {watch("new_Password") === watch("confirm_Password") &&
+                            watch("new_Password") !== null &&
+                            watch("confirm_Password") ? (
                               <CheckCircle color="success" />
                             ) : (
                               ""
@@ -483,7 +527,12 @@ export const ChangePassword = ({ changePasswordDetails, open, onClose, getPasswo
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={watch("current_Password") !== getPassword || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")}
+                disabled={
+                  watch("current_Password") !== getPassword ||
+                  !watch("new_Password") ||
+                  !watch("confirm_Password") ||
+                  watch("new_Password") !== watch("confirm_Password")
+                }
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,
