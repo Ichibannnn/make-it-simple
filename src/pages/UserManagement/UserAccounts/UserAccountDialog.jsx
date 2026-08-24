@@ -42,42 +42,88 @@ import {
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [storeCheckbox, setStoreCheckbox] = useState(false);
 
-  const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] =
-    useCreateUserMutation();
-  const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] =
-    useUpdateUserMutation();
+  const [
+    createUser,
+    { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching },
+  ] = useCreateUserMutation();
+  const [
+    updateUser,
+    { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching },
+  ] = useUpdateUserMutation();
 
   const [
     getEmployees,
-    { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess },
+    {
+      data: employeeData = [],
+      isLoading: emloyeeIsLoading,
+      isSuccess: employeeIsSuccess,
+    },
   ] = useLazyGetEmployeesQuery();
-  const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] =
-    useLazyGetRolesQuery();
+  const [
+    getRoles,
+    { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess },
+  ] = useLazyGetRolesQuery();
   const [
     getOneCharging,
-    { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess },
+    {
+      data: oneChargingData,
+      isLoading: oneChargingIsLoading,
+      isSuccess: oneChargingIsSuccess,
+    },
   ] = useLazyGetOneChargingQuery();
-  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] =
-    useLazyGetCompanyQuery();
+  const [
+    getCompany,
+    {
+      data: companyData,
+      isLoading: companyIsLoading,
+      isSuccess: companyIsSuccess,
+    },
+  ] = useLazyGetCompanyQuery();
   const [
     getBusinessUnit,
-    { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess },
+    {
+      data: businessUnitData,
+      isLoading: businessUnitIsLoading,
+      isSuccess: businessUnitIsSuccess,
+    },
   ] = useLazyGetBusinessUnitQuery();
   const [
     getDepartment,
-    { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess },
+    {
+      data: departmentData,
+      isLoading: departmentIsLoading,
+      isSuccess: departmentIsSuccess,
+    },
   ] = useLazyGetDepartmentQuery();
-  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] =
-    useLazyGetUnitQuery();
-  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] =
-    useLazyGetSubUnitQuery();
-  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] =
-    useLazyGetLocationWithPaginationQuery();
+  const [
+    getUnit,
+    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
+  ] = useLazyGetUnitQuery();
+  const [
+    getSubUnit,
+    {
+      data: subUnitData,
+      isLoading: subUnitIsLoading,
+      isSuccess: subUnitIsSuccess,
+    },
+  ] = useLazyGetSubUnitQuery();
+  const [
+    getLocation,
+    {
+      data: locationData,
+      isLoading: locationIsLoading,
+      isSuccess: locationIsSuccess,
+    },
+  ] = useLazyGetLocationWithPaginationQuery();
 
   const [warningData, setWarningData] = useState("");
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { open: warningOpen, onToggle: warningOnToggle, onClose: warningOnClose } = useDisclosure();
+  const {
+    open: warningOpen,
+    onToggle: warningOnToggle,
+    onClose: warningOnClose,
+  } = useDisclosure();
 
   const schema = useMemo(
     () =>
@@ -224,7 +270,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   const onSubmitHandler = (formData) => {
     console.log("FormData:", formData);
 
-    if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
+    if (
+      data?.is_Use === true &&
+      data?.user_Role_Name !== formData.userRoleId.user_Role_Name
+    ) {
       setWarningData({
         id: data.id,
         userRoleId: formData.userRoleId.id,
@@ -301,8 +350,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         });
       } else {
         const submitAddUser = {
-          empId: !storeCheckbox ? formData.empId.general_info.full_id_number : formData.empId,
-          fullname: !storeCheckbox ? formData.empId.general_info.full_name : formData.fullname,
+          empId: !storeCheckbox
+            ? formData.empId.general_info.full_id_number
+            : formData.empId,
+          fullname: !storeCheckbox
+            ? formData.empId.general_info.full_name
+            : formData.fullname,
           username: formData.username,
           userRoleId: formData.userRoleId.id,
           oneChargingCode: formData.oneCharging.code,
@@ -368,18 +421,29 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   const storeCheckboxHandler = (event) => {
     setStoreCheckbox(event.target.checked);
-    // reset();
+    reset();
   };
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open} PaperProps={{ style: { overflow: "auto" } }}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>
           {!data ? "Create User Account" : "Update User Account"}
         </DialogTitle>
 
         <DialogContent>
-          <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={2} paddingTop={3}>
+          <Stack
+            id="user"
+            component="form"
+            onSubmit={handleSubmit(onSubmitHandler)}
+            gap={2}
+            paddingTop={3}
+          >
             <Typography
               sx={{
                 color: "#48BB78",
@@ -406,7 +470,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                   sx={{
                     fontSize: "15px",
                     fontStyle: "italic",
-                    color: storeCheckbox ? theme.palette.text.main : theme.palette.text.secondary,
+                    color: storeCheckbox
+                      ? theme.palette.text.main
+                      : theme.palette.text.secondary,
                   }}
                 >
                   Check if you want to create user for Store
@@ -427,7 +493,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={employeeData}
                         loading={emloyeeIsLoading}
-                        renderInput={(params) => <TextField {...params} label="Employee ID" />}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Employee ID" />
+                        )}
                         onOpen={() => {
                           if (!employeeIsSuccess) getEmployees();
                         }}
@@ -440,14 +508,20 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                               .map((item) => item.at(0))
                               .join("")
                               .toLowerCase() +
-                              value?.general_info.last_name.split(" ").join("").toLowerCase(),
+                              value?.general_info.last_name
+                                .split(" ")
+                                .join("")
+                                .toLowerCase(),
                           );
 
                           onChange(value);
                         }}
-                        getOptionLabel={(option) => option?.general_info?.full_id_number}
+                        getOptionLabel={(option) =>
+                          option?.general_info?.full_id_number
+                        }
                         isOptionEqualToValue={(option, value) =>
-                          option.general_info.full_id_number === value.general_info.full_id_number
+                          option.general_info.full_id_number ===
+                          value.general_info.full_id_number
                         }
                         disabled={data ? true : false}
                         sx={{
@@ -527,7 +601,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                       onChange={onChange}
                       autoComplete="off"
                       fullWidth
-                      disabled
+                      disabled={data ? true : false}
                     />
                   );
                 }}
@@ -542,7 +616,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 sx={{ borderColor: "primary", flex: 1 }}
                 autoComplete="off"
                 // onChange={(e) => storeUsernameHandler(e.target.value)}
-                disabled
+                disabled={data ? true : false}
               />
             )}
 
@@ -557,7 +631,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={roleData?.value?.userRole || []}
                     loading={roleIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Role" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Role" />
+                    )}
                     onOpen={() => {
                       if (!roleIsSuccess)
                         getRoles({
@@ -566,7 +642,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     }}
                     onChange={(_, value) => onChange(value)}
                     getOptionLabel={(option) => option.user_Role_Name}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -600,7 +678,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={oneChargingData?.value?.onecharging || []}
                     loading={oneChargingIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Charging Code" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Charging Code" />
+                    )}
                     onOpen={() => {
                       if (!oneChargingIsSuccess) getOneCharging();
                     }}
@@ -642,8 +722,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option?.code} - ${option?.name}`}
-                    isOptionEqualToValue={(option, value) => option.code === value.code}
+                    getOptionLabel={(option) =>
+                      `${option?.code} - ${option?.name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.code === value.code
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -667,15 +751,21 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={companyData?.value?.company || []}
                     loading={companyIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Company" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Company" />
+                    )}
                     onOpen={() => {
                       if (!companyIsSuccess) getCompany();
                     }}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) =>
+                      `${option.company_Code} - ${option.company_Name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -697,12 +787,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={businessUnitData?.value?.businessUnit || []}
                     loading={businessUnitIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Business Unit" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Business Unit" />
+                    )}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) =>
+                      `${option.business_Code} - ${option.business_Name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -724,12 +820,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={departmentData?.value?.department || []}
                     loading={departmentIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Department" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Department" />
+                    )}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) =>
+                      `${option.department_Code} - ${option.department_Name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -751,12 +853,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={unitData?.value?.unit || []}
                     loading={unitIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Unit" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Unit" />
+                    )}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) =>
+                      `${option.unit_Code} - ${option.unit_Name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -784,12 +892,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                           Status: true,
                         });
                     }}
-                    renderInput={(params) => <TextField {...params} label="Sub Unit" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Sub Unit" />
+                    )}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) =>
+                      `${option.subUnit_Code} - ${option.subUnit_Name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -811,12 +925,18 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={locationData?.value?.location || []}
                     loading={locationIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Location" />}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Location" />
+                    )}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
-                    isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
+                    getOptionLabel={(option) =>
+                      `${option.location_Code} - ${option.location_Name}`
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.location_Code === value.location_Code
+                    }
                     sx={{
                       flex: 2,
                     }}
@@ -867,7 +987,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 isUpdateUserIsFetching
               }
               disabled={
-                // !watch("empId") ||
+                !watch("empId") ||
+                !watch("fullname") ||
                 !watch("username") ||
                 !watch("userRoleId") ||
                 !watch("companyId") ||
