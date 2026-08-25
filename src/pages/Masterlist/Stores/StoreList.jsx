@@ -40,6 +40,7 @@ import { storeListData } from "../../../data";
 // import PmsTypeActions from "./PmsTypeActions";
 // import PmsTypeDialog from "./PmsTypeDialog";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
+import StoreListDialog from "./StoreListDialog";
 
 // --- Static config kept out of render so it isn't rebuilt every pass ---------
 const STATUS_TABS = [
@@ -400,7 +401,7 @@ const StoreList = () => {
           </>
         )}
 
-        {/* <PmsTypeDialog data={editData} open={open} onClose={onDialogClose} /> */}
+        <StoreListDialog data={editData} open={open} onClose={onDialogClose} />
       </Stack>
     </Stack>
   );

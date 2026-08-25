@@ -1,4 +1,12 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import * as yup from "yup";
@@ -17,7 +25,10 @@ const schema = yup.object().shape({
 });
 
 export const CategoryConcernDialog = ({ data, open, onClose }) => {
-  const [createEditCategory, { isLoading: createEditCategoryIsLoading, isFetching: createEditCategoryIsFetching }] = useCreateEditCategoryConcernMutation();
+  const [
+    createEditCategory,
+    { isLoading: createEditCategoryIsLoading, isFetching: createEditCategoryIsFetching },
+  ] = useCreateEditCategoryConcernMutation();
 
   const {
     control,
@@ -99,10 +110,7 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <DialogTitle sx={sx.dialogTitle}>
-          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
-          {data ? "Edit Concern Category" : "Add Concern Category"}
-        </DialogTitle>
+        <Typography sx={sx.dialogTitle}>{data ? "Edit Concern Category" : "Add Concern Category"}</Typography>
         <Typography sx={sx.dialogSubtitle}>
           {data ? "Update the details of this concern category." : "Create a new concern category."}
         </Typography>
@@ -110,20 +118,27 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={sx.dialogStack}>
-              <TextField
-                {...register("concernCategory")}
-                variant="outlined"
-                label="Concern Category"
-                helperText={errors?.concernCategory?.message}
-                error={!!errors?.concernCategory?.message}
-                sx={{ borderColor: "primary" }}
-                fullWidth
-                autoComplete="off"
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Concern Category</Typography>
+                <TextField
+                  {...register("concernCategory")}
+                  variant="outlined"
+                  size="small"
+                  placeholder="Enter Concern Category"
+                  helperText={errors?.concernCategory?.message}
+                  error={!!errors?.concernCategory?.message}
+                  fullWidth
+                  autoComplete="off"
+                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
+                />
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+            </LoadingButton>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -133,10 +148,7 @@ export const CategoryConcernDialog = ({ data, open, onClose }) => {
               disabled={!watch("concernCategory")}
               sx={sx.disabledSaveButton}
             >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
         </form>

@@ -1,3 +1,4 @@
+import zIndex from "@mui/material/styles/zIndex";
 import { theme } from "../../../theme/theme";
 
 // Shared masterlist styling — mirrors the PmsType look so every Masterlist
@@ -269,36 +270,48 @@ export const masterlistStyles = {
     borderRadius: "16px",
     border: "1px solid #24344B",
     overflow: "unset",
+    padding: 0,
   },
   dialogTitle: {
     display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "left",
     gap: 1,
     paddingTop: 3,
-    paddingBottom: 0.5,
-    fontSize: "20px",
-    fontWeight: 700,
-    color: theme.palette.success.main,
+    paddingLeft: 3,
+    fontSize: "16px",
+    fontWeight: 500,
+    color: theme.palette.text.main,
   },
   dialogTitleIcon: {
     fontSize: "22px",
     color: theme.palette.success.main,
   },
   dialogSubtitle: {
-    textAlign: "center",
     fontSize: "12.5px",
     color: theme.palette.text.secondary,
+    paddingLeft: 3,
     marginBottom: "4px",
   },
   dialogStack: {
-    padding: "5px",
-    gap: 1.5,
+    // padding: "5px",
+    gap: 2,
+    mb: 1,
   },
+
   disabledSaveButton: {
     ":disabled": {
-      backgroundColor: theme.palette.secondary.main,
+      background: theme.palette.secondary.main,
       color: "black",
     },
+  },
+
+  formField: {
+    justifyContent: "flex-start",
+  },
+
+  fieldText: {
+    fontWeight: 500,
+    fontSize: "13px",
+    color: theme.palette.text.main,
   },
 };

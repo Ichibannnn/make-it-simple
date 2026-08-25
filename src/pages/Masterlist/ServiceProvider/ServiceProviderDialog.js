@@ -1,4 +1,13 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -9,7 +18,10 @@ import { toast } from "sonner";
 import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
-import { useCreateEditServiceProviderMutation, useServiceProviderValidationMutation } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import {
+  useCreateEditServiceProviderMutation,
+  useServiceProviderValidationMutation,
+} from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
@@ -19,9 +31,14 @@ const schema = yup.object().shape({
 });
 
 export const ServiceProviderDialog = ({ data, open, onClose }) => {
-  const [serviceProviderValidation, { error: errorValidation, isError: errorValidationIsError }] = useServiceProviderValidationMutation();
-  const [createEditServiceProvider, { isLoading: createEditServiceProviderIsLoading, isFetching: createEditServiceProviderIsFetching }] = useCreateEditServiceProviderMutation();
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [serviceProviderValidation, { error: errorValidation, isError: errorValidationIsError }] =
+    useServiceProviderValidationMutation();
+  const [
+    createEditServiceProvider,
+    { isLoading: createEditServiceProviderIsLoading, isFetching: createEditServiceProviderIsFetching },
+  ] = useCreateEditServiceProviderMutation();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] =
+    useLazyGetChannelsQuery();
 
   const {
     control,
@@ -130,10 +147,7 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <DialogTitle sx={sx.dialogTitle}>
-          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
-          {data ? "Edit Service Provider" : "Add Service Provider"}
-        </DialogTitle>
+        <Typography sx={sx.dialogTitle}>{data ? "Edit Service Provider" : "Add Service Provider"}</Typography>
         <Typography sx={sx.dialogSubtitle}>
           {data ? "Update this service provider and its channels." : "Create a new service provider."}
         </Typography>
@@ -141,62 +155,85 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={sx.dialogStack}>
-              <Controller
-                control={control}
-                name="serviceProviderName"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      value={value}
-                      label="Service Provider"
-                      onChange={onChange}
-                      onBlur={onValidateServiceProvider}
-                      error={errorValidationIsError}
-                      helperText={errorValidation?.data?.error?.message}
-                      // disabled={data ? true : false}
-                      sx={{
-                        flex: 2,
-                      }}
-                      autoComplete="off"
-                      fullWidth
-                    />
-                  );
-                }}
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Service Provider</Typography>
+                <Controller
+                  control={control}
+                  name="serviceProviderName"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <TextField
+                        inputRef={ref}
+                        value={value}
+                        size="small"
+                        placeholder="Enter Service Provider"
+                        onChange={onChange}
+                        onBlur={onValidateServiceProvider}
+                        error={errorValidationIsError}
+                        helperText={errorValidation?.data?.error?.message}
+                        sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                        autoComplete="off"
+                        fullWidth
+                      />
+                    );
+                  }}
+                />
+              </Stack>
 
-              <Controller
-                control={control}
-                name="channelId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      multiple
-                      ref={ref}
-                      value={value}
-                      options={channelData?.value?.channel || []}
-                      loading={channelIsLoading}
-                      renderInput={(params) => <TextField label="Channel Name" fullWidth {...params} />}
-                      onOpen={() => {
-                        if (!channelIsSuccess)
-                          getChannel({
-                            Status: true,
-                          });
-                      }}
-                      onChange={(_, value) => onChange(value)}
-                      getOptionLabel={(option) => option.channel_Name}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      fullWidth
-                      // disablePortal
-                      disableClearable
-                    />
-                  );
-                }}
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Channel Name</Typography>
+                <Controller
+                  control={control}
+                  name="channelId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        multiple
+                        ref={ref}
+                        value={value}
+                        size="small"
+                        options={channelData?.value?.channel || []}
+                        loading={channelIsLoading}
+                        renderInput={(params) => (
+                          <TextField
+                            placeholder="Channel Name"
+                            fullWidth
+                            {...params}
+                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                          />
+                        )}
+                        onOpen={() => {
+                          if (!channelIsSuccess)
+                            getChannel({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => onChange(value)}
+                        getOptionLabel={(option) => option.channel_Name}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        fullWidth
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "14px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+            </LoadingButton>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -206,10 +243,7 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
               disabled={!watch("serviceProviderName") || !watch("channelId")?.length}
               sx={sx.disabledSaveButton}
             >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
         </form>

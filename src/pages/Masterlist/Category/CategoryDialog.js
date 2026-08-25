@@ -1,4 +1,13 @@
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useEffect } from "react";
 import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
@@ -19,8 +28,12 @@ const schema = yup.object().shape({
 });
 
 export const CategoryDialog = ({ data, open, onClose }) => {
-  const [createEditCategory, { isLoading: createEditCategoryIsLoading, isFetching: createEditCategoryIsFetching }] = useCreateEditCategoryMutation();
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [
+    createEditCategory,
+    { isLoading: createEditCategoryIsLoading, isFetching: createEditCategoryIsFetching },
+  ] = useCreateEditCategoryMutation();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] =
+    useLazyGetChannelsQuery();
 
   const {
     control,
@@ -111,10 +124,7 @@ export const CategoryDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <DialogTitle sx={sx.dialogTitle}>
-          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
-          {data ? "Edit Category" : "Add Category"}
-        </DialogTitle>
+        <Typography sx={sx.dialogTitle}>{data ? "Edit Category" : "Add Category"}</Typography>
         <Typography sx={sx.dialogSubtitle}>
           {data ? "Update the details of this category." : "Create a new category."}
         </Typography>
@@ -122,47 +132,75 @@ export const CategoryDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={sx.dialogStack}>
-              <Controller
-                control={control}
-                name="channelId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      value={value}
-                      options={channelData?.value?.channel || []}
-                      loading={channelIsLoading}
-                      renderInput={(params) => <TextField label="Channel Name" fullWidth {...params} />}
-                      onOpen={() => {
-                        if (!channelIsSuccess)
-                          getChannel({
-                            Status: true,
-                          });
-                      }}
-                      onChange={(_, value) => onChange(value)}
-                      getOptionLabel={(option) => option.channel_Name}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      fullWidth
-                      disablePortal
-                    />
-                  );
-                }}
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Channel Name</Typography>
+                <Controller
+                  control={control}
+                  name="channelId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        value={value}
+                        size="small"
+                        options={channelData?.value?.channel || []}
+                        loading={channelIsLoading}
+                        renderInput={(params) => (
+                          <TextField
+                            placeholder="Select Channel Name"
+                            fullWidth
+                            {...params}
+                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                          />
+                        )}
+                        onOpen={() => {
+                          if (!channelIsSuccess)
+                            getChannel({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => onChange(value)}
+                        getOptionLabel={(option) => option.channel_Name}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "14px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Stack>
 
-              <TextField
-                {...register("category_Description")}
-                variant="outlined"
-                label="Category Name"
-                helperText={errors?.category_Description?.message}
-                error={!!errors?.category_Description?.message}
-                sx={{ borderColor: "primary" }}
-                fullWidth
-                autoComplete="off"
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Category</Typography>
+                <TextField
+                  {...register("category_Description")}
+                  variant="outlined"
+                  size="small"
+                  placeholder="Enter Category Name"
+                  helperText={errors?.category_Description?.message}
+                  error={!!errors?.category_Description?.message}
+                  fullWidth
+                  autoComplete="off"
+                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
+                />
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+            </LoadingButton>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -172,10 +210,7 @@ export const CategoryDialog = ({ data, open, onClose }) => {
               disabled={!watch("category_Description") || !watch("channelId")}
               sx={sx.disabledSaveButton}
             >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
         </form>

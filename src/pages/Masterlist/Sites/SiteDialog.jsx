@@ -25,10 +25,8 @@ const schema = yup.object().shape({
 });
 
 const SiteDialog = ({ data, open, onClose }) => {
-  const [
-    addEditSite,
-    { isLoading: addEditSiteIsLoading, isFetching: addEditSiteIsFetching },
-  ] = useAddEditSitesMutation();
+  const [addEditSite, { isLoading: addEditSiteIsLoading, isFetching: addEditSiteIsFetching }] =
+    useAddEditSitesMutation();
 
   const isEditMode = Boolean(data?.id);
 
@@ -121,10 +119,7 @@ const SiteDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <DialogTitle sx={sx.dialogTitle}>
-          {isEditMode ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
-          {isEditMode ? "Edit Site" : "Add Site"}
-        </DialogTitle>
+        <Typography sx={sx.dialogTitle}>{data ? "Edit Site" : "Add Site"}</Typography>
         <Typography sx={sx.dialogSubtitle}>
           {isEditMode ? "Update the details of this site." : "Create a new site location."}
         </Typography>
@@ -132,20 +127,27 @@ const SiteDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={sx.dialogStack}>
-              <TextField
-                {...register("name")}
-                variant="outlined"
-                label="Site Name"
-                helperText={errors?.name?.message}
-                error={!!errors?.name?.message}
-                sx={{ borderColor: "primary" }}
-                fullWidth
-                autoComplete="off"
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Site Name</Typography>
+                <TextField
+                  {...register("name")}
+                  variant="outlined"
+                  size="small"
+                  placeholder="Enter Site Name"
+                  helperText={errors?.name?.message}
+                  error={!!errors?.name?.message}
+                  sx={{ borderColor: "primary" }}
+                  fullWidth
+                  autoComplete="off"
+                />
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+            </LoadingButton>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -155,10 +157,7 @@ const SiteDialog = ({ data, open, onClose }) => {
               disabled={!watch("name")}
               sx={sx.disabledSaveButton}
             >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
         </form>

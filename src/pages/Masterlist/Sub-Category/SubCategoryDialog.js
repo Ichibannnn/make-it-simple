@@ -76,8 +76,6 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
         categoryId: formData.categoryId.categoryId,
       };
 
-      console.log("EditPayload: ", editPayload);
-
       createEditSubCategory(editPayload)
         .unwrap()
         .then(() => {
@@ -124,10 +122,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <DialogTitle sx={sx.dialogTitle}>
-          {data ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
-          {data ? "Edit Sub Category" : "Add Sub Category"}
-        </DialogTitle>
+        <Typography sx={sx.dialogTitle}>{data ? "Edit Sub Category" : "Add Sub Category"}</Typography>
 
         <Typography sx={sx.dialogSubtitle}>
           {data ? "Update the details of this sub category." : "Create a new sub category."}
@@ -136,47 +131,75 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={sx.dialogStack}>
-              <Controller
-                control={control}
-                name="categoryId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      value={value}
-                      options={categoryData?.value?.category || []}
-                      loading={categoryIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Category" />}
-                      onOpen={() => {
-                        if (!categoryIsSuccess)
-                          getCategory({
-                            Status: true,
-                          });
-                      }}
-                      onChange={(_, value) => onChange(value)}
-                      getOptionLabel={(option) => option.category_Description}
-                      isOptionEqualToValue={(option, value) => option.categoryId === value.categoryId}
-                      fullWidth
-                      disablePortal
-                    />
-                  );
-                }}
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Category</Typography>
+                <Controller
+                  control={control}
+                  name="categoryId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        value={value}
+                        size="small"
+                        options={categoryData?.value?.category || []}
+                        loading={categoryIsLoading}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder="Select Category"
+                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                          />
+                        )}
+                        onOpen={() => {
+                          if (!categoryIsSuccess)
+                            getCategory({
+                              Status: true,
+                            });
+                        }}
+                        onChange={(_, value) => onChange(value)}
+                        getOptionLabel={(option) => option.category_Description}
+                        isOptionEqualToValue={(option, value) => option.categoryId === value.categoryId}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "14px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Stack>
 
-              <TextField
-                {...register("subCategory_Description")}
-                variant="outlined"
-                label="Sub Category"
-                helperText={errors?.subCategory_Description?.message}
-                error={!!errors?.subCategory_Description?.message}
-                sx={{ borderColor: "primary" }}
-                fullWidth
-                autoComplete="off"
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Sub Category</Typography>
+
+                <TextField
+                  {...register("subCategory_Description")}
+                  size="small"
+                  variant="outlined"
+                  placeholder="Enter Sub Category"
+                  helperText={errors?.subCategory_Description?.message}
+                  error={!!errors?.subCategory_Description?.message}
+                  fullWidth
+                  autoComplete="off"
+                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
+                />
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+            </LoadingButton>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -186,10 +209,7 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
               disabled={!watch("categoryId") || !watch("subCategory_Description")}
               sx={sx.disabledSaveButton}
             >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
         </form>

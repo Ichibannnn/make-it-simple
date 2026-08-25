@@ -1,4 +1,12 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useEffect } from "react";
 import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
@@ -9,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useAddEditPmsTypeMutation } from "../../../features/api masterlist/pms-type/pmsTypeApi";
-import { pmsTypeStyles as sx } from "./styles/pmsTypeStyles";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -70,10 +78,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <DialogTitle sx={sx.dialogTitle}>
-          {isEditMode ? <EditOutlined sx={sx.dialogTitleIcon} /> : <AddCircleOutline sx={sx.dialogTitleIcon} />}
-          {isEditMode ? "Edit PMS Type" : "Add PMS Type"}
-        </DialogTitle>
+        <Typography sx={sx.dialogTitle}>{isEditMode ? "Edit PMS Type" : "Add PMS Type"}</Typography>
         <Typography sx={sx.dialogSubtitle}>
           {isEditMode ? "Update the details of this PMS type." : "Create a new PMS type for scheduling."}
         </Typography>
@@ -81,20 +86,27 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
             <Stack sx={sx.dialogStack}>
-              <TextField
-                {...register("name")}
-                variant="outlined"
-                label="PMS Type Name"
-                helperText={errors?.name?.message}
-                error={!!errors?.name?.message}
-                sx={{ borderColor: "primary" }}
-                fullWidth
-                autoComplete="off"
-              />
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>PMS Type</Typography>
+                <TextField
+                  {...register("name")}
+                  variant="outlined"
+                  size="small"
+                  placeholder="Enter PMS Type"
+                  helperText={errors?.name?.message}
+                  error={!!errors?.name?.message}
+                  fullWidth
+                  autoComplete="off"
+                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
+                />
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton variant="outlined" onClick={onCloseAction}>
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+            </LoadingButton>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -104,10 +116,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
               disabled={!watch("name")}
               sx={sx.disabledSaveButton}
             >
-              Save
-            </LoadingButton>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
         </form>
