@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Box, Typography, TextField, MenuItem, IconButton, Button, Divider, Chip } from "@mui/material";
+import { Box, Typography, TextField, MenuItem, IconButton, Button, Divider, Chip, Switch } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
@@ -131,11 +131,8 @@ function StatusButton({ value, target, onChange, color }) {
   );
 }
 
-function ChecklistRender({ field, value, onChange, errors }) {
+function ChecklistTable({ field, columns, descriptionLabel, rowState, onChange, rowErrors }) {
   const rows = field.rows || [];
-  const columns = getChecklistColumns(field);
-  const descriptionLabel = field.descriptionLabel || "DESCRIPTION";
-  const rowState = value || {};
   const statusCol = columns.find((c) => c.type === "status");
 
   function setRow(idx, patch) {
@@ -150,73 +147,151 @@ function ChecklistRender({ field, value, onChange, errors }) {
   ].join(" ");
 
   return (
-    <Box>
-      <FieldLabel text={field.label} required={field.required} />
-      <Box sx={s.checklistContainer}>
-        {/* Header row */}
-        <Box sx={s.checklistHeaderRow(gridCols)}>
-          <Typography sx={s.checklistHeaderCell}>#</Typography>
-          <Typography sx={s.checklistHeaderCell}>{descriptionLabel}</Typography>
-          {columns.map((col) => (
-            <Typography key={col.id} sx={s.checklistHeaderCol(col.type === "status")}>
-              {col.label}
-            </Typography>
-          ))}
-        </Box>
-
-        {/* Rows */}
-        {rows.map((rowLabel, i) => {
-          const r = rowState[i] || {};
-          const rowErr = errors?.[i];
-          return (
-            <Box
-              key={i}
-              sx={s.checklistRow(gridCols, i < rows.length - 1, !!rowErr)}
-            >
-              <Typography sx={s.checklistRowNum}>{i + 1}</Typography>
-              <Typography sx={s.checklistRowDesc}>{rowLabel}</Typography>
-
-              {columns.map((col) => {
-                const cellVal = r[col.id];
-                const required = isColumnRequired(col, statusCol ? r[statusCol.id] : undefined);
-                const hasErr = !!rowErr?.[col.id];
-
-                if (col.type === "status") {
-                  return (
-                    <Box key={col.id} sx={s.checklistStatusWrap}>
-                      <StatusButton
-                        value={cellVal}
-                        target="check"
-                        onChange={(v) => setRow(i, { [col.id]: v })}
-                        color="#22C55E"
-                      />
-                      <StatusButton
-                        value={cellVal}
-                        target="x"
-                        onChange={(v) => setRow(i, { [col.id]: v })}
-                        color="#EF4444"
-                      />
-                    </Box>
-                  );
-                }
-
-                return (
-                  <TextField
-                    key={col.id}
-                    size="small"
-                    type={col.type === "number" ? "number" : "text"}
-                    placeholder={required ? `${col.label} *` : `${col.label} (Optional)`}
-                    value={cellVal || ""}
-                    onChange={(e) => setRow(i, { [col.id]: e.target.value })}
-                    error={hasErr}
-                    sx={s.checklistCell}
-                  />
-                );
-              })}
-            </Box>
-          );
-        })}
+    <Box sx={s.checklistContainer}>
+      {/* Header row */}
+      <Box sx={s.checklistHeaderRow(gridCols)}>
+        <Typography sx={s.checklistHeaderCell}>#</Typography>
+        <Typography sx={s.checklistHeaderCell}>{descriptionLabel}</Typography>
+        {columns.map((col) => (
+          <Typography key={col.id} sx={s.checklistHeaderCol(col.type === "status")}>
+            {col.label}
+          </Typography>
+        ))}
       </Box>
+
+      {/* Rows */}
+      {rows.map((rowLabel, i) => {
+        const r = rowState[i] || {};
+        const rowErr = rowErrors?.[i];
+        return (
+          <Box
+            key={i}
+            sx={s.checklistRow(gridCols, i < rows.length - 1, !!rowErr)}
+          >
+            <Typography sx={s.checklistRowNum}>{i + 1}</Typography>
+            <Typography sx={s.checklistRowDesc}>{rowLabel}</Typography>
+
+            {columns.map((col) => {
+              const cellVal = r[col.id];
+              const required = isColumnRequired(col, statusCol ? r[statusCol.id] : undefined);
+              const hasErr = !!rowErr?.[col.id];
+
+              if (col.type === "status") {
+                return (
+                  <Box key={col.id} sx={s.checklistStatusWrap}>
+                    <StatusButton
+                      value={cellVal}
+                      target="check"
+                      onChange={(v) => setRow(i, { [col.id]: v })}
+                      color="#22C55E"
+                    />
+                    <StatusButton
+                      value={cellVal}
+                      target="x"
+                      onChange={(v) => setRow(i, { [col.id]: v })}
+                      color="#EF4444"
+                    />
+                  </Box>
+                );
+              }
+
+              return (
+                <TextField
+                  key={col.id}
+                  size="small"
+                  type={col.type === "number" ? "number" : "text"}
+                  placeholder={required ? `${col.label} *` : `${col.label} (Optional)`}
+                  value={cellVal || ""}
+                  onChange={(e) => setRow(i, { [col.id]: e.target.value })}
+                  error={hasErr}
+                  sx={s.checklistCell}
+                />
+              );
+            })}
+          </Box>
+        );
+      })}
+    </Box>
+  );
+}
+
+// A checklist field renders one or more table "instances". When `field.duplicable`
+// is on, an Add button appends another full copy of the table (e.g. a second
+// "Frontend PC" set). When `field.toggleable` is on, each instance gets its own
+// switch to disable/grey out that copy without deleting its data.
+function ChecklistRender({ field, value, onChange, errors }) {
+  const columns = getChecklistColumns(field);
+  const descriptionLabel = field.descriptionLabel || "DESCRIPTION";
+  const duplicable = !!field.duplicable;
+  const toggleable = !!field.toggleable;
+  const addLabel = field.duplicateLabel || `Add ${field.label || "Item"}`;
+
+  const instances = Array.isArray(value) && value.length > 0 ? value : [{ rows: {}, disabled: false }];
+
+  function updateInstance(idx, patch) {
+    onChange(instances.map((inst, i) => (i === idx ? { ...inst, ...patch } : inst)));
+  }
+  function addInstance() {
+    onChange([...instances, { rows: {}, disabled: false }]);
+  }
+  function removeInstance(idx) {
+    if (instances.length <= 1) return;
+    const next = [...instances];
+    next.splice(idx, 1);
+    onChange(next);
+  }
+
+  return (
+    <Box sx={s.checklistInstancesWrap}>
+      {instances.map((inst, idx) => {
+        const isLast = idx === instances.length - 1;
+        const isDisabled = toggleable && !!inst.disabled;
+        return (
+          <Box key={idx}>
+            <Box sx={s.checklistInstanceHeader}>
+              <Box sx={s.checklistTitleGroup}>
+                <FieldLabel text={field.label} required={field.required} />
+                {duplicable && <Chip label={idx + 1} size="small" sx={s.checklistCountBadge} />}
+              </Box>
+              <Box sx={s.checklistHeaderActions}>
+                {toggleable && (
+                  <Switch
+                    size="small"
+                    checked={isDisabled}
+                    onChange={(e) => updateInstance(idx, { disabled: e.target.checked })}
+                    sx={s.checklistDisableSwitch}
+                  />
+                )}
+                {duplicable && isLast && (
+                  <Button
+                    size="small"
+                    startIcon={<AddIcon sx={s.signatureAddIcon} />}
+                    onClick={addInstance}
+                    sx={s.signatureAddBtn}
+                  >
+                    {addLabel}
+                  </Button>
+                )}
+                {duplicable && instances.length > 1 && (
+                  <IconButton size="small" onClick={() => removeInstance(idx)} sx={s.signerRemoveBtn}>
+                    <DeleteOutlineIcon sx={s.signerRemoveIcon} />
+                  </IconButton>
+                )}
+              </Box>
+            </Box>
+            <Box sx={isDisabled ? s.checklistDisabledOverlay : undefined}>
+              <ChecklistTable
+                field={field}
+                columns={columns}
+                descriptionLabel={descriptionLabel}
+                rowState={inst.rows || {}}
+                onChange={(rows) => updateInstance(idx, { rows })}
+                rowErrors={errors?.[idx]}
+              />
+            </Box>
+          </Box>
+        );
+      })}
     </Box>
   );
 }
@@ -429,21 +504,27 @@ export default function FormRenderer({ fields }) {
       if (f.type === "checklist") {
         const cols = getChecklistColumns(f);
         const statusCol = cols.find((c) => c.type === "status");
-        const rowErr = {};
-        (f.rows || []).forEach((_, i) => {
-          const r = v?.[i] || {};
-          const rowStatus = statusCol ? r[statusCol.id] : undefined;
-          for (const col of cols) {
-            if (col.type === "status") continue;
-            if (isColumnRequired(col, rowStatus)) {
-              const val = r[col.id];
-              if (val == null || String(val).trim() === "") {
-                rowErr[i] = { ...(rowErr[i] || {}), [col.id]: true };
+        const instances = Array.isArray(v) && v.length > 0 ? v : [{ rows: {}, disabled: false }];
+        const instanceErrors = [];
+        instances.forEach((inst, instIdx) => {
+          if (f.toggleable && inst.disabled) return;
+          const rowErr = {};
+          (f.rows || []).forEach((_, i) => {
+            const r = inst.rows?.[i] || {};
+            const rowStatus = statusCol ? r[statusCol.id] : undefined;
+            for (const col of cols) {
+              if (col.type === "status") continue;
+              if (isColumnRequired(col, rowStatus)) {
+                const val = r[col.id];
+                if (val == null || String(val).trim() === "") {
+                  rowErr[i] = { ...(rowErr[i] || {}), [col.id]: true };
+                }
               }
             }
-          }
+          });
+          if (Object.keys(rowErr).length) instanceErrors[instIdx] = rowErr;
         });
-        if (Object.keys(rowErr).length) e[`${f.id}_rows`] = rowErr;
+        if (instanceErrors.some(Boolean)) e[`${f.id}_rows`] = instanceErrors;
       }
     }
     setErrors(e);

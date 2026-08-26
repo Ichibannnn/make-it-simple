@@ -77,22 +77,22 @@ const ChecklistManagementPage = () => {
                 <CreateCard />
               </Grid>
 
-              {(isLoading || isFetching) && renderSkeleton()}
+              {/* {(isLoading || isFetching) && renderSkeleton()} */}
 
-              {isSuccess &&
+              {/* {isSuccess &&
                 !isLoading &&
                 !isFetching &&
                 data?.value?.checklistManagement?.map((item, index) => (
                   <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
                     <ChecklistCards data={item} />
                   </Grid>
-                ))}
+                ))} */}
 
-              {/* {checklistData?.value?.checklistManagement?.map((item, index) => (
+              {checklistData?.value?.checklistManagement?.map((item, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
                   <ChecklistCards data={item} />
                 </Grid>
-              ))} */}
+              ))}
             </Grid>
           </Stack>
         </Stack>

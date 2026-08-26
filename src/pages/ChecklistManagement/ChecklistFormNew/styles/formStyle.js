@@ -691,6 +691,39 @@ export const formRendererStyles = {
   checklistRowDesc: { fontSize: 13, color: C.text },
   checklistStatusWrap: { display: "flex", gap: 0.5, justifyContent: "center" },
 
+  // ChecklistRender — duplicate/disable instance chrome
+  checklistInstancesWrap: { display: "flex", flexDirection: "column", gap: 2 },
+  checklistInstanceHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 1,
+    mb: 1,
+  },
+  checklistTitleGroup: { display: "flex", alignItems: "center", gap: 1 },
+  checklistCountBadge: {
+    height: 20,
+    minWidth: 20,
+    fontSize: 11,
+    fontWeight: 700,
+    bgcolor: C.primary,
+    color: C.white,
+    "& .MuiChip-label": { px: 0.75 },
+  },
+  checklistHeaderActions: { display: "flex", alignItems: "center", gap: 0.5 },
+  checklistDisableSwitch: {
+    "& .MuiSwitch-switchBase.Mui-checked": { color: C.danger },
+    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      bgcolor: C.danger,
+    },
+  },
+  checklistDisabledOverlay: {
+    opacity: 0.45,
+    filter: "grayscale(0.4)",
+    pointerEvents: "none",
+  },
+
   // SignerCard
   signerCard: {
     p: 2,

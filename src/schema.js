@@ -129,6 +129,9 @@ function serializeField(field) {
         descriptionLabel: field.descriptionLabel || "DESCRIPTION",
         rows: (field.rows || []).map((r, i) => (typeof r === "string" ? { id: `r${i + 1}`, label: r } : r)),
         columns: normalizeChecklistColumns(field),
+        duplicable: !!field.duplicable,
+        duplicateLabel: field.duplicateLabel || `Add ${field.label || "Item"}`,
+        toggleable: !!field.toggleable,
       };
     case "signature":
       return {
@@ -232,6 +235,9 @@ function deserializeField(field) {
           type: c.type,
           requireWhen: c.type === "status" ? "always" : exprToRequireWhen(c.requiredIf, statusCol?.id),
         })),
+        duplicable: field.duplicable,
+        duplicateLabel: field.duplicateLabel,
+        toggleable: field.toggleable,
       };
     }
     case "signature":

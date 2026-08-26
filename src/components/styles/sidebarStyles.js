@@ -74,7 +74,8 @@ export const sidebarStyles = {
     maxHeight: collapsed ? 0 : "34px",
     opacity: collapsed ? 0 : 1,
     transform: collapsed ? "translateY(-4px)" : "translateY(0)",
-    transition: "max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+    transition:
+      "max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
   }),
   brandRow: {
     flexDirection: "row",
@@ -102,6 +103,7 @@ export const sidebarStyles = {
   }),
 
   // Section label
+
   sectionLabel: {
     fontSize: "10px",
     fontWeight: 700,
@@ -109,13 +111,20 @@ export const sidebarStyles = {
     color: "#5B6678",
     margin: "18px 0 4px 26px",
     whiteSpace: "nowrap",
-    animation: "sidebarReveal 0.22s ease",
   },
+
+  sectionLabelWrap: (collapsed) => ({
+    overflow: "hidden",
+    maxHeight: collapsed ? 0 : "26px",
+    opacity: collapsed ? 0 : 1,
+    transition: "max-height 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease",
+  }),
 
   // Top-level list
   list: {
     marginLeft: "12px",
     marginRight: "12px",
+    marginTop: 2,
     padding: 0,
   },
   navButton: (collapsed) => ({
@@ -124,7 +133,7 @@ export const sidebarStyles = {
     padding: collapsed ? "10px" : "9px 12px",
     justifyContent: collapsed ? "center" : "flex-start",
     position: "relative",
-    transition: "background-color 0.2s ease, transform 0.2s ease",
+    transition: "background-color 0.2s ease, transform 0.2s ease, padding 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
     "&:hover": {
       backgroundColor: "#252E3E",
       transform: collapsed ? "none" : "translateX(3px)",
@@ -158,8 +167,21 @@ export const sidebarStyles = {
     lineHeight: "24px",
     mb: "2px",
     whiteSpace: "nowrap",
-    animation: "sidebarReveal 0.22s ease",
   },
+  navLabelWrap: (collapsed) => ({
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flex: "1 1 auto",
+    minWidth: 0,
+    maxWidth: collapsed ? 0 : "220px",
+    opacity: collapsed ? 0 : 1,
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    transition: "max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18 ease  ",
+  }),
   // Single chevron that rotates instead of swapping icons — smoother open/close.
   chevron: (open) => ({
     color: "#7C889C",

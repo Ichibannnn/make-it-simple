@@ -174,6 +174,31 @@ export default function PropertiesPanel({ field, onClose, onUpdate }) {
                 <>
                   <Divider sx={s.divider} />
 
+                  <ToggleRow
+                    label="Allow Duplicate (Add button)"
+                    checked={!!field.duplicable}
+                    onChange={(v) => update("duplicable", v)}
+                  />
+                  {field.duplicable && (
+                    <PropRow label="Duplicate Button Label">
+                      <TextField
+                        fullWidth
+                        size="small"
+                        value={field.duplicateLabel || ""}
+                        placeholder={`Add ${field.label || "Item"}`}
+                        onChange={(e) => update("duplicateLabel", e.target.value)}
+                        sx={s.input}
+                      />
+                    </PropRow>
+                  )}
+                  <ToggleRow
+                    label="Allow Enable/Disable Toggle"
+                    checked={!!field.toggleable}
+                    onChange={(v) => update("toggleable", v)}
+                  />
+
+                  <Divider sx={s.divider} />
+
                   <PropRow label="Description Column Header">
                     <TextField
                       fullWidth
