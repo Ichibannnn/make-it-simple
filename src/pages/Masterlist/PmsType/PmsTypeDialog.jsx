@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,19 +14,29 @@ import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 import * as yup from "yup";
 import { toast } from "sonner";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
 import { useAddEditPmsTypeMutation } from "../../../features/api masterlist/pms-type/pmsTypeApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
+import { useLazyGetActiveSitesQuery } from "../../../features/api masterlist/sites/sitesApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
-  name: yup.string().required("PMS Type is required."),
+  site: yup.object().nullable(),
+  name: yup.string().required().label("PMS Type is required."),
+  noOfPmsEvalutions: yup
+    .number()
+    .required("Total PMS evalution is required")
+    .positive("Must be positive value")
+    .typeError("Must be a number"),
 });
 
 const PmsTypeDialog = ({ data, open, onClose }) => {
   const [addEditPmsType, { isLoading }] = useAddEditPmsTypeMutation();
+
+  const [getSite, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] =
+    useLazyGetActiveSitesQuery();
 
   const isEditMode = Boolean(data?.id);
 
@@ -35,18 +46,22 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     watch,
     setValue,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       id: null,
+      site: null,
       name: "",
+      noOfPmsEvalutions: "",
     },
   });
 
   useEffect(() => {
     if (data) {
       setValue("id", data?.id);
+      // setValue("site", {})
       setValue("name", data?.name);
     }
   }, [data]);
@@ -87,6 +102,51 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
           <DialogContent>
             <Stack sx={sx.dialogStack}>
               <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Site</Typography>
+                <Controller
+                  control={control}
+                  name="site"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        value={value}
+                        size="small"
+                        options={siteData?.value?.sites || []}
+                        loading={siteIsLoading}
+                        renderInput={(params) => (
+                          <TextField
+                            placeholder="Select Site"
+                            fullWidth
+                            {...params}
+                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                          />
+                        )}
+                        onOpen={() => {
+                          if (!siteIsSuccess) getSite();
+                        }}
+                        onChange={(_, value) => onChange(value)}
+                        getOptionLabel={(option) => option.name}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                        componentsProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiAutocomplete-listbox": {
+                                fontSize: "14px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Stack>
+
+              <Stack sx={sx.formField}>
                 <Typography sx={sx.fieldText}>PMS Type</Typography>
                 <TextField
                   {...register("name")}
@@ -95,6 +155,21 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
                   placeholder="Enter PMS Type"
                   helperText={errors?.name?.message}
                   error={!!errors?.name?.message}
+                  fullWidth
+                  autoComplete="off"
+                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
+                />
+              </Stack>
+
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Total PMS Evaluations</Typography>
+                <TextField
+                  {...register("noOfPmsEvalutions")}
+                  variant="outlined"
+                  size="small"
+                  placeholder="Enter number of evaluation"
+                  helperText={errors?.noOfPmsEvalutions?.message}
+                  error={!!errors?.noOfPmsEvalutions?.message}
                   fullWidth
                   autoComplete="off"
                   sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
