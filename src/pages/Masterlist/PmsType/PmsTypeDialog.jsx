@@ -4,12 +4,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect } from "react";
-import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
+import { Save } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { toast } from "sonner";
@@ -20,6 +22,7 @@ import { LoadingButton } from "@mui/lab";
 import { useAddEditPmsTypeMutation } from "../../../features/api masterlist/pms-type/pmsTypeApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 import { useLazyGetActiveSitesQuery } from "../../../features/api masterlist/sites/sitesApi";
+import { useState } from "react";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -33,12 +36,16 @@ const schema = yup.object().shape({
 });
 
 const PmsTypeDialog = ({ data, open, onClose }) => {
+  const [lookupSource, setLookupSource] = useState(null);
+
   const [addEditPmsType, { isLoading }] = useAddEditPmsTypeMutation();
 
   const [getSite, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] =
     useLazyGetActiveSitesQuery();
 
   const isEditMode = Boolean(data?.id);
+
+  const lookupDropdownOptions = ["Stores", "Employees", "Farms", "Departments", "Buildings"];
 
   const {
     handleSubmit,
@@ -174,6 +181,30 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
                   autoComplete="off"
                   sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
                 />
+              </Stack>
+
+              <Stack sx={sx.formField}>
+                <Typography sx={sx.fieldText}>Lookup Source</Typography>
+                <Select
+                  value={lookupSource}
+                  // onChange={(e) => setLookupSource(e.target.value)}
+                  size="small"
+                  placeholder="Select lookup source"
+                  inputProps={{ "aria-label": "Without label" }}
+                  sx={{
+                    width: "100%",
+                    fontSize: "13px",
+                    "& .MuiSelect-select": {
+                      color: "#fff",
+                    },
+                  }}
+                >
+                  {lookupDropdownOptions.map((item, i) => (
+                    <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
               </Stack>
             </Stack>
           </DialogContent>

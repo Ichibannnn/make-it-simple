@@ -378,7 +378,6 @@ const SidebarList = ({ collapsed, onExpand }) => {
           path: "/masterlist/pms-type",
           icon: "BackupTableOutlined",
         },
-
         {
           id: 11,
           name: "Store List",
