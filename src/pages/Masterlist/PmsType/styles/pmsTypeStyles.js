@@ -68,7 +68,7 @@ export const pmsTypeStyles = {
     paddingX: "8px",
     ".MuiTab-root": {
       minWidth: { xs: "80px", md: "120px" },
-      fontSize: { xs: "10px", sm: "12px", md: "14px" },
+      fontSize: { xs: "8px", sm: "10px", md: "12px" },
       textTransform: "none",
       color: theme.palette.text.secondary,
       transition: "color 0.2s ease",
@@ -85,9 +85,8 @@ export const pmsTypeStyles = {
     },
   },
   tab: {
-    fontSize: "12px",
     fontWeight: 600,
-    letterSpacing: "0.3px",
+    letterSpacing: "0.5px",
   },
   divider: {
     background: "#2D3748",

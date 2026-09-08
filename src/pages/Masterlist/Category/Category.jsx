@@ -36,13 +36,16 @@ import { CategoryDialog } from "./CategoryDialog";
 import { CategoryActions } from "./CategoryActions";
 import { CategorySubCat } from "./CategorySubCat";
 
-import { useArchiveCategoryMutation, useGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
+import {
+  useArchiveCategoryMutation,
+  useGetCategoryQuery,
+} from "../../../features/api masterlist/category_api/categoryApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Archived" },
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
 ];
 
 const TABLE_COLUMNS = ["LINE NO.", "CHANNEL NAME", "CATEGORY NAME", "SUB CATEGORY", "STATUS", "ACTIONS"];
@@ -242,7 +245,13 @@ const Category = () => {
           <Typography sx={sx.pageSubtitle}>Manage channel categories</Typography>
         </Stack>
 
-        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<AddOutlined />}
+          onClick={onToggle}
+          sx={sx.addButton}
+        >
           Add
         </Button>
       </Stack>
@@ -256,7 +265,13 @@ const Category = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={sx.searchContainer}
+          gap={4}
+        >
           <OutlinedInput
             placeholder="Search category"
             startAdornment={<Search sx={sx.searchIcon} />}
@@ -286,7 +301,9 @@ const Category = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>CHANNEL NAME:</Typography>
-                        <Typography sx={sx.cardValue}>{item.channel_Name ? item.channel_Name : "-"}</Typography>
+                        <Typography sx={sx.cardValue}>
+                          {item.channel_Name ? item.channel_Name : "-"}
+                        </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -301,7 +318,12 @@ const Category = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                        <CategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <CategoryActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -310,7 +332,11 @@ const Category = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -350,7 +376,7 @@ const Category = () => {
           <>
             <TableContainer>
               <Table sx={sx.table}>
-                <TableHead>
+                <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
                       <TableCell
@@ -384,7 +410,12 @@ const Category = () => {
                           />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <CategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                          <CategoryActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -392,7 +423,11 @@ const Category = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>

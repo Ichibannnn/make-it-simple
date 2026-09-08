@@ -307,7 +307,7 @@ const OneCharging = () => {
           <>
             <TableContainer>
               <Table sx={sx.table}>
-                <TableHead>
+                <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
                       <TableCell key={column} sx={sx.headCell}>

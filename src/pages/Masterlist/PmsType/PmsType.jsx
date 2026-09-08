@@ -42,9 +42,9 @@ import { pmsTypeStyles as sx } from "./styles/pmsTypeStyles";
 
 // --- Static config kept out of render so it isn't rebuilt every pass ---------
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Archived" },
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
 ];
 
 const TABLE_COLUMNS = ["LINE NO.", "NAME", "STATUS", "ACTIONS"];

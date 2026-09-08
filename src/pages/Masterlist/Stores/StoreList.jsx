@@ -44,9 +44,9 @@ import StoreListDialog from "./StoreListDialog";
 
 // --- Static config kept out of render so it isn't rebuilt every pass ---------
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Archived" },
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
 ];
 
 const TABLE_COLUMNS = ["ID", "REGION", "AREA", "STORE", "STATUS", "ACTIONS"];
@@ -304,7 +304,7 @@ const StoreList = () => {
           <>
             <TableContainer>
               <Table sx={sx.table}>
-                <TableHead>
+                <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
                       <TableCell key={column} sx={sx.headCell} align={column === "NAME" ? "left" : "center"}>

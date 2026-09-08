@@ -34,13 +34,16 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { ListOfChannels } from "./ListOfChannels";
 import { ServiceProviderDialog } from "./ServiceProviderDialog";
 import { ServiceProviderActions } from "./ServiceProviderActions";
-import { useArchiveServiceProviderMutation, useGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import {
+  useArchiveServiceProviderMutation,
+  useGetServiceProviderQuery,
+} from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Archived" },
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
 ];
 
 const TABLE_COLUMNS = ["LINE NO.", "SERVICE PROVIDER", "CHANNELS", "STATUS", "ACTIONS"];
@@ -233,7 +236,13 @@ const ServiceProvider = () => {
           <Typography sx={sx.pageSubtitle}>Manage service providers and their channels</Typography>
         </Stack>
 
-        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<AddOutlined />}
+          onClick={onToggle}
+          sx={sx.addButton}
+        >
           Add
         </Button>
       </Stack>
@@ -247,7 +256,13 @@ const ServiceProvider = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={sx.searchContainer}
+          gap={4}
+        >
           <OutlinedInput
             placeholder="Search service provider"
             startAdornment={<Search sx={sx.searchIcon} />}
@@ -277,7 +292,9 @@ const ServiceProvider = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>SERVICE PROVIDER:</Typography>
-                        <Typography sx={sx.cardValue}>{item.serviceProviderName ? item.serviceProviderName : "-"}</Typography>
+                        <Typography sx={sx.cardValue}>
+                          {item.serviceProviderName ? item.serviceProviderName : "-"}
+                        </Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -287,7 +304,12 @@ const ServiceProvider = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                        <ServiceProviderActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <ServiceProviderActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -296,7 +318,11 @@ const ServiceProvider = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -336,7 +362,7 @@ const ServiceProvider = () => {
           <>
             <TableContainer>
               <Table sx={sx.table}>
-                <TableHead>
+                <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
                       <TableCell
@@ -356,7 +382,9 @@ const ServiceProvider = () => {
                         <TableCell sx={sx.bodyCell} align="center">
                           {i + 1}
                         </TableCell>
-                        <TableCell sx={sx.bodyCell}>{item.serviceProviderName ? item.serviceProviderName : "-"}</TableCell>
+                        <TableCell sx={sx.bodyCell}>
+                          {item.serviceProviderName ? item.serviceProviderName : "-"}
+                        </TableCell>
                         <TableCell sx={sx.bodyCell}>
                           <ListOfChannels serviceChannel={item.serviceChannel} />
                         </TableCell>
@@ -369,7 +397,12 @@ const ServiceProvider = () => {
                           />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} onArchive={onArchiveAction} />
+                          <ServiceProviderActions
+                            data={item}
+                            status={status}
+                            onUpdate={onEditAction}
+                            onArchive={onArchiveAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -377,7 +410,11 @@ const ServiceProvider = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>

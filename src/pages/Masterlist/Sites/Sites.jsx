@@ -39,9 +39,9 @@ import { useArchiveSitesMutation, useGetSitesQuery } from "../../../features/api
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Archived" },
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
 ];
 
 const TABLE_COLUMNS = ["LINE NO.", "SITE NAME", "STATUS", "ACTIONS"];
@@ -240,7 +240,13 @@ const Sites = () => {
           <Typography sx={sx.pageSubtitle}>Manage site locations</Typography>
         </Stack>
 
-        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<AddOutlined />}
+          onClick={onToggle}
+          sx={sx.addButton}
+        >
           Add
         </Button>
       </Stack>
@@ -254,7 +260,13 @@ const Sites = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={sx.searchContainer}
+          gap={4}
+        >
           <OutlinedInput
             placeholder="Search Site"
             startAdornment={<Search sx={sx.searchIcon} />}
@@ -289,7 +301,12 @@ const Sites = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                        <SiteActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <SiteActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -298,7 +315,11 @@ const Sites = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -341,7 +362,11 @@ const Sites = () => {
                 <TableHead>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
-                      <TableCell key={column} sx={sx.headCell} align={column === "SITE NAME" ? "left" : "center"}>
+                      <TableCell
+                        key={column}
+                        sx={sx.headCell}
+                        align={column === "SITE NAME" ? "left" : "center"}
+                      >
                         {column}
                       </TableCell>
                     ))}
@@ -365,7 +390,12 @@ const Sites = () => {
                           />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <SiteActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                          <SiteActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -373,7 +403,11 @@ const Sites = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>

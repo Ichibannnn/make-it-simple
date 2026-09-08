@@ -1604,7 +1604,7 @@ const IssueHandlerConcerns = () => {
                       alt="Something Went Wrong"
                       className="something-went-wrong-table"
                     />
-                    <Typography variant="h6" color="error" align="center">
+                    <Typography variant="h6" color="#EDF2F7" align="center">
                       Something went wrong.
                     </Typography>
                   </Stack>

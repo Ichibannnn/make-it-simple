@@ -468,7 +468,7 @@ const NewReceiverConcern = () => {
                                     color: theme.palette.text.main,
                                   }}
                                 >
-                                  {item.concern.split("\r\n").map((line, index) => (
+                                  {item.concern?.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
                                       <br />

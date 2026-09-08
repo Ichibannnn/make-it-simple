@@ -34,13 +34,16 @@ import useDisclosure from "../../../hooks/useDisclosure";
 
 import { CategoryConcernActions } from "./CategoryConcernActions";
 import { CategoryConcernDialog } from "./CategoryConcernDialog";
-import { useArchiveCategoryConcernMutation, useGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
+import {
+  useArchiveCategoryConcernMutation,
+  useGetCategoryConcernQuery,
+} from "../../../features/api masterlist/category_concern/categoryConcernApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "true", label: "Active" },
-  { value: "false", label: "Archived" },
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
 ];
 
 const TABLE_COLUMNS = ["LINE NO.", "CONCERN CATEGORY", "STATUS", "ACTIONS"];
@@ -240,7 +243,13 @@ const CategoryConcern = () => {
           <Typography sx={sx.pageSubtitle}>Manage concern categories</Typography>
         </Stack>
 
-        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<AddOutlined />}
+          onClick={onToggle}
+          sx={sx.addButton}
+        >
           Add
         </Button>
       </Stack>
@@ -254,7 +263,13 @@ const CategoryConcern = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={sx.searchContainer}
+          gap={4}
+        >
           <OutlinedInput
             placeholder="Search category"
             startAdornment={<Search sx={sx.searchIcon} />}
@@ -289,7 +304,12 @@ const CategoryConcern = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                        <CategoryConcernActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                        <CategoryConcernActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -298,7 +318,11 @@ const CategoryConcern = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                <img
+                  src={somethingWentWrong}
+                  alt="Something Went Wrong"
+                  className="something-went-wrong-table"
+                />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -338,10 +362,14 @@ const CategoryConcern = () => {
           <>
             <TableContainer>
               <Table sx={sx.table}>
-                <TableHead>
+                <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
-                      <TableCell key={column} sx={sx.headCell} align={column === "CONCERN CATEGORY" ? "left" : "center"}>
+                      <TableCell
+                        key={column}
+                        sx={sx.headCell}
+                        align={column === "CONCERN CATEGORY" ? "left" : "center"}
+                      >
                         {column}
                       </TableCell>
                     ))}
@@ -364,7 +392,12 @@ const CategoryConcern = () => {
                           />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <CategoryConcernActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
+                          <CategoryConcernActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -372,7 +405,11 @@ const CategoryConcern = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <img
+                          src={somethingWentWrong}
+                          alt="Something Went Wrong"
+                          className="something-went-wrong-table"
+                        />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
