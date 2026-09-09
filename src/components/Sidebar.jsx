@@ -596,10 +596,16 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
         },
         {
           id: 11,
-          name: "Store List",
-          path: "/masterlist/store-list",
-          icon: "StorefrontOutlined",
+          name: "Buildings",
+          path: "/masterlist/buildings",
+          icon: "ApartmentOutlined",
         },
+        //         {
+        //   id: 11,
+        //   name: "Store List",
+        //   path: "/masterlist/store-list",
+        //   icon: "StorefrontOutlined",
+        // },
       ],
     },
     {

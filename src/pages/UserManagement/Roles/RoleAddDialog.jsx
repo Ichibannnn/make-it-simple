@@ -56,7 +56,7 @@ const masterlistCheckbox = [
   "Approver Setup",
   "PMS Type",
   "Sites",
-  "Store List",
+  "Buildings",
 ];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];

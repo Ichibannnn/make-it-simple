@@ -80,9 +80,14 @@ export const sidebarNavigationData = [
       },
       {
         id: 11,
-        name: "Store List",
-        path: "/masterlist/store-list",
+        name: "Buildings",
+        path: "/masterlist/buildings",
       },
+      //       {
+      //   id: 11,
+      //   name: "Store List",
+      //   path: "/masterlist/store-list",
+      // },
     ],
   },
   {

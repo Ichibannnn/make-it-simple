@@ -3,6 +3,7 @@ import IcecreamOutlinedIcon from "@mui/icons-material/IcecreamOutlined";
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
 
 import {
+  ApartmentOutlined,
   AssessmentOutlined,
   AttachFileOutlined,
   AutoAwesomeMotionOutlined,
@@ -62,7 +63,7 @@ export const getSubMenuIcon = (iconName) => {
     GroupsOutlined: <GroupsOutlined fontSize="small" />,
     StorefrontOutlined: <StorefrontOutlined fontSize="small" />,
     StoreMallDirectoryOutlined: <StoreMallDirectoryOutlined fontSize="small" />,
-    BackupTableOutlined: <BackupTableOutlined fontSize="small" />,
+    ApartmentOutlined: <ApartmentOutlined fontSize="small" />,
     // Requestor / Receiver
     DiscountOutlined: <DiscountOutlined fontSize="small" />,
     // Ticketing
