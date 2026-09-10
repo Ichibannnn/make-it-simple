@@ -1,17 +1,4 @@
-import {
-  Autocomplete,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Stack,
-  TextField,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -34,107 +21,43 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
-import {
-  useCreateUserMutation,
-  useUpdateUserMutation,
-} from "../../../features/user_management_api/user/userApi";
+import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
+import { useLazyGetActiveUserTypesQuery } from "../../../features/api masterlist/user_types/userTypeApi";
+import { useLazyGetActiveBuildingsQuery } from "../../../features/api masterlist/buildings/buildingApi";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [storeCheckbox, setStoreCheckbox] = useState(false);
 
-  const [
-    createUser,
-    { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching },
-  ] = useCreateUserMutation();
-  const [
-    updateUser,
-    { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching },
-  ] = useUpdateUserMutation();
+  const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
+  const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
 
-  const [
-    getEmployees,
-    {
-      data: employeeData = [],
-      isLoading: emloyeeIsLoading,
-      isSuccess: employeeIsSuccess,
-    },
-  ] = useLazyGetEmployeesQuery();
-  const [
-    getRoles,
-    { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess },
-  ] = useLazyGetRolesQuery();
-  const [
-    getOneCharging,
-    {
-      data: oneChargingData,
-      isLoading: oneChargingIsLoading,
-      isSuccess: oneChargingIsSuccess,
-    },
-  ] = useLazyGetOneChargingQuery();
-  const [
-    getCompany,
-    {
-      data: companyData,
-      isLoading: companyIsLoading,
-      isSuccess: companyIsSuccess,
-    },
-  ] = useLazyGetCompanyQuery();
-  const [
-    getBusinessUnit,
-    {
-      data: businessUnitData,
-      isLoading: businessUnitIsLoading,
-      isSuccess: businessUnitIsSuccess,
-    },
-  ] = useLazyGetBusinessUnitQuery();
-  const [
-    getDepartment,
-    {
-      data: departmentData,
-      isLoading: departmentIsLoading,
-      isSuccess: departmentIsSuccess,
-    },
-  ] = useLazyGetDepartmentQuery();
-  const [
-    getUnit,
-    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
-  ] = useLazyGetUnitQuery();
-  const [
-    getSubUnit,
-    {
-      data: subUnitData,
-      isLoading: subUnitIsLoading,
-      isSuccess: subUnitIsSuccess,
-    },
-  ] = useLazyGetSubUnitQuery();
-  const [
-    getLocation,
-    {
-      data: locationData,
-      isLoading: locationIsLoading,
-      isSuccess: locationIsSuccess,
-    },
-  ] = useLazyGetLocationWithPaginationQuery();
+  const [getUserTypes, { data: userTypeData, isLoading: userTypeIsLoading, isSuccess: userTypeIsSuccess }] = useLazyGetActiveUserTypesQuery();
+  const [getEmployees, { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess }] = useLazyGetEmployeesQuery();
+  const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] = useLazyGetRolesQuery();
+  const [getOneCharging, { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess }] = useLazyGetOneChargingQuery();
+  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
+  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+  const [getBuildings, { data: buildingData, isLoading: buildingIsLoading, isSuccess: buildingIsSuccess }] = useLazyGetActiveBuildingsQuery();
 
   const [warningData, setWarningData] = useState("");
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const {
-    open: warningOpen,
-    onToggle: warningOnToggle,
-    onClose: warningOnClose,
-  } = useDisclosure();
+  const { open: warningOpen, onToggle: warningOnToggle, onClose: warningOnClose } = useDisclosure();
 
   const schema = useMemo(
     () =>
       yup.object().shape({
-        empId:
-          !storeCheckbox && !data?.is_Store === true
-            ? yup.object().required().label()
-            : yup.string().nullable(),
+        userType: yup.object().required().label("User Type"),
+        empId: !storeCheckbox && !data?.is_Store === true ? yup.object().required().label() : yup.string().nullable(),
         fullname: yup.string().required().label("Fullname"),
         username: yup.string().required().label("Username"),
         userRoleId: yup.object().required().label("Role"),
+        building: yup.object().required().label("Building"),
+
         oneCharging: yup.object().required().label("Charging"),
         companyId: yup.object().required().label("Company"),
         businessUnitId: yup.object().required().label("Business Unit"),
@@ -157,10 +80,13 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      userType: null,
       empId: !storeCheckbox ? null : "",
       fullname: "",
       username: "",
       userRoleId: null,
+      building: null,
+
       oneCharging: null,
       companyId: null,
       businessUnitId: null,
@@ -257,23 +183,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         });
       }
     }
-  }, [
-    data,
-    companyIsLoading,
-    businessUnitIsLoading,
-    departmentIsLoading,
-    unitIsLoading,
-    subUnitIsLoading,
-    locationIsLoading,
-  ]);
+  }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   const onSubmitHandler = (formData) => {
-    console.log("FormData:", formData);
-
-    if (
-      data?.is_Use === true &&
-      data?.user_Role_Name !== formData.userRoleId.user_Role_Name
-    ) {
+    if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
       setWarningData({
         id: data.id,
         userRoleId: formData.userRoleId.id,
@@ -350,12 +263,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         });
       } else {
         const submitAddUser = {
-          empId: !storeCheckbox
-            ? formData.empId.general_info.full_id_number
-            : formData.empId,
-          fullname: !storeCheckbox
-            ? formData.empId.general_info.full_name
-            : formData.fullname,
+          empId: !storeCheckbox ? formData.empId.general_info.full_id_number : formData.empId,
+          fullname: !storeCheckbox ? formData.empId.general_info.full_name : formData.fullname,
           username: formData.username,
           userRoleId: formData.userRoleId.id,
           oneChargingCode: formData.oneCharging.code,
@@ -426,24 +335,11 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={open}
-        PaperProps={{ style: { overflow: "auto" } }}
-      >
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>
-          {!data ? "Create User Account" : "Update User Account"}
-        </DialogTitle>
+      <Dialog fullWidth maxWidth="md" open={open} PaperProps={{ style: { overflow: "auto" } }}>
+        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>{!data ? "Create User Account" : "Update User Account"}</DialogTitle>
 
         <DialogContent>
-          <Stack
-            id="user"
-            component="form"
-            onSubmit={handleSubmit(onSubmitHandler)}
-            gap={2}
-            paddingTop={3}
-          >
+          <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={2} paddingTop={3}>
             <Typography
               sx={{
                 color: "#48BB78",
@@ -454,7 +350,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               Basic Information
             </Typography>
 
-            {!data && (
+            {/* Store Checkbox */}
+            {/* {!data && (
               <Stack direction="row" gap={0.5} alignItems="center">
                 <Checkbox
                   checked={storeCheckbox || data?.is_Store === true}
@@ -470,17 +367,16 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                   sx={{
                     fontSize: "15px",
                     fontStyle: "italic",
-                    color: storeCheckbox
-                      ? theme.palette.text.main
-                      : theme.palette.text.secondary,
+                    color: storeCheckbox ? theme.palette.text.main : theme.palette.text.secondary,
                   }}
                 >
                   Check if you want to create user for Store
                 </Typography>
               </Stack>
-            )}
+            )} */}
 
             <Stack direction={isSmallScreen ? "column" : "row"} gap={1}>
+              {/* Employee ID */}
               {storeCheckbox === false ? (
                 <Controller
                   control={control}
@@ -493,9 +389,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                         value={value}
                         options={employeeData}
                         loading={emloyeeIsLoading}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Employee ID" />
-                        )}
+                        renderInput={(params) => <TextField {...params} label="Employee ID" />}
                         onOpen={() => {
                           if (!employeeIsSuccess) getEmployees();
                         }}
@@ -507,22 +401,13 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                               .split(" ")
                               .map((item) => item.at(0))
                               .join("")
-                              .toLowerCase() +
-                              value?.general_info.last_name
-                                .split(" ")
-                                .join("")
-                                .toLowerCase(),
+                              .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase(),
                           );
 
                           onChange(value);
                         }}
-                        getOptionLabel={(option) =>
-                          option?.general_info?.full_id_number
-                        }
-                        isOptionEqualToValue={(option, value) =>
-                          option.general_info.full_id_number ===
-                          value.general_info.full_id_number
-                        }
+                        getOptionLabel={(option) => option?.general_info?.full_id_number}
+                        isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
                         disabled={data ? true : false}
                         sx={{
                           flex: 1,
@@ -547,6 +432,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 />
               )}
 
+              {/* Fullname */}
               {!storeCheckbox ? (
                 <Controller
                   control={control}
@@ -587,23 +473,13 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               )}
             </Stack>
 
+            {/* Username */}
             {!storeCheckbox ? (
               <Controller
                 control={control}
                 name="username"
                 render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="small"
-                      value={value}
-                      label="Username"
-                      onChange={onChange}
-                      autoComplete="off"
-                      fullWidth
-                      disabled={data ? true : false}
-                    />
-                  );
+                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth disabled={data ? true : false} />;
                 }}
               />
             ) : (
@@ -620,6 +496,36 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               />
             )}
 
+            {/* User Type */}
+            <Controller
+              control={control}
+              name="userType"
+              render={({ field: { ref, value, onChange } }) => {
+                return (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value}
+                    options={userTypeData?.value?.pms || []}
+                    loading={userTypeIsLoading}
+                    renderInput={(params) => <TextField {...params} label="User Type" />}
+                    onOpen={() => {
+                      if (!userTypeIsSuccess) getUserTypes();
+                    }}
+                    onChange={(_, value) => onChange(value)}
+                    getOptionLabel={(option) => option.name}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{
+                      flex: 2,
+                    }}
+                    fullWidth
+                    disablePortal
+                  />
+                );
+              }}
+            />
+
+            {/* Role */}
             <Controller
               control={control}
               name="userRoleId"
@@ -631,9 +537,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={roleData?.value?.userRole || []}
                     loading={roleIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Role" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Role" />}
                     onOpen={() => {
                       if (!roleIsSuccess)
                         getRoles({
@@ -642,9 +546,36 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     }}
                     onChange={(_, value) => onChange(value)}
                     getOptionLabel={(option) => option.user_Role_Name}
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{
+                      flex: 2,
+                    }}
+                    fullWidth
+                    disablePortal
+                  />
+                );
+              }}
+            />
+
+            {/* Building */}
+            <Controller
+              control={control}
+              name="building"
+              render={({ field: { ref, value, onChange } }) => {
+                return (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value}
+                    options={buildingData?.value?.pms || []}
+                    loading={buildingIsLoading}
+                    renderInput={(params) => <TextField {...params} label="Building" />}
+                    onOpen={() => {
+                      if (!buildingIsSuccess) getBuildings();
+                    }}
+                    onChange={(_, value) => onChange(value)}
+                    getOptionLabel={(option) => option.name}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -667,6 +598,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               Other Information
             </Typography>
 
+            {/* One Charging */}
             <Controller
               control={control}
               name="oneCharging"
@@ -678,9 +610,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={oneChargingData?.value?.onecharging || []}
                     loading={oneChargingIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Charging Code" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Charging Code" />}
                     onOpen={() => {
                       if (!oneChargingIsSuccess) getOneCharging();
                     }}
@@ -722,12 +652,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
 
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option?.code} - ${option?.name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.code === value.code
-                    }
+                    getOptionLabel={(option) => `${option?.code} - ${option?.name}`}
+                    isOptionEqualToValue={(option, value) => option.code === value.code}
                     sx={{
                       flex: 2,
                     }}
@@ -740,6 +666,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
+            {/* Company */}
             <Controller
               control={control}
               name="companyId"
@@ -751,21 +678,15 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={companyData?.value?.company || []}
                     loading={companyIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Company" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Company" />}
                     onOpen={() => {
                       if (!companyIsSuccess) getCompany();
                     }}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.company_Code} - ${option.company_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -776,6 +697,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
+            {/* Business Unit  */}
             <Controller
               control={control}
               name="businessUnitId"
@@ -787,18 +709,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={businessUnitData?.value?.businessUnit || []}
                     loading={businessUnitIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Business Unit" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Business Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.business_Code} - ${option.business_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -809,6 +725,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
+            {/* Department */}
             <Controller
               control={control}
               name="departmentId"
@@ -820,18 +737,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={departmentData?.value?.department || []}
                     loading={departmentIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Department" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Department" />}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.department_Code} - ${option.department_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -842,6 +753,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
+            {/* Unit */}
             <Controller
               control={control}
               name="unitId"
@@ -853,18 +765,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={unitData?.value?.unit || []}
                     loading={unitIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Unit" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.unit_Code} - ${option.unit_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -875,6 +781,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
+            {/* Sub Unit */}
             <Controller
               control={control}
               name="subUnitId"
@@ -892,18 +799,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                           Status: true,
                         });
                     }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Sub Unit" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Sub Unit" />}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.subUnit_Code} - ${option.subUnit_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
+                    getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
                     }}
@@ -914,6 +815,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
+            {/* Location */}
             <Controller
               control={control}
               name="locationId"
@@ -925,18 +827,12 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={locationData?.value?.location || []}
                     loading={locationIsLoading}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Location" />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="Location" />}
                     onChange={(_, value) => {
                       onChange(value);
                     }}
-                    getOptionLabel={(option) =>
-                      `${option.location_Code} - ${option.location_Name}`
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.location_Code === value.location_Code
-                    }
+                    getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                    isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
                     sx={{
                       flex: 2,
                     }}
@@ -955,12 +851,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               type="submit"
               form="user"
               variant="contained"
-              loading={
-                isCreateUserIsLoading ||
-                isCreateUserIsFetching ||
-                isUpdateUserIsLoading ||
-                isUpdateUserIsFetching
-              }
+              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
               disabled={
                 // !watch("empId") ||
                 !watch("username") ||
@@ -980,12 +871,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               type="submit"
               form="user"
               variant="contained"
-              loading={
-                isCreateUserIsLoading ||
-                isCreateUserIsFetching ||
-                isUpdateUserIsLoading ||
-                isUpdateUserIsFetching
-              }
+              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
               disabled={
                 !watch("empId") ||
                 !watch("fullname") ||
@@ -1007,13 +893,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogActions>
       </Dialog>
 
-      <UserAccountWarningDialog
-        data={data}
-        payload={warningData}
-        open={warningOpen}
-        onClose={warningOnClose}
-        userOnClose={onCloseHandler}
-      />
+      <UserAccountWarningDialog data={data} payload={warningData} open={warningOpen} onClose={warningOnClose} userOnClose={onCloseHandler} />
     </>
   );
 };

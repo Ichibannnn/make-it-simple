@@ -18,6 +18,7 @@ import { LoadingButton } from "@mui/lab";
 
 import { useAddEditSitesMutation } from "../../../features/api masterlist/sites/sitesApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
+import { useAddEditBuildingMutation } from "../../../features/api masterlist/buildings/buildingApi";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -25,8 +26,8 @@ const schema = yup.object().shape({
 });
 
 const BuildingDialog = ({ data, open, onClose }) => {
-  const [addEditSite, { isLoading: addEditSiteIsLoading, isFetching: addEditSiteIsFetching }] =
-    useAddEditSitesMutation();
+  const [addEditBuilding, { isLoading: addEditBuildingIsLoading, isFetching: addEditBuildingIsFetching }] =
+    useAddEditBuildingMutation();
 
   const isEditMode = Boolean(data?.id);
 
@@ -62,15 +63,11 @@ const BuildingDialog = ({ data, open, onClose }) => {
 
     if (formData.id) {
       const editPayload = {
-        siteNames: [
-          {
-            id: data.id,
-            name: formData?.name,
-          },
-        ],
+        id: data.id,
+        name: formData?.name,
       };
 
-      addEditSite(editPayload)
+      addEditBuilding(editPayload)
         .unwrap()
         .then(() => {
           toast.success("Success!", {
@@ -89,14 +86,10 @@ const BuildingDialog = ({ data, open, onClose }) => {
         });
     } else {
       const addPayload = {
-        siteNames: [
-          {
-            name: formData?.name,
-          },
-        ],
+        name: formData?.name,
       };
 
-      addEditSite(addPayload)
+      addEditBuilding(addPayload)
         .unwrap()
         .then(() => {
           toast.success("Success!", {
@@ -151,7 +144,7 @@ const BuildingDialog = ({ data, open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
-              loading={addEditSiteIsLoading || addEditSiteIsFetching}
+              loading={addEditBuildingIsLoading || addEditBuildingIsFetching}
               loadingPosition="start"
               startIcon={<Save />}
               disabled={!watch("name")}

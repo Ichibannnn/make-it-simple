@@ -73,6 +73,7 @@ const MOBILE_MENU_ITEMS = [
         icon: "PermIdentityOutlinedIcon",
       },
       { id: 2, name: "User Role", path: "/user-management/user-role", icon: "ManageAccountsOutlinedIcon" },
+      { id: 3, name: "User Type", path: "/user-management/user-type", icon: "SupervisorAccount" },
     ],
   },
   {
@@ -505,17 +506,21 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
       sub: [
         {
           id: 1,
-          menuId: 1,
           name: "User Account",
           path: "/user-management/user-account",
           icon: "PermIdentityOutlinedIcon",
         },
         {
           id: 2,
-          menuId: 1,
           name: "User Role",
           path: "/user-management/user-role",
           icon: "ManageAccountsOutlinedIcon",
+        },
+        {
+          id: 3,
+          name: "User Types",
+          path: "/user-management/user-types",
+          icon: "SupervisorAccount",
         },
       ],
     },

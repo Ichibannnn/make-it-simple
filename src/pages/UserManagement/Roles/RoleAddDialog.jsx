@@ -44,7 +44,7 @@ const parentCheckbox = [
   "PMS",
   "Reports",
 ];
-const userManagementCheckbox = ["User Account", "User Role"];
+const userManagementCheckbox = ["User Account", "User Role", "User Types"];
 const masterlistCheckbox = [
   "One Charging",
   "Channel Setup",

@@ -32,21 +32,21 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-// import SiteDialog from "./SiteDialog";
-// import SiteActions from "./SiteActions";
-
-// import { useArchiveSitesMutation, useGetSitesQuery } from "../../../features/api masterlist/sites/sitesApi";
-import { masterlistStyles as sx } from "../styles/masterlistStyles";
 import BuildingActions from "./BuildingActions";
 import BuildingDialog from "./BuildingDialog";
 
+import {
+  useArchiveBuildingMutation,
+  useGetBuildingsQuery,
+} from "../../../features/api masterlist/buildings/buildingApi";
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
+
+const TABLE_COLUMNS = ["LINE NO.", "BUILDING NAME", "STATUS", "ACTIONS"];
 const STATUS_TABS = [
   { value: "", label: "ALL" },
   { value: "true", label: "ACTIVE" },
   { value: "false", label: "ARCHIVED" },
 ];
-
-const TABLE_COLUMNS = ["LINE NO.", "BUILDING NAME", "STATUS", "ACTIONS"];
 
 const Buildings = () => {
   const theme = useTheme();
@@ -62,34 +62,19 @@ const Buildings = () => {
   const [editData, setEditData] = useState(null);
   const { open, onToggle, onClose } = useDisclosure();
 
-  //   const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetSitesQuery({
-  //     Status: status,
-  //     Search: search,
-  //     PageNumber: pageNumber,
-  //     PageSize: pageSize,
-  //   });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetBuildingsQuery({
+    Status: status,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
-  //   const [archiveSite] = useArchiveSitesMutation();
+  const [archiveBuilding] = useArchiveBuildingMutation();
 
-  const data = {
-    value: {
-      building: [
-        { id: 1, name: "Building A", isActive: true },
-        { id: 1, name: "Building B", isActive: true },
-        { id: 1, name: "Building C", isActive: true },
-        { id: 1, name: "Building D", isActive: true },
-        { id: 1, name: "Building E", isActive: true },
-      ],
-      totalCount: 5,
-      currentPage: 1,
-      pageSize: 5,
-    },
-  };
-
-  const rows = data?.value?.building ?? [];
-  //   const isBusy = isLoading || isFetching;
-  //   const hasRows = isSuccess && !isBusy && rows.length > 0;
-  //   const isEmpty = isSuccess && !isBusy && rows.length === 0;
+  const rows = data?.value?.pms ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
 
   const onPageNumberChange = (_, page) => setPageNumber(page + 1);
 
@@ -110,117 +95,117 @@ const Buildings = () => {
   };
 
   const onArchiveAction = (data) => {
-    // if (data.isActive === true) {
-    //   Swal.fire({
-    //     title: "Are you sure?",
-    //     text: "This will move the building to the archived tab.",
-    //     icon: "warning",
-    //     color: "white",
-    //     showCancelButton: true,
-    //     background: "#111927",
-    //     confirmButtonColor: "#9e77ed",
-    //     cancelButtonColor: "#1C2536",
-    //     heightAuto: false,
-    //     width: "30em",
-    //     allowOutsideClick: false,
-    //     customClass: {
-    //       container: "custom-container",
-    //       title: "custom-title",
-    //       htmlContainer: "custom-text",
-    //       icon: "custom-icon",
-    //       confirmButton: "custom-confirm-btn",
-    //       cancelButton: "custom-cancel-btn",
-    //     },
-    //     preConfirm: async () => {
-    //       try {
-    //         Swal.getConfirmButton().innerHTML = `
-    //         <div class="mui-btn-content">
-    //          <span class="mui-spinner"></span>
-    //          <span class="mui-label">Archiving...</span>
-    //         </div>
-    //         `;
-    //         Swal.getConfirmButton().disabled = true;
-    //         await archiveSite(data.id)
-    //           .unwrap()
-    //           .then(() => {
-    //             toast.success("Success!", {
-    //               description: "Building archived successfully!",
-    //             });
-    //           })
-    //           .catch((error) => {
-    //             toast.error("Error!", {
-    //               description: error.data.error.message,
-    //             });
-    //           });
-    //         return true; // resolves success
-    //       } catch (err) {
-    //         console.log("Error", err);
-    //         Swal.hideLoading();
-    //         Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
-    //         return false; // keeps modal open
-    //       }
-    //     },
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       Swal.close();
-    //     }
-    //   });
-    // } else {
-    //   Swal.fire({
-    //     title: "Are you sure?",
-    //     text: "This will move the building to the active tab.",
-    //     icon: "warning",
-    //     color: "white",
-    //     showCancelButton: true,
-    //     background: "#111927",
-    //     confirmButtonColor: "#9e77ed",
-    //     cancelButtonColor: "#1C2536",
-    //     heightAuto: false,
-    //     width: "30em",
-    //     allowOutsideClick: false,
-    //     customClass: {
-    //       container: "custom-container",
-    //       title: "custom-title",
-    //       htmlContainer: "custom-text",
-    //       icon: "custom-icon",
-    //       confirmButton: "custom-confirm-btn",
-    //       cancelButton: "custom-cancel-btn",
-    //     },
-    //     preConfirm: async () => {
-    //       try {
-    //         Swal.getConfirmButton().innerHTML = `
-    //         <div class="mui-btn-content">
-    //           <span class="mui-spinner"></span>
-    //           <span class="mui-label">Restoring...</span>
-    //         </div>
-    //         `;
-    //         Swal.getConfirmButton().disabled = true;
-    //         await archiveSite(data.id)
-    //           .unwrap()
-    //           .then(() => {
-    //             toast.success("Success!", {
-    //               description: "Building restored successfully!",
-    //             });
-    //           })
-    //           .catch((error) => {
-    //             toast.error("Error!", {
-    //               description: error.data.error.message,
-    //             });
-    //           });
-    //         return true;
-    //       } catch (err) {
-    //         console.log("Error", err);
-    //         Swal.hideLoading();
-    //         Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
-    //         return false;
-    //       }
-    //     },
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       Swal.close();
-    //     }
-    //   });
-    // }
+    if (data.isActive === true) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the building to the archived tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        allowOutsideClick: false,
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+             <span class="mui-spinner"></span>
+             <span class="mui-label">Archiving...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+            await archiveBuilding(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Building archived successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+            return true; // resolves success
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false; // keeps modal open
+          }
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.close();
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This will move the building to the active tab.",
+        icon: "warning",
+        color: "white",
+        showCancelButton: true,
+        background: "#111927",
+        confirmButtonColor: "#9e77ed",
+        cancelButtonColor: "#1C2536",
+        heightAuto: false,
+        width: "30em",
+        allowOutsideClick: false,
+        customClass: {
+          container: "custom-container",
+          title: "custom-title",
+          htmlContainer: "custom-text",
+          icon: "custom-icon",
+          confirmButton: "custom-confirm-btn",
+          cancelButton: "custom-cancel-btn",
+        },
+        preConfirm: async () => {
+          try {
+            Swal.getConfirmButton().innerHTML = `
+            <div class="mui-btn-content">
+              <span class="mui-spinner"></span>
+              <span class="mui-label">Restoring...</span>
+            </div>
+            `;
+            Swal.getConfirmButton().disabled = true;
+            await archiveBuilding(data.id)
+              .unwrap()
+              .then(() => {
+                toast.success("Success!", {
+                  description: "Building restored successfully!",
+                });
+              })
+              .catch((error) => {
+                toast.error("Error!", {
+                  description: error.data.error.message,
+                });
+              });
+            return true;
+          } catch (err) {
+            console.log("Error", err);
+            Swal.hideLoading();
+            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+            return false;
+          }
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.close();
+        }
+      });
+    }
   };
 
   const onEditAction = (data) => {
@@ -234,11 +219,11 @@ const Buildings = () => {
     }
   }, [searchValue]);
 
-  //   useEffect(() => {
-  //     if (status) {
-  //       refetch();
-  //     }
-  //   }, [status]);
+  useEffect(() => {
+    if (status) {
+      refetch();
+    }
+  }, [status]);
 
   return (
     <Stack sx={sx.pageContainer}>
@@ -246,11 +231,13 @@ const Buildings = () => {
         <Stack>
           <Stack sx={sx.titleGroup}>
             <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
-              Building
+              Buildings
             </Typography>
             <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
-          <Typography sx={sx.pageSubtitle}>Manage buildings for tagging of user accounts</Typography>
+          <Typography sx={sx.pageSubtitle}>
+            Manage buildings used to organize and tag user accounts
+          </Typography>
         </Stack>
 
         <Button
@@ -291,41 +278,42 @@ const Buildings = () => {
 
         {isSmallScreen ? (
           <Stack spacing={2}>
-            {rows.map((item, index) => (
-              <Card key={item.id} sx={sx.card}>
-                <CardContent>
-                  <Stack spacing={1}>
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography variant="body2" color="text.secondary">
-                        LINE NO. {index + 1}
-                      </Typography>
-                      <Chip
-                        label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                        size="small"
-                        sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }}
-                      />
-                    </Stack>
+            {hasRows &&
+              rows.map((item, index) => (
+                <Card key={item.id} sx={sx.card}>
+                  <CardContent>
+                    <Stack spacing={1}>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography variant="body2" color="text.secondary">
+                          LINE NO. {index + 1}
+                        </Typography>
+                        <Chip
+                          label={item.isActive ? "ACTIVE" : "INACTIVE"}
+                          size="small"
+                          sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }}
+                        />
+                      </Stack>
 
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={sx.cardLabel}>BUILDING NAME:</Typography>
-                      <Typography sx={sx.cardValue}>{item.name || "-"}</Typography>
-                    </Stack>
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={sx.cardLabel}>BUILDING NAME:</Typography>
+                        <Typography sx={sx.cardValue}>{item.name || "-"}</Typography>
+                      </Stack>
 
-                    <Stack direction="row" gap={0.5} alignItems="center">
-                      <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                      <BuildingActions
-                        data={item}
-                        status={status}
-                        onArchive={onArchiveAction}
-                        onUpdate={onEditAction}
-                      />
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={sx.cardLabel}>ACTION:</Typography>
+                        <BuildingActions
+                          data={item}
+                          status={status}
+                          onArchive={onArchiveAction}
+                          onUpdate={onEditAction}
+                        />
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
 
-            {/* {isError && (
+            {isError && (
               <Stack sx={sx.feedbackContainer}>
                 <img
                   src={somethingWentWrong}
@@ -354,7 +342,7 @@ const Buildings = () => {
                   No records found.
                 </Typography>
               </Stack>
-            )} */}
+            )}
 
             <TablePagination
               sx={sx.paginationMobile}
@@ -386,32 +374,33 @@ const Buildings = () => {
                 </TableHead>
 
                 <TableBody>
-                  {rows.map((item, i) => (
-                    <TableRow key={item.id}>
-                      <TableCell sx={sx.bodyCell} align="center">
-                        {i + 1}
-                      </TableCell>
-                      <TableCell sx={sx.bodyCell}>{item.name || "-"}</TableCell>
-                      <TableCell sx={sx.bodyCell} align="center">
-                        <Chip
-                          variant="filled"
-                          size="small"
-                          sx={sx.statusChip(item.isActive)}
-                          label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                        />
-                      </TableCell>
-                      <TableCell sx={sx.bodyCell} align="center">
-                        <BuildingActions
-                          data={item}
-                          status={status}
-                          onArchive={onArchiveAction}
-                          onUpdate={onEditAction}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {hasRows &&
+                    rows.map((item, i) => (
+                      <TableRow key={item.id}>
+                        <TableCell sx={sx.bodyCell} align="center">
+                          {i + 1}
+                        </TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.name || "-"}</TableCell>
+                        <TableCell sx={sx.bodyCell} align="center">
+                          <Chip
+                            variant="filled"
+                            size="small"
+                            sx={sx.statusChip(item.isActive)}
+                            label={item.isActive ? "ACTIVE" : "INACTIVE"}
+                          />
+                        </TableCell>
+                        <TableCell sx={sx.bodyCell} align="center">
+                          <BuildingActions
+                            data={item}
+                            status={status}
+                            onArchive={onArchiveAction}
+                            onUpdate={onEditAction}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
-                  {/* {isError && (
+                  {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img
@@ -451,7 +440,7 @@ const Buildings = () => {
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  )} */}
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

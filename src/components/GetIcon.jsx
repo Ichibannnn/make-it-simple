@@ -27,6 +27,7 @@ import {
   PermIdentityOutlined,
   StorefrontOutlined,
   StoreMallDirectoryOutlined,
+  SupervisorAccount,
   VisibilityOutlined,
 } from "@mui/icons-material";
 
@@ -54,6 +55,7 @@ export const getSubMenuIcon = (iconName) => {
     // User Management
     PermIdentityOutlinedIcon: <PermIdentityOutlined fontSize="small" />,
     ManageAccountsOutlinedIcon: <ManageAccountsOutlined fontSize="small" />,
+    SupervisorAccount: <SupervisorAccount fontSize="small" />,
     // Masterlist
     BusinessOutlinedIcon: <BusinessOutlined fontSize="small" />,
     HubOutlined: <HubOutlined fontSize="small" />,
@@ -62,6 +64,7 @@ export const getSubMenuIcon = (iconName) => {
     ContactsOutlined: <ContactsOutlined fontSize="small" />,
     GroupsOutlined: <GroupsOutlined fontSize="small" />,
     StorefrontOutlined: <StorefrontOutlined fontSize="small" />,
+    BackupTableOutlined: <BackupTableOutlined fontSize="small" />,
     StoreMallDirectoryOutlined: <StoreMallDirectoryOutlined fontSize="small" />,
     ApartmentOutlined: <ApartmentOutlined fontSize="small" />,
     // Requestor / Receiver

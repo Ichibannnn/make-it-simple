@@ -45,6 +45,7 @@ import AuthRedirect from "./AuthRedirect";
 import Redirect from "../pages/Redirect";
 import Pms from "../pages/PMS/Pms";
 import ChecklistManagementPage from "../pages/ChecklistManagement/ChecklistManagementPage";
+import UserType from "../pages/Masterlist/UserTypes/UserType";
 
 export const router = createBrowserRouter([
   {
@@ -85,6 +86,10 @@ export const router = createBrowserRouter([
           {
             path: "/user-management/user-role",
             element: <Roles />,
+          },
+          {
+            path: "/user-management/user-types",
+            element: <UserType />,
           },
         ],
       },

@@ -19,6 +19,11 @@ export const sidebarNavigationData = [
         name: "User Role",
         path: "/user-management/user-role",
       },
+      {
+        id: 3,
+        name: "User Types",
+        path: "/user-management/user-types",
+      },
     ],
   },
   {
@@ -83,7 +88,7 @@ export const sidebarNavigationData = [
         name: "Buildings",
         path: "/masterlist/buildings",
       },
-      //       {
+      // {
       //   id: 11,
       //   name: "Store List",
       //   path: "/masterlist/store-list",
