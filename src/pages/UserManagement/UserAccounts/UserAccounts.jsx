@@ -36,12 +36,7 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 import UserAccountAction from "./UserAccountAction";
 import UserAccountPermissions from "./UserAccountPermissions";
 import UserAccountDialog from "./UserAccountDialog";
-import {
-  useGetUsersQuery,
-  useResetUserPasswordMutation,
-  useArchiveUserMutation,
-  useGetPendingUsersQuery,
-} from "../../../features/user_management_api/user/userApi";
+import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation, useGetPendingUsersQuery } from "../../../features/user_management_api/user/userApi";
 import PendingAccountsTab from "./PendingAccounts/PendingAccountsTab";
 
 const UserAccounts = () => {
@@ -249,8 +244,6 @@ const UserAccounts = () => {
   };
 
   const onResetPasswordAction = (data) => {
-    console.log("data: ", data);
-
     Swal.fire({
       title: "Are you sure?",
       text: "This will reset the password of this user.",
@@ -334,23 +327,13 @@ const UserAccounts = () => {
     >
       <Stack>
         <Stack>
-          <Stack
-            width="100%"
-            justifyContent="space-between"
-            sx={{ flexDirection: isSmallScreen ? "column" : "row" }}
-          >
+          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
             <Stack justifyItems="left">
               <Typography variant={isSmallScreen ? "h5" : "h4"}>User Accounts</Typography>
             </Stack>
 
             <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button
-                variant="contained"
-                size={isSmallScreen ? "medium" : "large"}
-                color="primary"
-                startIcon={<AddOutlined />}
-                onClick={onToggle}
-              >
+              <Button variant="contained" size={isSmallScreen ? "medium" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
                 Add
               </Button>
             </Stack>
@@ -366,12 +349,7 @@ const UserAccounts = () => {
         }}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Tabs
-            value={status}
-            onChange={onStatusChange}
-            variant={isSmallScreen ? "scrollable" : "fullWidth"}
-            scrollButtons="auto"
-          >
+          <Tabs value={status} onChange={onStatusChange} variant={isSmallScreen ? "scrollable" : "fullWidth"} scrollButtons="auto">
             <Tab
               value=""
               label="All"
@@ -412,12 +390,7 @@ const UserAccounts = () => {
 
         <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ marginTop: "5px", padding: "10px" }}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "5px", padding: "10px" }}>
           <OutlinedInput
             placeholder="Search user"
             startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
@@ -513,12 +486,7 @@ const UserAccounts = () => {
                               ACTION:
                             </Typography>
 
-                            <UserAccountAction
-                              data={item}
-                              onReset={onResetPasswordAction}
-                              onArchive={onArchiveAction}
-                              onUpdate={onEditAction}
-                            />
+                            <UserAccountAction data={item} onReset={onResetPasswordAction} onArchive={onArchiveAction} onUpdate={onEditAction} />
                           </Stack>
                         </Stack>
                       </CardContent>
@@ -527,11 +495,7 @@ const UserAccounts = () => {
 
                 {isError && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img
-                      src={somethingWentWrong}
-                      alt="Something Went Wrong"
-                      className="something-went-wrong-table"
-                    />
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h6" color="error" align="center">
                       Something went wrong.
                     </Typography>
@@ -580,15 +544,7 @@ const UserAccounts = () => {
                     <Table stickyHeader sx={{ borderBottom: "none" }}>
                       <TableHead>
                         <TableRow>
-                          {[
-                            "LINE NO.",
-                            "FULLNAME",
-                            "USERNAME",
-                            "ROLE",
-                            "ACCOUNT ACCESS",
-                            "STATUS",
-                            "ACTIONS",
-                          ].map((header, idx) => (
+                          {["LINE NO.", "FULLNAME", "USERNAME", "ROLE", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].map((header, idx) => (
                             <TableCell
                               key={idx}
                               sx={{
@@ -597,11 +553,7 @@ const UserAccounts = () => {
                                 fontWeight: 700,
                                 fontSize: "12px",
                               }}
-                              align={
-                                ["LINE NO.", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].includes(header)
-                                  ? "center"
-                                  : "left"
-                              }
+                              align={["LINE NO.", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].includes(header) ? "center" : "left"}
                             >
                               {header}
                             </TableCell>
@@ -707,12 +659,7 @@ const UserAccounts = () => {
                                 }}
                                 align="center"
                               >
-                                <UserAccountAction
-                                  data={item}
-                                  onReset={onResetPasswordAction}
-                                  onArchive={onArchiveAction}
-                                  onUpdate={onEditAction}
-                                />
+                                <UserAccountAction data={item} onReset={onResetPasswordAction} onArchive={onArchiveAction} onUpdate={onEditAction} />
                               </TableCell>
                             </TableRow>
                           ))}
@@ -720,11 +667,7 @@ const UserAccounts = () => {
                         {isError && (
                           <TableRow>
                             <TableCell colSpan={7} align="center">
-                              <img
-                                src={somethingWentWrong}
-                                alt="Something Went Wrong"
-                                className="something-went-wrong-table"
-                              />
+                              <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                               <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                                 Something went wrong.
                               </Typography>
@@ -746,11 +689,7 @@ const UserAccounts = () => {
                         {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
                           <TableRow>
                             <TableCell colSpan={7} align="center">
-                              <img
-                                src={noRecordsFound}
-                                alt="No Records Found"
-                                className="norecords-found-table"
-                              />
+                              <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                               <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                                 No records found.
                               </Typography>
