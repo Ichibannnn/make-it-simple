@@ -8,6 +8,9 @@ import { Controller, useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { LoadingButton } from "@mui/lab";
+import { theme } from "../../../../theme/theme";
+import { userManagementStyles as sx } from "../../styles/userManagementStyles";
+
 import { useCreateUserMutation } from "../../../../features/user_management_api/user/userApi";
 import { useLazyGetRolesQuery } from "../../../../features/user_management_api/role/roleApi";
 import { useLazyGetCompanyQuery } from "../../../../features/api masterlist/company/companyApi";
@@ -16,14 +19,15 @@ import { useLazyGetDepartmentQuery } from "../../../../features/api masterlist/d
 import { useLazyGetUnitQuery } from "../../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../../features/api masterlist/location/locationApi";
-import { theme } from "../../../../theme/theme";
+
 import { useLazyGetOneChargingQuery } from "../../../../features/api masterlist/one_charging/oneChargingApi";
+import { useLazyGetActiveBuildingsQuery } from "../../../../features/api masterlist/buildings/buildingApi";
+import { useLazyGetActiveUserTypesQuery } from "../../../../features/api masterlist/user_types/userTypeApi";
 
 const PendingAccountDialog = ({ data, open, onClose }) => {
-  const [storeCheckbox, setStoreCheckbox] = useState(false);
-
   const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
 
+  const [getUserTypes, { data: userTypeData, isLoading: userTypeIsLoading, isSuccess: userTypeIsSuccess }] = useLazyGetActiveUserTypesQuery();
   const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] = useLazyGetRolesQuery();
   const [getOneCharging, { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess }] = useLazyGetOneChargingQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
@@ -32,15 +36,19 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+  const [getBuildings, { data: buildingData, isLoading: buildingIsLoading, isSuccess: buildingIsSuccess }] = useLazyGetActiveBuildingsQuery();
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const schema = useMemo(() =>
     yup.object().shape({
+      userType: yup.object().required().label("User Type"),
       empId: yup.string().required().label("Employee ID"),
       fullname: yup.string().required().label("Fullname"),
       username: yup.string().required().label("Username"),
       userRoleId: yup.object().required().label("Role"),
+      building: yup.object().required().label("Building"),
+
       oneCharging: yup.object().required().label("Charging"),
       companyId: yup.object().required().label("Company"),
       businessUnitId: yup.object().required().label("Business Unit"),
@@ -48,7 +56,7 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
       unitId: yup.object().required().label("Unit"),
       subUnitId: yup.object().required().label("Sub-Unit"),
       locationId: yup.object().required().label("Location"),
-    })
+    }),
   );
 
   const {
@@ -62,10 +70,13 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      userType: null,
       empId: "",
       fullname: "",
       username: "",
       userRoleId: null,
+      building: null,
+
       oneCharging: null,
       companyId: null,
       businessUnitId: null,
@@ -78,7 +89,6 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      console.log("Data: ", data);
       if (!oneChargingIsSuccess) getOneCharging();
       if (!companyIsSuccess) getCompany();
       if (!businessUnitIsSuccess) getBusinessUnit();
@@ -90,7 +100,6 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
       setValue("empId", `${data?.id_Prefix}-${data?.id_No}`);
       setValue("fullname", `${data?.last_Name}, ${data?.first_Name} ${data?.middle_Name ? data?.middle_Name : ""} ${data?.suffix ? data?.suffix : ""}`);
       setValue("username", data?.username);
-
       setValue("userRoleId", null);
 
       if (data?.oneChargingCode === undefined || data?.oneChargingCode === null) {
@@ -146,11 +155,13 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
 
     const submitUpdateUser = {
       empId: `${data?.id_Prefix}-${data?.id_No}`,
+      userTypeId: formData.userType.id,
       fullname: `${data?.last_Name}, ${data?.first_Name}${data?.suffix ? ` ${data?.suffix}` : ""} ${data?.middle_Name ? data?.middle_Name : ""}`,
+      username: formData.username,
       userRoleId: formData.userRoleId.id,
+      buildingId: formData.building.id,
       oneChargingCode: formData.oneCharging.code,
       oneChargingName: formData.oneCharging.name,
-      username: formData.username,
       companyId: formData.companyId.id,
       businessUnitId: formData.businessUnitId.id,
       departmentId: formData.departmentId.id,
@@ -201,7 +212,6 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
   };
 
   const onCloseHandler = () => {
-    setStoreCheckbox(false);
     reset();
     onClose();
   };
@@ -223,13 +233,42 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
               Basic Information
             </Typography>
 
+            {/* User Type */}
+            <Controller
+              control={control}
+              name="userType"
+              render={({ field: { ref, value, onChange } }) => {
+                return (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value}
+                    options={userTypeData?.value?.pms || []}
+                    loading={userTypeIsLoading}
+                    renderInput={(params) => <TextField {...params} label="User Type" />}
+                    onOpen={() => {
+                      if (!userTypeIsSuccess) getUserTypes();
+                    }}
+                    onChange={(_, value) => onChange(value)}
+                    getOptionLabel={(option) => option.name}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{
+                      flex: 2,
+                    }}
+                    fullWidth
+                    disablePortal
+                  />
+                );
+              }}
+            />
+
             <Stack direction={isSmallScreen ? "column" : "row"} gap={1}>
               <TextField
                 {...register("empId")}
                 helperText={errors?.fullname?.message}
                 error={!!errors?.fullname?.message}
                 size="small"
-                label="Employee ID Store"
+                label="Employee ID"
                 sx={{ borderColor: "primary", flex: 1 }}
                 autoComplete="off"
                 disabled={data ? true : false}
@@ -247,26 +286,13 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
               />
             </Stack>
 
-            {!storeCheckbox ? (
-              <Controller
-                control={control}
-                name="username"
-                render={({ field: { ref, value, onChange } }) => {
-                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth />;
-                }}
-              />
-            ) : (
-              <TextField
-                {...register("username")}
-                helperText={errors?.username?.message}
-                error={!!errors?.username?.message}
-                size="small"
-                label="Username"
-                sx={{ borderColor: "primary", flex: 1 }}
-                autoComplete="off"
-                // onChange={(e) => storeUsernameHandler(e.target.value)}
-              />
-            )}
+            <Controller
+              control={control}
+              name="username"
+              render={({ field: { ref, value, onChange } }) => {
+                return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth />;
+              }}
+            />
 
             <Controller
               control={control}
@@ -288,6 +314,35 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
                     }}
                     onChange={(_, value) => onChange(value)}
                     getOptionLabel={(option) => option.user_Role_Name}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    sx={{
+                      flex: 2,
+                    }}
+                    fullWidth
+                    disablePortal
+                  />
+                );
+              }}
+            />
+
+            {/* Building */}
+            <Controller
+              control={control}
+              name="building"
+              render={({ field: { ref, value, onChange } }) => {
+                return (
+                  <Autocomplete
+                    ref={ref}
+                    size="small"
+                    value={value}
+                    options={buildingData?.value?.pms || []}
+                    loading={buildingIsLoading}
+                    renderInput={(params) => <TextField {...params} label="Building" />}
+                    onOpen={() => {
+                      if (!buildingIsSuccess) getBuildings();
+                    }}
+                    onChange={(_, value) => onChange(value)}
+                    getOptionLabel={(option) => option.name}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     sx={{
                       flex: 2,
@@ -551,14 +606,19 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
+          <Button onClick={onCloseHandler} variant="contained" sx={sx.cancelButton}>
+            Close
+          </Button>
           <LoadingButton
             type="submit"
             form="user"
             variant="contained"
             loading={isCreateUserIsLoading || isCreateUserIsFetching}
             disabled={
+              !watch("userType") ||
               !watch("username") ||
               !watch("userRoleId") ||
+              !watch("building") ||
               !watch("companyId") ||
               !watch("businessUnitId") ||
               !watch("departmentId") ||
@@ -567,10 +627,8 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
               !watch("locationId")
             }
           >
-            Save
+            Create account
           </LoadingButton>
-
-          <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
     </>

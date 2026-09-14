@@ -9,10 +9,11 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
+import { userManagementStyles as sx } from "../styles/userManagementStyles";
+
 import useDisclosure from "../../../hooks/useDisclosure";
 import UserAccountWarningDialog from "./UserAccountWarningDialog";
 import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
-
 import { useLazyGetEmployeesQuery } from "../../../features/sedar/sedarApi";
 import { useLazyGetRolesQuery } from "../../../features/user_management_api/role/roleApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
@@ -26,8 +27,6 @@ import { useLazyGetActiveUserTypesQuery } from "../../../features/api masterlist
 import { useLazyGetActiveBuildingsQuery } from "../../../features/api masterlist/buildings/buildingApi";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
-  const [storeCheckbox, setStoreCheckbox] = useState(false);
-
   const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
 
@@ -66,7 +65,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         subUnitId: yup.object().required().label("Sub-Unit"),
         locationId: yup.object().required().label("Location"),
       }),
-    [storeCheckbox],
+    [],
   );
 
   const {
@@ -81,7 +80,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       userType: null,
-      empId: !storeCheckbox ? null : "",
+      empId: null,
       fullname: "",
       username: "",
       userRoleId: null,
@@ -313,7 +312,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 toast.success("Success!", {
                   description: "User added successfully!",
                 });
-                setStoreCheckbox(false);
                 reset();
                 onClose();
               })
@@ -330,7 +328,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   };
 
   const onCloseHandler = () => {
-    setStoreCheckbox(false);
     reset();
     onClose();
   };
@@ -782,6 +779,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
+          <Button onClick={onCloseHandler} variant="contained" sx={sx.cancelButton}>
+            Close
+          </Button>
+
           <LoadingButton
             type="submit"
             form="user"
@@ -801,10 +802,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               !watch("locationId")
             }
           >
-            Save
+            Create account
           </LoadingButton>
-
-          <Button onClick={onCloseHandler}>Close</Button>
         </DialogActions>
       </Dialog>
 
