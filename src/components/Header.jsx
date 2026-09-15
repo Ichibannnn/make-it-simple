@@ -1,31 +1,7 @@
-import {
-  Avatar,
-  Badge,
-  Box,
-  Dialog,
-  DialogContent,
-  Divider,
-  IconButton,
-  InputAdornment,
-  List,
-  ListItem,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Avatar, Badge, Box, Dialog, DialogContent, Divider, IconButton, InputAdornment, List, ListItem, ListItemIcon, Menu, MenuItem, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import {
-  CheckCircle,
-  CloseOutlined,
-  NotificationsNoneOutlined,
-  NotificationsOffOutlined,
-  Password,
-} from "@mui/icons-material";
+import { CheckCircle, CloseOutlined, NotificationsNoneOutlined, NotificationsOffOutlined, Password } from "@mui/icons-material";
 
 import { theme } from "../theme/theme";
 import React, { useContext } from "react";
@@ -48,11 +24,7 @@ import { concernIssueHandlerApi } from "../features/api_ticketing/issue_handler/
 import { ticketApprovalApi } from "../features/api_ticketing/approver/ticketApprovalApi";
 import { closingTicketApi } from "../features/api_ticketing/receiver/closingTicketApi";
 import { notificationApi } from "../features/api_notification/notificationApi";
-import {
-  notificationMessageApi,
-  useGetNotificationMessageQuery,
-  useGetNotificationNavMutation,
-} from "../features/api_notification_message/notificationMessageApi";
+import { notificationMessageApi, useGetNotificationMessageQuery, useGetNotificationNavMutation } from "../features/api_notification_message/notificationMessageApi";
 
 import { LoadingButton } from "@mui/lab";
 import { signOut } from "../features/auth/authSlice";
@@ -77,11 +49,7 @@ const Header = () => {
   const [notificationNav] = useGetNotificationNavMutation();
 
   const { data: notificationMessage } = useGetNotificationMessageQuery();
-  const {
-    open: openChangePassword,
-    onToggle: changePasswordOnToggle,
-    onClose: changePasswordOnClose,
-  } = useDisclosure();
+  const { open: openChangePassword, onToggle: changePasswordOnToggle, onClose: changePasswordOnClose } = useDisclosure();
 
   const notificationHandler = (event) => {
     setNotificationAnchor(event.currentTarget);
@@ -279,12 +247,7 @@ const Header = () => {
                     onClick={() => onNavigateAction(data)}
                   >
                     <Stack direction="row" gap={0.5} alignItems="center">
-                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                        {trimLetters(data.added_By)}
-                      </Avatar>
-                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                        {trimLetters(data.added_By)}
-                      </Avatar>
+                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>{trimLetters(data.added_By)}</Avatar>
 
                       <div style={{ flexGrow: 1, marginLeft: "10px" }}>
                         <Typography variant="body2" sx={{ fontWeight: "semibold" }}>
@@ -320,9 +283,7 @@ const Header = () => {
                 }}
               >
                 <NotificationsOffOutlined sx={{ color: theme.palette.text.secondary }} />
-                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>
-                  No notifications
-                </Typography>
+                <Typography sx={{ fontSize: "14px", color: theme.palette.text.secondary }}>No notifications</Typography>
               </Stack>
             )}
           </Stack>
@@ -460,18 +421,7 @@ const ChangePassword = ({ open, onClose }) => {
                 control={control}
                 name="current_Password"
                 render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="medium"
-                      value={value}
-                      label="Current Password"
-                      type="password"
-                      onChange={onChange}
-                      fullWidth
-                      autoComplete="off"
-                    />
-                  );
+                  return <TextField inputRef={ref} size="medium" value={value} label="Current Password" type="password" onChange={onChange} fullWidth autoComplete="off" />;
                 }}
               />
 
@@ -492,13 +442,7 @@ const ChangePassword = ({ open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") === watch("confirm_Password") &&
-                            watch("new_Password") !== null &&
-                            watch("confirm_Password") ? (
-                              <CheckCircle color="success" />
-                            ) : (
-                              ""
-                            )}
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? <CheckCircle color="success" /> : ""}
                           </InputAdornment>
                         ),
                       }}
@@ -524,13 +468,7 @@ const ChangePassword = ({ open, onClose }) => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {watch("new_Password") === watch("confirm_Password") &&
-                            watch("new_Password") !== null &&
-                            watch("confirm_Password") ? (
-                              <CheckCircle color="success" />
-                            ) : (
-                              ""
-                            )}
+                            {watch("new_Password") === watch("confirm_Password") && watch("new_Password") !== null && watch("confirm_Password") ? <CheckCircle color="success" /> : ""}
                           </InputAdornment>
                         ),
                       }}
@@ -544,12 +482,7 @@ const ChangePassword = ({ open, onClose }) => {
               <LoadingButton
                 type="submit"
                 variant="contained"
-                disabled={
-                  !watch("current_Password") ||
-                  !watch("new_Password") ||
-                  !watch("confirm_Password") ||
-                  watch("new_Password") !== watch("confirm_Password")
-                }
+                disabled={!watch("current_Password") || !watch("new_Password") || !watch("confirm_Password") || watch("new_Password") !== watch("confirm_Password")}
                 sx={{
                   ":disabled": {
                     backgroundColor: theme.palette.secondary.main,

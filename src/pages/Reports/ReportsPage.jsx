@@ -415,16 +415,6 @@ const ReportsPage = () => {
     }
   }, [userDetails]);
 
-  // useEffect(() => {
-  //   if (reportNavigation === "Open Tickets") {
-  //     setDateFrom("");
-  //     setDateTo("");
-  //   } else {
-  //     setDateFrom(new moment());
-  //     setDateTo(new moment());
-  //   }
-  // }, [reportNavigation]);
-
   return (
     <Stack
       sx={{

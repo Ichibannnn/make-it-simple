@@ -24,21 +24,7 @@ import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 import { useGetAllTicketsQuery } from "../../features/api_reports/reportsApi";
 import { useEffect } from "react";
 
-const AllTicketsHistory = ({
-  search,
-  searchValue,
-  setSearchValue,
-  serviceProvider,
-  channel,
-  user,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const AllTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvider, channel, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // ALL TICKETS API ~~~~
   const { data, isLoading, isFetching, isSuccess, isError } = useGetAllTicketsQuery({
@@ -71,22 +57,9 @@ const AllTicketsHistory = ({
     <>
       <Stack sx={{ width: "100%" }}>
         <Stack sx={{ width: "100%" }}>
-          <Stack
-            direction={isScreenSmall ? "column" : "row"}
-            justifyContent="space-between"
-            alignItems={isScreenSmall ? "left" : "center"}
-            gap={isScreenSmall ? 0.5 : 0}
-            mt={1}
-            mb={1}
-            ml={2}
-            mr={2}
-          >
+          <Stack direction={isScreenSmall ? "column" : "row"} justifyContent="space-between" alignItems={isScreenSmall ? "left" : "center"} gap={isScreenSmall ? 0.5 : 0} mt={1} mb={1} ml={2} mr={2}>
             <Stack>
-              <Typography
-                sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}
-              >
-                All Tickets Report
-              </Typography>
+              <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>All Tickets Report</Typography>
             </Stack>
 
             <Stack>
@@ -319,36 +292,18 @@ const AllTicketsHistory = ({
                       >
                         <Stack gap={0.5}>
                           <Stack>
-                            <Typography
-                              sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}
-                            >
-                              Category:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item.ticketCategoryDescriptions ? item.ticketCategoryDescriptions : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.ticketCategoryDescriptions ? item.ticketCategoryDescriptions : "--"}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography
-                              sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}
-                            >
-                              Sub Category:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item.ticketSubCategoryDescriptions ? item.ticketSubCategoryDescriptions : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.ticketSubCategoryDescriptions ? item.ticketSubCategoryDescriptions : "--"}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography
-                              sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}
-                            >
-                              Concern Category:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item.categoryConcern ? item.categoryConcern : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Concern Category:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.categoryConcern ? item.categoryConcern : "--"}</Typography>
                           </Stack>
                         </Stack>
                       </TableCell>
@@ -362,41 +317,23 @@ const AllTicketsHistory = ({
                       >
                         <Stack gap={0.5}>
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Start Date:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {moment(item.startDate).format("MMMM D, YYYY HH:mm")}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Start Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.startDate).format("MMMM D, YYYY HH:mm")}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Target Date:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {moment(item.target_Date).format("LL")}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.target_Date).format("LL")}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              For Closing Date:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item?.forClosedDate
-                                ? moment(item.forClosedDate).format("MMMM D, YYYY HH:mm")
-                                : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>For Closing Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.forClosedDate ? moment(item.forClosedDate).format("MMMM D, YYYY HH:mm") : "--"}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Closed Date:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item?.closedDate ? moment(item.closedDate).format("MMMM D, YYYY HH:mm") : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Closed Date:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.closedDate ? moment(item.closedDate).format("MMMM D, YYYY HH:mm") : "--"}</Typography>
                           </Stack>
                         </Stack>
                       </TableCell>
@@ -421,31 +358,18 @@ const AllTicketsHistory = ({
                       >
                         <Stack gap={0.5}>
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Requestor:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item.requestor_Name}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Requestor:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.requestor_Name}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Issue Handler:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item.personnel}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Issue Handler:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.personnel}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Technicians:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {" "}
-                              {item.technicians ? item.technicians : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Technicians:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.technicians ? item.technicians : "--"}</Typography>
                           </Stack>
                         </Stack>
                       </TableCell>
@@ -506,20 +430,9 @@ const AllTicketsHistory = ({
                             <Chip
                               variant="filled"
                               size="small"
-                              label={
-                                item.closingStatus === "On-Time"
-                                  ? "On-Time"
-                                  : item.closingStatus === "Delayed"
-                                    ? "Delayed"
-                                    : "--"
-                              }
+                              label={item.closingStatus === "On-Time" ? "On-Time" : item.closingStatus === "Delayed" ? "Delayed" : "--"}
                               sx={{
-                                backgroundColor:
-                                  item.closingStatus === "Delayed"
-                                    ? "#ff7043"
-                                    : item.closingStatus === "On-Time"
-                                      ? "#00913c"
-                                      : "transparent",
+                                backgroundColor: item.closingStatus === "Delayed" ? "#ff7043" : item.closingStatus === "On-Time" ? "#00913c" : "transparent",
                                 color: "#ffffffde",
                                 borderRadius: "20px",
                                 fontSize: "12px",
@@ -582,18 +495,12 @@ const AllTicketsHistory = ({
                       >
                         <Stack gap={0.5}>
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Backdate:
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                              {item.backDate ? moment(item.backDate).format("LL") : "--"}
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Backdate:</Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.backDate ? moment(item.backDate).format("LL") : "--"}</Typography>
                           </Stack>
 
                           <Stack>
-                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                              Backdate Remarks:
-                            </Typography>
+                            <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Backdate Remarks:</Typography>
                             <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
                               {item.backDateRemarks
                                 ? item.backDateRemarks?.split("\r\n").map((line, index) => (
@@ -613,11 +520,7 @@ const AllTicketsHistory = ({
                 {isError && (
                   <TableRow>
                     <TableCell colSpan={12} align="center">
-                      <img
-                        src={somethingWentWrong}
-                        alt="Something Went Wrong"
-                        className="something-went-wrong-table"
-                      />
+                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
                       </Typography>

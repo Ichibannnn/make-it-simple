@@ -1,17 +1,9 @@
-import {
-  Autocomplete,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
+import { Autocomplete, Box, Divider, Drawer, FormLabel, Stack, TextField, Typography } from "@mui/material";
+import { Save } from "@mui/icons-material";
 import { useEffect } from "react";
 
 import * as yup from "yup";
+import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
@@ -19,7 +11,6 @@ import { LoadingButton } from "@mui/lab";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useCreateEditSubCategoryMutation } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { toast } from "sonner";
-import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
@@ -28,12 +19,8 @@ const schema = yup.object().shape({
 });
 
 export const SubCategoryDialog = ({ data, open, onClose }) => {
-  const [
-    createEditSubCategory,
-    { isLoading: createEditSubCategoryIsLoading, isFetching: createEditSubCategoryIsFetching },
-  ] = useCreateEditSubCategoryMutation();
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
-    useLazyGetCategoryQuery();
+  const [createEditSubCategory, { isLoading: createEditSubCategoryIsLoading, isFetching: createEditSubCategoryIsFetching }] = useCreateEditSubCategoryMutation();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
 
   const {
     control,
@@ -75,6 +62,8 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
         subCategory_Description: formData.subCategory_Description,
         categoryId: formData.categoryId.categoryId,
       };
+
+      console.log("EditPayload: ", editPayload);
 
       createEditSubCategory(editPayload)
         .unwrap()
@@ -121,18 +110,34 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
-        <Typography sx={sx.dialogTitle}>{data ? "Edit Sub Category" : "Add Sub Category"}</Typography>
+      <Drawer anchor="right" open={open} onClose={onClose}>
+        <Stack sx={{ padding: 3 }}>
+          <Typography
+            sx={{
+              fontWeight: "bold",
+            }}
+          >
+            Sub Category Form
+          </Typography>
+        </Stack>
 
-        <Typography sx={sx.dialogSubtitle}>
-          {data ? "Update the details of this sub category." : "Create a new sub category."}
-        </Typography>
+        <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
-          <DialogContent>
-            <Stack sx={sx.dialogStack}>
-              <Stack sx={sx.formField}>
-                <Typography sx={sx.fieldText}>Category</Typography>
+          <Box sx={{ width: "300px", padding: 2, minHeight: "790px" }}>
+            <Stack sx={{ marginTop: 3, gap: 2 }}>
+              <Stack sx={{ width: "100%", gap: 1 }}>
+                <FormLabel
+                  sx={{
+                    color: theme.palette.text.main,
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    lineHeight: "1.4375em",
+                  }}
+                >
+                  Category
+                </FormLabel>
+
                 <Controller
                   control={control}
                   name="categoryId"
@@ -140,17 +145,11 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                     return (
                       <Autocomplete
                         ref={ref}
-                        value={value}
                         size="small"
+                        value={value}
                         options={categoryData?.value?.category || []}
                         loading={categoryIsLoading}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder="Select Category"
-                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
-                          />
-                        )}
+                        renderInput={(params) => <TextField {...params} />}
                         onOpen={() => {
                           if (!categoryIsSuccess)
                             getCategory({
@@ -160,60 +159,66 @@ export const SubCategoryDialog = ({ data, open, onClose }) => {
                         onChange={(_, value) => onChange(value)}
                         getOptionLabel={(option) => option.category_Description}
                         isOptionEqualToValue={(option, value) => option.categoryId === value.categoryId}
+                        sx={{
+                          flex: 2,
+                        }}
                         fullWidth
                         disablePortal
-                        disableClearable
-                        componentsProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiAutocomplete-listbox": {
-                                fontSize: "14px",
-                              },
-                            },
-                          },
-                        }}
                       />
                     );
                   }}
                 />
               </Stack>
 
-              <Stack sx={sx.formField}>
-                <Typography sx={sx.fieldText}>Sub Category</Typography>
+              <Stack sx={{ gap: 1 }}>
+                <FormLabel
+                  sx={{
+                    color: theme.palette.text.main,
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    lineHeight: "1.4375em",
+                  }}
+                >
+                  Sub Category
+                </FormLabel>
 
                 <TextField
                   {...register("subCategory_Description")}
                   size="small"
                   variant="outlined"
-                  placeholder="Enter Sub Category"
                   helperText={errors?.subCategory_Description?.message}
                   error={!!errors?.subCategory_Description?.message}
+                  sx={{ borderColor: "primary" }}
                   fullWidth
                   autoComplete="off"
-                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
                 />
               </Stack>
             </Stack>
-          </DialogContent>
 
-          <DialogActions>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
-            </LoadingButton>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={createEditSubCategoryIsLoading || createEditSubCategoryIsFetching}
-              loadingPosition="start"
-              startIcon={<Save />}
-              disabled={!watch("categoryId") || !watch("subCategory_Description")}
-              sx={sx.disabledSaveButton}
-            >
-              <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
-            </LoadingButton>
-          </DialogActions>
+            <Stack direction="row" justifyContent="right" alignItems="center" sx={{ paddingTop: 2, gap: 1 }}>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={createEditSubCategoryIsLoading || createEditSubCategoryIsFetching}
+                loadingPosition="start"
+                startIcon={<Save />}
+                disabled={!watch("categoryId") || !watch("subCategory_Description")}
+                sx={{
+                  ":disabled": {
+                    backgroundColor: theme.palette.secondary.main,
+                    color: "black",
+                  },
+                }}
+              >
+                Save
+              </LoadingButton>
+              <LoadingButton variant="outlined" onClick={onCloseAction}>
+                Close
+              </LoadingButton>
+            </Stack>
+          </Box>
         </form>
-      </Dialog>
+      </Drawer>
     </>
   );
 };

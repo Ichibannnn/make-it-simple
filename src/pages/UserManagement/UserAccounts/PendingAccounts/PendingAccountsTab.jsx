@@ -28,19 +28,7 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 import PendingAccountAction from "./PendingAccountAction";
 import PendingAccountDialog from "./PendingAccountDialog";
 
-const PendingAccountsTab = ({
-  data,
-  isLoading,
-  isFetching,
-  isSuccess,
-  isError,
-  setPageNumber,
-  setPageSize,
-  isSmallScreen,
-  onPageNumberChange,
-  onPageSizeChange,
-  somethingWentWrong,
-}) => {
+const PendingAccountsTab = ({ data, isLoading, isFetching, isSuccess, isError, setPageNumber, setPageSize, isSmallScreen, onPageNumberChange, onPageSizeChange, somethingWentWrong }) => {
   const [editData, setEditData] = useState(null);
   const { open, onToggle, onClose } = useDisclosure();
 

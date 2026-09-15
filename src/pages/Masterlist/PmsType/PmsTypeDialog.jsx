@@ -1,15 +1,4 @@
-import {
-  Autocomplete,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Save } from "@mui/icons-material";
 
@@ -29,10 +18,10 @@ const schema = yup.object().shape({
   site: yup.object().nullable(),
   name: yup.string().required().label("PMS Type is required."),
   noOfPmsEvalutions: yup
-    .number()
-    .required("Total PMS evalution is required")
-    .positive("Must be positive value")
-    .typeError("Must be a number"),
+    .string()
+    .required("Total PMS evaluation is required")
+    .matches(/^\d+$/, "Must be a number")
+    .test("positive", "Must be a positive value", (value) => Number(value) > 0),
 });
 
 const PmsTypeDialog = ({ data, open, onClose }) => {
@@ -40,12 +29,32 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
 
   const [addEditPmsType, { isLoading }] = useAddEditPmsTypeMutation();
 
-  const [getSite, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] =
-    useLazyGetActiveSitesQuery();
+  const [getSite, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
 
   const isEditMode = Boolean(data?.id);
 
-  const lookupDropdownOptions = ["Stores", "Employees", "Farms", "Departments", "Buildings"];
+  const lookupDropdownOptions = [
+    {
+      value: "Stores",
+      label: "Stores",
+    },
+    {
+      value: "Employees",
+      label: "Employees",
+    },
+    {
+      value: "Farms",
+      label: "Farms",
+    },
+    {
+      value: "Departments",
+      label: "Departments",
+    },
+    {
+      value: "Buildings",
+      label: "Buildings",
+    },
+  ];
 
   const {
     handleSubmit,
@@ -79,8 +88,25 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = async (formData) => {
+    // console.log("Form Data: ", formData);
+
     // Add and edit hit the same endpoint; the only difference is whether an id is sent.
-    const entry = isEditMode ? { id: data.id, name: formData.name } : { name: formData.name };
+    const entry = isEditMode
+      ? {
+          id: data.id,
+          name: formData.name,
+          siteId: formData.site.id,
+          noOfPmsEvalutions: Number(formData.noOfPmsEvalutions),
+          lookupSource: lookupSource,
+        }
+      : {
+          name: formData.name,
+          siteId: formData.site.id,
+          noOfPmsEvalutions: Number(formData.noOfPmsEvalutions),
+          lookupSource: lookupSource,
+        };
+
+    console.log("Entry: ", entry);
 
     try {
       await addEditPmsType({ typeNames: [entry] }).unwrap();
@@ -97,13 +123,13 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     }
   };
 
+  console.log("Lookup: ", lookupSource);
+
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
         <Typography sx={sx.dialogTitle}>{isEditMode ? "Edit PMS Type" : "Add PMS Type"}</Typography>
-        <Typography sx={sx.dialogSubtitle}>
-          {isEditMode ? "Update the details of this PMS type." : "Create a new PMS type for scheduling."}
-        </Typography>
+        <Typography sx={sx.dialogSubtitle}>{isEditMode ? "Update the details of this PMS type." : "Create a new PMS type for scheduling."}</Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
@@ -121,14 +147,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
                         size="small"
                         options={siteData?.value?.sites || []}
                         loading={siteIsLoading}
-                        renderInput={(params) => (
-                          <TextField
-                            placeholder="Select Site"
-                            fullWidth
-                            {...params}
-                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
-                          />
-                        )}
+                        renderInput={(params) => <TextField placeholder="Select Site" fullWidth {...params} sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
                         onOpen={() => {
                           if (!siteIsSuccess) getSite();
                         }}
@@ -176,10 +195,18 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
                   size="small"
                   placeholder="Enter number of evaluation"
                   helperText={errors?.noOfPmsEvalutions?.message}
-                  error={!!errors?.noOfPmsEvalutions?.message}
+                  error={!!errors?.noOfPmsEvalutions}
                   fullWidth
                   autoComplete="off"
-                  sx={{ borderColor: "primary", "& .MuiInputBase-input": { fontSize: "14px" } }}
+                  sx={{
+                    borderColor: "primary",
+                    "& .MuiInputBase-input": {
+                      fontSize: "14px",
+                    },
+                  }}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/\D/g, "");
+                  }}
                 />
               </Stack>
 
@@ -187,7 +214,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
                 <Typography sx={sx.fieldText}>Lookup Source</Typography>
                 <Select
                   value={lookupSource}
-                  // onChange={(e) => setLookupSource(e.target.value)}
+                  onChange={(e) => setLookupSource(e.target.value)}
                   size="small"
                   placeholder="Select lookup source"
                   inputProps={{ "aria-label": "Without label" }}
@@ -200,8 +227,8 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
                   }}
                 >
                   {lookupDropdownOptions.map((item, i) => (
-                    <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
-                      {item}
+                    <MenuItem key={i} value={item.value} sx={{ fontSize: "13px" }}>
+                      {item.label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -213,15 +240,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
             <LoadingButton variant="outlined" onClick={onCloseAction}>
               <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
             </LoadingButton>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isLoading}
-              loadingPosition="start"
-              startIcon={<Save />}
-              disabled={!watch("name")}
-              sx={sx.disabledSaveButton}
-            >
+            <LoadingButton type="submit" variant="contained" loading={isLoading} loadingPosition="start" startIcon={<Save />} disabled={!watch("name")} sx={sx.disabledSaveButton}>
               <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>
