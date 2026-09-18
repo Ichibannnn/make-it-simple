@@ -137,6 +137,8 @@ const Pms = () => {
           </Stack>
 
           <Stack sx={pmsStyles.searchAndTabContainer}>
+            <Stack sx={{ width: { xs: 0, md: "56%" } }}></Stack>
+
             <Stack sx={{ flex: 1 }}>
               <Tabs value={activeTab} onChange={onTabChange} variant="fullWidth" scrollButtons="auto">
                 {TAB_CONFIG.map(({ value, label }) => (

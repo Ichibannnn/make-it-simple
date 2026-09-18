@@ -121,6 +121,9 @@ export const pmsTypeStyles = {
     borderBottom: "none",
     fontSize: { xs: "10px", sm: "12px", md: "14px" },
   },
+  tableHead: {
+    whiteSpace: "nowrap",
+  },
   headCell: {
     background: "#1C2536",
     color: "#D65DB1",

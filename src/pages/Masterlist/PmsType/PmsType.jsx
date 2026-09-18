@@ -31,10 +31,7 @@ import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
-import {
-  useArchivePmsTypeMutation,
-  useGetPmsTypeQuery,
-} from "../../../features/api masterlist/pms-type/pmsTypeApi";
+import { useArchivePmsTypeMutation, useGetPmsTypeQuery } from "../../../features/api masterlist/pms-type/pmsTypeApi";
 
 import PmsTypeActions from "./PmsTypeActions";
 import PmsTypeDialog from "./PmsTypeDialog";
@@ -47,7 +44,7 @@ const STATUS_TABS = [
   { value: "false", label: "ARCHIVED" },
 ];
 
-const TABLE_COLUMNS = ["LINE NO.", "NAME", "STATUS", "ACTIONS"];
+const TABLE_COLUMNS = ["LINE NO.", "SITE", "NAME", "TOTAL EVALUATION", "LOOKUP SOURCE", "STATUS", "ACTIONS"];
 
 // Shared SweetAlert theme so every confirm dialog looks identical.
 const CONFIRM_DIALOG_THEME = {
@@ -125,9 +122,7 @@ const PmsType = () => {
 
   // One handler for both archive and restore — the only differences are the copy.
   const onArchiveAction = ({ id, isActive }) => {
-    const copy = isActive
-      ? { text: "archived", progress: "Archiving...", done: "archived" }
-      : { text: "active", progress: "Restoring...", done: "restored" };
+    const copy = isActive ? { text: "archived", progress: "Archiving...", done: "archived" } : { text: "active", progress: "Restoring...", done: "restored" };
 
     Swal.fire({
       ...CONFIRM_DIALOG_THEME,
@@ -175,13 +170,7 @@ const PmsType = () => {
           <Typography sx={sx.pageSubtitle}>Manage preventive maintenance schedule types</Typography>
         </Stack>
 
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<AddOutlined />}
-          onClick={onToggle}
-          sx={sx.addButton}
-        >
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
           Add
         </Button>
       </Stack>
@@ -195,20 +184,8 @@ const PmsType = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={sx.searchContainer}
-          gap={4}
-        >
-          <OutlinedInput
-            placeholder="Search PMS Type"
-            startAdornment={<Search sx={sx.searchIcon} />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            sx={sx.searchInput}
-          />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+          <OutlinedInput placeholder="Search PMS Type" startAdornment={<Search sx={sx.searchIcon} />} value={searchValue} onChange={(e) => setSearchValue(e.target.value)} sx={sx.searchInput} />
         </Stack>
 
         {isSmallScreen ? (
@@ -223,16 +200,22 @@ const PmsType = () => {
                         <Typography variant="body2" color="text.secondary">
                           LINE NO. {index + 1}
                         </Typography>
-                        <Chip
-                          label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                          size="small"
-                          sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }}
-                        />
+                        <Chip label={item.isActive ? "ACTIVE" : "INACTIVE"} size="small" sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }} />
+                      </Stack>
+
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={sx.cardLabel}>SITE:</Typography>
+                        <Typography sx={sx.cardValue}>{item.siteName || "--"}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>NAME:</Typography>
-                        <Typography sx={sx.cardValue}>{item.name || "-"}</Typography>
+                        <Typography sx={sx.cardValue}>{item.name || "--"}</Typography>
+                      </Stack>
+
+                      <Stack direction="row" gap={0.5} alignItems="center">
+                        <Typography sx={sx.cardLabel}>TOTAL EVALUATION:</Typography>
+                        <Typography sx={sx.cardValue}>{item.totalAnnualPMS || "--"}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -246,11 +229,7 @@ const PmsType = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -290,10 +269,10 @@ const PmsType = () => {
           <>
             <TableContainer>
               <Table sx={sx.table}>
-                <TableHead>
+                <TableHead sx={sx.tableHead}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
-                      <TableCell key={column} sx={sx.headCell} align={column === "NAME" ? "left" : "center"}>
+                      <TableCell key={column} sx={sx.headCell} align={column === "NAME" || column === "SITE" ? "left" : "center"}>
                         {column}
                       </TableCell>
                     ))}
@@ -307,14 +286,16 @@ const PmsType = () => {
                         <TableCell sx={sx.bodyCell} align="center">
                           {index + 1}
                         </TableCell>
-                        <TableCell sx={sx.bodyCell}>{item.name || "-"}</TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.siteName || "--"}</TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.name || "--"}</TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            sx={sx.statusChip(item.isActive)}
-                            label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                          />
+                          {item.totalAnnualPMS || "--"}
+                        </TableCell>
+                        <TableCell sx={sx.bodyCell} align="center">
+                          {item.lookup || "--"}
+                        </TableCell>
+                        <TableCell sx={sx.bodyCell} align="center">
+                          <Chip variant="filled" size="small" sx={sx.statusChip(item.isActive)} label={item.isActive ? "ACTIVE" : "INACTIVE"} />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
                           <PmsTypeActions data={item} onArchive={onArchiveAction} onUpdate={onEditAction} />
@@ -325,11 +306,7 @@ const PmsType = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
@@ -351,12 +328,7 @@ const PmsType = () => {
                   {isEmpty && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={noRecordsFound}
-                          alt="No Records Found"
-                          className="norecords-found-table"
-                          style={{ width: "100%", maxWidth: "300px" }}
-                        />
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
