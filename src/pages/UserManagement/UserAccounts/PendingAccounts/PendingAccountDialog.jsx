@@ -153,7 +153,7 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
   const onSubmitHandler = (formData) => {
     console.log("FormData:", formData);
 
-    const submitUpdateUser = {
+    const submitPendingUser = {
       empId: `${data?.id_Prefix}-${data?.id_No}`,
       userTypeId: formData.userType.id,
       fullname: `${data?.last_Name}, ${data?.first_Name}${data?.suffix ? ` ${data?.suffix}` : ""} ${data?.middle_Name ? data?.middle_Name : ""}`,
@@ -191,8 +191,8 @@ const PendingAccountDialog = ({ data, open, onClose }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log("Update User: ", submitUpdateUser);
-        createUser(submitUpdateUser)
+        // console.log("Update User: ", submitPendingUser);
+        createUser(submitPendingUser)
           .unwrap()
           .then(() => {
             toast.success("Success!", {

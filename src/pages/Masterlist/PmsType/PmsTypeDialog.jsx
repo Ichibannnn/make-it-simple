@@ -22,10 +22,11 @@ const schema = yup.object().shape({
     .required("Total PMS evaluation is required")
     .matches(/^\d+$/, "Must be a number")
     .test("positive", "Must be a positive value", (value) => Number(value) > 0),
+  lookupSource: yup.string().oneOf(["Stores", "Employees", "Farms", "Departments", "Buildings"], "Invalid Lookup Source").required("Lookup Source is required"),
 });
 
 const PmsTypeDialog = ({ data, open, onClose }) => {
-  const [lookupSource, setLookupSource] = useState(null);
+  // const [lookupSource, setLookupSource] = useState(null);
 
   const [addEditPmsType, { isLoading }] = useAddEditPmsTypeMutation();
 
@@ -33,28 +34,30 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
 
   const isEditMode = Boolean(data?.id);
 
-  const lookupDropdownOptions = [
-    {
-      value: "Stores",
-      label: "Stores",
-    },
-    {
-      value: "Employees",
-      label: "Employees",
-    },
-    {
-      value: "Farms",
-      label: "Farms",
-    },
-    {
-      value: "Departments",
-      label: "Departments",
-    },
-    {
-      value: "Buildings",
-      label: "Buildings",
-    },
-  ];
+  // const lookupDropdownOptions = [
+  //   {
+  //     value: "Stores",
+  //     label: "Stores",
+  //   },
+  //   {
+  //     value: "Employees",
+  //     label: "Employees",
+  //   },
+  //   {
+  //     value: "Farms",
+  //     label: "Farms",
+  //   },
+  //   {
+  //     value: "Departments",
+  //     label: "Departments",
+  //   },
+  //   {
+  //     value: "Buildings",
+  //     label: "Buildings",
+  //   },
+  // ];
+
+  const lookupDropdownOptions = ["Stores", "Employees", "Farms", "Departments", "Buildings"];
 
   const {
     handleSubmit,
@@ -71,14 +74,30 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
       site: null,
       name: "",
       noOfPmsEvalutions: "",
+      lookupSource: "Stores",
     },
   });
 
   useEffect(() => {
     if (data) {
       setValue("id", data?.id);
-      // setValue("site", {})
       setValue("name", data?.name);
+      setValue("noOfPmsEvalutions", data?.noOfPmsEvalutions);
+
+      if (data?.siteId) {
+        setValue("site", {
+          id: data?.siteId,
+          name: data?.siteName,
+        });
+      } else {
+        setValue("site", null);
+      }
+
+      if (data?.lookupSource) {
+        setValue("lookupSource", data?.lookupSource);
+      } else {
+        setValue("lookupSource", "");
+      }
     }
   }, [data]);
 
@@ -88,25 +107,20 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
   };
 
   const onSubmitAction = async (formData) => {
-    // console.log("Form Data: ", formData);
-
-    // Add and edit hit the same endpoint; the only difference is whether an id is sent.
     const entry = isEditMode
       ? {
           id: data.id,
           name: formData.name,
           siteId: formData.site.id,
           noOfPmsEvalutions: Number(formData.noOfPmsEvalutions),
-          lookupSource: lookupSource,
+          lookupSource: formData.lookupSource,
         }
       : {
           name: formData.name,
           siteId: formData.site.id,
           noOfPmsEvalutions: Number(formData.noOfPmsEvalutions),
-          lookupSource: lookupSource,
+          lookupSource: formData.lookupSource,
         };
-
-    console.log("Entry: ", entry);
 
     try {
       await addEditPmsType({ typeNames: [entry] }).unwrap();
@@ -123,7 +137,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     }
   };
 
-  console.log("Lookup: ", lookupSource);
+  console.log("Lookup: ", watch("lookupSource"));
 
   return (
     <>
@@ -212,26 +226,31 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
 
               <Stack sx={sx.formField}>
                 <Typography sx={sx.fieldText}>Lookup Source</Typography>
-                <Select
-                  value={lookupSource}
-                  onChange={(e) => setLookupSource(e.target.value)}
-                  size="small"
-                  placeholder="Select lookup source"
-                  inputProps={{ "aria-label": "Without label" }}
-                  sx={{
-                    width: "100%",
-                    fontSize: "13px",
-                    "& .MuiSelect-select": {
-                      color: "#fff",
-                    },
-                  }}
-                >
-                  {lookupDropdownOptions.map((item, i) => (
-                    <MenuItem key={i} value={item.value} sx={{ fontSize: "13px" }}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  name="lookupSource"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      displayEmpty
+                      size="small"
+                      placeholder="Select lookup source"
+                      sx={{
+                        width: "100%",
+                        fontSize: "13px",
+                        "& .MuiSelect-select": {
+                          color: "#fff",
+                        },
+                      }}
+                    >
+                      {lookupDropdownOptions.map((item, i) => (
+                        <MenuItem key={i} value={item} sx={{ fontSize: "13px" }}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
               </Stack>
             </Stack>
           </DialogContent>

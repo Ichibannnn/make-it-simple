@@ -519,7 +519,7 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvide
 
                 {isError && (
                   <TableRow>
-                    <TableCell colSpan={12} align="center">
+                    <TableCell colSpan={12} align="center" sx={{ height: "400px" }}>
                       <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
@@ -530,7 +530,7 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvide
 
                 {(isLoading || isFetching) && (
                   <TableRow>
-                    <TableCell colSpan={12} align="center">
+                    <TableCell colSpan={12} align="center" sx={{ height: "400px" }}>
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -541,7 +541,7 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvide
 
                 {isSuccess && !data?.value?.reports?.length && !isLoading && !isFetching && (
                   <TableRow>
-                    <TableCell colSpan={12} align="center">
+                    <TableCell colSpan={12} align="center" sx={{ height: "400px" }}>
                       <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         No records found.
