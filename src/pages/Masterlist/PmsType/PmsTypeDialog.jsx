@@ -22,41 +22,15 @@ const schema = yup.object().shape({
     .required("Total PMS evaluation is required")
     .matches(/^\d+$/, "Must be a number")
     .test("positive", "Must be a positive value", (value) => Number(value) > 0),
-  lookupSource: yup.string().oneOf(["Stores", "Employees", "Farms", "Departments", "Buildings"], "Invalid Lookup Source").required("Lookup Source is required"),
+  lookup: yup.string().oneOf(["Stores", "Employees", "Farms", "Departments", "Buildings"], "Invalid Lookup Source").required("Lookup Source is required"),
 });
 
 const PmsTypeDialog = ({ data, open, onClose }) => {
-  // const [lookupSource, setLookupSource] = useState(null);
-
   const [addEditPmsType, { isLoading }] = useAddEditPmsTypeMutation();
 
   const [getSite, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
 
   const isEditMode = Boolean(data?.id);
-
-  // const lookupDropdownOptions = [
-  //   {
-  //     value: "Stores",
-  //     label: "Stores",
-  //   },
-  //   {
-  //     value: "Employees",
-  //     label: "Employees",
-  //   },
-  //   {
-  //     value: "Farms",
-  //     label: "Farms",
-  //   },
-  //   {
-  //     value: "Departments",
-  //     label: "Departments",
-  //   },
-  //   {
-  //     value: "Buildings",
-  //     label: "Buildings",
-  //   },
-  // ];
-
   const lookupDropdownOptions = ["Stores", "Employees", "Farms", "Departments", "Buildings"];
 
   const {
@@ -66,7 +40,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     setValue,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -74,7 +48,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
       site: null,
       name: "",
       noOfPmsEvalutions: "",
-      lookupSource: "Stores",
+      lookup: "Stores",
     },
   });
 
@@ -82,7 +56,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     if (data) {
       setValue("id", data?.id);
       setValue("name", data?.name);
-      setValue("noOfPmsEvalutions", data?.noOfPmsEvalutions);
+      setValue("noOfPmsEvalutions", data?.totalAnnualPMS);
 
       if (data?.siteId) {
         setValue("site", {
@@ -93,10 +67,10 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
         setValue("site", null);
       }
 
-      if (data?.lookupSource) {
-        setValue("lookupSource", data?.lookupSource);
+      if (data?.lookup) {
+        setValue("lookup", data?.lookup);
       } else {
-        setValue("lookupSource", "");
+        setValue("lookup", "");
       }
     }
   }, [data]);
@@ -106,24 +80,26 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     onClose();
   };
 
+  console.log("Site: ", watch("site"));
+
   const onSubmitAction = async (formData) => {
     const entry = isEditMode
       ? {
           id: data.id,
           name: formData.name,
           siteId: formData.site.id,
-          noOfPmsEvalutions: Number(formData.noOfPmsEvalutions),
-          lookupSource: formData.lookupSource,
+          totalAnnualPMS: Number(formData.noOfPmsEvalutions),
+          lookup: formData.lookup,
         }
       : {
           name: formData.name,
           siteId: formData.site.id,
-          noOfPmsEvalutions: Number(formData.noOfPmsEvalutions),
-          lookupSource: formData.lookupSource,
+          totalAnnualPMS: Number(formData.noOfPmsEvalutions),
+          lookup: formData.lookup,
         };
 
     try {
-      await addEditPmsType({ typeNames: [entry] }).unwrap();
+      await addEditPmsType(entry).unwrap();
       toast.success("Success!", {
         description: isEditMode ? "PMS Type updated successfully!" : "PMS Type added successfully!",
         duration: 1500,
@@ -136,8 +112,6 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
       });
     }
   };
-
-  console.log("Lookup: ", watch("lookupSource"));
 
   return (
     <>
@@ -227,7 +201,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
               <Stack sx={sx.formField}>
                 <Typography sx={sx.fieldText}>Lookup Source</Typography>
                 <Controller
-                  name="lookupSource"
+                  name="lookup"
                   control={control}
                   render={({ field }) => (
                     <Select
@@ -259,7 +233,7 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
             <LoadingButton variant="outlined" onClick={onCloseAction}>
               <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
             </LoadingButton>
-            <LoadingButton type="submit" variant="contained" loading={isLoading} loadingPosition="start" startIcon={<Save />} disabled={!watch("name")} sx={sx.disabledSaveButton}>
+            <LoadingButton type="submit" variant="contained" loading={isLoading} loadingPosition="start" startIcon={<Save />} disabled={!isValid} sx={sx.disabledSaveButton}>
               <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Save</Typography>
             </LoadingButton>
           </DialogActions>

@@ -272,7 +272,7 @@ const PmsType = () => {
                 <TableHead sx={sx.tableHead}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
-                      <TableCell key={column} sx={sx.headCell} align={column === "NAME" || column === "SITE" ? "left" : "center"}>
+                      <TableCell key={column} sx={sx.headCell} align={column === "NAME" || column === "SITE" || column === "LOOKUP SOURCE" ? "left" : "center"}>
                         {column}
                       </TableCell>
                     ))}
@@ -291,9 +291,7 @@ const PmsType = () => {
                         <TableCell sx={sx.bodyCell} align="center">
                           {item.totalAnnualPMS || "--"}
                         </TableCell>
-                        <TableCell sx={sx.bodyCell} align="center">
-                          {item.lookup || "--"}
-                        </TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.lookup || "--"}</TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
                           <Chip variant="filled" size="small" sx={sx.statusChip(item.isActive)} label={item.isActive ? "ACTIVE" : "INACTIVE"} />
                         </TableCell>
