@@ -35,12 +35,10 @@ import useDisclosure from "../../../hooks/useDisclosure";
 import { SubCategoryDialog } from "./SubCategoryDialog";
 import { SubCategoryActions } from "./SubCategoryActions";
 
-import {
-  useArchiveSubCategoryMutation,
-  useGetSubCategoryQuery,
-} from "../../../features/api masterlist/sub_category_api/subCategoryApi";
+import { useArchiveSubCategoryMutation, useGetSubCategoryQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { sweetAlertDialog } from "../../../hooks/useSweetAlertDialog";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
+import { showConfirmAction } from "../../../utils/sweetAlert";
 
 const STATUS_TABS = [
   { value: "", label: "ALL" },
@@ -98,86 +96,29 @@ const SubCategory = () => {
   };
 
   const onArchiveAction = async (data) => {
-    if (data.isActive === true) {
-      await sweetAlertDialog({
-        title: "Are you sure?",
-        text: "This will move the sub category to the archived tab.",
-        icon: "warning",
-        confirmButtonText: "Archive",
+    const copy = data?.isActive
+      ? { text: "archived", progress: "Archiving...", done: "archived", buttonText: "Archive" }
+      : {
+          text: "active",
+          progress: "Restoring...",
+          done: "restored",
+          buttonText: "Restore",
+        };
 
-        onConfirm: async () => {
-          Swal.getConfirmButton().innerHTML = "Archiving...";
+    const confirmed = await showConfirmAction({
+      title: "Are you sure?",
+      text: `This will move the sub category to the ${copy.text} tab.`,
+      confirmButtonText: `${copy.buttonText}`,
+      loadingText: copy.progress,
 
-          await archiveSubCategory(data.id)
-            .unwrap()
-            .then(() => {
-              toast.success("Success!", {
-                description: "Sub Category archived successfully!",
-              });
-            })
-            .catch((error) => {
-              toast.error("Error!", {
-                description: error.data.error.message,
-              });
-            });
-        },
-      });
-    } else {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "This will move the sub category to the active tab.",
-        icon: "warning",
-        color: "white",
-        showCancelButton: true,
-        background: "#111927",
-        confirmButtonColor: "#9e77ed",
-        cancelButtonColor: "#1C2536",
-        heightAuto: false,
-        allowOutsideClick: false,
-        width: "30em",
-        customClass: {
-          container: "custom-container",
-          title: "custom-title",
-          htmlContainer: "custom-text",
-          icon: "custom-icon",
-          confirmButton: "custom-confirm-btn",
-          cancelButton: "custom-cancel-btn",
-        },
-        preConfirm: async () => {
-          try {
-            Swal.getConfirmButton().innerHTML = `
-            <div class="mui-btn-content">
-              <span class="mui-spinner"></span>
-              <span class="mui-label">Restoring...</span>
-            </div>
-            `;
-            Swal.getConfirmButton().disabled = true;
+      onConfirm: async () => {
+        await archiveSubCategory(data.id).unwrap();
+      },
+    });
 
-            await archiveSubCategory(data.id)
-              .unwrap()
-              .then(() => {
-                toast.success("Success!", {
-                  description: "Sub Category restored successfully!",
-                });
-              })
-              .catch((error) => {
-                toast.error("Error!", {
-                  description: error.data.error.message,
-                });
-              });
-
-            return true;
-          } catch (err) {
-            console.log("Error", err);
-            Swal.hideLoading();
-            Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
-            return false;
-          }
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.close();
-        }
+    if (confirmed) {
+      toast.success("Success!", {
+        description: `Sub category ${copy.done} successfully!`,
       });
     }
   };
@@ -212,13 +153,7 @@ const SubCategory = () => {
           <Typography sx={sx.pageSubtitle}>Manage sub categories</Typography>
         </Stack>
 
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<AddOutlined />}
-          onClick={onToggle}
-          sx={sx.addButton}
-        >
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
           Add
         </Button>
       </Stack>
@@ -232,20 +167,8 @@ const SubCategory = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={sx.searchContainer}
-          gap={4}
-        >
-          <OutlinedInput
-            placeholder="Search sub category"
-            startAdornment={<Search sx={sx.searchIcon} />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            sx={sx.searchInput}
-          />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+          <OutlinedInput placeholder="Search sub category" startAdornment={<Search sx={sx.searchIcon} />} value={searchValue} onChange={(e) => setSearchValue(e.target.value)} sx={sx.searchInput} />
         </Stack>
 
         {isSmallScreen ? (
@@ -259,11 +182,7 @@ const SubCategory = () => {
                         <Typography variant="body2" color="text.secondary">
                           LINE NO. {index + 1}
                         </Typography>
-                        <Chip
-                          label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                          size="small"
-                          sx={{ ...sx.statusChip(item.is_Active), ...sx.cardChip }}
-                        />
+                        <Chip label={item.is_Active ? "ACTIVE" : "INACTIVE"} size="small" sx={{ ...sx.statusChip(item.is_Active), ...sx.cardChip }} />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -278,12 +197,7 @@ const SubCategory = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                        <SubCategoryActions
-                          data={item}
-                          status={status}
-                          onArchive={onArchiveAction}
-                          onUpdate={onEditAction}
-                        />
+                        <SubCategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -292,11 +206,7 @@ const SubCategory = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -339,11 +249,7 @@ const SubCategory = () => {
                 <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
-                      <TableCell
-                        key={column}
-                        sx={sx.headCell}
-                        align={column === "CATEGORY" || column === "SUB CATEGORY NAME" ? "left" : "center"}
-                      >
+                      <TableCell key={column} sx={sx.headCell} align={column === "CATEGORY" || column === "SUB CATEGORY NAME" ? "left" : "center"}>
                         {column}
                       </TableCell>
                     ))}
@@ -360,20 +266,10 @@ const SubCategory = () => {
                         <TableCell sx={sx.bodyCell}>{item.category_Description}</TableCell>
                         <TableCell sx={sx.bodyCell}>{item.subCategory_Description}</TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            sx={sx.statusChip(item.is_Active)}
-                            label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                          />
+                          <Chip variant="filled" size="small" sx={sx.statusChip(item.is_Active)} label={item.is_Active ? "ACTIVE" : "INACTIVE"} />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <SubCategoryActions
-                            data={item}
-                            status={status}
-                            onArchive={onArchiveAction}
-                            onUpdate={onEditAction}
-                          />
+                          <SubCategoryActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -381,11 +277,7 @@ const SubCategory = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>

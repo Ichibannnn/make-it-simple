@@ -27,7 +27,7 @@ import { calendarData } from "../../../data";
 const arrayStatus = ["All Status", "Pending", "Done", "Delayed"];
 const arrayTimePeriod = ["All", "Today", "This Week", "Delayed"];
 
-const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
+const PmsCalendar = ({ data, isLoading, isFetching, isSuccess, pmsTypeOptions }) => {
   const [getDate, setGetDate] = useState("");
 
   const { params: pmsReminderParams, setStatus, setTimePeriod } = usePmsReminderParams();
@@ -101,7 +101,7 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
         </Stack>
 
         <Stack ref={calendarWrapperRef} sx={{ width: "100%", height: "100%", ...pmsStyles.fullCalendarOverrides }}>
-          <FullCalendar
+          {/* <FullCalendar
             ref={calendarRef}
             height={isScreenSmall ? "64vh" : "100%"}
             plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
@@ -124,8 +124,8 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
               </Stack>
             )}
             moreLinkContent={(args) => <Typography sx={pmsStyles.calendarLinkContent}>+{args.num} more</Typography>}
-          />
-          {/* {isLoading || isFetching ? (
+          /> */}
+          {isLoading || isFetching ? (
             <CalendarSkeleton />
           ) : (
             <FullCalendar
@@ -152,7 +152,7 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
               )}
               moreLinkContent={(args) => <Typography sx={pmsStyles.calendarLinkContent}>+{args.num} more</Typography>}
             />
-          )} */}
+          )}
         </Stack>
       </Stack>
 
@@ -266,7 +266,7 @@ const PmsCalendar = ({ data, isLoading, isFetching, isSuccess }) => {
         </Stack>
       </Stack>
 
-      <PmsAddSchedule openAddSchedule={openAddSchedule} onCloseAddSchedule={onCloseAddSchedule} />
+      <PmsAddSchedule openAddSchedule={openAddSchedule} onCloseAddSchedule={onCloseAddSchedule} pmsTypeOptions={pmsTypeOptions} />
       <PmsUploadSchedule openUploadSchedule={openUploadSchedule} onCloseUploadSchedule={onCloseUploadSchedule} />
       <PmsDetailDialog data={data} getDate={getDate} setGetDate={setGetDate} open={viewOpen} onClose={viewOnClose} />
     </Stack>

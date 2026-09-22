@@ -25,25 +25,14 @@ import { LoadingButton } from "@mui/lab";
 
 import useDebounce from "../../../hooks/useDebounce";
 
+import { masterlistStyles as sx } from "../styles/masterlistStyles";
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
-import {
-  useGetOneChargingQuery,
-  useSyncOneChargingMutation,
-} from "../../../features/api masterlist/one_charging/oneChargingApi";
-import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
-const TABLE_COLUMNS = [
-  "SYNC ID",
-  "CODE",
-  "NAME",
-  "COMPANY",
-  "BUSINESS UNIT",
-  "DEPARTMENT",
-  "UNIT",
-  "SUB UNIT",
-  "LOCATION",
-];
+import { useGetOneChargingQuery, useSyncOneChargingMutation } from "../../../features/api masterlist/one_charging/oneChargingApi";
+import { showConfirmAction } from "../../../utils/sweetAlert";
+
+const TABLE_COLUMNS = ["SYNC ID", "CODE", "NAME", "COMPANY", "BUSINESS UNIT", "DEPARTMENT", "UNIT", "SUB UNIT", "LOCATION"];
 
 const OneCharging = () => {
   const theme = useTheme();
@@ -55,21 +44,14 @@ const OneCharging = () => {
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
 
-  const { data, isLoading, isFetching, isSuccess, isError } =
-    useGetOneChargingQuery({
-      Status: true,
-      Search: search,
-      PageNumber: pageNumber,
-      PageSize: pageSize,
-    });
+  const { data, isLoading, isFetching, isSuccess, isError } = useGetOneChargingQuery({
+    Status: true,
+    Search: search,
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+  });
 
-  const [
-    syncOneCharging,
-    {
-      isLoading: syncOneChargingIsLoading,
-      isFetching: syncOneChargingIsFetching,
-    },
-  ] = useSyncOneChargingMutation();
+  const [syncOneCharging, { isLoading: syncOneChargingIsLoading, isFetching: syncOneChargingIsFetching }] = useSyncOneChargingMutation();
 
   const rows = data?.value?.onecharging ?? [];
   const isBusy = isLoading || isFetching;
@@ -88,45 +70,66 @@ const OneCharging = () => {
     }
   }, [searchValue]);
 
-  const onSyncOneCharging = () => {
-    Swal.fire({
+  const onSyncOneCharging = async () => {
+    const sync = await showConfirmAction({
       title: "Confirmation?",
       text: "Are you sure you want to sync the one charging list?",
       icon: "info",
-      color: "white",
-      showCancelButton: true,
-      background: "#111927",
-      confirmButtonColor: "#9e77ed",
-      cancelButtonColor: "#1C2536",
-      heightAuto: false,
-      width: "30em",
-      customClass: {
-        container: "custom-container",
-        title: "custom-title",
-        htmlContainer: "custom-text",
-        icon: "custom-icon",
-        confirmButton: "custom-confirm-btn",
-        cancelButton: "custom-cancel-btn",
+      confirmButtonText: "Sync",
+      loadingText: "Syncing...",
+
+      onConfirm: async () => {
+        await syncOneCharging().unwrap();
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        syncOneCharging()
-          .unwrap()
-          .then(() => {
-            toast.success("Success", {
-              description: "Sync data successfully",
-              classNames: {
-                toast: "bg-blue-400",
-              },
-            });
-          })
-          .catch(() => {
-            toast.error("Error!", {
-              description: "Company sync failed!",
-            });
-          });
-      }
     });
+
+    if (sync) {
+      toast.success("Success", {
+        description: "Sync data successfully",
+        classNames: {
+          toast: "bg-blue-400",
+        },
+      });
+    }
+
+    // Swal.fire({
+    //   title: "Confirmation?",
+    //   text: "Are you sure you want to sync the one charging list?",
+    //   icon: "info",
+    //   color: "white",
+    //   showCancelButton: true,
+    //   background: "#111927",
+    //   confirmButtonColor: "#9e77ed",
+    //   cancelButtonColor: "#1C2536",
+    //   heightAuto: false,
+    //   width: "30em",
+    //   customClass: {
+    //     container: "custom-container",
+    //     title: "custom-title",
+    //     htmlContainer: "custom-text",
+    //     icon: "custom-icon",
+    //     confirmButton: "custom-confirm-btn",
+    //     cancelButton: "custom-cancel-btn",
+    //   },
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     syncOneCharging()
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success", {
+    //           description: "Sync data successfully",
+    //           classNames: {
+    //             toast: "bg-blue-400",
+    //           },
+    //         });
+    //       })
+    //       .catch(() => {
+    //         toast.error("Error!", {
+    //           description: "Company sync failed!",
+    //         });
+    //       });
+    //   }
+    // });
   };
 
   return (
@@ -137,15 +140,9 @@ const OneCharging = () => {
             <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
               One Charging
             </Typography>
-            <Chip
-              label={`${data?.value?.totalCount ?? 0} total`}
-              size="small"
-              sx={sx.countChip}
-            />
+            <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
-          <Typography sx={sx.pageSubtitle}>
-            Sync and view the one charging list
-          </Typography>
+          <Typography sx={sx.pageSubtitle}>Sync and view the one charging list</Typography>
         </Stack>
 
         <LoadingButton
@@ -154,12 +151,7 @@ const OneCharging = () => {
           startIcon={<SyncOutlined />}
           loadingPosition="start"
           onClick={() => onSyncOneCharging()}
-          loading={
-            isLoading ||
-            isFetching ||
-            syncOneChargingIsLoading ||
-            syncOneChargingIsFetching
-          }
+          loading={isLoading || isFetching || syncOneChargingIsLoading || syncOneChargingIsFetching}
           sx={sx.syncButton}
         >
           Sync One Charging
@@ -167,20 +159,8 @@ const OneCharging = () => {
       </Stack>
 
       <Stack sx={sx.contentContainer}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={sx.searchContainer}
-          gap={4}
-        >
-          <OutlinedInput
-            placeholder="Search"
-            startAdornment={<Search sx={sx.searchIcon} />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            sx={sx.searchInput}
-          />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+          <OutlinedInput placeholder="Search" startAdornment={<Search sx={sx.searchIcon} />} value={searchValue} onChange={(e) => setSearchValue(e.target.value)} sx={sx.searchInput} />
         </Stack>
 
         {isSmallScreen ? (
@@ -212,9 +192,7 @@ const OneCharging = () => {
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography sx={sx.cardLabel}>
-                          BUSINESS UNIT:
-                        </Typography>
+                        <Typography sx={sx.cardLabel}>BUSINESS UNIT:</Typography>
                         <Typography sx={sx.cardValue}>
                           {item.businessUnitCode} - {item.businessUnitName}
                         </Typography>
@@ -254,11 +232,7 @@ const OneCharging = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -276,11 +250,7 @@ const OneCharging = () => {
 
             {isEmpty && (
               <Stack sx={sx.feedbackContainer}>
-                <img
-                  src={noRecordsFound}
-                  alt="No Records Found"
-                  className="norecords-found-table"
-                />
+                <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
                   No records found.
                 </Typography>
@@ -289,12 +259,7 @@ const OneCharging = () => {
 
             <TablePagination
               sx={sx.paginationMobile}
-              rowsPerPageOptions={[
-                100,
-                300,
-                500,
-                { value: data?.value?.totalCount, label: "All" },
-              ]}
+              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 100}
@@ -350,16 +315,8 @@ const OneCharging = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
-                        <Typography
-                          variant="h5"
-                          sx={sx.feedbackText}
-                          marginLeft={2}
-                        >
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
                       </TableCell>
@@ -380,16 +337,8 @@ const OneCharging = () => {
                   {isEmpty && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={noRecordsFound}
-                          alt="No Records Found"
-                          className="norecords-found-table"
-                        />
-                        <Typography
-                          variant="h5"
-                          sx={sx.feedbackText}
-                          marginLeft={2}
-                        >
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
                       </TableCell>
@@ -401,12 +350,7 @@ const OneCharging = () => {
 
             <TablePagination
               sx={sx.pagination}
-              rowsPerPageOptions={[
-                100,
-                300,
-                500,
-                { value: data?.value?.totalCount, label: "All" },
-              ]}
+              rowsPerPageOptions={[100, 300, 500, { value: data?.value?.totalCount, label: "All" }]}
               component="div"
               count={data?.value?.totalCount || 0}
               rowsPerPage={data?.value?.pageSize || 100}

@@ -80,8 +80,6 @@ const PmsTypeDialog = ({ data, open, onClose }) => {
     onClose();
   };
 
-  console.log("Site: ", watch("site"));
-
   const onSubmitAction = async (formData) => {
     const entry = isEditMode
       ? {

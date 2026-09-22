@@ -22,6 +22,15 @@ export const sitesApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoi
       providesTags: tags,
     }),
 
+    getActiveSitesWithPmsType: builder.query({
+      query: (params) => ({
+        url: "pms-types/Grouped?Status=true",
+        method: "GET",
+        params: params,
+      }),
+      providesTags: tags,
+    }),
+
     addEditSites: builder.mutation({
       query: (body) => ({
         url: "pms-sites",
@@ -41,4 +50,4 @@ export const sitesApi = api.enhanceEndpoints({ addTagTypes: tags }).injectEndpoi
   }),
 });
 
-export const { useGetSitesQuery, useLazyGetActiveSitesQuery, useAddEditSitesMutation, useArchiveSitesMutation } = sitesApi;
+export const { useGetSitesQuery, useLazyGetActiveSitesQuery, useLazyGetActiveSitesWithPmsTypeQuery, useAddEditSitesMutation, useArchiveSitesMutation } = sitesApi;

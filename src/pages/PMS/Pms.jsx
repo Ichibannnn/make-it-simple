@@ -1,5 +1,5 @@
-import { Autocomplete, Box, Button, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
-import { ContentPasteGoOutlined, Search } from "@mui/icons-material";
+import { Autocomplete, Box, Button, IconButton, MenuItem, OutlinedInput, Select, Stack, Tab, Tabs, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Clear, ContentPasteGoOutlined, Search } from "@mui/icons-material";
 
 import { data } from "../../data";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { pmsStyles } from "./styles/pmsStyles";
 import { Controller } from "react-hook-form";
 
 import { useLazyGetActivePmsTypeQuery } from "../../features/api masterlist/pms-type/pmsTypeApi";
-import { useLazyGetActiveSitesQuery } from "../../features/api masterlist/sites/sitesApi";
+import { useLazyGetActiveSitesQuery, useLazyGetActiveSitesWithPmsTypeQuery } from "../../features/api masterlist/sites/sitesApi";
 import { usePmsCalendarParams } from "../../hooks/api_params/pms/usePmsCalendarParams";
 
 import PmsCalendar from "./PMSCalendar/PmsCalendar";
@@ -40,11 +40,12 @@ const Pms = () => {
   const [defaultSite, setDefaultSite] = useState(null);
   const [defaultPmsType, setDefaultPmsType] = useState(null);
 
-  const { params, setSearch, setSite, setPmsType } = usePmsCalendarParams();
+  const { params, setSearch, setSiteId, setPmsTypeId } = usePmsCalendarParams();
   const { data: pmsCalendarData, isLoading: pmsCalendarIsLoading, isFetching: pmsCalendarIsFetching, isError: pmsCalendarIsError } = useGetPmsCalendarQuery(params);
 
-  const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
-  const [getPmsTypes, { data: pmsTypeData, isLoading: pmsTypeIsLoading, isSuccess: pmsTypeIsSuccess }] = useLazyGetActivePmsTypeQuery();
+  // const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesQuery();
+  const [getSites, { data: siteData, isLoading: siteIsLoading, isSuccess: siteIsSuccess }] = useLazyGetActiveSitesWithPmsTypeQuery();
+  // const [getPmsTypes, { data: pmsTypeData, isLoading: pmsTypeIsLoading, isSuccess: pmsTypeIsSuccess }] = useLazyGetActivePmsTypeQuery();
 
   const onTabChange = (_, newValue) => {
     setActiveTab(newValue);
@@ -53,7 +54,7 @@ const Pms = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 1:
-        return <PmsCalendar data={pmsCalendarData} isLoading={pmsCalendarIsLoading} isFetching={pmsCalendarIsFetching} isError={pmsCalendarIsError} />;
+        return <PmsCalendar data={pmsCalendarData} isLoading={pmsCalendarIsLoading} isFetching={pmsCalendarIsFetching} isError={pmsCalendarIsError} pmsTypeOptions={currentPmsTypeOptions} />;
       case 2:
         return <PmsTable data={data} />;
       case 3:
@@ -64,17 +65,25 @@ const Pms = () => {
   };
 
   useEffect(() => {
-    getPmsTypes();
     getSites();
 
-    if (siteData?.value?.sites?.length && pmsTypeData?.value?.type?.length) {
-      setDefaultSite(siteData?.value?.sites?.[0]);
-      setSite(siteData?.value?.sites?.[0]?.name);
+    if (siteData?.value?.site?.length) {
+      setDefaultSite(siteData?.value?.site?.[0]);
+      setSiteId(siteData?.value?.site?.[0]?.siteId);
 
-      setDefaultPmsType(pmsTypeData?.value?.type?.[0]);
-      setPmsType(pmsTypeData?.value?.type?.[0]?.name);
+      setDefaultPmsType(siteData?.value?.site?.[0]?.listOfTypes?.[0]);
+      setPmsTypeId(siteData?.value?.site?.[0]?.listOfTypes?.[0]?.typeId);
+    } else {
+      setDefaultSite(null);
+      setSiteId("");
+
+      setDefaultPmsType(null);
+      setPmsTypeId("");
     }
-  }, [getPmsTypes, getSites, siteData, pmsTypeData]);
+  }, [getSites, siteData]);
+
+  const currentSiteOptions = siteData?.value?.site || [];
+  const currentPmsTypeOptions = siteData?.value?.site?.find((s) => s.siteId === params.SiteId)?.listOfTypes || [];
 
   return (
     <Stack sx={global.layoutContainer}>
@@ -98,41 +107,51 @@ const Pms = () => {
           <Stack sx={pmsStyles.selectFilterContainer}>
             <Box sx={pmsStyles.selectSiteContainer}>
               <Typography fontSize="12px">Filter by Site:</Typography>
-
-              <Select
-                value={defaultSite || ""}
+              <Autocomplete
                 size="small"
-                sx={pmsStyles.customSelect}
-                onChange={(e) => {
-                  setDefaultSite(e.target.value);
-                  setSite(e.target.value.name);
+                options={currentSiteOptions}
+                getOptionLabel={(option) => option?.siteName || ""}
+                isOptionEqualToValue={(option, value) => option?.siteId === value?.siteId}
+                value={defaultSite}
+                onChange={(_, newValue) => {
+                  setDefaultSite(newValue);
+                  setSiteId(newValue?.siteId || "");
+                  setDefaultPmsType(null);
+                  setPmsTypeId("");
                 }}
-              >
-                {siteData?.value?.sites?.map((item, i) => (
-                  <MenuItem key={i} value={item} sx={pmsStyles.menuItemsFont}>
-                    {item.name}
+                sx={pmsStyles.filterAutocompleteStyles}
+                slotProps={{ popper: { sx: pmsStyles.filterPopperStyles } }}
+                renderInput={(params) => <TextField {...params} placeholder="Select site" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                renderOption={(props, option) => (
+                  <MenuItem {...props} key={option.siteId} sx={pmsStyles.menuItemsFont}>
+                    {option.siteName}
                   </MenuItem>
-                ))}
-              </Select>
+                )}
+                disableClearable
+              />
             </Box>
 
             <Box sx={pmsStyles.selectPmsTypeContainer}>
               <Typography sx={{ fontSize: "12px" }}>Filter by PMS Type:</Typography>
-              <Select
-                value={defaultPmsType || ""}
+              <Autocomplete
                 size="small"
-                sx={pmsStyles.customSelect}
-                onChange={(e) => {
-                  setDefaultPmsType(e.target.value);
-                  setPmsType(e.target.value.name);
+                options={currentPmsTypeOptions}
+                getOptionLabel={(option) => option?.typeName || ""}
+                isOptionEqualToValue={(option, value) => option?.typeId === value?.typeId}
+                value={defaultPmsType}
+                onChange={(_, newValue) => {
+                  setDefaultPmsType(newValue);
+                  setPmsTypeId(newValue?.typeId || "");
                 }}
-              >
-                {pmsTypeData?.value?.type?.map((item, i) => (
-                  <MenuItem key={i} value={item} sx={pmsStyles.menuItemsFont}>
-                    {item.name}
+                sx={pmsStyles.filterAutocompleteStyles}
+                slotProps={{ popper: { sx: pmsStyles.filterPopperStyles } }}
+                renderInput={(params) => <TextField {...params} placeholder="Select PMS type" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
+                renderOption={(props, option) => (
+                  <MenuItem {...props} key={option.typeId} sx={pmsStyles.menuItemsFont}>
+                    {option.typeName}
                   </MenuItem>
-                ))}
-              </Select>
+                )}
+              />
             </Box>
           </Stack>
 

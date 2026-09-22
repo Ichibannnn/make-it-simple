@@ -97,7 +97,7 @@ export const pmsStyles = {
   selectFilterContainer: {
     width: {
       xs: "100%",
-      md: "30%",
+      md: "auto",
     },
     flexDirection: {
       xs: "column",
@@ -108,13 +108,13 @@ export const pmsStyles = {
   selectSiteContainer: {
     width: {
       xs: "100%",
-      md: "48%",
+      md: "70%",
     },
   },
   selectPmsTypeContainer: {
     width: {
       xs: "100%",
-      md: "48%",
+      md: "70%",
     },
   },
 
@@ -531,5 +531,65 @@ export const pmsStyles = {
     padding: 2,
     flexDirection: "row",
     gap: 1,
+  },
+
+  // Add this style object (put it in pmsStyles.js, or inline here)
+  filterAutocompleteStyles: {
+    width: { xs: "100%", md: 220 },
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: "rgba(255, 255, 255, 0.04)",
+      borderRadius: "8px",
+      color: "#E4E4E7",
+      paddingY: "2px",
+      "& fieldset": {
+        borderColor: "rgba(255, 255, 255, 0.12)",
+      },
+      "&:hover fieldset": {
+        borderColor: "rgba(255, 255, 255, 0.24)",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#8B5CF6",
+        borderWidth: "1px",
+      },
+    },
+    "& .MuiAutocomplete-input": {
+      fontSize: "14px",
+      padding: "6px 4px !important",
+    },
+    "& .MuiAutocomplete-clearIndicator, & .MuiAutocomplete-popupIndicator": {
+      color: "#A1A1AA",
+      "&:hover": {
+        color: "#C4B5FD",
+        backgroundColor: "rgba(139, 92, 246, 0.12)",
+      },
+    },
+  },
+
+  filterPopperStyles: {
+    "& .MuiPaper-root": {
+      backgroundColor: "#1C1C24",
+      border: "1px solid rgba(255, 255, 255, 0.08)",
+      borderRadius: "8px",
+      marginTop: "4px",
+    },
+    "& .MuiAutocomplete-listbox": {
+      padding: "4px",
+      "& .MuiAutocomplete-option": {
+        borderRadius: "6px",
+        color: "#E4E4E7",
+        fontSize: "14px",
+        padding: "8px 10px",
+        '&[aria-selected="true"]': {
+          backgroundColor: "rgba(139, 92, 246, 0.18)",
+        },
+        "&.Mui-focused": {
+          backgroundColor: "rgba(139, 92, 246, 0.28)",
+        },
+      },
+    },
+    "& .MuiAutocomplete-noOptions": {
+      color: "#71717A",
+      fontSize: "14px",
+    },
   },
 };

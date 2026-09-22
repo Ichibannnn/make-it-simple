@@ -1,15 +1,5 @@
-import { Close, FiberManualRecord } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { ChevronRight, Close, DevicesOther, FiberManualRecord } from "@mui/icons-material";
+import { Autocomplete, Button, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { theme } from "../../../theme/theme";
 import useDisclosure from "../../../hooks/useDisclosure";
 
@@ -22,31 +12,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { Controller, useForm } from "react-hook-form";
 import { useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 
-const PmsAddSchedule = ({ openAddSchedule, onCloseAddSchedule }) => {
-  const pmsType = [
-    {
-      title: "Store",
-      description: "Store Maintenance Schedule",
-    },
-    {
-      title: "Desktop",
-      description: "Desktop PMS",
-    },
-    {
-      title: "Laptop",
-      description: "Laptop PMS",
-    },
-    {
-      title: "Weighing Scale",
-      description: "Weighing Scale PMS",
-    },
-  ];
-
-  const {
-    open: openAddScheduleForm,
-    onToggle: onToggleAddScheduleForm,
-    onClose: onCloseAddScheduleForm,
-  } = useDisclosure();
+const PmsAddSchedule = ({ openAddSchedule, onCloseAddSchedule, pmsTypeOptions }) => {
+  const { open: openAddScheduleForm, onToggle: onToggleAddScheduleForm, onClose: onCloseAddScheduleForm } = useDisclosure();
 
   const onOpenAddScheduleFormAction = () => {
     onToggleAddScheduleForm();
@@ -66,6 +33,102 @@ const PmsAddSchedule = ({ openAddSchedule, onCloseAddSchedule }) => {
           onCloseAddSchedule();
         }}
         disableEscapeKeyDown={false}
+        sx={{ backdropFilter: "blur(4px)" }}
+        PaperProps={{
+          sx: {
+            backgroundColor: "#111927",
+            backgroundImage: "none",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "12px",
+            overflow: "hidden",
+          },
+        }}
+      >
+        <DialogContent sx={{ padding: 0 }}>
+          <Stack p={2.5} direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
+            <Stack gap={0.25}>
+              <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#F4F4F5" }}>Select PMS type</Typography>
+              <Typography sx={{ fontSize: "12.5px", color: "#8A8F98" }}>Choose a type to start a new schedule</Typography>
+            </Stack>
+
+            <IconButton
+              onClick={onCloseAddSchedule}
+              size="small"
+              sx={{
+                color: "#8A8F98",
+                mt: -0.5,
+                mr: -0.5,
+                "&:hover": {
+                  color: "#F4F4F5",
+                  backgroundColor: "rgba(255, 255, 255, 0.06)",
+                },
+              }}
+            >
+              <Close fontSize="small" />
+            </IconButton>
+          </Stack>
+
+          <Stack p={2} gap={1}>
+            {pmsTypeOptions.map((item, i) => (
+              <Stack
+                key={i}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                onClick={() => onOpenAddScheduleFormAction()}
+                sx={{
+                  cursor: "pointer",
+                  padding: "12px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid `rgba(255, 255, 255, 0.08)`",
+                  backgroundColor: "rgba(255, 255, 255, 0.02)",
+                  transition: "all 0.15s ease",
+                  "&:hover": {
+                    backgroundColor: "rgba(139, 92, 246, 0.08)",
+                    borderColor: theme.palette.primary.main,
+                  },
+                  "&:hover .pms-type-icon": {
+                    color: theme.palette.primary.main,
+                  },
+                  "&:hover .pms-type-chevron": {
+                    opacity: 1,
+                    transform: "translateX(0)",
+                  },
+                }}
+              >
+                <Stack direction="row" alignItems="center" gap={1.5}>
+                  <DevicesOther className="pms-type-icon" sx={{ fontSize: 20, color: "#8A8F98", transition: "color 0.15s ease" }} />
+                  <Typography sx={{ fontSize: "14px", fontWeight: 500, color: "#E4E4E7" }}>{item.typeName}</Typography>
+                </Stack>
+
+                <ChevronRight
+                  className="pms-type-chevron"
+                  sx={{
+                    fontSize: 18,
+                    color: theme.palette.primary.main,
+                    opacity: 0,
+                    transform: "translateX(-4px)",
+                    transition: "all 0.15s ease",
+                  }}
+                />
+              </Stack>
+            ))}
+          </Stack>
+        </DialogContent>
+      </Dialog>
+
+      {/* <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={openAddSchedule}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseAddSchedule();
+        }}
+        disableEscapeKeyDown={false}
         sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
         PaperProps={{
           style: { overflow: "auto", border: "2px solid #4b586f" },
@@ -73,16 +136,9 @@ const PmsAddSchedule = ({ openAddSchedule, onCloseAddSchedule }) => {
       >
         <DialogContent sx={{ padding: 0 }}>
           <Stack sx={{ borderBottom: "2px solid #4b586f", mb: 2 }}>
-            <Stack
-              p={2}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+            <Stack p={2} direction="row" justifyContent="space-between" alignItems="center">
               <Stack>
-                <Typography sx={{ fontWeight: 600 }}>
-                  Select PMS type to add schedule
-                </Typography>
+                <Typography sx={{ fontWeight: 600 }}>Select PMS type to add schedule</Typography>
               </Stack>
 
               <Stack direction="row" gap={0.5} alignItems="center">
@@ -93,7 +149,7 @@ const PmsAddSchedule = ({ openAddSchedule, onCloseAddSchedule }) => {
             </Stack>
           </Stack>
 
-          {pmsType.map((item, i) => (
+          {pmsTypeOptions.map((item, i) => (
             <Stack
               key={i}
               pr={3}
@@ -118,26 +174,16 @@ const PmsAddSchedule = ({ openAddSchedule, onCloseAddSchedule }) => {
                   },
                 }}
               >
-                <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                  {item.title}
-                </Typography>
-                <Typography
-                  sx={{ fontSize: "13px", color: theme.palette.text.secondary }}
-                >
-                  {item.description}
-                </Typography>
+                <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>{item.typeName}</Typography>
               </Stack>
             </Stack>
           ))}
         </DialogContent>
 
         <DialogActions></DialogActions>
-      </Dialog>
+      </Dialog> */}
 
-      <PmsAddScheduleForm
-        open={openAddScheduleForm}
-        onClose={onCloseAddScheduleForm}
-      />
+      <PmsAddScheduleForm open={openAddScheduleForm} onClose={onCloseAddScheduleForm} />
     </>
   );
 };
@@ -150,10 +196,7 @@ const schema = yup.object().shape({
 export default PmsAddSchedule;
 
 const PmsAddScheduleForm = ({ open, onClose }) => {
-  const [
-    getUser,
-    { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess },
-  ] = useLazyGetUsersQuery();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
 
   const {
     control,
@@ -197,16 +240,9 @@ const PmsAddScheduleForm = ({ open, onClose }) => {
       >
         <DialogContent sx={{ padding: 0 }}>
           <Stack sx={{ borderBottom: "2px solid #4b586f" }}>
-            <Stack
-              p={2}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+            <Stack p={2} direction="row" justifyContent="space-between" alignItems="center">
               <Stack>
-                <Typography sx={{ fontWeight: 600 }}>
-                  Add Store Schedule
-                </Typography>
+                <Typography sx={{ fontWeight: 600 }}>Add Store Schedule</Typography>
               </Stack>
 
               <Stack direction="row" gap={0.5} alignItems="center">
@@ -234,13 +270,7 @@ const PmsAddScheduleForm = ({ open, onClose }) => {
                       value={value}
                       options={userData?.value?.users || []}
                       loading={userIsLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          placeholder="Select Store"
-                          sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                        />
-                      )}
+                      renderInput={(params) => <TextField {...params} placeholder="Select Store" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                       onOpen={() => {
                         if (!userIsSuccess)
                           getUser({
@@ -251,9 +281,7 @@ const PmsAddScheduleForm = ({ open, onClose }) => {
                         onChange(value);
                       }}
                       getOptionLabel={(option) => option?.fullname}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
                       disablePortal
                       disableClearable
                       componentsProps={{
@@ -284,9 +312,7 @@ const PmsAddScheduleForm = ({ open, onClose }) => {
                     <DatePicker
                       value={field.value ? moment(field.value) : null}
                       onChange={(newValue) => {
-                        const formattedValue = newValue
-                          ? moment(newValue).format("YYYY-MM-DD")
-                          : null;
+                        const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
                         field.onChange(formattedValue);
                       }}
                       slotProps={{
@@ -304,15 +330,11 @@ const PmsAddScheduleForm = ({ open, onClose }) => {
                       }}
                       minDate={new moment()}
                       error={!!errors.ScheduleDate}
-                      helperText={
-                        errors.ScheduleDate ? errors.ScheduleDate.message : null
-                      }
+                      helperText={errors.ScheduleDate ? errors.ScheduleDate.message : null}
                     />
                   )}
                 />
-                {errors.ScheduleDate && (
-                  <Typography>{errors.ScheduleDate.message}</Typography>
-                )}
+                {errors.ScheduleDate && <Typography>{errors.ScheduleDate.message}</Typography>}
               </LocalizationProvider>
             </Stack>
           </Stack>

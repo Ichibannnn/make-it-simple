@@ -192,13 +192,13 @@ const Header = () => {
             borderRadius: "20px",
           }}
         >
-          <IconButton onClick={notificationHandler} ml={1}>
+          {/* <IconButton onClick={notificationHandler} ml={1}>
             <Tooltip title="Notifications">
               <Badge color="error" variant="dot" invisible={!showBadge}>
                 <NotificationsNoneOutlined />
               </Badge>
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
 
           <IconButton onClick={menuHandler} ml={1}>
             <Tooltip title="Account">

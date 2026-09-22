@@ -22,56 +22,27 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import { toast } from "sonner";
-
-import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
-import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+import { useEffect, useState } from "react";
+import { pmsTypeStyles as sx } from "./styles/pmsTypeStyles";
+import { showConfirmAction } from "../../../utils/sweetAlert";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
+import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
+import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
+
 import { useArchivePmsTypeMutation, useGetPmsTypeQuery } from "../../../features/api masterlist/pms-type/pmsTypeApi";
 
 import PmsTypeActions from "./PmsTypeActions";
 import PmsTypeDialog from "./PmsTypeDialog";
-import { pmsTypeStyles as sx } from "./styles/pmsTypeStyles";
 
-// --- Static config kept out of render so it isn't rebuilt every pass ---------
 const STATUS_TABS = [
   { value: "", label: "ALL" },
   { value: "true", label: "ACTIVE" },
   { value: "false", label: "ARCHIVED" },
 ];
-
 const TABLE_COLUMNS = ["LINE NO.", "SITE", "NAME", "TOTAL EVALUATION", "LOOKUP SOURCE", "STATUS", "ACTIONS"];
-
-// Shared SweetAlert theme so every confirm dialog looks identical.
-const CONFIRM_DIALOG_THEME = {
-  icon: "warning",
-  color: "white",
-  background: "#111927",
-  showCancelButton: true,
-  confirmButtonColor: "#9e77ed",
-  cancelButtonColor: "#1C2536",
-  heightAuto: false,
-  width: "30em",
-  allowOutsideClick: false,
-  customClass: {
-    container: "custom-container",
-    title: "custom-title",
-    htmlContainer: "custom-text",
-    icon: "custom-icon",
-    confirmButton: "custom-confirm-btn",
-    cancelButton: "custom-cancel-btn",
-  },
-};
-
-const loadingButtonHtml = (label) => `
-  <div class="mui-btn-content">
-    <span class="mui-spinner"></span>
-    <span class="mui-label">${label}</span>
-  </div>`;
 
 const PmsType = () => {
   const theme = useTheme();
@@ -80,11 +51,10 @@ const PmsType = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [editData, setEditData] = useState(null);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
-
-  const [editData, setEditData] = useState(null);
   const { open, onToggle, onClose } = useDisclosure();
 
   const { data, isLoading, isFetching, isSuccess, isError } = useGetPmsTypeQuery({
@@ -96,7 +66,6 @@ const PmsType = () => {
 
   const [archivePmsType] = useArchivePmsTypeMutation();
 
-  // Derived view state — computed once, read many times below.
   const rows = data?.value?.type ?? [];
   const isBusy = isLoading || isFetching;
   const hasRows = isSuccess && !isBusy && rows.length > 0;
@@ -120,32 +89,28 @@ const PmsType = () => {
     onClose();
   };
 
-  // One handler for both archive and restore — the only differences are the copy.
-  const onArchiveAction = ({ id, isActive }) => {
-    const copy = isActive ? { text: "archived", progress: "Archiving...", done: "archived" } : { text: "active", progress: "Restoring...", done: "restored" };
+  const onArchiveAction = async ({ id, isActive }) => {
+    const copy = isActive
+      ? { text: "archived", progress: "Archiving...", done: "archived", buttonText: "Archive" }
+      : { text: "active", progress: "Restoring...", done: "restored", buttonText: "Restore" };
 
-    Swal.fire({
-      ...CONFIRM_DIALOG_THEME,
+    const confirmed = await showConfirmAction({
       title: "Are you sure?",
-      text: `This will move the PMS Type to the ${copy.text} tab.`,
-      preConfirm: async () => {
-        const confirmButton = Swal.getConfirmButton();
-        confirmButton.disabled = true;
-        confirmButton.innerHTML = loadingButtonHtml(copy.progress);
+      icon: "warning",
+      text: `This will move the PMS type to the ${copy.text} tab.`,
+      confirmButtonText: copy.buttonText,
+      loadingText: copy.progress,
 
-        try {
-          await archivePmsType(id).unwrap();
-          toast.success("Success!", { description: `PMS Type ${copy.done} successfully!` });
-          return true; // closes the dialog
-        } catch (error) {
-          Swal.hideLoading();
-          Swal.showValidationMessage(error?.data?.error?.message || "Something went wrong");
-          return false; // keeps the dialog open so the user sees the error
-        }
+      onConfirm: async () => {
+        await archivePmsType(id).unwrap();
       },
-    }).then((result) => {
-      if (result.isConfirmed) Swal.close();
     });
+
+    if (confirmed) {
+      toast.success("Success!", {
+        description: `PMS type ${copy.done} successfully!`,
+      });
+    }
   };
 
   const onEditAction = (row) => {
