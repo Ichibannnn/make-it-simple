@@ -26,6 +26,8 @@ import {
   useTheme,
 } from "@mui/material";
 import {
+  ArrowDownwardRounded,
+  ArrowUpwardRounded,
   CalendarMonthOutlined,
   Check,
   DiscountOutlined,
@@ -94,8 +96,8 @@ const IssueHandlerConcerns = () => {
   const search = useDebounce(searchValue, 500);
 
   const [ticketStatus, setTicketStatus] = useState("For Approval");
-  const [ascendingDate, setAscendingDate] = useState(true);
   const [filterStatus, setFilterStatus] = useState(null);
+  const [ascendingDate, setAscendingDate] = useState(false);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
 
@@ -112,47 +114,18 @@ const IssueHandlerConcerns = () => {
   const [cancelTransferTicket] = useCancelTransferTicketMutation();
   const [resumeIssueHandlerTickets] = useResumeIssueHandlerTicketsMutation();
   const [cancelClosingTickets] = useCancelClosingIssueHandlerTicketsMutation();
-  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] =
-    useConfirmConcernMutation();
+  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] = useConfirmConcernMutation();
 
   const { open: viewOpen, onToggle: viewOnToggle, onClose: viewOnClose } = useDisclosure();
   const { open: addTicketOpen, onToggle: addTicketOnToggle, onClose: addTicketOnClose } = useDisclosure();
   const { open: holdTicketOpen, onToggle: holdTicketOnToggle, onClose: holdTicketOnClose } = useDisclosure();
-  const {
-    open: manageHoldTicketOpen,
-    onToggle: manageHoldTicketOnToggle,
-    onClose: manageHoldTicketOnClose,
-  } = useDisclosure();
-  const {
-    open: closeTicketOpen,
-    onToggle: closeTicketOnToggle,
-    onClose: closeTicketOnClose,
-  } = useDisclosure();
-  const {
-    open: manageTicketOpen,
-    onToggle: manageTicketOnToggle,
-    onClose: manageTicketOnClose,
-  } = useDisclosure();
-  const {
-    open: transferTicketOpen,
-    onToggle: transferTicketOnToggle,
-    onClose: transferTicketOnClose,
-  } = useDisclosure();
-  const {
-    open: rejectTransferOpen,
-    onToggle: rejectTransferOnToggle,
-    onClose: rejectTransferOnClose,
-  } = useDisclosure();
-  const {
-    open: manageTransferOpen,
-    onToggle: manageTransferOnToggle,
-    onClose: manageTransferOnClose,
-  } = useDisclosure();
-  const {
-    open: approveTransferOpen,
-    onToggle: approveTransferOnToggle,
-    onClose: approveTransferOnClose,
-  } = useDisclosure();
+  const { open: manageHoldTicketOpen, onToggle: manageHoldTicketOnToggle, onClose: manageHoldTicketOnClose } = useDisclosure();
+  const { open: closeTicketOpen, onToggle: closeTicketOnToggle, onClose: closeTicketOnClose } = useDisclosure();
+  const { open: manageTicketOpen, onToggle: manageTicketOnToggle, onClose: manageTicketOnClose } = useDisclosure();
+  const { open: transferTicketOpen, onToggle: transferTicketOnToggle, onClose: transferTicketOnClose } = useDisclosure();
+  const { open: rejectTransferOpen, onToggle: rejectTransferOnToggle, onClose: rejectTransferOnClose } = useDisclosure();
+  const { open: manageTransferOpen, onToggle: manageTransferOnToggle, onClose: manageTransferOnClose } = useDisclosure();
+  const { open: approveTransferOpen, onToggle: approveTransferOnToggle, onClose: approveTransferOnClose } = useDisclosure();
   const { open: printTicketOpen, onClose: printTicketOnClose } = useDisclosure();
   const { open: rejectDateOpen, onToggle: rejectDateOnToggle, onClose: rejectDateOnClose } = useDisclosure();
 
@@ -296,11 +269,7 @@ const IssueHandlerConcerns = () => {
           const description = form.getTextField("description");
           const resolution = form.getTextField("resolution");
 
-          const supportTechFields = [
-            form.getTextField("support_tech_one"),
-            form.getTextField("support_tech_two"),
-            form.getTextField("support_tech_three"),
-          ];
+          const supportTechFields = [form.getTextField("support_tech_one"), form.getTextField("support_tech_two"), form.getTextField("support_tech_three")];
 
           const issue_handler = form.getTextField("issue_handler");
           const ticket_number = form.getTextField("ticket_number");
@@ -699,9 +668,7 @@ const IssueHandlerConcerns = () => {
   };
 
   const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) =>
-      prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item],
-    );
+    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
   };
 
   const onDialogClose = () => {
@@ -750,14 +717,7 @@ const IssueHandlerConcerns = () => {
           </Stack>
           <Stack justifyItems="space-between" direction="row">
             <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button
-                size={isScreenSmall ? "small" : "medium"}
-                variant="contained"
-                color="primary"
-                startIcon={<DiscountOutlined />}
-                onClick={addTicketOnToggle}
-                sx={{ fontSize: "11px" }}
-              >
+              <Button size={isScreenSmall ? "small" : "medium"} variant="contained" color="primary" startIcon={<DiscountOutlined />} onClick={addTicketOnToggle} sx={{ fontSize: "11px" }}>
                 Add Ticket
               </Button>
             </Stack>
@@ -787,13 +747,7 @@ const IssueHandlerConcerns = () => {
             </Stack>
 
             <Stack direction="row" gap={0.5}>
-              <LoadingButton
-                variant="contained"
-                color="success"
-                onClick={onSelectedConfirmAction}
-                loading={confirmConcernIsLoading || confirmConcernIsFetching}
-                startIcon={<Check />}
-              >
+              <LoadingButton variant="contained" color="success" onClick={onSelectedConfirmAction} loading={confirmConcernIsLoading || confirmConcernIsFetching} startIcon={<Check />}>
                 Confirm
               </LoadingButton>
             </Stack>
@@ -1129,14 +1083,7 @@ const IssueHandlerConcerns = () => {
 
             <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center" }}>
               {ticketStatus === "" && (
-                <TicketFiltering
-                  filterStatus={filterStatus}
-                  setFilterStatus={setFilterStatus}
-                  dateFrom={dateFrom}
-                  setDateFrom={setDateFrom}
-                  dateTo={dateTo}
-                  setDateTo={setDateTo}
-                />
+                <TicketFiltering filterStatus={filterStatus} setFilterStatus={setFilterStatus} dateFrom={dateFrom} setDateFrom={setDateFrom} dateTo={dateTo} setDateTo={setDateTo} />
               )}
             </Stack>
           </Stack>
@@ -1180,12 +1127,8 @@ const IssueHandlerConcerns = () => {
                   }}
                 >
                   <Checkbox
-                    indeterminate={
-                      selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length
-                    }
-                    checked={
-                      selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length
-                    }
+                    indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length}
+                    checked={selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length}
                     onChange={handleSelectAll}
                     inputProps={{ "aria-label": "select all tickets" }}
                   />
@@ -1354,13 +1297,7 @@ const IssueHandlerConcerns = () => {
                                 <Chip
                                   variant="filled"
                                   size="small"
-                                  icon={
-                                    item?.closed_At !== null ? (
-                                      <CalendarMonthOutlined fontSize="small" color="primary" />
-                                    ) : (
-                                      ""
-                                    )
-                                  }
+                                  icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
                                   label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
                                   sx={{
                                     fontSize: "12px",
@@ -1415,12 +1352,7 @@ const IssueHandlerConcerns = () => {
                                     size="small"
                                     label={item.remarks ? item.remarks : ""}
                                     sx={{
-                                      backgroundColor:
-                                        item.remarks === null
-                                          ? "transparent"
-                                          : item.remarks === "Ticket Closed"
-                                            ? "#00913c"
-                                            : theme.palette.error.main,
+                                      backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
                                       color: "#ffffff",
                                       borderRadius: "none",
                                       maxWidth: "300px",
@@ -1517,10 +1449,7 @@ const IssueHandlerConcerns = () => {
                                   }
                                   sx={{
                                     fontSize: "12px",
-                                    backgroundColor:
-                                      item?.closed_Status === "On-Time" || item?.closed_Status === "Delay"
-                                        ? theme.palette.bgForm.black1
-                                        : "transparent",
+                                    backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
                                     color: theme.palette.text.main,
                                     fontWeight: 800,
                                   }}
@@ -1599,11 +1528,7 @@ const IssueHandlerConcerns = () => {
 
                 {isError && (
                   <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img
-                      src={somethingWentWrong}
-                      alt="Something Went Wrong"
-                      className="something-went-wrong-table"
-                    />
+                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h6" color="#EDF2F7" align="center">
                       Something went wrong.
                     </Typography>
@@ -1667,13 +1592,8 @@ const IssueHandlerConcerns = () => {
                           align="center"
                         >
                           <Checkbox
-                            indeterminate={
-                              selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length
-                            }
-                            checked={
-                              selectableTickets.length > 0 &&
-                              selectedTickets.length === selectableTickets.length
-                            }
+                            indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectableTickets.length}
+                            checked={selectableTickets.length > 0 && selectedTickets.length === selectableTickets.length}
                             onChange={handleSelectAll}
                             inputProps={{ "aria-label": "select all tickets" }}
                           />
@@ -1683,21 +1603,22 @@ const IssueHandlerConcerns = () => {
                       <TableCell
                         sx={{
                           background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
                         }}
                       >
-                        TICKET NO.
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            dispatch(setAscending(!ascending));
-                            // setAscendingDate(!ascendingDate);
-                          }}
-                        >
-                          <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
-                        </IconButton>
+                        <Stack sx={{ flexDirection: "row", gap: 0.5, alignItems: "center" }}>
+                          <Typography sx={{ color: "#D65DB1", fontWeight: 700, fontSize: "12px" }}>TICKET NO.</Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              dispatch(setAscending(!ascending));
+
+                              // if
+                              // setAscendingDate(!ascendingDate);
+                            }}
+                          >
+                            {ascending ? <ArrowUpwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                          </IconButton>
+                        </Stack>
                       </TableCell>
 
                       <TableCell
@@ -1743,17 +1664,19 @@ const IssueHandlerConcerns = () => {
                           fontSize: "12px",
                         }}
                       >
-                        TARGET DATE
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            setAscendingDate(!ascendingDate);
-                            dispatch(setAscending(!ascending));
-                            refetch();
-                          }}
-                        >
-                          <SwapVertOutlined sx={{ color: "#D65DB1", fontSize: "25px" }} />
-                        </IconButton>
+                        <Stack sx={{ flexDirection: "row", gap: 0.5, alignItems: "center" }}>
+                          <Typography sx={{ color: "#D65DB1", fontWeight: 700, fontSize: "12px" }}>TARGET DATE</Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setAscendingDate(!ascendingDate);
+                              // dispatch(setAscending(!ascending));
+                              // refetch();
+                            }}
+                          >
+                            {ascendingDate ? <ArrowUpwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                          </IconButton>
+                        </Stack>
                       </TableCell>
 
                       {(ticketStatus === "Closed" || ticketStatus === "") && (
@@ -2073,12 +1996,7 @@ const IssueHandlerConcerns = () => {
                                       size="small"
                                       label={item.remarks ? item.remarks : ""}
                                       sx={{
-                                        backgroundColor:
-                                          item.remarks === null
-                                            ? "transparent"
-                                            : item.remarks === "Ticket Closed"
-                                              ? "#00913c"
-                                              : theme.palette.error.main,
+                                        backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
                                         color: "#ffffff",
                                         borderRadius: "none",
                                         maxWidth: "300px",
@@ -2096,11 +2014,7 @@ const IssueHandlerConcerns = () => {
                                     fontSize: "12px",
                                     fontWeight: 500,
                                     "&:hover": {
-                                      background:
-                                        ticketStatus === "Closed" &&
-                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time"
-                                          ? ""
-                                          : "",
+                                      background: ticketStatus === "Closed" && item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? "" : "",
                                       color: "#EDF2F7",
                                     },
                                   }}
@@ -2176,8 +2090,7 @@ const IssueHandlerConcerns = () => {
                                     sx={{
                                       fontSize: "12px",
                                       backgroundColor:
-                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ||
-                                        item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" || item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
                                           ? theme.palette.bgForm.black1
                                           : "transparent",
                                       color: theme.palette.text.main,
@@ -2253,11 +2166,7 @@ const IssueHandlerConcerns = () => {
                     {isError && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img
-                            src={somethingWentWrong}
-                            alt="Something Went Wrong"
-                            className="something-went-wrong-table"
-                          />
+                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             Something went wrong.
                           </Typography>
@@ -2279,11 +2188,7 @@ const IssueHandlerConcerns = () => {
                     {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          <img
-                            src={noRecordsFound}
-                            alt="No Records Found"
-                            className="norecords-found-table"
-                          />
+                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                           <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                             No records found.
                           </Typography>
@@ -2328,12 +2233,7 @@ const IssueHandlerConcerns = () => {
         )}
 
         {addTicketOpen && <AddTicketDialog open={addTicketOpen} onClose={addTicketOnClose} />}
-        <IssueHandlerClosingDialog
-          data={closeTicketData}
-          open={closeTicketOpen}
-          onClose={onDialogClose}
-          viewOnClose={viewOnClose}
-        />
+        <IssueHandlerClosingDialog data={closeTicketData} open={closeTicketOpen} onClose={onDialogClose} viewOnClose={viewOnClose} />
 
         <RejectDateDialog
           data={rejectDateData}
@@ -2380,13 +2280,7 @@ const IssueHandlerConcerns = () => {
           />
         )}
 
-        {rejectTransferOpen && (
-          <RejectTransfer
-            data={transferTicketData}
-            open={rejectTransferOpen}
-            onClose={rejectTransferOnClose}
-          />
-        )}
+        {rejectTransferOpen && <RejectTransfer data={transferTicketData} open={rejectTransferOpen} onClose={rejectTransferOnClose} />}
 
         {holdTicketOpen && (
           <IssueHandlerHoldDialog

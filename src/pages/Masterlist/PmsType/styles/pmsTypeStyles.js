@@ -253,4 +253,25 @@ export const pmsTypeStyles = {
       color: "black",
     },
   },
+
+  // Add Schedule Dialog
+  selectPmsTypeCards: {
+    cursor: "pointer",
+    padding: "12px 14px",
+    borderRadius: "8px",
+    border: "1px solid `rgba(255, 255, 255, 0.08)`",
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    transition: "all 0.15s ease",
+    "&:hover": {
+      backgroundColor: "rgba(139, 92, 246, 0.08)",
+      borderColor: theme.palette.primary.main,
+    },
+    "&:hover .pms-type-icon": {
+      color: theme.palette.primary.main,
+    },
+    "&:hover .pms-type-chevron": {
+      opacity: 1,
+      transform: "translateX(0)",
+    },
+  },
 };
