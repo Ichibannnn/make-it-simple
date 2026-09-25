@@ -1,19 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  FormHelperText,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, Divider, FormHelperText, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { Add, AttachFileOutlined, CheckOutlined, Close, FiberManualRecord } from "@mui/icons-material";
 
 import { useEffect, useRef, useState } from "react";
@@ -25,15 +11,9 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 
-import {
-  useDeleteRequestorAttachmentMutation,
-  useLazyGetTechniciansQuery,
-} from "../../../features/api_request/concerns/concernApi";
+import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
@@ -48,11 +28,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
   closingTicketId: yup.number(),
-  resolution: yup
-    .string()
-    .min(20, "Resolution must be more than 20 character long")
-    .required("This field is required")
-    .label("Resolution"),
+  resolution: yup.string().min(20, "Resolution must be more than 20 character long").required("This field is required").label("Resolution"),
   AddClosingAttachments: yup.array().nullable(),
 
   ChannelId: yup.object().required().label("Channel"),
@@ -81,25 +57,14 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
   // useSignalRConnection();
 
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
-    useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] =
-    useLazyGetSubCategoryArrayQuery();
-  const [
-    getConcernCategory,
-    { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess },
-  ] = useLazyGetCategoryConcernQuery();
-  const [
-    getTechnicians,
-    { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess },
-  ] = useLazyGetTechniciansQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryArrayQuery();
+  const [getConcernCategory, { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess }] = useLazyGetCategoryConcernQuery();
+  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [
-    closeIssueHandlerTickets,
-    { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching },
-  ] = useCloseIssueHandlerTicketsMutation();
+  const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -138,9 +103,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       file,
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name),
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -231,18 +194,12 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
         payload.append("Resolution", formData.resolution);
         payload.append("Notes", formData.Notes);
 
-        payload.append(
-          "BackDate",
-          formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "",
-        );
+        payload.append("BackDate", formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "");
         payload.append("BackDateRemarks", formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "");
 
         const category = formData.CategoryId;
         for (let i = 0; i < category.length; i++) {
-          payload.append(
-            `ClosingTicketCategories[${i}].ticketCategoryId`,
-            category[i].ticketCategoryId || "",
-          );
+          payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
           payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
         }
 
@@ -253,10 +210,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
         const subCategory = formData.SubCategoryId;
         for (let i = 0; i < subCategory.length; i++) {
-          payload.append(
-            `ClosingSubTicketCategories[${i}].ticketSubCategoryId`,
-            subCategory[i]?.ticketSubCategoryId || "",
-          );
+          payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
           payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
         }
 
@@ -267,10 +221,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
         const technicians = formData.Technicians;
         for (let i = 0; i < technicians.length; i++) {
-          payload.append(
-            `AddClosingTicketTechnicians[${i}].ticketTechnicianId`,
-            technicians[i].ticketTechnicianId || "",
-          );
+          payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, technicians[i].ticketTechnicianId || "");
           payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
         }
 
@@ -330,18 +281,8 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
       setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
 
-      setValue(
-        "ClosingDate",
-        data?.getForClosingTickets?.[0]?.backDate
-          ? moment(data?.getForClosingTickets?.[0]?.backDate).format("YYYY-MM-DD")
-          : null,
-      );
-      setValue(
-        "BackdateRemarks",
-        data?.getForClosingTickets?.[0]?.backDateRemarks !== ""
-          ? data?.getForClosingTickets?.[0]?.backDateRemarks
-          : "",
-      );
+      setValue("ClosingDate", data?.getForClosingTickets?.[0]?.backDate ? moment(data?.getForClosingTickets?.[0]?.backDate).format("YYYY-MM-DD") : null);
+      setValue("BackdateRemarks", data?.getForClosingTickets?.[0]?.backDateRemarks !== "" ? data?.getForClosingTickets?.[0]?.backDateRemarks : "");
 
       setValue("ChannelId", {
         id: data?.channelId,
@@ -475,15 +416,6 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
   };
 
   const minDate = new moment().subtract(1, "days");
-  const closingDate = watch("ClosingDate");
-
-  const isClosingDateInvalid = closingDate
-    ? moment(closingDate).isBefore(minDate, "day") || moment(closingDate).isAfter(moment(), "day")
-    : true;
-
-  const today = new moment();
-  const isTodayAfterTarget = today.isAfter(data?.getForClosingTickets?.[0]?.backDate);
-  const isTodayAndTargetSame = today.isSame(data?.getForClosingTickets?.[0]?.backDate, "day");
 
   return (
     <>
@@ -512,14 +444,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
 
             <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
 
-            <Stack
-              id="closeticket"
-              component="form"
-              direction="row"
-              gap={1}
-              sx={{ width: "100%", height: "100%" }}
-              onSubmit={handleSubmit(onSubmitAction)}
-            >
+            <Stack id="closeticket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
                 <Stack direction="row" gap={0.5} alignItems="center">
@@ -564,9 +489,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         Ticket Description:
                       </Typography>
 
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                      >
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                         {data?.concern_Description?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -588,11 +511,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         Target Date:
                       </Typography>
 
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                      >
-                        {moment(data?.target_Date).format("LL")}
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
                     </Stack>
                   </>
                 ) : (
@@ -621,9 +540,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       </Box>
                       <Box sx={{ width: "5%" }} />
                       <Box width={{ width: "75%", ml: 2 }}>
-                        <Typography
-                          sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                        >
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
                           {data?.concern_Description?.split("\r\n").map((line, index) => (
                             <span key={index}>
                               {line}
@@ -657,11 +574,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       </Box>
                       <Box sx={{ width: "5%" }} />
                       <Box width={{ width: "75%", ml: 2 }}>
-                        <Typography
-                          sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                        >
-                          {moment(data?.target_Date).format("LL")}
-                        </Typography>
+                        <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.target_Date).format("LL")}</Typography>
                       </Box>
                     </Stack>
                   </>
@@ -675,9 +588,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       color: theme.palette.primary.main,
                     }}
                   >
-                    {data?.getForClosingTickets?.[0]?.isApprove === false
-                      ? "Manage Ticket Form"
-                      : "View Ticket Form"}
+                    {data?.getForClosingTickets?.[0]?.isApprove === false ? "Manage Ticket Form" : "View Ticket Form"}
                   </Typography>
 
                   <Stack gap={0.5} mt={2}>
@@ -704,19 +615,9 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                options={
-                                  categoryData?.value?.category.filter(
-                                    (item) => item.channelId === watch("ChannelId")?.id,
-                                  ) || []
-                                }
+                                options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
                                 loading={categoryIsLoading}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    placeholder="Category"
-                                    sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                  />
-                                )}
+                                renderInput={(params) => <TextField {...params} placeholder="Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                                 onOpen={() => {
                                   if (!categoryIsSuccess)
                                     getCategory({
@@ -739,9 +640,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 }}
                                 getOptionLabel={(option) => option.category_Description || ""}
                                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                                getOptionDisabled={(option) =>
-                                  watch("CategoryId").some((item) => item.id === option.id)
-                                }
+                                getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                                 sx={{
                                   flex: 2,
                                 }}
@@ -787,25 +686,13 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 value={value}
                                 options={subCategoryData?.value || []}
                                 loading={subCategoryIsLoading}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    placeholder="Sub Category"
-                                    sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                  />
-                                )}
+                                renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}
                                 getOptionLabel={(option) => option?.sub_Category_Description || ""}
-                                isOptionEqualToValue={(option, value) =>
-                                  option?.subCategoryId === value?.subCategoryId
-                                }
-                                getOptionDisabled={(option) =>
-                                  watch("SubCategoryId").some(
-                                    (item) => item.subCategoryId === option.subCategoryId,
-                                  )
-                                }
+                                isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                                getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                                 noOptionsText={"No sub category available"}
                                 sx={{
                                   flex: 2,
@@ -854,13 +741,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                 value={value}
                                 options={concernCategoryData?.value?.category || []}
                                 loading={concernCategoryIsLoading}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    placeholder="Concern Category"
-                                    sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                  />
-                                )}
+                                renderInput={(params) => <TextField {...params} placeholder="Concern Category" sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }} />}
                                 onOpen={() => {
                                   if (!concernCategoryIsSuccess)
                                     getConcernCategory({
@@ -895,120 +776,110 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                       </Stack>
                     </Stack>
 
-                    {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
-                      data?.getForClosingTickets?.[0]?.backDate && (
-                        <>
-                          <Stack gap={0.5} sx={{ width: "100%" }}>
-                            <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                              <Typography
-                                sx={{
-                                  fontSize: "14px",
-                                }}
-                              >
-                                Backdate (Optional):
-                              </Typography>
-                              {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
-                            </Stack>
-
-                            <LocalizationProvider dateAdapter={AdapterMoment}>
-                              <Controller
-                                control={control}
-                                name="ClosingDate"
-                                render={({ field }) => (
-                                  <DatePicker
-                                    value={field.value ? moment(field.value) : null}
-                                    onChange={(newValue) => {
-                                      const formattedValue = newValue
-                                        ? moment(newValue).format("YYYY-MM-DD")
-                                        : null;
-                                      field.onChange(formattedValue);
-                                    }}
-                                    slotProps={{
-                                      textField: {
-                                        variant: "outlined",
-                                        sx: {
-                                          "& .MuiInputBase-input": {
-                                            padding: "8.5px 14px",
-                                          },
-                                          "& .MuiOutlinedInput-root": {
-                                            fontSize: "13px",
-                                          },
-                                        },
-                                      },
-                                    }}
-                                    maxDate={new moment()}
-                                    minDate={minDate}
-                                    error={!!errors.ClosingDate}
-                                    helperText={errors.ClosingDate ? errors.ClosingDate.message : null}
-                                    disabled={
-                                      data?.getForClosingTickets?.[0]?.isApprove === true ? true : false
-                                    }
-                                  />
-                                )}
-                              />
-                            </LocalizationProvider>
+                    {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && data?.getForClosingTickets?.[0]?.backDate && (
+                      <>
+                        <Stack gap={0.5} sx={{ width: "100%" }}>
+                          <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                            <Typography
+                              sx={{
+                                fontSize: "14px",
+                              }}
+                            >
+                              Backdate (Optional):
+                            </Typography>
+                            {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
                           </Stack>
 
-                          <Stack gap={0.5} sx={{ width: "100%" }}>
-                            <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                              <Typography
-                                sx={{
-                                  fontSize: "14px",
-                                }}
-                              >
-                                Backdate Remarks:
-                              </Typography>
-                              <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                            </Stack>
-
+                          <LocalizationProvider dateAdapter={AdapterMoment}>
                             <Controller
                               control={control}
-                              name="BackdateRemarks"
-                              render={({ field: { ref, value, onChange } }) => {
-                                return (
-                                  <TextField
-                                    inputRef={ref}
-                                    size="medium"
-                                    value={value}
-                                    onChange={onChange}
-                                    autoComplete="off"
-                                    rows={2}
-                                    multiline
-                                    InputProps={{
-                                      style: {
-                                        fontSize: "13px",
+                              name="ClosingDate"
+                              render={({ field }) => (
+                                <DatePicker
+                                  value={field.value ? moment(field.value) : null}
+                                  onChange={(newValue) => {
+                                    const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                    field.onChange(formattedValue);
+                                  }}
+                                  slotProps={{
+                                    textField: {
+                                      variant: "outlined",
+                                      sx: {
+                                        "& .MuiInputBase-input": {
+                                          padding: "8.5px 14px",
+                                        },
+                                        "& .MuiOutlinedInput-root": {
+                                          fontSize: "13px",
+                                        },
                                       },
-                                    }}
-                                    InputLabelProps={{
-                                      style: {
-                                        fontSize: "13px",
-                                      },
-                                    }}
-                                    disabled={
-                                      !watch("ClosingDate") ||
-                                      data?.getForClosingTickets?.[0]?.isApprove === true
-                                        ? true
-                                        : false
-                                    }
-                                    sx={{
-                                      "& .disabled": {
-                                        backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
-                                        cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
-                                      },
-                                    }}
-                                  />
-                                );
-                              }}
+                                    },
+                                  }}
+                                  maxDate={new moment()}
+                                  minDate={minDate}
+                                  error={!!errors.ClosingDate}
+                                  helperText={errors.ClosingDate ? errors.ClosingDate.message : null}
+                                  disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
+                                />
+                              )}
                             />
+                          </LocalizationProvider>
+                        </Stack>
 
-                            {errors.BackdateRemarks && (
-                              <Typography color="error" sx={{ fontSize: "12px" }}>
-                                {errors.BackdateRemarks.message}
-                              </Typography>
-                            )}
+                        <Stack gap={0.5} sx={{ width: "100%" }}>
+                          <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                            <Typography
+                              sx={{
+                                fontSize: "14px",
+                              }}
+                            >
+                              Backdate Remarks:
+                            </Typography>
+                            <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                           </Stack>
-                        </>
-                      )}
+
+                          <Controller
+                            control={control}
+                            name="BackdateRemarks"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <TextField
+                                  inputRef={ref}
+                                  size="medium"
+                                  value={value}
+                                  onChange={onChange}
+                                  autoComplete="off"
+                                  rows={2}
+                                  multiline
+                                  InputProps={{
+                                    style: {
+                                      fontSize: "13px",
+                                    },
+                                  }}
+                                  InputLabelProps={{
+                                    style: {
+                                      fontSize: "13px",
+                                    },
+                                  }}
+                                  disabled={!watch("ClosingDate") || data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
+                                  sx={{
+                                    "& .disabled": {
+                                      backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
+                                      cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
+                                    },
+                                  }}
+                                />
+                              );
+                            }}
+                          />
+
+                          {errors.BackdateRemarks && (
+                            <Typography color="error" sx={{ fontSize: "12px" }}>
+                              {errors.BackdateRemarks.message}
+                            </Typography>
+                          )}
+                        </Stack>
+                      </>
+                    )}
 
                     <Stack mt={2} gap={0.5}>
                       <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
@@ -1095,18 +966,10 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                     }
                                   }}
                                   getOptionLabel={(option) => option.technician_Name || ""}
-                                  isOptionEqualToValue={(option, val) =>
-                                    option.technicianId === val.technicianId
-                                  }
-                                  getOptionDisabled={(option) =>
-                                    watch("Technicians").some(
-                                      (item) => item.technicianId === option.technicianId,
-                                    )
-                                  }
+                                  isOptionEqualToValue={(option, val) => option.technicianId === val.technicianId}
+                                  getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
                                   fullWidth
-                                  disabled={
-                                    data?.getForClosingTickets?.[0]?.isApprove === true ? true : false
-                                  }
+                                  disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                                   disablePortal
                                   disableClearable
                                   componentsProps={{
@@ -1120,11 +983,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                   }}
                                 />
 
-                                {value.length >= 3 && (
-                                  <FormHelperText sx={{ color: theme.palette.warning.main }}>
-                                    You can only select up to 3 technicians.
-                                  </FormHelperText>
-                                )}
+                                {value.length >= 3 && <FormHelperText sx={{ color: theme.palette.warning.main }}>You can only select up to 3 technicians.</FormHelperText>}
                               </Stack>
                             )}
                           />
@@ -1183,14 +1042,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         </Typography>
 
                         {data?.getForClosingTickets?.[0]?.isApprove === false && (
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="warning"
-                            startIcon={<Add />}
-                            onClick={handleUploadButtonClick}
-                            sx={{ padding: "2px", borderRadius: "2px" }}
-                          >
+                          <Button size="small" variant="contained" color="warning" startIcon={<Add />} onClick={handleUploadButtonClick} sx={{ padding: "2px", borderRadius: "2px" }}>
                             <Typography sx={{ fontSize: "12px" }}>Add</Typography>
                           </Button>
                         )}
@@ -1208,9 +1060,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                         >
                           <Stack direction="row" gap={0.5} justifyContent="center">
                             <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
-                            <Typography sx={{ color: theme.palette.text.secondary }}>
-                              No attached file
-                            </Typography>
+                            <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
                           </Stack>
                         </Stack>
                       ) : (
@@ -1275,19 +1125,13 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                                       sx={{
                                         fontSize: "14px",
                                         fontWeight: 500,
-                                        color: !!fileName.ticketAttachmentId
-                                          ? theme.palette.success.main
-                                          : theme.palette.primary.main,
+                                        color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                       }}
                                     >
-                                      {!!fileName.ticketAttachmentId
-                                        ? "Attached file"
-                                        : "Uploaded the file successfully"}
+                                      {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
                                     </Typography>
 
-                                    {!!fileName.ticketAttachmentId && (
-                                      <CheckOutlined color="success" fontSize="small" />
-                                    )}
+                                    {!!fileName.ticketAttachmentId && <CheckOutlined color="success" fontSize="small" />}
                                   </Box>
                                 </Box>
 
@@ -1324,10 +1168,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                               const files = Array.from(event.target.files);
                               files[0].ticketAttachmentId = ticketAttachmentId;
 
-                              onChange([
-                                ...files,
-                                ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                              ]);
+                              onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
 
                               setAttachments((prevFiles) => [
                                 ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
@@ -1344,9 +1185,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                               handleAttachments(event);
                               const files = Array.from(event.target.files);
 
-                              const uniqueNewFiles = files.filter(
-                                (item) => !value.some((file) => file.name === item.name),
-                              );
+                              const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
                               onChange([...value, ...uniqueNewFiles]);
                               fileInputRef.current.value = "";
@@ -1373,10 +1212,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
                 variant="contained"
                 loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
                 disabled={
-                  !watch("resolution") ||
-                  watch("CategoryId").length === 0 ||
-                  watch("SubCategoryId").length === 0 ||
-                  (watch("ClosingDate") && !watch("BackdateRemarks"))
+                  !watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || (watch("ClosingDate") && !watch("BackdateRemarks"))
                   // (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
                   // isTodayAfterTarget &&
                   // !isTodayAndTargetSame
@@ -1397,9 +1233,7 @@ const ManageTicketDialog = ({ data, open, onClose }) => {
       {selectedImage && (
         <>
           <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-            <DialogContent sx={{ height: "auto" }}>
-              {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
-            </DialogContent>
+            <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
             <DialogActions>
               <Button onClick={handleViewClose}>Close</Button>
             </DialogActions>

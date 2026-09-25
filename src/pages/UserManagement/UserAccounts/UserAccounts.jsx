@@ -39,6 +39,8 @@ import UserAccountDialog from "./UserAccountDialog";
 import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation, useGetPendingUsersQuery } from "../../../features/user_management_api/user/userApi";
 import PendingAccountsTab from "./PendingAccounts/PendingAccountsTab";
 
+const TABLE_COLUMNS = ["LINE NO.", "SITE", "NAME", "TOTAL EVALUATION", "LOOKUP SOURCE", "STATUS", "ACTIONS"];
+
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);

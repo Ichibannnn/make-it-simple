@@ -802,7 +802,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               !watch("locationId")
             }
           >
-            Create account
+            {!data ? `Create account` : `Save`}
           </LoadingButton>
         </DialogActions>
       </Dialog>

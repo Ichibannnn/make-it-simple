@@ -97,7 +97,7 @@ const IssueHandlerConcerns = () => {
 
   const [ticketStatus, setTicketStatus] = useState("For Approval");
   const [filterStatus, setFilterStatus] = useState(null);
-  const [ascendingDate, setAscendingDate] = useState(false);
+  const [ascendingDate, setAscendingDate] = useState(true);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
 
@@ -2302,6 +2302,7 @@ const IssueHandlerConcerns = () => {
             }}
           />
         )}
+
         {printTicketOpen && (
           <PrintServiceReport
             data={printData}
