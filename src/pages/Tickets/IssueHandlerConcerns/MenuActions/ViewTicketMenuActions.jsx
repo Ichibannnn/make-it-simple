@@ -1,11 +1,28 @@
-import { FileDownloadOutlined, MoreHoriz, VisibilityOutlined } from "@mui/icons-material";
-import { CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import {
+  FileDownloadOutlined,
+  MoreHoriz,
+  VisibilityOutlined,
+} from "@mui/icons-material";
+import {
+  CircularProgress,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 
 import { useRef } from "react";
 import useDisclosure from "../../../../hooks/useDisclosure";
 import { useEffect } from "react";
 
-const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
+const ViewTicketMenuActions = ({
+  fileName,
+  onView,
+  onDownload,
+  isImageFile,
+  viewIsLoading,
+  downloadIsLoading,
+}) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -48,16 +65,32 @@ const ViewTicketMenuActions = ({ fileName, onView, onDownload, isImageFile, view
         <MoreHoriz />
       </IconButton>
 
-      <Menu anchorEl={ref.current} open={open} onClose={onToggle} disableAutoFocusItem>
-        {isImageFile(fileName.name) && (
+      <Menu
+        anchorEl={ref.current}
+        open={open}
+        onClose={onToggle}
+        disableAutoFocusItem
+      >
+        {/* {isImageFile(fileName.name) && (
           <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
             <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
             View
           </MenuItem>
-        )}
+        )} */}
 
-        <MenuItem onClick={(e) => handleMenuDownloadClick(e, () => onDownloadAction(fileName))} disabled={downloadIsLoading}>
-          <ListItemIcon>{downloadIsLoading ? <CircularProgress size={18} /> : <FileDownloadOutlined fontSize="small" />}</ListItemIcon>
+        <MenuItem
+          onClick={(e) =>
+            handleMenuDownloadClick(e, () => onDownloadAction(fileName))
+          }
+          disabled={downloadIsLoading}
+        >
+          <ListItemIcon>
+            {downloadIsLoading ? (
+              <CircularProgress size={18} />
+            ) : (
+              <FileDownloadOutlined fontSize="small" />
+            )}
+          </ListItemIcon>
           Download
         </MenuItem>
       </Menu>
