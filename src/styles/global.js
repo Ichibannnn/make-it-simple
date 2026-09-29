@@ -64,4 +64,30 @@ export const global = {
   dialogContent: {
     padding: 0,
   },
+
+  // Custom Table
+  table: {
+    borderBottom: "none",
+    fontSize: { xs: "10px", sm: "12px", md: "14px" },
+  },
+  tableHead: {
+    whiteSpace: "nowrap",
+  },
+  headCell: {
+    background: "#111927",
+    color: "#D65DB1",
+    fontWeight: 700,
+    fontSize: "12px",
+    // letterSpacing: "0.8px",
+    // textTransform: "uppercase",
+    paddingY: "14px",
+  },
+  bodyCell: {
+    color: "#EDF2F7",
+    // background: "#1A222F",
+    fontSize: "12px",
+    fontWeight: 500,
+    border: "2px solid #293242",
+    paddingY: "14px",
+  },
 };

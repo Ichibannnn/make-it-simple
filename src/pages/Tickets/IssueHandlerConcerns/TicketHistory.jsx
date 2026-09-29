@@ -1,5 +1,6 @@
 import moment from "moment";
 import { theme } from "../../../theme/theme";
+import { ticketStyle as sx } from "./style/ticketStyle";
 
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Typography, useMediaQuery } from "@mui/material";
@@ -16,11 +17,11 @@ const TicketHistory = ({ data }) => {
 
   return (
     <Stack sx={{ width: "100%" }}>
-      <Accordion sx={{ background: theme.palette.bgForm.black2, padding: 1 }}>
+      <Accordion defaultExpanded sx={sx.accordionHistory}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
-          <Stack direction="row" gap={0.5} sx={{ width: "100%", alignItems: "center" }}>
+          <Stack sx={sx.accordionTitleHeader}>
             <DiscountOutlined sx={{ fontSize: isScreenSmall ? "16px " : "18px" }} />
-            <Typography sx={{ fontSize: isScreenSmall ? "14px " : "16px" }}>Ticket Timeline</Typography>
+            <Typography sx={{ fontSize: { xs: "12px", md: "14px" } }}>Ticket Timeline</Typography>
           </Stack>
         </AccordionSummary>
 
@@ -76,9 +77,7 @@ const TicketHistory = ({ data }) => {
 
                     <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
                       <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
-                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>
-                        {item.transacted_By}
-                      </Typography>
+                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
                     </Stack>
 
                     <Stack gap={0} marginTop={2}>
@@ -117,10 +116,10 @@ const TicketHistory = ({ data }) => {
                           item.request === "Rejected"
                             ? theme.palette.error.main
                             : item.request === "Disapprove"
-                            ? theme.palette.error.main
-                            : item.request === "Cancel"
-                            ? theme.palette.error.main
-                            : theme.palette.success.main,
+                              ? theme.palette.error.main
+                              : item.request === "Cancel"
+                                ? theme.palette.error.main
+                                : theme.palette.success.main,
                       }}
                     >
                       {item.request}
@@ -132,9 +131,7 @@ const TicketHistory = ({ data }) => {
 
                     <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
                       <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
-                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>
-                        {item.transacted_By}
-                      </Typography>
+                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
                     </Stack>
 
                     <Stack gap={0} marginTop={2}>

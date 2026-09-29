@@ -26,6 +26,7 @@ const theme = createTheme({
       black1: "#0E1320",
       black2: "#1C2536",
       black3: "#111927",
+      black4: "#2D3748",
     },
     text: {
       main: "#EDF2F7",
@@ -168,6 +169,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#111927",
+          // backgroundColor: "#111927",
           color: "#EDF2F7",
         },
       },
