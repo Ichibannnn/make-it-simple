@@ -69,6 +69,7 @@ export const global = {
   table: {
     borderBottom: "none",
     fontSize: { xs: "10px", sm: "12px", md: "14px" },
+    background: "#111927",
   },
   tableHead: {
     whiteSpace: "nowrap",
@@ -78,8 +79,6 @@ export const global = {
     color: "#D65DB1",
     fontWeight: 700,
     fontSize: "12px",
-    // letterSpacing: "0.8px",
-    // textTransform: "uppercase",
     paddingY: "14px",
   },
   bodyCell: {
@@ -89,5 +88,14 @@ export const global = {
     fontWeight: 500,
     border: "2px solid #293242",
     paddingY: "14px",
+  },
+
+  customButtonText: { fontSize: "12px" },
+  ticketNoText: {
+    fontSize: { xs: "12px", md: "14px" },
+    fontWeight: 700,
+    background: "linear-gradient(90deg, #5c3ced, #ff8cc6)",
+    WebkitBackgroundClip: "text",
+    color: "transparent",
   },
 };

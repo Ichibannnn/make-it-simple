@@ -1,6 +1,7 @@
 // Layout 2
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Avatar,
   Box,
   Button,
   Chip,
@@ -181,6 +182,16 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
 
   const TABLE_COLUMNS = ["TICKET NO.", "TICKET DESCRIPTION", "DATE NEEDED", "TARGET DATE"];
 
+  const trimLetters = (name) => {
+    if (!name) return "";
+    const nameArray = name.split(" ").filter((n) => n);
+    const initials = nameArray
+      .slice(0, 2)
+      .map((n) => n[0])
+      .join("");
+    return initials.split("").reverse().join("");
+  };
+
   return (
     <>
       <Dialog
@@ -202,7 +213,8 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
           {/* Requestor*/}
           <Stack sx={sx.header}>
             <Stack direction="row" gap={1} alignItems="center">
-              <AccountCircleRounded sx={sx.avatarIcon} />
+              <Avatar sx={sx.avatarIcon}>{trimLetters(data?.requestor_Name)}</Avatar>
+
               <Stack>
                 <Typography sx={sx.secondaryText}>Created by</Typography>
                 <Typography sx={sx.requestorText}>{data?.requestor_Name}</Typography>
@@ -219,9 +231,8 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
 
           <Stack gap={2} sx={{ marginTop: 2 }}>
             <Stack sx={sx.ticketDetailsSection}>
-              <Stack sx={sx.ticketTitleHeader}>
-                <Receipt sx={sx.receiptIcon} />
-                <Typography sx={sx.ticketTitleHeader}>Ticket Details</Typography>
+              <Stack sx={sx.titleHeader}>
+                <Typography sx={sx.titleHeader}>Ticket Details</Typography>
               </Stack>
 
               {/* Detail Box */}
@@ -511,7 +522,9 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
 
                       <TableBody>
                         <TableRow>
-                          <TableCell sx={global.bodyCell}>{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</TableCell>
+                          <TableCell sx={global.bodyCell}>
+                            <Typography sx={global.ticketNoText}>{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                          </TableCell>
                           <TableCell sx={global.bodyCell}>
                             {data?.concern_Description?.split("\r\n").map((line, index) => (
                               <span key={index}>
@@ -530,23 +543,15 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
               </Stack>
             </Stack>
 
-            <Stack
-              sx={{
-                width: "100%",
-                background: theme.palette.bgForm.black2,
-                border: "2px solid #293242",
-                borderRadius: "15px",
-              }}
-            >
+            <Stack sx={sx.attachmentBox}>
               {/* Attachments */}
-              <Stack marginTop={2} padding={2}>
-                <Stack direction="row" gap={1} alignItems="center">
-                  <GetAppOutlined sx={sx.attachmentIcon} />
-                  <Typography sx={sx.attachmentTitleHeader}>Attachment(s):</Typography>
+              <Stack marginTop={1} padding={2}>
+                <Stack sx={sx.titleHeader}>
+                  <Typography sx={sx.titleHeader}>Attachment(s):</Typography>
                 </Stack>
 
                 {attachments?.length > 0 && (
-                  <Stack sx={{ gap: 1.5 }}>
+                  <Stack sx={{ gap: 1 }}>
                     {/* Image thumbnails, grid layout */}
                     {imageAttachments.length > 0 && (
                       <Box
@@ -573,45 +578,12 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
 
                     {/* Non-image files, row list (unchanged from before) */}
                     {otherAttachments.map((fileName, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          width: "100%",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: 1,
-                        }}
-                      >
+                      <Box key={index} sx={sx.attachmentCards}>
                         {getAttachmentIcon(fileName)}
-                        <Box
-                          sx={{
-                            width: "100%",
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: 0.5,
-                            borderBottom: "1px solid #2D3748",
-                          }}
-                        >
+                        <Box sx={sx.attachmentNameBox}>
                           <Box sx={{ display: "flex", flexDirection: "column" }}>
-                            <Typography
-                              sx={{
-                                fontSize: isScreenSmall ? "12px" : "14px",
-                              }}
-                            >
-                              {fileName.name}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: isScreenSmall ? "12px" : "14px",
-                                color: theme.palette.text.secondary,
-                              }}
-                            >
-                              {fileName.size} Mb
-                            </Typography>
+                            <Typography sx={sx.fontSize}>{fileName.name}</Typography>
+                            <Typography sx={sx.fontSize}>{fileName.size} Mb</Typography>
                           </Box>
 
                           <Box>
@@ -651,22 +623,10 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                 )}
 
                 {attachmentIsSuccess && !attachments?.length && !attachmentIsLoading && !attachmentIsFetching && (
-                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                    <Stack direction="row" gap={0.5} justifyContent="center" alignItems="center">
-                      <AttachFileOutlined
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          fontSize: isScreenSmall ? "16px" : "18px",
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          fontSize: isScreenSmall ? "14px" : "16px",
-                        }}
-                      >
-                        No attached file
-                      </Typography>
+                  <Stack sx={sx.noAttachmentBox}>
+                    <Stack sx={sx.attachmentContent}>
+                      <AttachFileOutlined sx={sx.titleSubIcon} />
+                      <Typography sx={sx.titleSubText}>No attached file</Typography>
                     </Stack>
                   </Stack>
                 )}
@@ -682,16 +642,14 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
           {data?.ticket_Status === "Open Ticket" && (
             <>
               <Stack direction="row" gap={0.5} alignItems="center" mb={1}>
-                <Button variant="contained" size="small" onClick={() => onClosing(data)} color="success" startIcon={<ChecklistRtlOutlined />} sx={{ borderRadius: "1px" }}>
-                  <Typography sx={{ fontSize: "12px" }}>Close</Typography>
+                <Button variant="contained" size="small" onClick={() => onClosing(data)} color="success" startIcon={<ChecklistRtlOutlined />}>
+                  <Typography sx={global.customButtonText}>Close</Typography>
                 </Button>
-
-                <Button variant="contained" size="small" onClick={() => onTransfer(data)} color="info" startIcon={<MoveDownOutlined />} sx={{ borderRadius: "1px" }}>
-                  <Typography sx={{ fontSize: "12px" }}>Transfer</Typography>
+                <Button variant="contained" size="small" onClick={() => onTransfer(data)} color="info" startIcon={<MoveDownOutlined />}>
+                  <Typography sx={global.customButtonText}>Transfer</Typography>
                 </Button>
-
-                <Button variant="contained" size="small" onClick={() => onHold(data)} color="warning" startIcon={<PendingOutlined />} sx={{ borderRadius: "1px" }}>
-                  <Typography sx={{ fontSize: "12px" }}>Hold</Typography>
+                <Button variant="contained" size="small" onClick={() => onHold(data)} color="warning" startIcon={<PendingOutlined />}>
+                  <Typography sx={global.customButtonText}>Hold</Typography>
                 </Button>
               </Stack>
             </>

@@ -25,6 +25,7 @@ const TestIssueTicketDetails = () => {
                 Ticket Number:
               </Typography>
             </Box>
+            
             <Box sx={{ ml: 2 }}>
               <Typography
                 sx={{

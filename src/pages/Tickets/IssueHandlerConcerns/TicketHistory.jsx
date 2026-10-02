@@ -1,6 +1,6 @@
 import moment from "moment";
 import { theme } from "../../../theme/theme";
-import { ticketStyle as sx } from "./style/ticketStyle";
+import { getStatus, ticketStyle as sx } from "./style/ticketStyle";
 
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Typography, useMediaQuery } from "@mui/material";
@@ -15,136 +15,99 @@ const TicketHistory = ({ data }) => {
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
+  const upcoming = historyData?.value?.[0]?.upComingApprovers ?? [];
+  const history = historyData?.value?.[0]?.getTicketHistoryConcerns ?? [];
+
   return (
     <Stack sx={{ width: "100%" }}>
       <Accordion defaultExpanded sx={sx.accordionHistory}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
-          <Stack sx={sx.accordionTitleHeader}>
-            <DiscountOutlined sx={{ fontSize: isScreenSmall ? "16px " : "18px" }} />
-            <Typography sx={{ fontSize: { xs: "12px", md: "14px" } }}>Ticket Timeline</Typography>
+          <Stack sx={sx.titleHeader}>
+            <Typography sx={sx.titleHeader}>Ticket Timeline</Typography>
           </Stack>
         </AccordionSummary>
 
         <AccordionDetails>
-          <Stack sx={{ width: "100%", height: "auto", background: theme.palette.bgForm.black2, borderRadius: "20px" }}>
-            <Timeline
-              position="right"
-              sx={{
-                [`& .${timelineOppositeContentClasses.root}`]: {
-                  flex: 0.2,
-                  alignItems: "center",
-                },
-              }}
-            >
-              {/* Upcoming History */}
-              {historyData?.value?.[0]?.upComingApprovers?.map((item, index) => (
-                <TimelineItem key={index}>
-                  <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
-                    <Stack>
+          <Stack>
+            <Timeline position="right" sx={sx.labTimeline}>
+              {/* Upcoming approvers (pending) */}
+              {upcoming.map((item, index) => {
+                const status = item.transaction_Date ? getStatus(item.request) : "pending";
+                const isLast = history.length === 0 && index === upcoming.length - 1;
+
+                return (
+                  <TimelineItem key={`up-${index}`}>
+                    <TimelineOppositeContent>
                       {item.transaction_Date ? (
-                        <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
+                        <Typography sx={sx.dateText}>{moment(item.transaction_Date).format("llll")}</Typography>
                       ) : (
-                        <Stack>
-                          <Box gap={0.3} sx={{ display: "flex", direction: "row", alignItems: "center", justifyContent: "end" }}>
-                            <History />
-                            <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>Pending...</Typography>
-                          </Box>
-                        </Stack>
+                        <Box sx={sx.pendingBox}>
+                          <History />
+                          <Typography sx={sx.dateText}>Pending...</Typography>
+                        </Box>
                       )}
-                    </Stack>
-                  </TimelineOppositeContent>
+                    </TimelineOppositeContent>
 
-                  <TimelineSeparator>
-                    <TimelineDot color="grey" />
-                    <TimelineConnector />
-                  </TimelineSeparator>
+                    <TimelineSeparator>
+                      <TimelineDot variant={status === "pending" ? "outlined" : "filled"} sx={sx.labDot(status)} />
+                      {!isLast && <TimelineConnector sx={sx.labConnector(status)} />}
+                    </TimelineSeparator>
 
-                  <TimelineContent>
-                    <Typography
-                      component="span"
-                      sx={{
-                        fontSize: isScreenSmall ? "15px" : "17px",
-                        fontWeight: 900,
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      {item.request}
-                    </Typography>
+                    <TimelineContent sx={sx.labContent}>
+                      <Box sx={sx.stepTitle(status)}>{item.request}</Box>
+                      <Box sx={sx.stepDesc}>{item.status}</Box>
 
-                    <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px" }}>
-                      {item.status}
-                    </Typography>
+                      <Box sx={sx.whoRow}>
+                        <PersonOutlineOutlined />
+                        <Typography sx={sx.whoText}>{item.transacted_By}</Typography>
+                      </Box>
 
-                    <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
-                      <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
-                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
-                    </Stack>
+                      {item.remarks && (
+                        <Box sx={sx.reasonBox(status)}>
+                          <Typography sx={sx.reasonLabel}>Reason</Typography>
+                          <Typography sx={sx.reasonText}>{item.remarks}</Typography>
+                        </Box>
+                      )}
+                    </TimelineContent>
+                  </TimelineItem>
+                );
+              })}
 
-                    <Stack gap={0} marginTop={2}>
-                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.main }}>
-                        {item.remarks ? "Reason: " : ""}
-                      </Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.secondary }}>
-                        {item.remarks ? item.remarks : ""}
-                      </Typography>
-                    </Stack>
-                  </TimelineContent>
-                </TimelineItem>
-              ))}
+              {/* Ticket history (completed) */}
+              {history.map((item, index) => {
+                const status = getStatus(item.request);
+                const isLast = index === history.length - 1;
 
-              {/* Ticket History */}
-              {historyData?.value?.[0]?.getTicketHistoryConcerns?.map((item, index) => (
-                <TimelineItem key={index}>
-                  <TimelineOppositeContent color="text.secondary" sx={{ fontSize: "13px" }}>
-                    <Stack direction="row">
-                      <Typography sx={{ fontSize: isScreenSmall ? "9px" : "13px" }}>{moment(item.transaction_Date).format("llll")}</Typography>
-                    </Stack>
-                  </TimelineOppositeContent>
+                return (
+                  <TimelineItem key={`hist-${index}`}>
+                    <TimelineOppositeContent>
+                      <Typography sx={sx.dateText}>{moment(item.transaction_Date).format("llll")}</Typography>
+                    </TimelineOppositeContent>
 
-                  <TimelineSeparator>
-                    <TimelineDot color={item.request === "Rejected" ? "error" : item.request === "Disapprove" ? "error" : item.request === "Cancel" ? "error" : "success"} />
-                    <TimelineConnector />
-                  </TimelineSeparator>
+                    <TimelineSeparator>
+                      <TimelineDot variant="filled" sx={sx.labDot(status)} />
+                      {!isLast && <TimelineConnector sx={sx.labConnector(status)} />}
+                    </TimelineSeparator>
 
-                  <TimelineContent>
-                    <Typography
-                      component="span"
-                      sx={{
-                        fontSize: isScreenSmall ? "15px" : "17px",
-                        fontWeight: 900,
-                        color:
-                          item.request === "Rejected"
-                            ? theme.palette.error.main
-                            : item.request === "Disapprove"
-                              ? theme.palette.error.main
-                              : item.request === "Cancel"
-                                ? theme.palette.error.main
-                                : theme.palette.success.main,
-                      }}
-                    >
-                      {item.request}
-                    </Typography>
+                    <TimelineContent sx={sx.labContent}>
+                      <Box sx={sx.stepTitle(status)}>{item.request}</Box>
+                      <Box sx={sx.stepDesc}>{item.status}</Box>
 
-                    <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px" }}>
-                      {item.status}
-                    </Typography>
+                      <Box sx={sx.whoRow}>
+                        <PersonOutlineOutlined />
+                        <Typography sx={sx.whoText}>{item.transacted_By}</Typography>
+                      </Box>
 
-                    <Stack direction="row" gap={0.5} mt={1} sx={{ alignItems: "center" }}>
-                      <PersonOutlineOutlined sx={{ fontSize: isScreenSmall ? "18px" : "20px", color: theme.palette.text.main }} />
-                      <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", fontStyle: "italic", fontWeight: 500, color: theme.palette.text.main }}>{item.transacted_By}</Typography>
-                    </Stack>
-
-                    <Stack gap={0} marginTop={2}>
-                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.text.main }}>
-                        {item.remarks ? "Reason: " : ""}
-                      </Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: isScreenSmall ? "13px" : "15px", fontWeight: "500", color: theme.palette.error.main }}>
-                        {item.remarks ? item.remarks : ""}
-                      </Typography>
-                    </Stack>
-                  </TimelineContent>
-                </TimelineItem>
-              ))}
+                      {item.remarks && (
+                        <Box sx={sx.reasonBox(status)}>
+                          <Typography sx={sx.reasonLabel}>Reason</Typography>
+                          <Typography sx={sx.reasonText}>{item.remarks}</Typography>
+                        </Box>
+                      )}
+                    </TimelineContent>
+                  </TimelineItem>
+                );
+              })}
             </Timeline>
           </Stack>
         </AccordionDetails>
