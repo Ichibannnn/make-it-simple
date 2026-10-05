@@ -3,15 +3,16 @@ import {
   Autocomplete,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   Divider,
   FormHelperText,
   IconButton,
+  LinearProgress,
   Stack,
   TextField,
-  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -19,9 +20,8 @@ import {
   Add,
   CheckOutlined,
   Close,
+  CloseOutlined,
   FiberManualRecord,
-  RemoveCircleOutline,
-  VisibilityOutlined,
 } from "@mui/icons-material";
 
 import { useEffect, useRef, useState } from "react";
@@ -31,7 +31,6 @@ import * as yup from "yup";
 
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
-import Swal from "sweetalert2";
 
 import {
   useDeleteRequestorAttachmentMutation,
@@ -71,35 +70,69 @@ const schema = yup.object().shape({
 });
 
 const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
-  const [addAttachments, setAddAttachments] = useState([]);
+  const [attachments, setAttachments] = useState([]);
+
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+
+  // For viewing of attachment picture
+  const [zoom, setZoom] = useState(1);
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 4;
+  const ZOOM_STEP = 0.25;
+
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const positionStartRef = useRef({ x: 0, y: 0 });
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
+  const channelNameValidation = useSelector(
+    (state) => state?.user?.channels?.[0]?.channelName,
+  );
   // useSignalRConnection();
 
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
-    useLazyGetCategoryQuery();
-  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] =
-    useLazyGetSubCategoryArrayQuery();
+  const [
+    getCategory,
+    {
+      data: categoryData,
+      isLoading: categoryIsLoading,
+      isSuccess: categoryIsSuccess,
+    },
+  ] = useLazyGetCategoryQuery();
+  const [
+    getSubCategory,
+    { data: subCategoryData, isLoading: subCategoryIsLoading },
+  ] = useLazyGetSubCategoryArrayQuery();
   const [
     getConcernCategory,
-    { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess },
+    {
+      data: concernCategoryData,
+      isLoading: concernCategoryIsLoading,
+      isSuccess: concernCategoryIsSuccess,
+    },
   ] = useLazyGetCategoryConcernQuery();
   const [
     getTechnicians,
-    { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess },
+    {
+      data: technicianData,
+      isLoading: technicianIsLoading,
+      isSuccess: technicianIsSuccess,
+    },
   ] = useLazyGetTechniciansQuery();
 
   const [
     closeIssueHandlerTickets,
-    { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching },
+    {
+      isLoading: closeIssueHandlerTicketsIsLoading,
+      isFetching: closeIssueHandlerTicketsIsFetching,
+    },
   ] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
@@ -138,13 +171,27 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     payload.append("Resolution", formData.resolution);
     payload.append("Notes", formData.Notes);
 
-    payload.append("BackDate", formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "");
-    payload.append("BackDateRemarks", formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "");
+    payload.append(
+      "BackDate",
+      formData.ClosingDate
+        ? moment(formData.ClosingDate).format("YYYY-MM-DD")
+        : "",
+    );
+    payload.append(
+      "BackDateRemarks",
+      formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "",
+    );
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
-      payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
-      payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
+      payload.append(
+        `ClosingTicketCategories[${i}].ticketCategoryId`,
+        category[i].ticketCategoryId || "",
+      );
+      payload.append(
+        `ClosingTicketCategories[${i}].categoryId`,
+        category[i]?.id,
+      );
     }
 
     if (category.length === 0) {
@@ -159,7 +206,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         `ClosingSubTicketCategories[${i}].ticketSubCategoryId`,
         subCategory[i]?.ticketSubCategoryId || "",
       );
-      payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+      payload.append(
+        `ClosingSubTicketCategories[${i}].subCategoryId`,
+        subCategory[i]?.subCategoryId,
+      );
     }
 
     if (subCategory.length === 0) {
@@ -169,8 +219,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
     const technicians = formData.Technicians;
     for (let i = 0; i < technicians.length; i++) {
-      payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, "");
-      payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
+      payload.append(
+        `AddClosingTicketTechnicians[${i}].ticketTechnicianId`,
+        "",
+      );
+      payload.append(
+        `AddClosingTicketTechnicians[${i}].technician_By`,
+        technicians[i]?.technicianId,
+      );
     }
 
     if (technicians.length === 0) {
@@ -181,7 +237,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     // Attachments
     const files = formData.AddClosingAttachments;
     for (let i = 0; i < files.length; i++) {
-      payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+      payload.append(
+        `AddClosingAttachments[${i}].ticketAttachmentId`,
+        files[i].ticketAttachmentId || "",
+      );
       payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
     }
 
@@ -212,7 +271,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             });
             dispatch(notificationApi.util.resetApiState());
             dispatch(notificationMessageApi.util.resetApiState());
-            setAddAttachments([]);
+            setAttachments([]);
             reset();
             viewOnClose();
             onClose();
@@ -224,58 +283,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         });
       }
     }
-
-    // Swal.fire({
-    //   title: "Confirmation",
-    //   text: `Requesting to close this ticket number ${data?.ticketConcernId}?`,
-    //   icon: "info",
-    //   color: "white",
-    //   showCancelButton: true,
-    //   background: "#111927",
-    //   confirmButtonColor: "#9e77ed",
-    //   confirmButtonText: "Yes",
-    //   cancelButtonText: "No",
-    //   cancelButtonColor: "#1C2536",
-    //   heightAuto: false,
-    //   width: "30em",
-    //   customClass: {
-    //     container: "custom-container",
-    //     title: "custom-title",
-    //     htmlContainer: "custom-text",
-    //     icon: "custom-icon",
-    //     confirmButton: "custom-confirm-btn",
-    //     cancelButton: "custom-cancel-btn",
-    //   },
-    //   // footer: isAfter4PM
-    //   //   ? '<span style="color: orange; border-color: none !important;">' +
-    //   //     '<Warning style="margin-right: 5px;" />' +
-    //   //     "Please note that closing of tickets are only available until 4:00pm.</span>"
-    //   //   : "",
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     closeIssueHandlerTickets(payload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "Ticket submitted successfully!",
-    //           duration: 1500,
-    //         });
-    //         dispatch(notificationApi.util.resetApiState());
-    //         dispatch(notificationMessageApi.util.resetApiState());
-    //         setAddAttachments([]);
-    //         reset();
-    //         viewOnClose();
-    //         onClose();
-    //       })
-    //       .catch((err) => {
-    //         console.log("Error", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-    // });
   };
 
   const handleAttachments = (event) => {
@@ -288,46 +295,84 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     }));
 
     const uniqueNewFiles = fileNames.filter(
-      (newFile) => !addAttachments.some((existingFile) => existingFile.name === newFile.name),
+      (newFile) =>
+        !attachments.some((existingFile) => existingFile.name === newFile.name),
     );
 
-    setAddAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
 
   const handleUploadButtonClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleDeleteFile = async (fileNameToDelete) => {
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          removeAttachments: [
-            {
-              ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-            },
-          ],
-        };
-        await deleteRequestorAttachment(deletePayload).unwrap();
-      }
-
-      setAddAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-      setValue(
-        "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
-      );
-    } catch (error) {}
-  };
-
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
+  const handleViewImage = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedImage(e.target.result);
+      setZoom(1);
+      setPosition({ x: 0, y: 0 });
+      setIsViewDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDeleteFile = async (fileNameToDelete) => {
+    // try {
+    //   if (fileNameToDelete.ticketAttachmentId) {
+    //     const deletePayload = {
+    //       removeAttachments: [
+    //         {
+    //           ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+    //         },
+    //       ],
+    //     };
+    //     await deleteRequestorAttachment(deletePayload).unwrap();
+    //   }
+
+    //   setAddAttachments((prevFiles) =>
+    //     prevFiles.filter((fileName) => fileName !== fileNameToDelete),
+    //   );
+
+    //   setValue(
+    //     "AddClosingAttachments",
+    //     watch("AddClosingAttachments").filter(
+    //       (file) => file.name !== fileNameToDelete.name,
+    //     ),
+    //   );
+    // } catch (error) {}
+
+    setAttachments((prevFiles) =>
+      prevFiles.filter((fileName) => fileName !== fileNameToDelete),
+    );
+
+    setValue(
+      "AddClosingAttachments",
+      watch("AddClosingAttachments").filter(
+        (file) => file.name !== fileNameToDelete.name,
+      ),
+    );
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
   const onCloseHandler = () => {
-    onClose();
     reset();
-    setAddAttachments([]);
+    setAttachments([]);
+    onClose();
   };
 
   const handleDrop = (event) => {
@@ -344,29 +389,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter((fileName) => !addAttachments.includes(fileName));
-    setAddAttachments([...addAttachments, ...uniqueNewFiles]);
-  };
-
-  // Function to open image view dialog
-  const handleViewImage = (file) => {
-    console.log("File: ", file);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedImage(e.target.result);
-      setIsViewDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleViewClose = () => {
-    setIsViewDialogOpen(false);
-    setSelectedImage(null);
-  };
-
-  const isImageFile = (fileName) => {
-    return /\.(jpg|jpeg|png)$/i.test(fileName);
+    const uniqueNewFiles = fileNames.filter(
+      (fileName) => !attachments.includes(fileName),
+    );
+    setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
   useEffect(() => {
@@ -382,7 +408,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
       setValue("CategoryConcern", {
         id: concernCategoryData?.value?.category?.[0]?.id,
-        categoryConcern: concernCategoryData?.value?.category?.[0]?.categoryConcern,
+        categoryConcern:
+          concernCategoryData?.value?.category?.[0]?.categoryConcern,
       });
 
       const category = data?.getOpenTicketCategories?.map((item) => ({
@@ -400,7 +427,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       setValue("CategoryId", null);
       setValue("SubCategoryId", null);
 
-      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
+      const categoryIdParams = data?.getOpenTicketCategories?.map(
+        (item) => item?.categoryId,
+      );
 
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
@@ -415,12 +444,15 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) =>
-          subCategoryData?.value?.some(
-            (item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id,
+      const filteredSubCategories = selectedSubCategories.filter(
+        (subCategory) =>
+          selectedCategories.some((category) =>
+            subCategoryData?.value?.some(
+              (item) =>
+                item.subCategoryId === subCategory.subCategoryId &&
+                item.categoryId === category.id,
+            ),
           ),
-        ),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -432,6 +464,58 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   const today = new moment();
   const isTodayAfterTarget = today.isAfter(data?.target_Date);
   const isTodayAndTargetSame = today.isSame(data?.target_Date, "day");
+
+  const handleZoomIn = () =>
+    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () =>
+    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomReset = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleWheelZoom = (event) => {
+    event.preventDefault();
+    if (event.deltaY < 0) handleZoomIn();
+    else handleZoomOut();
+  };
+
+  useEffect(() => {
+    if (zoom <= 1) setPosition({ x: 0, y: 0 });
+  }, [zoom]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (event) => {
+      const dx = event.clientX - dragStartRef.current.x;
+      const dy = event.clientY - dragStartRef.current.y;
+      setPosition({
+        x: positionStartRef.current.x + dx,
+        y: positionStartRef.current.y + dy,
+      });
+    };
+    const handleMouseUp = () => setIsDragging(false);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
+
+  const handleImageMouseDown = (event) => {
+    if (zoom <= 1) return;
+    event.preventDefault();
+    setIsDragging(true);
+    dragStartRef.current = { x: event.clientX, y: event.clientY };
+    positionStartRef.current = { ...position };
+  };
+
+  // Split into images (grid) vs everything else (row list), matching the target layout.
+  const imageAttachments = attachments.filter((a) => isImageFile(a.name));
+  const fileAttachments = attachments.filter((a) => !isImageFile(a.name));
 
   return (
     <>
@@ -452,7 +536,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       >
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Stack direction="column">
                 <Typography
                   sx={{
@@ -524,12 +612,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           wordBreak: "break-word",
                         }}
                       >
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
+                        {data?.concern_Description
+                          ?.split("\r\n")
+                          .map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
                       </Typography>
                     </Stack>
 
@@ -598,12 +688,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             wordBreak: "break-word",
                           }}
                         >
-                          {data?.concern_Description?.split("\r\n").map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
+                          {data?.concern_Description
+                            ?.split("\r\n")
+                            .map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))}
                         </Typography>
                       </Box>
                     </Stack>
@@ -660,8 +752,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
                   <Stack mt={2} gap={0.5}>
                     <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
-                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                      <Stack
+                        gap={0.5}
+                        sx={{ width: isScreenSmall ? "100%" : "50%" }}
+                      >
+                        <Stack
+                          direction="row"
+                          sx={{ alignItems: "center", gap: 0.5 }}
+                        >
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -669,7 +767,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           >
                             Category:
                           </Typography>
-                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                          <FiberManualRecord
+                            color="error"
+                            sx={{ fontSize: "10px" }}
+                          />
                         </Stack>
 
                         <Controller
@@ -684,7 +785,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 value={value}
                                 options={
                                   categoryData?.value?.category.filter(
-                                    (item) => item.channelId === watch("ChannelId")?.id,
+                                    (item) =>
+                                      item.channelId === watch("ChannelId")?.id,
                                   ) || []
                                 }
                                 loading={categoryIsLoading}
@@ -708,7 +810,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange={(_, value) => {
                                   onChange(value);
 
-                                  const categoryIdParams = value?.map((category) => category?.id);
+                                  const categoryIdParams = value?.map(
+                                    (category) => category?.id,
+                                  );
 
                                   if (watch("CategoryId").length === 0) {
                                     setValue("SubCategoryId", []);
@@ -718,10 +822,16 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                     CategoryId: categoryIdParams,
                                   });
                                 }}
-                                getOptionLabel={(option) => option.category_Description || ""}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionLabel={(option) =>
+                                  option.category_Description || ""
+                                }
+                                isOptionEqualToValue={(option, value) =>
+                                  option.id === value.id
+                                }
                                 getOptionDisabled={(option) =>
-                                  watch("CategoryId").some((item) => item.id === option.id)
+                                  watch("CategoryId").some(
+                                    (item) => item.id === option.id,
+                                  )
                                 }
                                 sx={{
                                   flex: 2,
@@ -744,8 +854,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         />
                       </Stack>
 
-                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                      <Stack
+                        gap={0.5}
+                        sx={{ width: isScreenSmall ? "100%" : "50%" }}
+                      >
+                        <Stack
+                          direction="row"
+                          sx={{ alignItems: "center", gap: 0.5 }}
+                        >
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -753,7 +869,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           >
                             Sub Category:
                           </Typography>
-                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                          <FiberManualRecord
+                            color="error"
+                            sx={{ fontSize: "10px" }}
+                          />
                         </Stack>
                         <Controller
                           control={control}
@@ -781,13 +900,17 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}
-                                getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                                getOptionLabel={(option) =>
+                                  option?.sub_Category_Description || ""
+                                }
                                 isOptionEqualToValue={(option, value) =>
                                   option?.subCategoryId === value?.subCategoryId
                                 }
                                 getOptionDisabled={(option) =>
                                   watch("SubCategoryId").some(
-                                    (item) => item.subCategoryId === option.subCategoryId,
+                                    (item) =>
+                                      item.subCategoryId ===
+                                      option.subCategoryId,
                                   )
                                 }
                                 noOptionsText={"No sub category available"}
@@ -814,7 +937,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
                     <Stack gap={1}>
                       <Stack gap={0.5} sx={{ width: "100%" }}>
-                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                        <Stack
+                          direction="row"
+                          sx={{ alignItems: "center", gap: 0.5 }}
+                        >
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -822,7 +948,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           >
                             Concern Category:
                           </Typography>
-                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                          <FiberManualRecord
+                            color="error"
+                            sx={{ fontSize: "10px" }}
+                          />
                         </Stack>
 
                         <Controller
@@ -834,7 +963,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                options={concernCategoryData?.value?.category || []}
+                                options={
+                                  concernCategoryData?.value?.category || []
+                                }
                                 loading={concernCategoryIsLoading}
                                 renderInput={(params) => (
                                   <TextField
@@ -856,8 +987,12 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}
-                                getOptionLabel={(option) => option.categoryConcern || ""}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionLabel={(option) =>
+                                  option.categoryConcern || ""
+                                }
+                                isOptionEqualToValue={(option, value) =>
+                                  option.id === value.id
+                                }
                                 sx={{
                                   flex: 2,
                                 }}
@@ -879,12 +1014,16 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         />
                       </Stack>
 
-                      {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
+                      {channelNameValidation ===
+                        "HMU - IT Hardware Support (Hardware Concern)" &&
                         isTodayAfterTarget &&
                         !isTodayAndTargetSame && (
                           <>
                             <Stack gap={0.5} sx={{ width: "100%" }}>
-                              <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                              <Stack
+                                direction="row"
+                                sx={{ alignItems: "center", gap: 0.5 }}
+                              >
                                 <Typography
                                   sx={{
                                     fontSize: "14px",
@@ -901,13 +1040,20 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                   name="ClosingDate"
                                   render={({ field }) => (
                                     <DatePicker
-                                      value={field.value ? moment(field.value) : null}
+                                      value={
+                                        field.value ? moment(field.value) : null
+                                      }
                                       onChange={(newValue) => {
                                         const formattedValue = newValue
-                                          ? moment(newValue).format("YYYY-MM-DD")
+                                          ? moment(newValue).format(
+                                              "YYYY-MM-DD",
+                                            )
                                           : null;
                                         field.onChange(formattedValue);
-                                        console.log("FormattedValue: ", newValue);
+                                        console.log(
+                                          "FormattedValue: ",
+                                          newValue,
+                                        );
                                       }}
                                       slotProps={{
                                         textField: {
@@ -925,18 +1071,29 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                       maxDate={new moment()}
                                       minDate={minDate}
                                       error={!!errors.ClosingDate}
-                                      helperText={errors.ClosingDate ? errors.ClosingDate.message : null}
+                                      helperText={
+                                        errors.ClosingDate
+                                          ? errors.ClosingDate.message
+                                          : null
+                                      }
                                       // disabled={!watch("IssueHandler")}
                                     />
                                   )}
                                 />
-                                {errors.ClosingDate && <Typography>{errors.ClosingDate.message}</Typography>}
+                                {errors.ClosingDate && (
+                                  <Typography>
+                                    {errors.ClosingDate.message}
+                                  </Typography>
+                                )}
                               </LocalizationProvider>
                             </Stack>
 
                             {watch("ClosingDate") && (
                               <Stack gap={0.5} sx={{ width: "100%" }}>
-                                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                                <Stack
+                                  direction="row"
+                                  sx={{ alignItems: "center", gap: 0.5 }}
+                                >
                                   <Typography
                                     sx={{
                                       fontSize: "14px",
@@ -944,13 +1101,18 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                   >
                                     Backdate Remarks:
                                   </Typography>
-                                  <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                                  <FiberManualRecord
+                                    color="error"
+                                    sx={{ fontSize: "10px" }}
+                                  />
                                 </Stack>
 
                                 <Controller
                                   control={control}
                                   name="BackdateRemarks"
-                                  render={({ field: { ref, value, onChange } }) => {
+                                  render={({
+                                    field: { ref, value, onChange },
+                                  }) => {
                                     return (
                                       <TextField
                                         inputRef={ref}
@@ -973,8 +1135,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                         disabled={!watch("ClosingDate")}
                                         sx={{
                                           "& .disabled": {
-                                            backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
-                                            cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
+                                            backgroundColor: !watch(
+                                              "ClosingDate",
+                                            )
+                                              ? "lightgray"
+                                              : "inherit",
+                                            cursor: !watch("ClosingDate")
+                                              ? "not-allowed"
+                                              : "inherit",
                                           },
                                         }}
                                       />
@@ -983,7 +1151,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 />
 
                                 {errors.BackdateRemarks && (
-                                  <Typography color="error" sx={{ fontSize: "12px" }}>
+                                  <Typography
+                                    color="error"
+                                    sx={{ fontSize: "12px" }}
+                                  >
                                     {errors.BackdateRemarks.message}
                                   </Typography>
                                 )}
@@ -994,7 +1165,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Stack>
 
                     <Stack mt={2} gap={0.5}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                      <Stack
+                        direction="row"
+                        sx={{ alignItems: "center", gap: 0.5 }}
+                      >
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -1002,7 +1176,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         >
                           Resolution:
                         </Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                        <FiberManualRecord
+                          color="error"
+                          sx={{ fontSize: "10px" }}
+                        />
                       </Stack>
 
                       <Controller
@@ -1041,10 +1218,15 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Stack>
 
                     {/* TECHNICIANS */}
-                    <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
+                    <Stack
+                      direction="row"
+                      sx={{ width: "100%", gap: 2, mt: 1 }}
+                    >
                       <Stack sx={{ width: "100%", gap: 1 }}>
                         <Stack>
-                          <Typography sx={{ fontSize: "14px", mb: 0.5 }}>Technicians (Optional):</Typography>
+                          <Typography sx={{ fontSize: "14px", mb: 0.5 }}>
+                            Technicians (Optional):
+                          </Typography>
                           <Controller
                             control={control}
                             name="Technicians"
@@ -1076,13 +1258,17 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                       onChange(newValue);
                                     }
                                   }}
-                                  getOptionLabel={(option) => option.technician_Name || ""}
+                                  getOptionLabel={(option) =>
+                                    option.technician_Name || ""
+                                  }
                                   isOptionEqualToValue={(option, val) =>
                                     option.technicianId === val.technicianId
                                   }
                                   getOptionDisabled={(option) =>
                                     watch("Technicians").some(
-                                      (item) => item.technicianId === option.technicianId,
+                                      (item) =>
+                                        item.technicianId ===
+                                        option.technicianId,
                                     )
                                   }
                                   fullWidth
@@ -1100,7 +1286,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 />
 
                                 {value.length >= 3 && (
-                                  <FormHelperText sx={{ color: theme.palette.warning.main }}>
+                                  <FormHelperText
+                                    sx={{ color: theme.palette.warning.main }}
+                                  >
                                     You can only select up to 3 technicians.
                                   </FormHelperText>
                                 )}
@@ -1149,117 +1337,93 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                       />
                     </Stack>
 
-                    <Stack gap={0.5} mt={2} onDragOver={handleDragOver} onDrop={handleDrop}>
-                      <Stack direction="row" gap={0.5}>
-                        <Typography
+                    {/* Attachments */}
+                    <Stack
+                      gap={0.5}
+                      mt={2}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                    >
+                      <Typography sx={{ fontSize: "11px" }}>
+                        Attachment (Optional)
+                      </Typography>
+
+                      <Stack
+                        sx={{
+                          width: "100%",
+                          display: "flex",
+                          border: "2px dashed #2D3748",
+                          justifyContent: "left",
+                          padding: 1,
+                          gap: 1.5,
+                        }}
+                        onDragOver={handleDragOver}
+                      >
+                        <Box
                           sx={{
-                            fontSize: "14px",
+                            display: "flex",
+                            flexDirection: "row",
+                            gap: 1,
+                            alignItems: "center",
                           }}
                         >
-                          Attachment (Optional):
-                        </Typography>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="warning"
+                            onClick={handleUploadButtonClick}
+                          >
+                            <Typography sx={{ fontSize: "12px" }}>
+                              Choose File
+                            </Typography>
+                          </Button>
 
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="warning"
-                          startIcon={<Add />}
-                          onClick={handleUploadButtonClick}
-                          sx={{ padding: "2px", borderRadius: "2px" }}
-                        >
-                          <Typography sx={{ fontSize: "12px" }}>Add</Typography>
-                        </Button>
-                      </Stack>
-
-                      <Box
-                        sx={{
-                          border: "1px solid #2D3748",
-                          minHeight: "195px",
-                          display: "flex",
-                          width: "100%",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          padding: 1,
-                        }}
-                      >
-                        {addAttachments?.map((fileName, index) => (
-                          <Box
-                            key={index}
+                          <Typography
                             sx={{
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              padding: 1,
-                              borderBottom: "1px solid #2D3748",
+                              color: theme.palette.text.secondary,
+                              fontSize: "11px",
                             }}
                           >
-                            {getAttachmentIcon(fileName)}
-                            <Stack
-                              sx={{
-                                width: "100%",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <Typography sx={{ fontSize: "14px" }}>{fileName.name}</Typography>
+                            .docx, .jpg, .jpeg, .png, .pdf file
+                          </Typography>
+                        </Box>
 
-                                <Typography
-                                  sx={{
-                                    fontSize: "12px",
-                                    color: theme.palette.text.secondary,
-                                  }}
-                                >
-                                  {fileName.size} Mb
-                                </Typography>
-
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: 1,
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      fontSize: "14px",
-                                      fontWeight: 500,
-                                      color: !!fileName.ticketAttachmentId
-                                        ? theme.palette.success.main
-                                        : theme.palette.primary.main,
-                                    }}
-                                  >
-                                    {!!fileName.ticketAttachmentId
-                                      ? "Attached file"
-                                      : "Uploaded the file successfully"}
-                                  </Typography>
-
-                                  {!!fileName.ticketAttachmentId && (
-                                    <CheckOutlined color="success" fontSize="small" />
-                                  )}
-                                </Box>
-                              </Box>
-
-                              <Box>
-                                <ClosingDialogMenuActions
-                                  fileName={fileName}
-                                  onView={handleViewImage}
-                                  onDelete={handleDeleteFile}
-                                  isImageFile={isImageFile}
-                                />
-                              </Box>
-                            </Stack>
+                        <Divider
+                          variant="fullWidth"
+                          sx={{
+                            display: !attachments.length ? "none" : "flex",
+                            background: "#2D3748",
+                          }}
+                        />
+                        {/* Image thumbnails, grid layout */}
+                        {imageAttachments.length > 0 && (
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}
+                          >
+                            {imageAttachments.map((fileName, index) => (
+                              <ImageAttachmentCard
+                                key={`img-${index}`}
+                                fileName={fileName}
+                                onView={handleViewImage}
+                                onDelete={handleDeleteFile}
+                              />
+                            ))}
                           </Box>
-                        ))}
-                      </Box>
+                        )}
+
+                        {/* Non-image files, row list */}
+                        {fileAttachments.length > 0 && (
+                          <Stack sx={{ width: "100%", gap: 1 }}>
+                            {fileAttachments.map((fileName, index) => (
+                              <FileAttachmentRow
+                                key={`file-${index}`}
+                                fileName={fileName}
+                                onDelete={handleDeleteFile}
+                              />
+                            ))}
+                          </Stack>
+                        )}
+                      </Stack>
                     </Stack>
 
                     <Controller
@@ -1274,16 +1438,17 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
                             const uniqueNewFiles = files.filter(
-                              (item) => !value.some((file) => file.name === item.name),
+                              (item) =>
+                                !value.some((file) => file.name === item.name),
                             );
 
-                            console.log("Controller Files: ", files);
+                            // console.log("Controller Files: ", files);
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";
                           }}
                           hidden
-                          multiple={!!ticketAttachmentId}
+                          // multiple={!!ticketAttachmentId}
                         />
                       )}
                     />
@@ -1300,7 +1465,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
               type="submit"
               form="closeTicket"
               variant="contained"
-              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
+              loading={
+                closeIssueHandlerTicketsIsLoading ||
+                closeIssueHandlerTicketsIsFetching
+              }
               disabled={
                 !watch("resolution") ||
                 watch("CategoryId").length === 0 ||
@@ -1321,9 +1489,20 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         </DialogActions>
 
         {/* Dialog to view image */}
-        <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+        <Dialog
+          fullWidth
+          maxWidth="md"
+          open={isViewDialogOpen}
+          onClose={handleViewClose}
+        >
           <DialogContent sx={{ height: "auto" }}>
-            {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+            {selectedImage && (
+              <img
+                src={selectedImage}
+                alt="Preview"
+                style={{ width: "100%" }}
+              />
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleViewClose}>Close</Button>
@@ -1335,3 +1514,189 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 };
 
 export default IssueHandlerClosingDialog;
+
+const ImageAttachmentCard = ({ fileName, onView, onDelete }) => {
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    const url = URL.createObjectURL(fileName.file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [fileName.file]);
+
+  const ext = fileName.name.split(".").pop()?.toUpperCase();
+  const showSpinner = !previewUrl || !imgLoaded;
+
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: 120,
+        height: 116,
+        borderRadius: "10px",
+        overflow: "hidden",
+        border: `1px solid ${theme.palette.divider}`,
+        backgroundColor: theme.palette.bgForm?.black3 || "#1A202C",
+        cursor: "pointer",
+      }}
+      onClick={() => onView(fileName.file)}
+    >
+      <IconButton
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(fileName);
+        }}
+        sx={{
+          position: "absolute",
+          top: 4,
+          right: 4,
+          zIndex: 2,
+          padding: "2px",
+          backgroundColor: "rgba(0,0,0,0.55)",
+          "&:hover": { backgroundColor: "rgba(0,0,0,0.75)" },
+        }}
+      >
+        <CloseOutlined sx={{ fontSize: 14, color: "#fff" }} />
+      </IconButton>
+
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: 80,
+          backgroundColor: "rgba(255,255,255,0.04)",
+        }}
+      >
+        {previewUrl && (
+          <Box
+            component="img"
+            src={previewUrl}
+            alt={fileName.name}
+            onLoad={() => setImgLoaded(true)}
+            onError={() => setImgLoaded(true)}
+            sx={{
+              width: "100%",
+              height: 80,
+              objectFit: "cover",
+              display: "block",
+              opacity: showSpinner ? 0 : 1,
+              transition: "opacity 0.15s ease",
+            }}
+          />
+        )}
+
+        {showSpinner && (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress
+              size={20}
+              thickness={4}
+              sx={{ color: theme.palette.text.secondary }}
+            />
+          </Box>
+        )}
+      </Box>
+
+      <Box sx={{ padding: "6px 8px", overflow: "hidden" }}>
+        <Typography
+          noWrap
+          title={fileName.name}
+          sx={{
+            fontSize: "11px",
+            fontWeight: 500,
+            color: theme.palette.text.main,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "block",
+          }}
+        >
+          {fileName.name}
+        </Typography>
+        <Typography
+          noWrap
+          sx={{
+            fontSize: "10px",
+            color: theme.palette.text.secondary,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "block",
+          }}
+        >
+          {ext} · {fileName.size} MB
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+// One row for a non-image attachment (bottom list in the target design).
+const FileAttachmentRow = ({ fileName, onDelete, uploadProgress }) => {
+  const inProgress = typeof uploadProgress === "number" && uploadProgress < 100;
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1.5,
+        padding: "8px 10px",
+        borderRadius: "8px",
+        backgroundColor: theme.palette.bgForm?.black3 || "#1A202C",
+        border: `1px solid ${theme.palette.divider}`,
+      }}
+    >
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        {getAttachmentIcon(fileName)}
+      </Box>
+
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography noWrap sx={{ fontSize: "12px", fontWeight: 500 }}>
+          {fileName.name}
+        </Typography>
+
+        {inProgress ? (
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ mt: 0.5 }}
+          >
+            <LinearProgress
+              variant="determinate"
+              value={uploadProgress}
+              sx={{ flex: 1, height: 4, borderRadius: 2 }}
+            />
+            <Typography
+              sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
+            >
+              {uploadProgress}%
+            </Typography>
+          </Stack>
+        ) : (
+          <Typography
+            sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
+          >
+            {fileName.name.split(".").pop()?.toUpperCase()} · {fileName.size} MB
+          </Typography>
+        )}
+      </Box>
+
+      <IconButton size="small" onClick={() => onDelete(fileName)}>
+        <Close sx={{ fontSize: 16 }} />
+      </IconButton>
+    </Box>
+  );
+};

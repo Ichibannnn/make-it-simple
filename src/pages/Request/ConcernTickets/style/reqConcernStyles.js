@@ -54,7 +54,11 @@ export const reqConcernStyles = {
   },
 
   // Cards
-  cards: { backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" },
+  cards: {
+    backgroundColor: theme.palette.bgForm.black3,
+    borderRadius: "15px",
+    borderColor: "#2D3748",
+  },
 
   cardContent: {
     cursor: "pointer",
@@ -64,15 +68,29 @@ export const reqConcernStyles = {
     },
   },
 
-  cardTitle: { fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" },
+  cardTitle: {
+    fontWeight: 700,
+    fontSize: "0.775rem",
+    lineHeight: 1.57,
+    color: "#D65DB1",
+  },
 
-  cardDescription: { fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main },
+  cardDescription: {
+    fontWeight: 400,
+    fontSize: "0.775rem",
+    lineHeight: 1.57,
+    color: theme.palette.text.main,
+  },
 
   cardChip: {
     fontSize: "12px",
     backgroundColor: "#1D1F3B",
     color: theme.palette.primary.main,
     fontWeight: 800,
+  },
+
+  titleHeaderIcon: {
+    fontSize: { xs: "16px", md: "18px" },
   },
 
   // History
@@ -90,6 +108,7 @@ export const reqConcernStyles = {
       borderRadius: "15px",
     },
     padding: 2,
+    gap: 4,
   },
 
   titleHeaderStack: {
@@ -155,7 +174,12 @@ export const reqConcernStyles = {
   }),
 
   // ** Date column
-  dateDay: { fontSize: { xs: 10, md: 12 }, fontWeight: 600, color: t.text, lineHeight: 1.3 },
+  dateDay: {
+    fontSize: { xs: 10, md: 12 },
+    fontWeight: 600,
+    color: t.text,
+    lineHeight: 1.3,
+  },
   dateTime: { fontSize: { xs: 10, md: 11 }, color: t.muted, lineHeight: 1.3 },
   pendingBox: {
     display: "flex",
@@ -180,12 +204,21 @@ export const reqConcernStyles = {
   statusText: ({ tone, next }) => ({
     fontSize: { xs: 14, md: 16 },
     fontWeight: 800,
-    color: next ? t.violet : toneColor[tone] === t.muted ? t.text : toneColor[tone],
+    color: next
+      ? t.violet
+      : toneColor[tone] === t.muted
+        ? t.text
+        : toneColor[tone],
   }),
 
   historyDesc: { fontSize: { xs: 12, md: 14 }, color: t.muted, mt: 0.25 },
 
-  transactedByBox: { flexDirection: "row", alignItems: "center", gap: 1, mt: 1.25 },
+  transactedByBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 1,
+    mt: 1.25,
+  },
 
   avatar: {
     width: 22,
@@ -197,18 +230,30 @@ export const reqConcernStyles = {
     border: `1px solid ${alpha(t.violet, 0.6)}`,
   },
 
-  transactedBy: { fontSize: { xs: 12, md: 13 }, fontWeight: 600, color: t.text },
+  transactedBy: {
+    fontSize: { xs: 12, md: 13 },
+    fontWeight: 600,
+    color: t.text,
+  },
 
   // ** Reason callout
   reasonBox: ({ tone }) => ({
     mt: 1.5,
     p: 1.25,
     borderRadius: "8px",
-    bgcolor: alpha(toneColor[tone] === t.muted ? t.violet : toneColor[tone], 0.08),
+    bgcolor: alpha(
+      toneColor[tone] === t.muted ? t.violet : toneColor[tone],
+      0.08,
+    ),
     border: `1px solid ${alpha(toneColor[tone] === t.muted ? t.violet : toneColor[tone], 0.3)}`,
   }),
 
-  reasonLabel: { fontSize: { xs: 12, md: 13 }, fontWeight: 700, color: t.text, mb: 0.5 },
+  reasonLabel: {
+    fontSize: { xs: 12, md: 13 },
+    fontWeight: 700,
+    color: t.text,
+    mb: 0.5,
+  },
 
   reasonText: ({ tone }) => ({
     fontSize: { xs: 12, md: 13 },

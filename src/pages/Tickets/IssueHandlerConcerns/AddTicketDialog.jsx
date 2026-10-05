@@ -1,5 +1,5 @@
 // Modified
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
   Box,
@@ -211,8 +211,6 @@ const AddTicketDialog = ({ open, onClose }) => {
     },
   });
 
-  // console.log("Error: ", errors);
-
   const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "Concern",
@@ -381,18 +379,6 @@ const AddTicketDialog = ({ open, onClose }) => {
     event.preventDefault();
   };
 
-  const onCloseAction = () => {
-    reset({
-      UserId: {
-        id: userInformation?.id || "",
-        fullname: userInformation?.fullname || "",
-      },
-      IssueHandler: userId,
-    });
-    setAttachments([]);
-    onClose();
-  };
-
   const handleViewImage = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -426,6 +412,18 @@ const AddTicketDialog = ({ open, onClose }) => {
 
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
+  const onCloseAction = () => {
+    reset({
+      UserId: {
+        id: userInformation?.id || "",
+        fullname: userInformation?.fullname || "",
+      },
+      IssueHandler: userId,
+    });
+    setAttachments([]);
+    onClose();
   };
 
   useEffect(() => {
