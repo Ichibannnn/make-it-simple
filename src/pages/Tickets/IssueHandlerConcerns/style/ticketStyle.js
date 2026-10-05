@@ -1,3 +1,4 @@
+import { alpha, keyframes } from "@mui/material";
 import { theme } from "../../../../theme/theme";
 
 export const tokens = {
@@ -15,15 +16,34 @@ export const tokens = {
 };
 
 const t = tokens;
-const statusColor = { success: t.ok, error: t.error, pending: t.muted };
 
-export const NEGATIVE_REQUESTS = ["Rejected", "Disapprove", "Cancel"];
+// tone -> color. "pending" = upcoming step that hasn't happened yet
+export const toneColor = {
+  ok: t.ok,
+  error: t.error,
+  pending: t.muted,
+};
 
-export const getStatus = (request) => (!request ? "pending" : NEGATIVE_REQUESTS.includes(request) ? "error" : "success");
+const pulse = keyframes`
+  0%   { box-shadow: 0 0 0 0 ${alpha(t.violet, 0.55)}; }
+  100% { box-shadow: 0 0 0 10px ${alpha(t.violet, 0)}; }
+`;
 
 export const ticketStyle = {
-  // ------- Issue View Dialog ---------- //
+  // Ticketing
+  remarksChip: {
+    color: "#ffffff",
+    borderRadius: "none",
+    maxWidth: "210px",
+    cursor: "pointer",
+    "& .MuiChip-label": {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+  },
 
+  // ------- Issue View Dialog ---------- //
   //  ** Reusable
   titleHeader: {
     flexDirection: "row",
@@ -244,81 +264,147 @@ export const ticketStyle = {
   pendingBox: { display: "flex", direction: "row", alignItems: "center", justifyContent: "end", gap: 0.3 },
 
   // Timeline
-  labTimeline: {
+  accordionHistory: {
+    background: `linear-gradient(${t.panel}, ${t.panel}) padding-box, linear-gradient(135deg, #7c5cff66, ${t.line} 40%, #ff4fa355) border-box`,
+    border: "1px solid transparent",
+    borderRadius: "15px",
+    overflow: "hidden",
+    "&:before": { display: "none" },
+    "&.Mui-expanded": { borderRadius: "15px", margin: 0 },
+  },
+
+  titleHeader: { flexDirection: "row", alignItems: "center", gap: 1 },
+
+  titleBar: {
+    width: 3,
+    height: 14,
+    borderRadius: 2,
+    background: `linear-gradient(${t.violet}, ${t.pink})`,
+  },
+
+  titleText: { fontSize: 13, fontWeight: 600, color: t.text },
+
+  // ** Timeline
+  timeline: {
     p: 0,
     m: 0,
-    "& .MuiTimelineOppositeContent-root": { flex: 0.28, pt: "2px", px: 2 },
+    "& .MuiTimelineOppositeContent-root": {
+      flex: { xs: 0.3, md: 0.2 },
+      px: { xs: 0.5, md: 1.5 },
+      pt: "14px",
+      textAlign: "right",
+    },
   },
-  labDot: (status = "pending", current = false) => {
-    const color = statusColor[status];
-    const filled = status !== "pending";
+
+  timelineContent: { py: 0, pl: { xs: 1, md: 2 }, pr: 0 },
+
+  // Dot: filled for done steps, hollow for upcoming, pulsing for the next one
+  dot: ({ tone, next }) => {
+    const color = next ? t.violet : toneColor[tone];
+    const hollow = tone === "pending";
     return {
-      m: "4px 0",
-      p: "4px",
-      bgcolor: filled ? color : "transparent",
-      borderColor: current ? t.violet : color,
-      borderWidth: 2,
-      boxShadow: filled ? `0 0 0 4px ${color}22` : "none",
-      ...(current && {
-        animation: "tlPulse 1.8s ease-out infinite",
-        "@keyframes tlPulse": {
-          "0%": { boxShadow: `0 0 0 0 ${t.violet}66` },
-          "100%": { boxShadow: `0 0 0 10px ${t.violet}00` },
-        },
+      m: "16px 0 0",
+      p: 0,
+      width: 12,
+      height: 12,
+      boxSizing: "border-box",
+      bgcolor: hollow ? t.panel : color,
+      border: `2px solid ${color}`,
+      boxShadow: hollow ? "none" : `0 0 0 4px ${alpha(color, 0.16)}`,
+      ...(next && {
+        animation: `${pulse} 1.8s ease-out infinite`,
+        "@media (prefers-reduced-motion: reduce)": { animation: "none" },
       }),
     };
   },
 
-  // line fades from this step's color into the next step's color
-  labConnector: (status = "pending", next = "pending") => ({
-    width: 2,
-    background: `linear-gradient(${status === "pending" ? t.line : statusColor[status]}, ${next === "pending" ? t.line : statusColor[next]})`,
+  // Solid line for what happened, dashed for what's still to come
+  connector: (pending) => ({
+    width: 0,
+    bgcolor: "transparent",
+    borderLeft: `2px ${pending ? "dashed" : "solid"} ${t.line}`,
   }),
 
-  dateChip: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 0.5,
-    mt: "6px",
-    px: "8px",
-    py: "2px",
-    borderRadius: "99px",
-    fontSize: 11,
-    color: t.muted,
-    background: "#ffffff08",
-    border: `1px solid ${t.line}`,
-    "& svg": { fontSize: 13 },
-  },
-
-  stepTitle: (status = "pending") => ({
-    fontWeight: 600,
-    fontSize: 14,
-    color: status === "pending" ? t.text : statusColor[status],
-  }),
-  dateText: { fontSize: 12, color: t.muted },
+  // ** Date column
+  dateDay: { fontSize: { xs: 10, md: 12 }, fontWeight: 600, color: t.text, lineHeight: 1.3 },
+  dateTime: { fontSize: { xs: 10, md: 11 }, color: t.muted, lineHeight: 1.3 },
   pendingBox: {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
     gap: 0.5,
     color: t.muted,
-    "& svg": { fontSize: 16 },
+    fontSize: { xs: 10, md: 12 },
   },
-  whoRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: 0.5,
-    mt: 1,
-    "& svg": { fontSize: 16, color: t.muted },
-  },
-  whoText: { fontSize: 12, fontWeight: 600, color: "#c9d3ee" },
-  reasonBox: (status = "pending") => ({
-    mt: 1.5,
-    p: "10px 12px",
+
+  // ** Entry card
+  card: ({ tone }) => ({
+    mb: 2,
+    p: { xs: 1.25, md: 1.75 },
     borderRadius: "10px",
-    background: `${statusColor[status]}12`,
-    borderLeft: `3px solid ${statusColor[status]}`,
+    bgcolor: t.panel2,
+    border: `1px solid ${t.line}`,
+    borderLeft: `3px solid ${toneColor[tone]}`,
+    opacity: tone === "pending" ? 0.8 : 1,
   }),
-  reasonLabel: { fontSize: 11, fontWeight: 600, color: t.muted, textTransform: "uppercase", letterSpacing: ".5px" },
-  reasonText: { fontSize: 13, color: t.text },
+
+  statusText: ({ tone, next }) => ({
+    fontSize: { xs: 14, md: 16 },
+    fontWeight: 800,
+    color: next ? t.violet : toneColor[tone] === t.muted ? t.text : toneColor[tone],
+  }),
+
+  historyDesc: { fontSize: { xs: 12, md: 14 }, color: t.muted, mt: 0.25 },
+
+  transactedByBox: { flexDirection: "row", alignItems: "center", gap: 1, mt: 1.25 },
+
+  avatar: {
+    width: 22,
+    height: 22,
+    fontSize: 10,
+    fontWeight: 700,
+    color: t.text,
+    bgcolor: alpha(t.violet, 0.35),
+    border: `1px solid ${alpha(t.violet, 0.6)}`,
+  },
+
+  transactedBy: { fontSize: { xs: 12, md: 13 }, fontWeight: 600, color: t.text },
+
+  // ** Reason callout
+  reasonBox: ({ tone }) => ({
+    mt: 1.5,
+    p: 1.25,
+    borderRadius: "8px",
+    bgcolor: alpha(toneColor[tone] === t.muted ? t.violet : toneColor[tone], 0.08),
+    border: `1px solid ${alpha(toneColor[tone] === t.muted ? t.violet : toneColor[tone], 0.3)}`,
+  }),
+
+  reasonLabel: { fontSize: { xs: 12, md: 13 }, fontWeight: 700, color: t.text, mb: 0.5 },
+
+  reasonText: ({ tone }) => ({
+    fontSize: { xs: 12, md: 13 },
+    lineHeight: 1.5,
+    color: tone === "error" ? t.error : t.muted,
+    whiteSpace: "pre-wrap",
+    overflowWrap: "anywhere", // long unbroken strings / pasted code won't overflow the card
+  }),
+
+  reasonClamp: {
+    display: "-webkit-box",
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+  },
+
+  reasonToggle: {
+    mt: 0.5,
+    p: 0,
+    minWidth: 0,
+    fontSize: 12,
+    textTransform: "none",
+    color: t.muted,
+    "&:hover": { bgcolor: "transparent", textDecoration: "underline" },
+  },
+
+  emptyText: { fontSize: 13, color: t.muted, textAlign: "center", py: 3 },
 };

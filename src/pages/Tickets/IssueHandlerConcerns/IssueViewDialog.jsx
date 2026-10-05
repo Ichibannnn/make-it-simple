@@ -4,40 +4,22 @@ import {
   Avatar,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
   IconButton,
   Skeleton,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Tabs,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
-import {
-  AccountCircleRounded,
-  AttachFileOutlined,
-  ChecklistRtlOutlined,
-  Close,
-  GetAppOutlined,
-  MoveDownOutlined,
-  PendingOutlined,
-  Receipt,
-  ReceiptLong,
-  RestartAlt,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { AttachFileOutlined, ChecklistRtlOutlined, Close, MoveDownOutlined, PendingOutlined, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import { theme } from "../../../theme/theme";
 import moment from "moment";
@@ -59,15 +41,12 @@ import { useSelector } from "react-redux";
 
 const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
   const [attachments, setAttachments] = useState([]);
-  const [navigation, setNavigation] = useState("1");
-
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
   const [viewIsLoading, setViewIsLoading] = useState(false);
 
   const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
-  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
 
@@ -232,7 +211,8 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
           <Stack gap={2} sx={{ marginTop: 2 }}>
             <Stack sx={sx.ticketDetailsSection}>
               <Stack sx={sx.titleHeader}>
-                <Typography sx={sx.titleHeader}>Ticket Details</Typography>
+                <Box sx={sx.titleBar} />
+                <Typography sx={sx.titleText}>Ticket Details</Typography>
               </Stack>
 
               {/* Detail Box */}
@@ -547,7 +527,8 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
               {/* Attachments */}
               <Stack marginTop={1} padding={2}>
                 <Stack sx={sx.titleHeader}>
-                  <Typography sx={sx.titleHeader}>Attachment(s):</Typography>
+                  <Box sx={sx.titleBar} />
+                  <Typography sx={sx.titleText}>Attachments</Typography>
                 </Stack>
 
                 {attachments?.length > 0 && (

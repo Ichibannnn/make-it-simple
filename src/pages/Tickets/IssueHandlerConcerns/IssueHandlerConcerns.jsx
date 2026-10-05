@@ -39,7 +39,6 @@ import {
   PendingActionsOutlined,
   PendingOutlined,
   Search,
-  SwapVertOutlined,
   ThumbDownOffAlt,
 } from "@mui/icons-material";
 import React, { useEffect, useMemo, useState } from "react";
@@ -56,6 +55,7 @@ import { theme } from "../../../theme/theme";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+import { ticketStyle as sx } from "./style/ticketStyle";
 
 import {
   useCancelClosingIssueHandlerTicketsMutation,
@@ -1979,16 +1979,7 @@ const IssueHandlerConcerns = () => {
                                   </TableCell>
                                 ))}
 
-                              <TableCell
-                                className="ellipsis-styling"
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  width: "100px",
-                                }}
-                                onClick={() => onViewAction(item)}
-                              >
+                              <TableCell onClick={() => onViewAction(item)}>
                                 <Box>
                                   <Tooltip title={item.remarks} placement="bottom-start">
                                     <Chip
@@ -1996,11 +1987,8 @@ const IssueHandlerConcerns = () => {
                                       size="small"
                                       label={item.remarks ? item.remarks : ""}
                                       sx={{
+                                        ...sx.remarksChip,
                                         backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
-                                        color: "#ffffff",
-                                        borderRadius: "none",
-                                        maxWidth: "300px",
-                                        cursor: "pointer",
                                       }}
                                     />
                                   </Tooltip>
