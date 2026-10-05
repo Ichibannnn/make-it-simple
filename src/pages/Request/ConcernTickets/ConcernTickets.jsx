@@ -18,7 +18,6 @@ import {
   TablePagination,
   TableRow,
   Tabs,
-  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -37,14 +36,16 @@ import {
   Warning,
 } from "@mui/icons-material";
 
-import { theme } from "../../../theme/theme";
-import { toast } from "sonner";
 import Swal from "sweetalert2";
 import moment from "moment";
-
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
+import { theme } from "../../../theme/theme";
+import { toast } from "sonner";
+import { LoadingButton } from "@mui/lab";
+import { useDispatch, useSelector } from "react-redux";
+import { reqConcernStyles as sx } from "./style/reqConcernStyles";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
@@ -53,17 +54,13 @@ import ConcernDialog from "./ConcernDialog";
 import ConcernViewDialog from "./ConcernViewDialog";
 import ConcernReturn from "./ConcernReturn";
 import ConcernHistory from "./ConcernHistory";
+import ConcernTicketFiltering from "./ConcernTicketFiltering";
 
-import useSignalRConnection from "../../../hooks/useSignalRConnection";
-import { useDispatch } from "react-redux";
+import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
 
-import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
-import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import { LoadingButton } from "@mui/lab";
-import { useSelector } from "react-redux";
 import { setSearchValue, setStatus, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
-import ConcernTicketFiltering from "./ConcernTicketFiltering";
+import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
 
 const ConcernTickets = () => {
   const status = useSelector((state) => state.root.status);
@@ -412,13 +409,7 @@ const ConcernTickets = () => {
             </Stack>
 
             <Stack direction="row" gap={0.5}>
-              <LoadingButton
-                variant="contained"
-                color="success"
-                onClick={onSelectedConfirmAction}
-                loading={confirmConcernIsLoading || confirmConcernIsFetching}
-                startIcon={<Check />}
-              >
+              <LoadingButton variant="contained" color="success" onClick={onSelectedConfirmAction} loading={confirmConcernIsLoading || confirmConcernIsFetching} startIcon={<Check />}>
                 Confirm
               </LoadingButton>
             </Stack>
@@ -653,23 +644,9 @@ const ConcernTickets = () => {
                     !isLoading &&
                     !isFetching &&
                     data?.value?.requestConcern?.map((item, index) => (
-                      <Card key={index} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
-                        <CardContent
-                          sx={{
-                            cursor: "pointer",
-                            "&:hover": {
-                              backgroundColor: "#1A222F",
-                              color: "#9e77ed",
-                            },
-                          }}
-                        >
-                          <Stack
-                            spacing={1}
-                            direction="row"
-                            sx={{
-                              alignItems: "center",
-                            }}
-                          >
+                      <Card key={index} sx={sx.cards}>
+                        <CardContent sx={sx.cardContent}>
+                          <Stack spacing={1} direction="row" alignItems="center">
                             {status === "For Confirmation" && (
                               <Stack>
                                 <Checkbox
@@ -684,15 +661,13 @@ const ConcernTickets = () => {
 
                             <Stack spacing={1}>
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>
-                                  {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}
-                                </Typography>
+                                <Typography sx={sx.cardTitle}>TICKET NUMBER:</Typography>
+                                <Typography sx={sx.cardDescription}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>REQUEST DETAILS:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
+                                <Typography sx={sx.cardTitle}>REQUEST DETAILS:</Typography>
+                                <Typography sx={sx.cardDescription}>
                                   {item.concern.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
@@ -703,8 +678,8 @@ const ConcernTickets = () => {
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>RESOLUTION:</Typography>
-                                <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main, wordBreak: "break-word" }}>
+                                <Typography sx={sx.cardTitle}>RESOLUTION:</Typography>
+                                <Typography sx={sx.cardDescription}>
                                   {item.resolution
                                     ? item.resolution?.split("\r\n").map((line, index) => (
                                         <span key={index}>
@@ -717,24 +692,13 @@ const ConcernTickets = () => {
                               </Stack>
 
                               <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>DATE CREATED:</Typography>
-                                <Chip
-                                  variant="filled"
-                                  size="30px"
-                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: "#1D1F3B",
-                                    color: theme.palette.primary.main,
-                                    fontWeight: 800,
-                                  }}
-                                  label={moment(item.created_At).format("LL")}
-                                />
+                                <Typography sx={sx.cardTitle}>DATE CREATED:</Typography>
+                                <Chip variant="filled" size="30px" icon={<CalendarMonthOutlined fontSize="small" color="primary" />} sx={sx.cardChip} label={moment(item.created_At).format("LL")} />
                               </Stack>
 
                               {item?.concern_Status === "" && (
                                 <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                  <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>STATUS:</Typography>
+                                  <Typography sx={sx.cardTitle}>STATUS:</Typography>
                                   <Chip
                                     variant="filled"
                                     size="30px"
@@ -768,21 +732,21 @@ const ConcernTickets = () => {
                                       item.concern_Status === "For Approval"
                                         ? "Verification"
                                         : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                        ? "Ongoing/On Hold"
-                                        : item.concern_Status === "Ongoing"
-                                        ? "Ongoing"
-                                        : item.concern_Status === "For Confirmation"
-                                        ? "For Confirmation"
-                                        : item.concern_Status === "Done"
-                                        ? "Done"
-                                        : ""
+                                          ? "Ongoing/On Hold"
+                                          : item.concern_Status === "Ongoing"
+                                            ? "Ongoing"
+                                            : item.concern_Status === "For Confirmation"
+                                              ? "For Confirmation"
+                                              : item.concern_Status === "Done"
+                                                ? "Done"
+                                                : ""
                                     }
                                   />
                                 </Stack>
                               )}
 
                               <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
+                                <Typography sx={sx.cardTitle}>ACTION:</Typography>
                                 <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
                               </Stack>
                             </Stack>
@@ -842,9 +806,6 @@ const ConcernTickets = () => {
                             padding="checkbox"
                             sx={{
                               background: "#1C2536",
-                              color: "#D65DB1",
-                              fontWeight: 700,
-                              fontSize: "12px",
                             }}
                             align="center"
                           >
@@ -856,75 +817,12 @@ const ConcernTickets = () => {
                             />
                           </TableCell>
                         )}
-
-                        <TableCell
-                          sx={{
-                            width: 100,
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          TICKET NO.
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          REQUEST DETAILS
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          RESOLUTION
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                          align="center"
-                        >
-                          DATE CREATED
-                        </TableCell>
-
-                        {status === "" && (
-                          <TableCell
-                            sx={{
-                              background: "#1C2536",
-                              color: "#D65DB1",
-                              fontWeight: 700,
-                              fontSize: "12px",
-                            }}
-                          >
-                            STATUS
-                          </TableCell>
-                        )}
-
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.tableCellHeader}>TICKET NO.</TableCell>
+                        <TableCell sx={sx.tableCellHeader}>REQUEST DETAILS</TableCell>
+                        <TableCell sx={sx.tableCellHeader}>RESOLUTION</TableCell>
+                        <TableCell sx={sx.tableCellHeader}>DATE CREATED</TableCell>
+                        {status === "" && <TableCell sx={sx.tableCellHeader}>STATUS</TableCell>}
+                        <TableCell sx={sx.tableCellHeader} align="center">
                           ACTION
                         </TableCell>
                       </TableRow>
@@ -950,15 +848,7 @@ const ConcernTickets = () => {
                                 }}
                               >
                                 {status === "For Confirmation" && (
-                                  <TableCell
-                                    padding="checkbox"
-                                    sx={{
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                    }}
-                                    align="center"
-                                  >
+                                  <TableCell padding="checkbox" sx={sx.tableCellBody} align="center">
                                     <Checkbox
                                       checked={selectedTickets.includes(item.requestConcernId)}
                                       onChange={() => handleSelectTicket(item.requestConcernId)}
@@ -969,60 +859,31 @@ const ConcernTickets = () => {
                                   </TableCell>
                                 )}
 
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                  // align="center"
-                                  onClick={() => onViewHistoryAction(item)}
-                                >
-                                  <Stack sx={{ width: "80px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Stack>
+                                <TableCell sx={sx.tableCellBody} onClick={() => onViewHistoryAction(item)}>
+                                  {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                                 </TableCell>
 
-                                <TableCell
-                                  sx={{
-                                    width: "400px",
-                                  }}
-                                  onClick={() => onViewHistoryAction(item)}
-                                >
-                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
-                                    {item.concern?.split("\r\n").map((line, index) => (
-                                      <span key={index}>
-                                        {line}
-                                        <br />
-                                      </span>
-                                    ))}
-                                  </Typography>
+                                <TableCell sx={sx.customTableCellBody} onClick={() => onViewHistoryAction(item)}>
+                                  {item.concern?.split("\r\n").map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
                                 </TableCell>
 
-                                <TableCell
-                                  sx={{
-                                    width: "400px",
-                                  }}
-                                  onClick={() => onViewHistoryAction(item)}
-                                >
-                                  <Typography sx={{ color: "#EDF2F7", fontSize: "12px", fontWeight: 500, wordBreak: "break-word" }}>
-                                    {item.resolution
-                                      ? item.resolution?.split("\r\n").map((line, index) => (
-                                          <span key={index}>
-                                            {line}
-                                            <br />
-                                          </span>
-                                        ))
-                                      : "--"}
-                                  </Typography>
+                                <TableCell sx={sx.customTableCellBody} onClick={() => onViewHistoryAction(item)}>
+                                  {item.resolution
+                                    ? item.resolution?.split("\r\n").map((line, index) => (
+                                        <span key={index}>
+                                          {line}
+                                          <br />
+                                        </span>
+                                      ))
+                                    : "--"}
                                 </TableCell>
 
-                                <TableCell
-                                  sx={{
-                                    fontSize: "14px",
-                                    fontWeight: 500,
-                                  }}
-                                  align="center"
-                                  onClick={() => onViewHistoryAction(item)}
-                                >
+                                <TableCell onClick={() => onViewHistoryAction(item)}>
                                   <Chip
                                     variant="filled"
                                     size="30px"
@@ -1038,14 +899,7 @@ const ConcernTickets = () => {
                                 </TableCell>
 
                                 {status === "" && (
-                                  <TableCell
-                                    sx={{
-                                      color: "#EDF2F7",
-                                      fontSize: "14px",
-                                      fontWeight: 500,
-                                    }}
-                                    onClick={() => onViewHistoryAction(item)}
-                                  >
+                                  <TableCell onClick={() => onViewHistoryAction(item)}>
                                     <Chip
                                       variant="filled"
                                       size="30px"
@@ -1079,27 +933,20 @@ const ConcernTickets = () => {
                                         item.concern_Status === "For Approval"
                                           ? "Verification"
                                           : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
-                                          ? "Ongoing/On Hold"
-                                          : item.concern_Status === "Ongoing"
-                                          ? "Ongoing"
-                                          : item.concern_Status === "For Confirmation"
-                                          ? "For Confirmation"
-                                          : item.concern_Status === "Done"
-                                          ? "Done"
-                                          : ""
+                                            ? "Ongoing/On Hold"
+                                            : item.concern_Status === "Ongoing"
+                                              ? "Ongoing"
+                                              : item.concern_Status === "For Confirmation"
+                                                ? "For Confirmation"
+                                                : item.concern_Status === "Done"
+                                                  ? "Done"
+                                                  : ""
                                       }
                                     />
                                   </TableCell>
                                 )}
 
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "14px",
-                                    fontWeight: 500,
-                                  }}
-                                  align="center"
-                                >
+                                <TableCell align="center">
                                   <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
                                 </TableCell>
                               </TableRow>

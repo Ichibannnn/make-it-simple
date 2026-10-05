@@ -52,13 +52,6 @@ export const ticketStyle = {
     alignItems: "center",
     fontSize: { xs: "10px", md: "14px" },
     fontWeight: 600,
-    "&::before": {
-      content: '""',
-      width: 3,
-      height: 14,
-      borderRadius: "2px",
-      background: `linear-gradient(${t.violet}, ${t.pink})`,
-    },
   },
 
   titleHeaderIcon: {
@@ -204,20 +197,6 @@ export const ticketStyle = {
   },
 
   // ** History
-  accordionHistory: {
-    background: `linear-gradient(${t.panel}, ${t.panel}) padding-box, linear-gradient(135deg, #7c5cff66, ${t.line} 40%, #ff4fa355) border-box`,
-    border: "1px solid transparent",
-    borderRadius: "15px",
-    overflow: "hidden",
-
-    "&:before": {
-      display: "none",
-    },
-
-    "&.Mui-expanded": {
-      borderRadius: "15px",
-    },
-  },
 
   transactionDateText: {
     fontSize: { xs: "10px", md: "12px" },
@@ -272,8 +251,6 @@ export const ticketStyle = {
     "&:before": { display: "none" },
     "&.Mui-expanded": { borderRadius: "15px", margin: 0 },
   },
-
-  titleHeader: { flexDirection: "row", alignItems: "center", gap: 1 },
 
   titleBar: {
     width: 3,
