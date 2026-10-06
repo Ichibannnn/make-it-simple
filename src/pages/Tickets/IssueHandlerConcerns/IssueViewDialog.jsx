@@ -19,27 +19,13 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import {
-  AttachFile,
-  AttachFileOutlined,
-  ChecklistRtlOutlined,
-  Close,
-  MoveDownOutlined,
-  PendingOutlined,
-  Receipt,
-  RestartAlt,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { AttachFile, AttachFileOutlined, ChecklistRtlOutlined, Close, MoveDownOutlined, PendingOutlined, Receipt, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import { theme } from "../../../theme/theme";
 import moment from "moment";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 
 import TicketHistory from "./TicketHistory";
 import ViewTicketMenuActions from "./MenuActions/ViewTicketMenuActions";
@@ -53,14 +39,7 @@ import { ticketStyle as sx } from "./style/ticketStyle";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import { useSelector } from "react-redux";
 
-const IssueViewDialog = ({
-  data,
-  viewOpen,
-  viewOnClose,
-  onClosing,
-  onTransfer,
-  onHold,
-}) => {
+const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
   const [attachments, setAttachments] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
@@ -69,19 +48,10 @@ const IssueViewDialog = ({
   const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
 
-  const channelNameValidation = useSelector(
-    (state) => state?.user?.channels?.[0]?.channelName,
-  );
+  const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
 
-  const [
-    getRequestorAttachment,
-    {
-      isLoading: attachmentIsLoading,
-      isError: attachmentIsError,
-      isFetching: attachmentIsFetching,
-      isSuccess: attachmentIsSuccess,
-    },
-  ] = useLazyGetRequestorAttachmentQuery();
+  const [getRequestorAttachment, { isLoading: attachmentIsLoading, isError: attachmentIsError, isFetching: attachmentIsFetching, isSuccess: attachmentIsSuccess }] =
+    useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
@@ -186,21 +156,10 @@ const IssueViewDialog = ({
   };
 
   // Filter once per attachments change instead of on every render
-  const imageAttachments = useMemo(
-    () => attachments.filter((a) => isImagePreview(a.name)),
-    [attachments],
-  );
-  const otherAttachments = useMemo(
-    () => attachments.filter((a) => !isImagePreview(a.name)),
-    [attachments],
-  );
+  const imageAttachments = useMemo(() => attachments.filter((a) => isImagePreview(a.name)), [attachments]);
+  const otherAttachments = useMemo(() => attachments.filter((a) => !isImagePreview(a.name)), [attachments]);
 
-  const TABLE_COLUMNS = [
-    "TICKET NO.",
-    "TICKET DESCRIPTION",
-    "DATE NEEDED",
-    "TARGET DATE",
-  ];
+  const TABLE_COLUMNS = ["TICKET NO.", "TICKET DESCRIPTION", "DATE NEEDED", "TARGET DATE"];
 
   const trimLetters = (name) => {
     if (!name) return "";
@@ -233,18 +192,12 @@ const IssueViewDialog = ({
           {/* Requestor*/}
           <Stack sx={sx.header}>
             <Stack direction="row" gap={1} alignItems="center">
-              <Avatar sx={sx.avatarIcon}>
-                {trimLetters(data?.requestor_Name)}
-              </Avatar>
+              <Avatar sx={sx.avatarIcon}>{trimLetters(data?.requestor_Name)}</Avatar>
 
               <Stack>
                 <Typography sx={sx.secondaryText}>Created by</Typography>
-                <Typography sx={sx.requestorText}>
-                  {data?.requestor_Name}
-                </Typography>
-                <Typography
-                  sx={sx.departmentText}
-                >{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
+                <Typography sx={sx.requestorText}>{data?.requestor_Name}</Typography>
+                <Typography sx={sx.departmentText}>{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
               </Stack>
             </Stack>
 
@@ -265,31 +218,15 @@ const IssueViewDialog = ({
 
               {/* Detail Box */}
               <Stack sx={sx.detailBox}>
-                {/* Ticket Number */}
-                {/* <Stack sx={sx.detailLayout}>
-                  <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>Ticket Number:</Typography>
-                  </Box>
-
-                  <Box sx={sx.spacer} />
-                  <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
-                  </Box>
-                </Stack> */}
-
                 {/* Request Type */}
                 <Stack sx={sx.detailLayout}>
                   <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>
-                      Request Type:
-                    </Typography>
+                    <Typography sx={sx.ticketTitleLabel}>Request Type:</Typography>
                   </Box>
 
                   <Box sx={sx.spacer} />
                   <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>
-                      {data?.request_Type}
-                    </Typography>
+                    <Typography sx={sx.ticketDescLabel}>{data?.request_Type}</Typography>
                   </Box>
                 </Stack>
 
@@ -297,16 +234,12 @@ const IssueViewDialog = ({
                 {data?.request_Type === "Back Job" && (
                   <Stack sx={sx.detailLayout}>
                     <Box sx={sx.detailRowTextLayout}>
-                      <Typography sx={sx.ticketTitleLabel}>
-                        Rework Ticket Number:
-                      </Typography>
+                      <Typography sx={sx.ticketTitleLabel}>Rework Ticket Number:</Typography>
                     </Box>
 
                     <Box sx={sx.spacer} />
                     <Box sx={sx.valueBox}>
-                      <Typography
-                        sx={sx.ticketDescLabel}
-                      >{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                      <Typography sx={sx.ticketDescLabel}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
                     </Box>
                   </Stack>
                 )}
@@ -314,16 +247,12 @@ const IssueViewDialog = ({
                 {/* Department */}
                 <Stack sx={sx.detailLayout}>
                   <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>
-                      Department:
-                    </Typography>
+                    <Typography sx={sx.ticketTitleLabel}>Department:</Typography>
                   </Box>
 
                   <Box sx={sx.spacer} />
                   <Box sx={sx.valueBox}>
-                    <Typography
-                      sx={sx.ticketDescLabel}
-                    >{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
+                    <Typography sx={sx.ticketDescLabel}>{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
                   </Box>
                 </Stack>
 
@@ -334,10 +263,7 @@ const IssueViewDialog = ({
                   </Box>
                   <Box sx={sx.spacer} />
                   <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>
-                      {" "}
-                      {data?.channel_Name}
-                    </Typography>
+                    <Typography sx={sx.ticketDescLabel}> {data?.channel_Name}</Typography>
                   </Box>
                 </Stack>
 
@@ -367,9 +293,7 @@ const IssueViewDialog = ({
                 {/* Sub-Category */}
                 <Stack sx={sx.detailLayout}>
                   <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>
-                      Sub Category:
-                    </Typography>
+                    <Typography sx={sx.ticketTitleLabel}>Sub Category:</Typography>
                   </Box>
                   <Box sx={sx.spacer} />
                   <Box sx={sx.valueBox}>
@@ -390,22 +314,14 @@ const IssueViewDialog = ({
                 </Stack>
 
                 {/* Concern Category */}
-                {(data?.ticket_Status === "For Closing Ticket" ||
-                  data?.ticket_Status === "For Confirmation" ||
-                  data?.ticket_Status === "Closed") && (
+                {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
                   <Stack sx={sx.detailLayout}>
                     <Box sx={sx.detailRowTextLayout}>
-                      <Typography sx={sx.ticketTitleLabel}>
-                        Concern Category:
-                      </Typography>
+                      <Typography sx={sx.ticketTitleLabel}>Concern Category:</Typography>
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.valueBox}>
-                      <Typography sx={sx.ticketDescLabel}>
-                        {data?.getForClosingTickets?.[0]?.categoryConcernName
-                          ? data?.getForClosingTickets?.[0]?.categoryConcernName
-                          : "--"}
-                      </Typography>
+                      <Typography sx={sx.ticketDescLabel}>{data?.getForClosingTickets?.[0]?.categoryConcernName ? data?.getForClosingTickets?.[0]?.categoryConcernName : "--"}</Typography>
                     </Box>
                   </Stack>
                 )}
@@ -413,15 +329,11 @@ const IssueViewDialog = ({
                 {/* Assigned To */}
                 <Stack sx={sx.detailLayout}>
                   <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>
-                      Assigned to:
-                    </Typography>
+                    <Typography sx={sx.ticketTitleLabel}>Assigned to:</Typography>
                   </Box>
                   <Box sx={sx.spacer} />
                   <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>
-                      {data?.issue_Handler}
-                    </Typography>
+                    <Typography sx={sx.ticketDescLabel}>{data?.issue_Handler}</Typography>
                   </Box>
                 </Stack>
 
@@ -429,15 +341,11 @@ const IssueViewDialog = ({
                 {data?.ticket_Status === "For On-Hold" && (
                   <Stack sx={sx.detailLayout}>
                     <Box sx={sx.detailRowTextLayout}>
-                      <Typography sx={sx.ticketTitleLabel}>
-                        Hold Reason:
-                      </Typography>
+                      <Typography sx={sx.ticketTitleLabel}>Hold Reason:</Typography>
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.valueBox}>
-                      <Typography sx={sx.ticketDescLabel}>
-                        {data?.getForOnHolds?.[0]?.reason}
-                      </Typography>
+                      <Typography sx={sx.ticketDescLabel}>{data?.getForOnHolds?.[0]?.reason}</Typography>
                     </Box>
                   </Stack>
                 )}
@@ -446,15 +354,11 @@ const IssueViewDialog = ({
                 {data?.ticket_Status === "For Transfer" && (
                   <Stack sx={sx.detailLayout}>
                     <Box sx={sx.detailRowTextLayout}>
-                      <Typography sx={sx.ticketTitleLabel}>
-                        Transfer Remarks:
-                      </Typography>
+                      <Typography sx={sx.ticketTitleLabel}>Transfer Remarks:</Typography>
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.valueBox}>
-                      <Typography sx={sx.ticketDescLabel}>
-                        {data?.getForTransferTickets?.[0]?.transfer_Remarks}
-                      </Typography>
+                      <Typography sx={sx.ticketDescLabel}>{data?.getForTransferTickets?.[0]?.transfer_Remarks}</Typography>
                     </Box>
                   </Stack>
                 )}
@@ -463,110 +367,43 @@ const IssueViewDialog = ({
                 {data?.ticket_Status === "Transfer Approval" && (
                   <Stack sx={sx.detailLayout}>
                     <Box sx={sx.detailRowTextLayout}>
-                      <Typography sx={sx.ticketTitleLabel}>
-                        Transfer Remarks:
-                      </Typography>
+                      <Typography sx={sx.ticketTitleLabel}>Transfer Remarks:</Typography>
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.valueBox}>
-                      <Typography sx={sx.ticketDescLabel}>
-                        {data?.transferApprovalTickets?.[0]?.transfer_Remarks}
-                      </Typography>
+                      <Typography sx={sx.ticketDescLabel}>{data?.transferApprovalTickets?.[0]?.transfer_Remarks}</Typography>
                     </Box>
                   </Stack>
                 )}
 
-                {/* Date Needed */}
-                {/* <Stack sx={sx.detailLayout}>
-                  <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>Date Needed:</Typography>
-                  </Box>
-                  <Box sx={sx.spacer} />
-                  <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>{data?.date_Needed ? moment(data?.date_Needed).format("LL") : "--"}</Typography>
-                  </Box>
-                </Stack> */}
-
-                {/* Target Date  */}
-                {/* <Stack sx={sx.detailLayout}>
-                  <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>Target Date:</Typography>
-                  </Box>
-                  <Box sx={sx.spacer} />
-                  <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>{moment(data?.target_Date).format("LL")}</Typography>
-                  </Box>
-                </Stack> */}
-
                 {/* Closing Date Remarks */}
-                {(channelNameValidation ===
-                  "HMU - IT Hardware Support (Hardware Concern)" &&
-                  data?.ticket_Status === "") ||
-                  (channelNameValidation ===
-                    "HMU - IT Hardware Support (Hardware Concern)" &&
-                    data?.ticket_Status === "For Closing Ticket") ||
-                  (channelNameValidation ===
-                    "HMU - IT Hardware Support (Hardware Concern)" &&
-                    data?.ticket_Status === "Closed") ||
-                  (channelNameValidation ===
-                    "HMU - IT Hardware Support (Hardware Concern)" &&
-                    data?.ticket_Status === "For Confirmation" && (
-                      <>
-                        <Stack sx={sx.detailLayout}>
-                          <Box sx={sx.detailRowTextLayout}>
-                            <Typography sx={sx.ticketTitleLabel}>
-                              Backdate:
-                            </Typography>
-                          </Box>
-                          <Box sx={sx.spacer} />
-                          <Box sx={sx.valueBox}>
-                            <Typography sx={sx.ticketDescLabel}>
-                              {data?.getForClosingTickets?.[0]?.backDate
-                                ? moment(
-                                    data?.getForClosingTickets?.[0]?.backDate,
-                                  ).format("LL")
-                                : "--"}
-                            </Typography>
-                          </Box>
-                        </Stack>
+                {(channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && data?.ticket_Status === "") ||
+                  (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && data?.ticket_Status === "For Closing Ticket") ||
+                  (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && data?.ticket_Status === "Closed") ||
+                  (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && data?.ticket_Status === "For Confirmation" && (
+                    <>
+                      <Stack sx={sx.detailLayout}>
+                        <Box sx={sx.detailRowTextLayout}>
+                          <Typography sx={sx.ticketTitleLabel}>Backdate:</Typography>
+                        </Box>
+                        <Box sx={sx.spacer} />
+                        <Box sx={sx.valueBox}>
+                          <Typography sx={sx.ticketDescLabel}>{data?.getForClosingTickets?.[0]?.backDate ? moment(data?.getForClosingTickets?.[0]?.backDate).format("LL") : "--"}</Typography>
+                        </Box>
+                      </Stack>
 
-                        {/* Backdate Remarks */}
-                        <Stack sx={sx.detailLayout}>
-                          <Box sx={sx.detailRowTextLayout}>
-                            <Typography sx={sx.ticketTitleLabel}>
-                              Backdate Remarks:
-                            </Typography>
-                          </Box>
-                          <Box sx={sx.spacer} />
-                          <Box sx={sx.valueBox}>
-                            <Typography sx={sx.ticketDescLabel}>
-                              {data?.getForClosingTickets?.[0]?.backDateRemarks
-                                ? data?.getForClosingTickets?.[0]
-                                    ?.backDateRemarks
-                                : "--"}
-                            </Typography>
-                          </Box>
-                        </Stack>
-                      </>
-                    ))}
-
-                {/* Ticket Description */}
-                {/* <Stack sx={sx.detailLayout}>
-                  <Box sx={sx.detailRowTextLayout}>
-                    <Typography sx={sx.ticketTitleLabel}>Ticket Description:</Typography>
-                  </Box>
-                  <Box sx={sx.spacer} />
-                  <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>
-                      {data?.concern_Description?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </Typography>
-                  </Box>
-                </Stack> */}
+                      {/* Backdate Remarks */}
+                      <Stack sx={sx.detailLayout}>
+                        <Box sx={sx.detailRowTextLayout}>
+                          <Typography sx={sx.ticketTitleLabel}>Backdate Remarks:</Typography>
+                        </Box>
+                        <Box sx={sx.spacer} />
+                        <Box sx={sx.valueBox}>
+                          <Typography sx={sx.ticketDescLabel}>{data?.getForClosingTickets?.[0]?.backDateRemarks ? data?.getForClosingTickets?.[0]?.backDateRemarks : "--"}</Typography>
+                        </Box>
+                      </Stack>
+                    </>
+                  ))}
 
                 {/* Notes */}
                 <Stack sx={sx.detailLayout}>
@@ -575,33 +412,25 @@ const IssueViewDialog = ({
                   </Box>
                   <Box sx={sx.spacer} />
                   <Box sx={sx.valueBox}>
-                    <Typography sx={sx.ticketDescLabel}>
-                      {data?.notes !== null ? data?.notes : "--"}
-                    </Typography>
+                    <Typography sx={sx.ticketDescLabel}>{data?.notes !== null ? data?.notes : "--"}</Typography>
                   </Box>
                 </Stack>
 
                 {/* Resolution */}
-                {(data?.ticket_Status === "For Closing Ticket" ||
-                  data?.ticket_Status === "For Confirmation" ||
-                  data?.ticket_Status === "Closed") && (
+                {(data?.ticket_Status === "For Closing Ticket" || data?.ticket_Status === "For Confirmation" || data?.ticket_Status === "Closed") && (
                   <Stack sx={sx.detailLayout}>
                     <Box sx={sx.detailRowTextLayout}>
-                      <Typography sx={sx.ticketTitleLabel}>
-                        Resolution:
-                      </Typography>
+                      <Typography sx={sx.ticketTitleLabel}>Resolution:</Typography>
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.valueBox}>
                       <Typography sx={sx.ticketDescLabel}>
-                        {data?.getForClosingTickets?.[0]?.resolution
-                          ?.split("\r\n")
-                          .map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
+                        {data?.getForClosingTickets?.[0]?.resolution?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                       </Typography>
                     </Box>
                   </Stack>
@@ -623,28 +452,18 @@ const IssueViewDialog = ({
                       <TableBody>
                         <TableRow>
                           <TableCell sx={global.bodyCell}>
-                            <Typography
-                              sx={global.ticketNoText}
-                            >{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                            <Typography sx={global.ticketNoText}>{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                           </TableCell>
                           <TableCell sx={global.bodyCell}>
-                            {data?.concern_Description
-                              ?.split("\r\n")
-                              .map((line, index) => (
-                                <span key={index}>
-                                  {line}
-                                  <br />
-                                </span>
-                              ))}
+                            {data?.concern_Description?.split("\r\n").map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                <br />
+                              </span>
+                            ))}
                           </TableCell>
-                          <TableCell sx={global.bodyCell}>
-                            {data?.date_Needed
-                              ? moment(data?.date_Needed).format("LL")
-                              : "--"}
-                          </TableCell>
-                          <TableCell sx={global.bodyCell}>
-                            {moment(data?.target_Date).format("LL")}
-                          </TableCell>
+                          <TableCell sx={global.bodyCell}>{data?.date_Needed ? moment(data?.date_Needed).format("LL") : "--"}</TableCell>
+                          <TableCell sx={global.bodyCell}>{moment(data?.target_Date).format("LL")}</TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
@@ -681,10 +500,7 @@ const IssueViewDialog = ({
                             onDownload={handleDownloadAttachment}
                             viewIsLoading={viewIsLoading}
                             downloadIsLoading={downloadIsLoading}
-                            isOpening={
-                              loadingAttachmentId ===
-                              fileName.ticketAttachmentId
-                            }
+                            isOpening={loadingAttachmentId === fileName.ticketAttachmentId}
                           />
                         ))}
                       </Box>
@@ -695,15 +511,9 @@ const IssueViewDialog = ({
                       <Box key={index} sx={sx.attachmentCards}>
                         {getAttachmentIcon(fileName)}
                         <Box sx={sx.attachmentNameBox}>
-                          <Box
-                            sx={{ display: "flex", flexDirection: "column" }}
-                          >
-                            <Typography sx={sx.fontSize}>
-                              {fileName.name}
-                            </Typography>
-                            <Typography sx={sx.fontSize}>
-                              {fileName.size} Mb
-                            </Typography>
+                          <Box sx={{ display: "flex", flexDirection: "column" }}>
+                            <Typography sx={sx.fontSize}>{fileName.name}</Typography>
+                            <Typography sx={sx.fontSize}>{fileName.size} Mb</Typography>
                           </Box>
 
                           <Box>
@@ -733,37 +543,23 @@ const IssueViewDialog = ({
                         alignItems: "center",
                       }}
                     >
-                      <Skeleton
-                        animation="wave"
-                        variant="circular"
-                        width={45}
-                        height={40}
-                      />
+                      <Skeleton animation="wave" variant="circular" width={45} height={40} />
                       <Stack sx={{ width: "100%" }}>
-                        <Skeleton
-                          animation="wave"
-                          height={20}
-                          style={{ marginBottom: 6 }}
-                        />
+                        <Skeleton animation="wave" height={20} style={{ marginBottom: 6 }} />
                         <Skeleton animation="wave" height={20} />
                       </Stack>
                     </Stack>
                   </Stack>
                 )}
 
-                {attachmentIsSuccess &&
-                  !attachments?.length &&
-                  !attachmentIsLoading &&
-                  !attachmentIsFetching && (
-                    <Stack sx={sx.noAttachmentBox}>
-                      <Stack sx={sx.attachmentContent}>
-                        <AttachFileOutlined sx={sx.titleSubIcon} />
-                        <Typography sx={sx.titleSubText}>
-                          No attached file
-                        </Typography>
-                      </Stack>
+                {attachmentIsSuccess && !attachments?.length && !attachmentIsLoading && !attachmentIsFetching && (
+                  <Stack sx={sx.noAttachmentBox}>
+                    <Stack sx={sx.attachmentContent}>
+                      <AttachFileOutlined sx={sx.titleSubIcon} />
+                      <Typography sx={sx.titleSubText}>No attached file</Typography>
                     </Stack>
-                  )}
+                  </Stack>
+                )}
               </Stack>
             </Stack>
 
@@ -776,31 +572,13 @@ const IssueViewDialog = ({
           {data?.ticket_Status === "Open Ticket" && (
             <>
               <Stack direction="row" gap={0.5} alignItems="center" mb={1}>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => onClosing(data)}
-                  color="success"
-                  startIcon={<ChecklistRtlOutlined />}
-                >
+                <Button variant="contained" size="small" onClick={() => onClosing(data)} color="success" startIcon={<ChecklistRtlOutlined />}>
                   <Typography sx={global.customButtonText}>Close</Typography>
                 </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => onTransfer(data)}
-                  color="info"
-                  startIcon={<MoveDownOutlined />}
-                >
+                <Button variant="contained" size="small" onClick={() => onTransfer(data)} color="info" startIcon={<MoveDownOutlined />}>
                   <Typography sx={global.customButtonText}>Transfer</Typography>
                 </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => onHold(data)}
-                  color="warning"
-                  startIcon={<PendingOutlined />}
-                >
+                <Button variant="contained" size="small" onClick={() => onHold(data)} color="warning" startIcon={<PendingOutlined />}>
                   <Typography sx={global.customButtonText}>Hold</Typography>
                 </Button>
               </Stack>
@@ -809,28 +587,18 @@ const IssueViewDialog = ({
         </DialogActions>
 
         <IssueHandlerClosingDialog data={data} viewOnClose={onCloseHandler} />
-        <TicketForTransferDialog
-          data={data}
-          viewOnClose={onTransferCloseHandler}
-        />
+        <TicketForTransferDialog data={data} viewOnClose={onTransferCloseHandler} />
         <IssueHandlerHoldDialog data={data} viewOnClose={onHoldCloseHandler} />
       </Dialog>
 
-      {selectedImage && (
-        <ImageViewerDialog
-          imageUrl={selectedImage}
-          open={isViewDialogOpen}
-          onClose={handleViewClose}
-        />
-      )}
+      {selectedImage && <ImageViewerDialog imageUrl={selectedImage} open={isViewDialogOpen} onClose={handleViewClose} />}
     </>
   );
 };
 
 export default IssueViewDialog;
 
-const isImagePreview = (fileName) =>
-  /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+const isImagePreview = (fileName) => /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
 
 const EXT_TO_MIME = {
   png: "image/png",
@@ -848,11 +616,7 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.25;
 
-const ImageViewerDialog = memo(function ImageViewerDialog({
-  imageUrl,
-  open,
-  onClose,
-}) {
+const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onClose }) {
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -860,10 +624,8 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
   const dragStartRef = useRef({ x: 0, y: 0 });
   const positionStartRef = useRef({ x: 0, y: 0 });
 
-  const handleZoomIn = () =>
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () =>
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   const handleZoomReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
@@ -874,11 +636,7 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
     if (!viewport) return;
     const onWheel = (event) => {
       event.preventDefault();
-      setZoom((z) =>
-        event.deltaY < 0
-          ? Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2))
-          : Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)),
-      );
+      setZoom((z) => (event.deltaY < 0 ? Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)) : Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2))));
     };
     viewport.addEventListener("wheel", onWheel, { passive: false });
     return () => viewport.removeEventListener("wheel", onWheel);
@@ -887,8 +645,7 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
   // Snap the pan offset back to center whenever zoom returns to 100% or below
   // (only updates state if it actually changes)
   useEffect(() => {
-    if (zoom <= 1)
-      setPosition((p) => (p.x === 0 && p.y === 0 ? p : { x: 0, y: 0 }));
+    if (zoom <= 1) setPosition((p) => (p.x === 0 && p.y === 0 ? p : { x: 0, y: 0 }));
   }, [zoom]);
 
   // Dragging to pan: only active once zoomed in. Listens on window so a drag
@@ -898,10 +655,8 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
 
     const handleMouseMove = (event) => {
       setPosition({
-        x:
-          positionStartRef.current.x + (event.clientX - dragStartRef.current.x),
-        y:
-          positionStartRef.current.y + (event.clientY - dragStartRef.current.y),
+        x: positionStartRef.current.x + (event.clientX - dragStartRef.current.x),
+        y: positionStartRef.current.y + (event.clientY - dragStartRef.current.y),
       });
     };
     const handleMouseUp = () => setIsDragging(false);
@@ -941,12 +696,7 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
               padding: "2px 6px",
             }}
           >
-            <IconButton
-              size="small"
-              onClick={handleZoomOut}
-              disabled={zoom <= MIN_ZOOM}
-              sx={{ color: "#fff" }}
-            >
+            <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
               <ZoomOut fontSize="small" />
             </IconButton>
 
@@ -961,20 +711,11 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
               {Math.round(zoom * 100)}%
             </Typography>
 
-            <IconButton
-              size="small"
-              onClick={handleZoomIn}
-              disabled={zoom >= MAX_ZOOM}
-              sx={{ color: "#fff" }}
-            >
+            <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
               <ZoomIn fontSize="small" />
             </IconButton>
 
-            <IconButton
-              size="small"
-              onClick={handleZoomReset}
-              sx={{ color: "#fff" }}
-            >
+            <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
               <RestartAlt fontSize="small" />
             </IconButton>
           </Stack>
@@ -1004,8 +745,7 @@ const ImageViewerDialog = memo(function ImageViewerDialog({
                 transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
                 transformOrigin: "center center",
                 transition: isDragging ? "none" : "transform 0.15s ease",
-                cursor:
-                  zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+                cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
               }}
             />
           </Box>
@@ -1037,28 +777,17 @@ const createThumbnailBlob = async (blob, mime) => {
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(bitmap.width * scale);
     canvas.height = Math.round(bitmap.height * scale);
-    canvas
-      .getContext("2d")
-      .drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
     const outType = mime === "image/jpeg" ? "image/jpeg" : "image/png";
-    const thumb = await new Promise((resolve) =>
-      canvas.toBlob(resolve, outType, 0.8),
-    );
+    const thumb = await new Promise((resolve) => canvas.toBlob(resolve, outType, 0.8));
     return thumb || typed;
   } catch {
     return typed; // fall back to the original file
   }
 };
 
-const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({
-  fileName,
-  onView,
-  onDownload,
-  viewIsLoading,
-  downloadIsLoading,
-  isOpening,
-}) {
+const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({ fileName, onView, onDownload, viewIsLoading, downloadIsLoading, isOpening }) {
   const [getAttachmentPreview] = useLazyGetViewAttachmentQuery();
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewError, setPreviewError] = useState(false);
@@ -1070,16 +799,11 @@ const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({
 
     (async () => {
       try {
-        const response = await getAttachmentPreview(
-          fileName?.ticketAttachmentId,
-        );
+        const response = await getAttachmentPreview(fileName?.ticketAttachmentId);
         if (cancelled) return;
 
         if (response?.data) {
-          const mime =
-            EXT_TO_MIME[ext] ||
-            response.data.type ||
-            "application/octet-stream";
+          const mime = EXT_TO_MIME[ext] || response.data.type || "application/octet-stream";
           const thumbBlob = await createThumbnailBlob(response.data, mime);
           if (cancelled) return;
           objectUrl = URL.createObjectURL(thumbBlob);
@@ -1127,14 +851,7 @@ const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({
           backgroundColor: "rgba(0,0,0,0.55)",
         }}
       >
-        <ViewTicketMenuActions
-          fileName={fileName}
-          onView={onView}
-          onDownload={onDownload}
-          isImageFile={isImagePreview}
-          viewIsLoading={viewIsLoading}
-          downloadIsLoading={downloadIsLoading}
-        />
+        <ViewTicketMenuActions fileName={fileName} onView={onView} onDownload={onDownload} isImageFile={isImagePreview} viewIsLoading={viewIsLoading} downloadIsLoading={downloadIsLoading} />
       </Box>
 
       <Box
@@ -1171,11 +888,7 @@ const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({
               justifyContent: "center",
             }}
           >
-            <CircularProgress
-              size={20}
-              thickness={4}
-              sx={{ color: theme.palette.text.secondary }}
-            />
+            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
           </Box>
         )}
 

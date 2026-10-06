@@ -16,13 +16,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import {
-  Add,
-  CheckOutlined,
-  Close,
-  CloseOutlined,
-  FiberManualRecord,
-} from "@mui/icons-material";
+import { Add, CheckOutlined, Close, CloseOutlined, FiberManualRecord, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -32,10 +26,7 @@ import * as yup from "yup";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 
-import {
-  useDeleteRequestorAttachmentMutation,
-  useLazyGetTechniciansQuery,
-} from "../../../features/api_request/concerns/concernApi";
+import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useDispatch, useSelector } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
@@ -52,11 +43,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
-  resolution: yup
-    .string()
-    .min(20, "Resolution must be more than 20 character long")
-    .required("This field is required")
-    .label("Resolution"),
+  resolution: yup.string().min(20, "Resolution must be more than 20 character long").required("This field is required").label("Resolution"),
   AddClosingAttachments: yup.array().nullable(),
   ChannelId: yup.object().required().label("Channel"),
   CategoryId: yup.array().required().label("Category"),
@@ -93,47 +80,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   const fileInputRef = useRef();
 
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-  const channelNameValidation = useSelector(
-    (state) => state?.user?.channels?.[0]?.channelName,
-  );
+  const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
   // useSignalRConnection();
 
-  const [
-    getCategory,
-    {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
-    },
-  ] = useLazyGetCategoryQuery();
-  const [
-    getSubCategory,
-    { data: subCategoryData, isLoading: subCategoryIsLoading },
-  ] = useLazyGetSubCategoryArrayQuery();
-  const [
-    getConcernCategory,
-    {
-      data: concernCategoryData,
-      isLoading: concernCategoryIsLoading,
-      isSuccess: concernCategoryIsSuccess,
-    },
-  ] = useLazyGetCategoryConcernQuery();
-  const [
-    getTechnicians,
-    {
-      data: technicianData,
-      isLoading: technicianIsLoading,
-      isSuccess: technicianIsSuccess,
-    },
-  ] = useLazyGetTechniciansQuery();
-
-  const [
-    closeIssueHandlerTickets,
-    {
-      isLoading: closeIssueHandlerTicketsIsLoading,
-      isFetching: closeIssueHandlerTicketsIsFetching,
-    },
-  ] = useCloseIssueHandlerTicketsMutation();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryArrayQuery();
+  const [getConcernCategory, { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess }] = useLazyGetCategoryConcernQuery();
+  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
+  const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -171,27 +125,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     payload.append("Resolution", formData.resolution);
     payload.append("Notes", formData.Notes);
 
-    payload.append(
-      "BackDate",
-      formData.ClosingDate
-        ? moment(formData.ClosingDate).format("YYYY-MM-DD")
-        : "",
-    );
-    payload.append(
-      "BackDateRemarks",
-      formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "",
-    );
+    payload.append("BackDate", formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "");
+    payload.append("BackDateRemarks", formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "");
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
-      payload.append(
-        `ClosingTicketCategories[${i}].ticketCategoryId`,
-        category[i].ticketCategoryId || "",
-      );
-      payload.append(
-        `ClosingTicketCategories[${i}].categoryId`,
-        category[i]?.id,
-      );
+      payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+      payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
     }
 
     if (category.length === 0) {
@@ -202,14 +142,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     const subCategory = formData.SubCategoryId;
 
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(
-        `ClosingSubTicketCategories[${i}].ticketSubCategoryId`,
-        subCategory[i]?.ticketSubCategoryId || "",
-      );
-      payload.append(
-        `ClosingSubTicketCategories[${i}].subCategoryId`,
-        subCategory[i]?.subCategoryId,
-      );
+      payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
+      payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
 
     if (subCategory.length === 0) {
@@ -219,14 +153,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
     const technicians = formData.Technicians;
     for (let i = 0; i < technicians.length; i++) {
-      payload.append(
-        `AddClosingTicketTechnicians[${i}].ticketTechnicianId`,
-        "",
-      );
-      payload.append(
-        `AddClosingTicketTechnicians[${i}].technician_By`,
-        technicians[i]?.technicianId,
-      );
+      payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, "");
+      payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
     }
 
     if (technicians.length === 0) {
@@ -237,10 +165,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     // Attachments
     const files = formData.AddClosingAttachments;
     for (let i = 0; i < files.length; i++) {
-      payload.append(
-        `AddClosingAttachments[${i}].ticketAttachmentId`,
-        files[i].ticketAttachmentId || "",
-      );
+      payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
       payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
     }
 
@@ -294,10 +219,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       file: file,
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) =>
-        !attachments.some((existingFile) => existingFile.name === newFile.name),
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -322,39 +244,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    // try {
-    //   if (fileNameToDelete.ticketAttachmentId) {
-    //     const deletePayload = {
-    //       removeAttachments: [
-    //         {
-    //           ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-    //         },
-    //       ],
-    //     };
-    //     await deleteRequestorAttachment(deletePayload).unwrap();
-    //   }
-
-    //   setAddAttachments((prevFiles) =>
-    //     prevFiles.filter((fileName) => fileName !== fileNameToDelete),
-    //   );
-
-    //   setValue(
-    //     "AddClosingAttachments",
-    //     watch("AddClosingAttachments").filter(
-    //       (file) => file.name !== fileNameToDelete.name,
-    //     ),
-    //   );
-    // } catch (error) {}
-
-    setAttachments((prevFiles) =>
-      prevFiles.filter((fileName) => fileName !== fileNameToDelete),
-    );
+    setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
     setValue(
       "AddClosingAttachments",
-      watch("AddClosingAttachments").filter(
-        (file) => file.name !== fileNameToDelete.name,
-      ),
+      watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
     );
   };
 
@@ -389,9 +283,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName),
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -408,8 +300,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
       setValue("CategoryConcern", {
         id: concernCategoryData?.value?.category?.[0]?.id,
-        categoryConcern:
-          concernCategoryData?.value?.category?.[0]?.categoryConcern,
+        categoryConcern: concernCategoryData?.value?.category?.[0]?.categoryConcern,
       });
 
       const category = data?.getOpenTicketCategories?.map((item) => ({
@@ -427,9 +318,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       setValue("CategoryId", null);
       setValue("SubCategoryId", null);
 
-      const categoryIdParams = data?.getOpenTicketCategories?.map(
-        (item) => item?.categoryId,
-      );
+      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
 
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
@@ -444,15 +333,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter(
-        (subCategory) =>
-          selectedCategories.some((category) =>
-            subCategoryData?.value?.some(
-              (item) =>
-                item.subCategoryId === subCategory.subCategoryId &&
-                item.categoryId === category.id,
-            ),
-          ),
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -465,10 +347,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
   const isTodayAfterTarget = today.isAfter(data?.target_Date);
   const isTodayAndTargetSame = today.isSame(data?.target_Date, "day");
 
-  const handleZoomIn = () =>
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () =>
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   const handleZoomReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
@@ -536,11 +416,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
       >
         <DialogContent>
           <Stack sx={{ minHeight: "600px" }}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="column">
                 <Typography
                   sx={{
@@ -560,15 +436,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
               </Stack>
             </Stack>
 
-            <Stack
-              id="closeTicket"
-              component="form"
-              direction="row"
-              gap={1}
-              sx={{ width: "100%", height: "100%" }}
-              onSubmit={handleSubmit(onSubmitAction)}
-            >
-              {/* TICKET DETAILS */}
+            <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
+              {/* Ticket Details */}
               <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
                 <Stack direction="row" gap={0.5} alignItems="center">
                   <FiberManualRecord color="warning" fontSize="20px" />
@@ -612,14 +481,12 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           wordBreak: "break-word",
                         }}
                       >
-                        {data?.concern_Description
-                          ?.split("\r\n")
-                          .map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                       </Typography>
                     </Stack>
 
@@ -688,14 +555,12 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             wordBreak: "break-word",
                           }}
                         >
-                          {data?.concern_Description
-                            ?.split("\r\n")
-                            .map((line, index) => (
-                              <span key={index}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
+                          {data?.concern_Description?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
                         </Typography>
                       </Box>
                     </Stack>
@@ -750,16 +615,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     Closing Ticket Form
                   </Typography>
 
-                  <Stack mt={2} gap={0.5}>
+                  <Stack mt={1} gap={0.5}>
                     <Stack direction={isScreenSmall ? "column" : "row"} gap={1}>
-                      <Stack
-                        gap={0.5}
-                        sx={{ width: isScreenSmall ? "100%" : "50%" }}
-                      >
-                        <Stack
-                          direction="row"
-                          sx={{ alignItems: "center", gap: 0.5 }}
-                        >
+                      {/* Category */}
+                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -767,10 +627,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           >
                             Category:
                           </Typography>
-                          <FiberManualRecord
-                            color="error"
-                            sx={{ fontSize: "10px" }}
-                          />
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                         </Stack>
 
                         <Controller
@@ -783,12 +640,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                options={
-                                  categoryData?.value?.category.filter(
-                                    (item) =>
-                                      item.channelId === watch("ChannelId")?.id,
-                                  ) || []
-                                }
+                                options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
                                 loading={categoryIsLoading}
                                 renderInput={(params) => (
                                   <TextField
@@ -810,9 +662,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange={(_, value) => {
                                   onChange(value);
 
-                                  const categoryIdParams = value?.map(
-                                    (category) => category?.id,
-                                  );
+                                  const categoryIdParams = value?.map((category) => category?.id);
 
                                   if (watch("CategoryId").length === 0) {
                                     setValue("SubCategoryId", []);
@@ -822,17 +672,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                     CategoryId: categoryIdParams,
                                   });
                                 }}
-                                getOptionLabel={(option) =>
-                                  option.category_Description || ""
-                                }
-                                isOptionEqualToValue={(option, value) =>
-                                  option.id === value.id
-                                }
-                                getOptionDisabled={(option) =>
-                                  watch("CategoryId").some(
-                                    (item) => item.id === option.id,
-                                  )
-                                }
+                                getOptionLabel={(option) => option.category_Description || ""}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                                 sx={{
                                   flex: 2,
                                 }}
@@ -853,15 +695,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           }}
                         />
                       </Stack>
-
-                      <Stack
-                        gap={0.5}
-                        sx={{ width: isScreenSmall ? "100%" : "50%" }}
-                      >
-                        <Stack
-                          direction="row"
-                          sx={{ alignItems: "center", gap: 0.5 }}
-                        >
+                      {/* Sub Category */}
+                      <Stack gap={0.5} sx={{ width: isScreenSmall ? "100%" : "50%" }}>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -869,10 +705,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           >
                             Sub Category:
                           </Typography>
-                          <FiberManualRecord
-                            color="error"
-                            sx={{ fontSize: "10px" }}
-                          />
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                         </Stack>
                         <Controller
                           control={control}
@@ -900,19 +733,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}
-                                getOptionLabel={(option) =>
-                                  option?.sub_Category_Description || ""
-                                }
-                                isOptionEqualToValue={(option, value) =>
-                                  option?.subCategoryId === value?.subCategoryId
-                                }
-                                getOptionDisabled={(option) =>
-                                  watch("SubCategoryId").some(
-                                    (item) =>
-                                      item.subCategoryId ===
-                                      option.subCategoryId,
-                                  )
-                                }
+                                getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                                isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                                getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                                 noOptionsText={"No sub category available"}
                                 sx={{
                                   flex: 2,
@@ -934,13 +757,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         />
                       </Stack>
                     </Stack>
-
+                    {/* Concern Category */}
                     <Stack gap={1}>
                       <Stack gap={0.5} sx={{ width: "100%" }}>
-                        <Stack
-                          direction="row"
-                          sx={{ alignItems: "center", gap: 0.5 }}
-                        >
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                           <Typography
                             sx={{
                               fontSize: "14px",
@@ -948,10 +768,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           >
                             Concern Category:
                           </Typography>
-                          <FiberManualRecord
-                            color="error"
-                            sx={{ fontSize: "10px" }}
-                          />
+                          <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                         </Stack>
 
                         <Controller
@@ -963,9 +780,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 ref={ref}
                                 size="small"
                                 value={value}
-                                options={
-                                  concernCategoryData?.value?.category || []
-                                }
+                                options={concernCategoryData?.value?.category || []}
                                 loading={concernCategoryIsLoading}
                                 renderInput={(params) => (
                                   <TextField
@@ -987,12 +802,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange={(_, value) => {
                                   onChange(value);
                                 }}
-                                getOptionLabel={(option) =>
-                                  option.categoryConcern || ""
-                                }
-                                isOptionEqualToValue={(option, value) =>
-                                  option.id === value.id
-                                }
+                                getOptionLabel={(option) => option.categoryConcern || ""}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
                                 sx={{
                                   flex: 2,
                                 }}
@@ -1014,161 +825,118 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         />
                       </Stack>
 
-                      {channelNameValidation ===
-                        "HMU - IT Hardware Support (Hardware Concern)" &&
-                        isTodayAfterTarget &&
-                        !isTodayAndTargetSame && (
-                          <>
-                            <Stack gap={0.5} sx={{ width: "100%" }}>
-                              <Stack
-                                direction="row"
-                                sx={{ alignItems: "center", gap: 0.5 }}
+                      {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && isTodayAfterTarget && !isTodayAndTargetSame && (
+                        <>
+                          <Stack gap={0.5} sx={{ width: "100%" }}>
+                            <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                              <Typography
+                                sx={{
+                                  fontSize: "14px",
+                                }}
                               >
+                                Backdate (Optional):
+                              </Typography>
+                              {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
+                            </Stack>
+
+                            <LocalizationProvider dateAdapter={AdapterMoment}>
+                              <Controller
+                                control={control}
+                                name="ClosingDate"
+                                render={({ field }) => (
+                                  <DatePicker
+                                    value={field.value ? moment(field.value) : null}
+                                    onChange={(newValue) => {
+                                      const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                      field.onChange(formattedValue);
+                                      console.log("FormattedValue: ", newValue);
+                                    }}
+                                    slotProps={{
+                                      textField: {
+                                        variant: "outlined",
+                                        sx: {
+                                          "& .MuiInputBase-input": {
+                                            padding: "8.5px 14px",
+                                          },
+                                          "& .MuiOutlinedInput-root": {
+                                            fontSize: "13px",
+                                          },
+                                        },
+                                      },
+                                    }}
+                                    maxDate={new moment()}
+                                    minDate={minDate}
+                                    error={!!errors.ClosingDate}
+                                    helperText={errors.ClosingDate ? errors.ClosingDate.message : null}
+                                    // disabled={!watch("IssueHandler")}
+                                  />
+                                )}
+                              />
+                              {errors.ClosingDate && <Typography>{errors.ClosingDate.message}</Typography>}
+                            </LocalizationProvider>
+                          </Stack>
+
+                          {watch("ClosingDate") && (
+                            <Stack gap={0.5} sx={{ width: "100%" }}>
+                              <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                                 <Typography
                                   sx={{
                                     fontSize: "14px",
                                   }}
                                 >
-                                  Backdate (Optional):
+                                  Backdate Remarks:
                                 </Typography>
-                                {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
+                                <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                               </Stack>
 
-                              <LocalizationProvider dateAdapter={AdapterMoment}>
-                                <Controller
-                                  control={control}
-                                  name="ClosingDate"
-                                  render={({ field }) => (
-                                    <DatePicker
-                                      value={
-                                        field.value ? moment(field.value) : null
-                                      }
-                                      onChange={(newValue) => {
-                                        const formattedValue = newValue
-                                          ? moment(newValue).format(
-                                              "YYYY-MM-DD",
-                                            )
-                                          : null;
-                                        field.onChange(formattedValue);
-                                        console.log(
-                                          "FormattedValue: ",
-                                          newValue,
-                                        );
-                                      }}
-                                      slotProps={{
-                                        textField: {
-                                          variant: "outlined",
-                                          sx: {
-                                            "& .MuiInputBase-input": {
-                                              padding: "8.5px 14px",
-                                            },
-                                            "& .MuiOutlinedInput-root": {
-                                              fontSize: "13px",
-                                            },
-                                          },
+                              <Controller
+                                control={control}
+                                name="BackdateRemarks"
+                                render={({ field: { ref, value, onChange } }) => {
+                                  return (
+                                    <TextField
+                                      inputRef={ref}
+                                      size="medium"
+                                      value={value}
+                                      onChange={onChange}
+                                      autoComplete="off"
+                                      rows={2}
+                                      multiline
+                                      InputProps={{
+                                        style: {
+                                          fontSize: "13px",
                                         },
                                       }}
-                                      maxDate={new moment()}
-                                      minDate={minDate}
-                                      error={!!errors.ClosingDate}
-                                      helperText={
-                                        errors.ClosingDate
-                                          ? errors.ClosingDate.message
-                                          : null
-                                      }
-                                      // disabled={!watch("IssueHandler")}
+                                      InputLabelProps={{
+                                        style: {
+                                          fontSize: "13px",
+                                        },
+                                      }}
+                                      disabled={!watch("ClosingDate")}
+                                      sx={{
+                                        "& .disabled": {
+                                          backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
+                                          cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
+                                        },
+                                      }}
                                     />
-                                  )}
-                                />
-                                {errors.ClosingDate && (
-                                  <Typography>
-                                    {errors.ClosingDate.message}
-                                  </Typography>
-                                )}
-                              </LocalizationProvider>
+                                  );
+                                }}
+                              />
+
+                              {errors.BackdateRemarks && (
+                                <Typography color="error" sx={{ fontSize: "12px" }}>
+                                  {errors.BackdateRemarks.message}
+                                </Typography>
+                              )}
                             </Stack>
-
-                            {watch("ClosingDate") && (
-                              <Stack gap={0.5} sx={{ width: "100%" }}>
-                                <Stack
-                                  direction="row"
-                                  sx={{ alignItems: "center", gap: 0.5 }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      fontSize: "14px",
-                                    }}
-                                  >
-                                    Backdate Remarks:
-                                  </Typography>
-                                  <FiberManualRecord
-                                    color="error"
-                                    sx={{ fontSize: "10px" }}
-                                  />
-                                </Stack>
-
-                                <Controller
-                                  control={control}
-                                  name="BackdateRemarks"
-                                  render={({
-                                    field: { ref, value, onChange },
-                                  }) => {
-                                    return (
-                                      <TextField
-                                        inputRef={ref}
-                                        size="medium"
-                                        value={value}
-                                        onChange={onChange}
-                                        autoComplete="off"
-                                        rows={2}
-                                        multiline
-                                        InputProps={{
-                                          style: {
-                                            fontSize: "13px",
-                                          },
-                                        }}
-                                        InputLabelProps={{
-                                          style: {
-                                            fontSize: "13px",
-                                          },
-                                        }}
-                                        disabled={!watch("ClosingDate")}
-                                        sx={{
-                                          "& .disabled": {
-                                            backgroundColor: !watch(
-                                              "ClosingDate",
-                                            )
-                                              ? "lightgray"
-                                              : "inherit",
-                                            cursor: !watch("ClosingDate")
-                                              ? "not-allowed"
-                                              : "inherit",
-                                          },
-                                        }}
-                                      />
-                                    );
-                                  }}
-                                />
-
-                                {errors.BackdateRemarks && (
-                                  <Typography
-                                    color="error"
-                                    sx={{ fontSize: "12px" }}
-                                  >
-                                    {errors.BackdateRemarks.message}
-                                  </Typography>
-                                )}
-                              </Stack>
-                            )}
-                          </>
-                        )}
+                          )}
+                        </>
+                      )}
                     </Stack>
-
+                    {/* Resolution */}
                     <Stack mt={2} gap={0.5}>
-                      <Stack
-                        direction="row"
-                        sx={{ alignItems: "center", gap: 0.5 }}
-                      >
+                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                         <Typography
                           sx={{
                             fontSize: "14px",
@@ -1176,10 +944,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         >
                           Resolution:
                         </Typography>
-                        <FiberManualRecord
-                          color="error"
-                          sx={{ fontSize: "10px" }}
-                        />
+                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
                       </Stack>
 
                       <Controller
@@ -1216,17 +981,11 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         </Typography>
                       )}
                     </Stack>
-
-                    {/* TECHNICIANS */}
-                    <Stack
-                      direction="row"
-                      sx={{ width: "100%", gap: 2, mt: 1 }}
-                    >
+                    {/* Technicians */}
+                    <Stack direction="row" sx={{ width: "100%", gap: 2, mt: 1 }}>
                       <Stack sx={{ width: "100%", gap: 1 }}>
                         <Stack>
-                          <Typography sx={{ fontSize: "14px", mb: 0.5 }}>
-                            Technicians (Optional):
-                          </Typography>
+                          <Typography sx={{ fontSize: "14px", mb: 0.5 }}>Technicians (Optional):</Typography>
                           <Controller
                             control={control}
                             name="Technicians"
@@ -1258,19 +1017,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                       onChange(newValue);
                                     }
                                   }}
-                                  getOptionLabel={(option) =>
-                                    option.technician_Name || ""
-                                  }
-                                  isOptionEqualToValue={(option, val) =>
-                                    option.technicianId === val.technicianId
-                                  }
-                                  getOptionDisabled={(option) =>
-                                    watch("Technicians").some(
-                                      (item) =>
-                                        item.technicianId ===
-                                        option.technicianId,
-                                    )
-                                  }
+                                  getOptionLabel={(option) => option.technician_Name || ""}
+                                  isOptionEqualToValue={(option, val) => option.technicianId === val.technicianId}
+                                  getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
                                   fullWidth
                                   disablePortal
                                   disableClearable
@@ -1285,20 +1034,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                   }}
                                 />
 
-                                {value.length >= 3 && (
-                                  <FormHelperText
-                                    sx={{ color: theme.palette.warning.main }}
-                                  >
-                                    You can only select up to 3 technicians.
-                                  </FormHelperText>
-                                )}
+                                {value.length >= 3 && <FormHelperText sx={{ color: theme.palette.warning.main }}>You can only select up to 3 technicians.</FormHelperText>}
                               </Stack>
                             )}
                           />
                         </Stack>
                       </Stack>
                     </Stack>
-
+                    {/* Notes */}
                     <Stack mt={2} gap={0.5}>
                       <Typography
                         sx={{
@@ -1338,15 +1081,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Stack>
 
                     {/* Attachments */}
-                    <Stack
-                      gap={0.5}
-                      mt={2}
-                      onDragOver={handleDragOver}
-                      onDrop={handleDrop}
-                    >
-                      <Typography sx={{ fontSize: "11px" }}>
-                        Attachment (Optional)
-                      </Typography>
+                    <Stack gap={0.5} mt={2} onDragOver={handleDragOver} onDrop={handleDrop}>
+                      <Typography sx={{ fontSize: "14px" }}>Attachment (Optional)</Typography>
 
                       <Stack
                         sx={{
@@ -1367,15 +1103,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             alignItems: "center",
                           }}
                         >
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="warning"
-                            onClick={handleUploadButtonClick}
-                          >
-                            <Typography sx={{ fontSize: "12px" }}>
-                              Choose File
-                            </Typography>
+                          <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
+                            <Typography sx={{ fontSize: "12px" }}>Choose File</Typography>
                           </Button>
 
                           <Typography
@@ -1397,16 +1126,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         />
                         {/* Image thumbnails, grid layout */}
                         {imageAttachments.length > 0 && (
-                          <Box
-                            sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}
-                          >
+                          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
                             {imageAttachments.map((fileName, index) => (
-                              <ImageAttachmentCard
-                                key={`img-${index}`}
-                                fileName={fileName}
-                                onView={handleViewImage}
-                                onDelete={handleDeleteFile}
-                              />
+                              <ImageAttachmentCard key={`img-${index}`} fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} />
                             ))}
                           </Box>
                         )}
@@ -1415,11 +1137,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                         {fileAttachments.length > 0 && (
                           <Stack sx={{ width: "100%", gap: 1 }}>
                             {fileAttachments.map((fileName, index) => (
-                              <FileAttachmentRow
-                                key={`file-${index}`}
-                                fileName={fileName}
-                                onDelete={handleDeleteFile}
-                              />
+                              <FileAttachmentRow key={`file-${index}`} fileName={fileName} onDelete={handleDeleteFile} />
                             ))}
                           </Stack>
                         )}
@@ -1437,18 +1155,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                           onChange={(event) => {
                             handleAttachments(event);
                             const files = Array.from(event.target.files);
-                            const uniqueNewFiles = files.filter(
-                              (item) =>
-                                !value.some((file) => file.name === item.name),
-                            );
-
-                            // console.log("Controller Files: ", files);
+                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
                             onChange([...value, ...uniqueNewFiles]);
                             fileInputRef.current.value = "";
                           }}
                           hidden
-                          // multiple={!!ticketAttachmentId}
+                          multiple
                         />
                       )}
                     />
@@ -1465,49 +1178,97 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
               type="submit"
               form="closeTicket"
               variant="contained"
-              loading={
-                closeIssueHandlerTicketsIsLoading ||
-                closeIssueHandlerTicketsIsFetching
-              }
+              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
               disabled={
-                !watch("resolution") ||
-                watch("CategoryId").length === 0 ||
-                watch("SubCategoryId").length === 0 ||
-                !watch("CategoryConcern") ||
-                (watch("ClosingDate") && !watch("BackdateRemarks"))
-
-                // (channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" &&
-                // isTodayAfterTarget &&
-                // !isTodayAndTargetSame
-                //   ? !watch("ClosingDate") || !!errors.ClosingDate || !watch("BackdateRemarks")
-                //   : false)
+                !watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || !watch("CategoryConcern") || (watch("ClosingDate") && !watch("BackdateRemarks"))
               }
             >
               Submit
             </LoadingButton>
           </Stack>
         </DialogActions>
+      </Dialog>
 
-        {/* Dialog to view image */}
-        <Dialog
-          fullWidth
-          maxWidth="md"
-          open={isViewDialogOpen}
-          onClose={handleViewClose}
-        >
-          <DialogContent sx={{ height: "auto" }}>
-            {selectedImage && (
-              <img
-                src={selectedImage}
-                alt="Preview"
-                style={{ width: "100%" }}
-              />
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleViewClose}>Close</Button>
-          </DialogActions>
-        </Dialog>
+      {/* Dialog to view image */}
+      <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
+        <DialogContent sx={{ height: "auto", padding: 0 }}>
+          <Box sx={{ position: "relative" }}>
+            {/* Zoom controls */}
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                zIndex: 1,
+                backgroundColor: "rgba(0,0,0,0.6)",
+                borderRadius: "20px",
+                padding: "2px 6px",
+              }}
+            >
+              <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
+                <ZoomOut fontSize="small" />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  color: "#fff",
+                  fontSize: "12px",
+                  minWidth: 38,
+                  textAlign: "center",
+                }}
+              >
+                {Math.round(zoom * 100)}%
+              </Typography>
+
+              <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
+                <ZoomIn fontSize="small" />
+              </IconButton>
+
+              <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
+                <RestartAlt fontSize="small" />
+              </IconButton>
+            </Stack>
+
+            {/* Fixed viewport — no native scroll, so wheel events go straight to handleWheelZoom instead of competing with browser scroll. Panning is done manually via drag + CSS transform below. */}
+            <Box
+              onWheel={handleWheelZoom}
+              sx={{
+                width: "100%",
+                height: "70vh",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#000",
+              }}
+            >
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="Preview"
+                  onMouseDown={handleImageMouseDown}
+                  draggable={false}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "70vh",
+                    display: "block",
+                    userSelect: "none",
+                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+                    transformOrigin: "center center",
+                    transition: isDragging ? "none" : "transform 0.15s ease",
+                    cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleViewClose}>Close</Button>
+        </DialogActions>
       </Dialog>
     </>
   );
@@ -1597,11 +1358,7 @@ const ImageAttachmentCard = ({ fileName, onView, onDelete }) => {
               justifyContent: "center",
             }}
           >
-            <CircularProgress
-              size={20}
-              thickness={4}
-              sx={{ color: theme.palette.text.secondary }}
-            />
+            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
           </Box>
         )}
       </Box>
@@ -1656,11 +1413,7 @@ const FileAttachmentRow = ({ fileName, onDelete, uploadProgress }) => {
         border: `1px solid ${theme.palette.divider}`,
       }}
     >
-      <Box
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-      >
-        {getAttachmentIcon(fileName)}
-      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{getAttachmentIcon(fileName)}</Box>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography noWrap sx={{ fontSize: "12px", fontWeight: 500 }}>
@@ -1668,27 +1421,12 @@ const FileAttachmentRow = ({ fileName, onDelete, uploadProgress }) => {
         </Typography>
 
         {inProgress ? (
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            sx={{ mt: 0.5 }}
-          >
-            <LinearProgress
-              variant="determinate"
-              value={uploadProgress}
-              sx={{ flex: 1, height: 4, borderRadius: 2 }}
-            />
-            <Typography
-              sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
-            >
-              {uploadProgress}%
-            </Typography>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.5 }}>
+            <LinearProgress variant="determinate" value={uploadProgress} sx={{ flex: 1, height: 4, borderRadius: 2 }} />
+            <Typography sx={{ fontSize: "10px", color: theme.palette.text.secondary }}>{uploadProgress}%</Typography>
           </Stack>
         ) : (
-          <Typography
-            sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
-          >
+          <Typography sx={{ fontSize: "10px", color: theme.palette.text.secondary }}>
             {fileName.name.split(".").pop()?.toUpperCase()} · {fileName.size} MB
           </Typography>
         )}

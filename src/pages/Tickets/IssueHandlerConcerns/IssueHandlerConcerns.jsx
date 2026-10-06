@@ -2237,6 +2237,7 @@ const IssueHandlerConcerns = () => {
           onClose={() => {
             manageTicketOnClose(setCloseTicketData(null));
           }}
+          refetch={refetch}
         />
 
         {transferTicketOpen && (

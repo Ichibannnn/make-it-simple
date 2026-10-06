@@ -27,14 +27,14 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
     onDownload(fileName);
   };
 
-  const handleMenuViewClick = (event, action) => {
-    if (viewIsLoading) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-    action();
-  };
+  // const handleMenuViewClick = (event, action) => {
+  //   if (viewIsLoading) {
+  //     event.preventDefault();
+  //     event.stopPropagation();
+  //     return;
+  //   }
+  //   action();
+  // };
 
   const handleMenuDownloadClick = (event, action) => {
     if (downloadIsLoading) {
@@ -44,12 +44,6 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
     }
     action();
   };
-
-  // useEffect(() => {
-  //   if (!viewIsLoading && !downloadIsLoading) {
-  //     onToggle();
-  //   }
-  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>
@@ -65,7 +59,7 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
         }}
         disableAutoFocusItem
       >
-        {!!fileName.ticketAttachmentId ? (
+        {/* {!!fileName.ticketAttachmentId ? (
           <Box>
             {isImageFile(fileName.name) && (
               <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
@@ -85,7 +79,7 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
               </MenuItem>
             )}
           </Box>
-        )}
+        )} */}
 
         {data?.getForClosingTickets?.[0]?.isApprove === false && (
           <MenuItem onClick={() => onDeleteAction(fileName)}>

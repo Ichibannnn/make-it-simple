@@ -197,7 +197,6 @@ export const ticketStyle = {
   },
 
   // ** History
-
   transactionDateText: {
     fontSize: { xs: "10px", md: "12px" },
   },
