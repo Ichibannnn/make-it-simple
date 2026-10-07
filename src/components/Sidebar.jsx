@@ -33,31 +33,11 @@ import { useGetNotificationQuery } from "../features/api_notification/notificati
 import helpDeskLogo from "../assets/images/helpdesk_icon.png";
 import { sidebarStyles as sx } from "./styles/sidebarStyles";
 
-// Below this width there just isn't enough room to spare for a push rail, so the
-// sidebar switches to an overlay drawer: fixed-position, slides in on top of the
-// dashboard, reserves no layout space while closed. Covers phones and tablets
-// (portrait and landscape, up to a small laptop width).
-// Set to 1281 (not 1280) so a device reporting an exact 1280px viewport is safely
-// covered — some browsers report a fraction of a pixel above the nominal width
-// (scrollbar reservation, DPI/zoom rounding), which would slip past a hard
-// "max-width: 1280px" boundary and miss the query, e.g. a 1280×800 tablet.
+
 const OVERLAY_BREAKPOINT = 1281;
-// Below this width, the side overlay drawer gives way to a bottom tab bar —
-// a left-edge drawer is awkward to reach with one thumb on a phone.
 const MOBILE_BREAKPOINT = 640;
-// Between OVERLAY_BREAKPOINT and this width, the push rail defaults to collapsed.
 const RAIL_COLLAPSE_BREAKPOINT = 1639;
-
-// Which top-level items become direct bottom-tab buttons on phones (max ~4 —
-// anything more gets cramped). Everything else, plus these four, are still
-// reachable via the "More" tab. Adjust this list to taste.
 const MOBILE_QUICK_ITEM_NAMES = ["Overview", "Ticketing", "Checklist Management", "Reports"];
-
-// Plain data version of the menu — no per-group open/onToggle wiring, since the
-// mobile bottom-nav's "More" sheet manages its own (much simpler, accordion-style)
-// open state locally instead of the six independent useDisclosure hooks the
-// desktop push rail uses. Kept in sync by hand with the wired copy inside
-// SidebarList below if you add/remove/rename items.
 const MOBILE_MENU_ITEMS = [
   { id: 1, name: "Overview", path: "/overview", icon: "EqualizerOutlined" },
   {
@@ -83,10 +63,10 @@ const MOBILE_MENU_ITEMS = [
     icon: "ChecklistOutlinedIcon",
     sub: [
       { id: 1, name: "One Charging", path: "/masterlist/one-charging", icon: "BusinessOutlinedIcon" },
-      { id: 2, name: "Channel Setup", path: "/masterlist/channel-setup", icon: "HubOutlined" },
-      { id: 3, name: "Category", path: "/masterlist/category", icon: "CategoryOutlined" },
-      { id: 4, name: "Sub Category", path: "/masterlist/sub-category", icon: "AutoAwesomeMotionOutlined" },
-      { id: 5, name: "Service Provider", path: "/masterlist/service-provider", icon: "HubOutlined" },
+      { id: 2, name: "Service Provider", path: "/masterlist/service-provider", icon: "HubOutlined" },
+      { id: 3, name: "Channel Setup", path: "/masterlist/channel-setup", icon: "HubOutlined" },
+      { id: 4, name: "Category", path: "/masterlist/category", icon: "CategoryOutlined" },
+      { id: 5, name: "Sub Category", path: "/masterlist/sub-category", icon: "AutoAwesomeMotionOutlined" },
       {
         id: 6,
         name: "Concern Category",
@@ -105,18 +85,14 @@ const MOBILE_MENU_ITEMS = [
     name: "Requestor",
     path: "/requestor",
     icon: "DynamicFeedOutlined",
-    sub: [
-      { id: 1, name: "Requestor Concerns", path: "/requestor/requestor-concerns", icon: "DiscountOutlined" },
-    ],
+    sub: [{ id: 1, name: "Requestor Concerns", path: "/requestor/requestor-concerns", icon: "DiscountOutlined" }],
   },
   {
     id: 5,
     name: "Receiver",
     path: "/receiver",
     icon: "DynamicFeedOutlined",
-    sub: [
-      { id: 1, name: "Receiver Concerns", path: "/receiver/receiver-concerns", icon: "DiscountOutlined" },
-    ],
+    sub: [{ id: 1, name: "Receiver Concerns", path: "/receiver/receiver-concerns", icon: "DiscountOutlined" }],
   },
   {
     id: 6,
@@ -199,12 +175,7 @@ const Sidebar = () => {
           <Box sx={sx.backdrop} onClick={() => setMobileOpen(false)} />
         </Fade>
 
-        <SidebarContent
-          collapsed={false}
-          overlayOpen={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          onNavigate={() => setMobileOpen(false)}
-        />
+        <SidebarContent collapsed={false} overlayOpen={mobileOpen} onClose={() => setMobileOpen(false)} onNavigate={() => setMobileOpen(false)} />
       </>
     );
   }
@@ -220,11 +191,7 @@ export default Sidebar;
 const SidebarContent = ({ collapsed, overlayOpen, onToggleCollapse, onClose, onNavigate }) => (
   <Stack sx={[sx.container(collapsed), onClose && sx.overlayPanel(overlayOpen)]}>
     <SidebarHeader collapsed={collapsed} onToggleCollapse={onToggleCollapse} onClose={onClose} />
-    <SidebarList
-      collapsed={collapsed}
-      onExpand={() => collapsed && onToggleCollapse?.()}
-      onNavigate={onNavigate}
-    />
+    <SidebarList collapsed={collapsed} onExpand={() => collapsed && onToggleCollapse?.()} onNavigate={onNavigate} />
   </Stack>
 );
 
@@ -242,13 +209,7 @@ const SidebarHeader = ({ collapsed, onToggleCollapse, onClose }) => {
       )}
 
       <Stack sx={sx.header(collapsed)}>
-        <Box
-          component="img"
-          src={helpDeskLogo}
-          alt="MIS Helpdesk"
-          className="logo-sidebar"
-          sx={sx.logo(collapsed)}
-        />
+        <Box component="img" src={helpDeskLogo} alt="MIS Helpdesk" className="logo-sidebar" sx={sx.logo(collapsed)} />
 
         {/* Kept mounted so it can fade/collapse smoothly in both directions */}
         <Box sx={sx.brandWrap(collapsed)}>
@@ -314,18 +275,7 @@ const SubMenuItem = ({ subItem, selected, onClick, openNotification, ticketAppro
 // can actually animate instead of popping. The hover flyout (Popper) is always
 // mounted for items with sub-menus; it's just inert (`open={false}`) unless the
 // rail happens to be collapsed.
-const NavRow = ({
-  item,
-  subs,
-  hasSubs,
-  collapsed,
-  pathname,
-  navigate,
-  onExpand,
-  onNavigate,
-  openNotification,
-  ticketApprovalNotification,
-}) => {
+const NavRow = ({ item, subs, hasSubs, collapsed, pathname, navigate, onExpand, onNavigate, openNotification, ticketApprovalNotification }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const closeTimer = useRef();
   const flyoutOpen = collapsed && hasSubs && Boolean(anchorEl);
@@ -334,10 +284,7 @@ const NavRow = ({
   // && 0)" evaluates to the number 0 — falsy, but not `false`. React renders a bare
   // 0 as literal text in JSX (unlike false/null/undefined, which render nothing),
   // so without this cast the row would show a stray "0" instead of nothing.
-  const hasRowNotif = Boolean(
-    (item.name === "Ticketing" && openNotification) ||
-    (item.name === "Approver" && ticketApprovalNotification),
-  );
+  const hasRowNotif = Boolean((item.name === "Ticketing" && openNotification) || (item.name === "Approver" && ticketApprovalNotification));
 
   const openFlyout = (e) => {
     if (!collapsed || !hasSubs) return;
@@ -405,22 +352,10 @@ const NavRow = ({
       )}
 
       {hasSubs && (
-        <Popper
-          open={flyoutOpen}
-          anchorEl={anchorEl}
-          placement="right-start"
-          transition
-          sx={sx.flyoutPopper}
-          modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}
-        >
+        <Popper open={flyoutOpen} anchorEl={anchorEl} placement="right-start" transition sx={sx.flyoutPopper} modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}>
           {({ TransitionProps }) => (
             <Grow {...TransitionProps} style={{ transformOrigin: "left top" }} timeout={180}>
-              <Paper
-                elevation={8}
-                sx={sx.flyoutPaper}
-                onMouseEnter={() => clearTimeout(closeTimer.current)}
-                onMouseLeave={scheduleClose}
-              >
+              <Paper elevation={8} sx={sx.flyoutPaper} onMouseEnter={() => clearTimeout(closeTimer.current)} onMouseLeave={scheduleClose}>
                 <Typography sx={sx.flyoutHeader}>{item.name}</Typography>
                 <List sx={sx.flyoutList}>
                   {subs.map((subItem, j) => (
@@ -452,36 +387,12 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
   const openNotification = notificationData?.value?.openTicketNotif || 0;
   const ticketApprovalNotification = notificationData?.value?.forApprovalClosingNotif || 0;
 
-  const {
-    open: userManagementOpen,
-    onToggle: userManagementOnToggle,
-    onClose: userManagementOnClose,
-  } = useDisclosure(!!pathname.match(/user-management/gi));
-  const {
-    open: masterListOpen,
-    onToggle: masterListOnToggle,
-    onClose: masterlistOnClose,
-  } = useDisclosure(!!pathname.match(/masterlist/gi));
-  const {
-    open: requestOpen,
-    onToggle: requestOnToggle,
-    onClose: requestOnClose,
-  } = useDisclosure(!!pathname.match(/requestor/gi));
-  const {
-    open: receiverOpen,
-    onToggle: receiverOnToggle,
-    onClose: receiverOnClose,
-  } = useDisclosure(!!pathname.match(/receiver/gi));
-  const {
-    open: ticketingOpen,
-    onToggle: ticketingOnToggle,
-    onClose: ticketingOnClose,
-  } = useDisclosure(!!pathname.match(/ticketing/gi));
-  const {
-    open: approverOpen,
-    onToggle: approverOnToggle,
-    onClose: approverOnClose,
-  } = useDisclosure(!!pathname.match(/approver/gi));
+  const { open: userManagementOpen, onToggle: userManagementOnToggle, onClose: userManagementOnClose } = useDisclosure(!!pathname.match(/user-management/gi));
+  const { open: masterListOpen, onToggle: masterListOnToggle, onClose: masterlistOnClose } = useDisclosure(!!pathname.match(/masterlist/gi));
+  const { open: requestOpen, onToggle: requestOnToggle, onClose: requestOnClose } = useDisclosure(!!pathname.match(/requestor/gi));
+  const { open: receiverOpen, onToggle: receiverOnToggle, onClose: receiverOnClose } = useDisclosure(!!pathname.match(/receiver/gi));
+  const { open: ticketingOpen, onToggle: ticketingOnToggle, onClose: ticketingOnClose } = useDisclosure(!!pathname.match(/ticketing/gi));
+  const { open: approverOpen, onToggle: approverOnToggle, onClose: approverOnClose } = useDisclosure(!!pathname.match(/approver/gi));
 
   const sidebarMenu = [
     {
@@ -545,30 +456,31 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
           path: "/masterlist/one-charging",
           icon: "BusinessOutlinedIcon",
         },
-        {
+                {
           id: 2,
+          name: "Service Provider",
+          path: "/masterlist/service-provider",
+          icon: "HubOutlined",
+        },
+        {
+          id: 3,
           name: "Channel Setup",
           path: "/masterlist/channel-setup",
           icon: "HubOutlined",
         },
         {
-          id: 3,
+          id: 4,
           name: "Category",
           path: "/masterlist/category",
           icon: "CategoryOutlined",
         },
         {
-          id: 4,
+          id: 5,
           name: "Sub Category",
           path: "/masterlist/sub-category",
           icon: "AutoAwesomeMotionOutlined",
         },
-        {
-          id: 5,
-          name: "Service Provider",
-          path: "/masterlist/service-provider",
-          icon: "HubOutlined",
-        },
+
         {
           id: 6,
           name: "Concern Category",
@@ -782,8 +694,7 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
 
 // A given top-level item counts as "active" if its own path matches, or the
 // current route belongs to one of its sub-items.
-const isMobileItemActive = (item, pathname) =>
-  item.path === pathname || item.sub?.some((s) => s.path === pathname);
+const isMobileItemActive = (item, pathname) => item.path === pathname || item.sub?.some((s) => s.path === pathname);
 
 // Phone bottom tab bar: a handful of curated quick-access tabs plus a "More" tab
 // that opens a bottom sheet with everything else. Replaces the side panel
@@ -843,9 +754,7 @@ const MobileBottomNav = () => {
         sx={sx.bottomNav}
       >
         {quickItems.map((item) => {
-          const hasNotif =
-            (item.name === "Ticketing" && openNotification) ||
-            (item.name === "Approver" && ticketApprovalNotification);
+          const hasNotif = (item.name === "Ticketing" && openNotification) || (item.name === "Approver" && ticketApprovalNotification);
           return (
             <BottomNavigationAction
               key={item.id}
@@ -863,12 +772,7 @@ const MobileBottomNav = () => {
       </BottomNavigation>
 
       {/* Small sheet for a quick tab's own sub-items only. */}
-      <Drawer
-        anchor="bottom"
-        open={Boolean(subSheetItem)}
-        onClose={() => setSubSheetItem(null)}
-        PaperProps={{ sx: sx.subSheetPanel }}
-      >
+      <Drawer anchor="bottom" open={Boolean(subSheetItem)} onClose={() => setSubSheetItem(null)} PaperProps={{ sx: sx.subSheetPanel }}>
         {subSheetItem && (
           <>
             <Box sx={sx.sheetHandle} />
@@ -894,12 +798,7 @@ const MobileBottomNav = () => {
 
       {/* "More" sheet — everything not pinned to a quick tab, same expand/collapse
           behavior as the desktop list. */}
-      <Drawer
-        anchor="bottom"
-        open={moreOpen}
-        onClose={() => setMoreOpen(false)}
-        PaperProps={{ sx: sx.bottomSheetPanel }}
-      >
+      <Drawer anchor="bottom" open={moreOpen} onClose={() => setMoreOpen(false)} PaperProps={{ sx: sx.bottomSheetPanel }}>
         <Box sx={sx.sheetHandle} />
         <Stack sx={sx.sheetHeaderRow}>
           <Typography sx={sx.sheetTitle}>More</Typography>
@@ -924,9 +823,7 @@ const MoreMenuList = ({ items, pathname, onNavigate }) => {
   const openNotification = notificationData?.value?.openTicketNotif || 0;
   const ticketApprovalNotification = notificationData?.value?.forApprovalClosingNotif || 0;
 
-  const [openId, setOpenId] = useState(
-    () => items.find((item) => item.sub?.some((s) => s.path === pathname))?.id ?? null,
-  );
+  const [openId, setOpenId] = useState(() => items.find((item) => item.sub?.some((s) => s.path === pathname))?.id ?? null);
 
   return (
     <List sx={sx.list}>
@@ -937,10 +834,7 @@ const MoreMenuList = ({ items, pathname, onNavigate }) => {
         // See the identical Boolean() cast in NavRow above — without it, a 0/0
         // notification count renders as a literal "0" next to the row instead
         // of nothing.
-        const hasRowNotif = Boolean(
-          (item.name === "Ticketing" && openNotification) ||
-          (item.name === "Approver" && ticketApprovalNotification),
-        );
+        const hasRowNotif = Boolean((item.name === "Ticketing" && openNotification) || (item.name === "Approver" && ticketApprovalNotification));
 
         return (
           <Fragment key={item.id}>

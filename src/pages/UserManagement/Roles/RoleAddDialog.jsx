@@ -1,17 +1,4 @@
-import {
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Stack,
-  TextField,
-  useMediaQuery,
-} from "@mui/material";
+import { Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Stack, TextField, useMediaQuery } from "@mui/material";
 import { useEffect } from "react";
 
 import * as yup from "yup";
@@ -21,57 +8,25 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 
-import {
-  useCreateRoleMutation,
-  useUpdateRoleNameMutation,
-  useUpdateRolePermissionMutation,
-} from "../../../features/user_management_api/role/roleApi";
+import { useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
 
 const schema = yup.object().shape({
   user_Role_Name: yup.string().required("Role Name is required."),
   permissions: yup.array().required(),
 });
 
-const parentCheckbox = [
-  "Overview",
-  "User Management",
-  "Masterlist",
-  "Requestor",
-  "Receiver",
-  "Approver",
-  "Ticketing",
-  "Checklist Management",
-  "PMS",
-  "Reports",
-];
+const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Checklist Management", "PMS", "Reports"];
 const userManagementCheckbox = ["User Account", "User Role", "User Types"];
-const masterlistCheckbox = [
-  "One Charging",
-  "Channel Setup",
-  "Category",
-  "Sub Category",
-  "Concern Category",
-  "Service Provider",
-  "Receiver Setup",
-  "Approver Setup",
-  "PMS Type",
-  "Sites",
-  "Buildings",
-];
+const masterlistCheckbox = ["One Charging", "Service Provider", "Channel Setup", "Category", "Sub Category", "Concern Category", "Receiver Setup", "Approver Setup", "PMS Type", "Sites", "Buildings"];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
 const approverCheckbox = ["Approval", "View Tickets"];
 const ticketingCheckbox = ["Tickets"];
 
 const RoleAddDialog = ({ data, open, onClose }) => {
-  const [createRole, { isLoading: createRoleIsLoading, isFetching: createRoleIsFetching }] =
-    useCreateRoleMutation();
-  const [updateRoleName, { isLoading: updateRoleNameIsLoading, isFetching: updateRoleNameIsFetching }] =
-    useUpdateRoleNameMutation();
-  const [
-    updateRolePermission,
-    { isLoading: updateRolePermissionIsLoading, isFetching: updateRolePermissionIsFetching },
-  ] = useUpdateRolePermissionMutation();
+  const [createRole, { isLoading: createRoleIsLoading, isFetching: createRoleIsFetching }] = useCreateRoleMutation();
+  const [updateRoleName, { isLoading: updateRoleNameIsLoading, isFetching: updateRoleNameIsFetching }] = useUpdateRoleNameMutation();
+  const [updateRolePermission, { isLoading: updateRolePermissionIsLoading, isFetching: updateRolePermissionIsFetching }] = useUpdateRolePermissionMutation();
 
   const {
     control,
@@ -145,9 +100,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
           }
 
           // Role Permission API
-          const isPermissionMatch =
-            formData.permissions.every((item) => data.permissions.includes(item)) &&
-            formData.permissions.length === data.permissions.length;
+          const isPermissionMatch = formData.permissions.every((item) => data.permissions.includes(item)) && formData.permissions.length === data.permissions.length;
           if (!isPermissionMatch) {
             updateRolePermission({
               id: data.id,
@@ -701,35 +654,16 @@ const RoleAddDialog = ({ data, open, onClose }) => {
             <LoadingButton
               type="submit"
               variant="contained"
-              loading={
-                createRoleIsLoading ||
-                createRoleIsFetching ||
-                updateRoleNameIsLoading ||
-                updateRoleNameIsFetching ||
-                updateRolePermissionIsLoading ||
-                updateRolePermissionIsFetching
-              }
+              loading={createRoleIsLoading || createRoleIsFetching || updateRoleNameIsLoading || updateRoleNameIsFetching || updateRolePermissionIsLoading || updateRolePermissionIsFetching}
               disabled={
                 !watch("user_Role_Name") ||
                 !watch("permissions").length ||
-                (watch("permissions").includes("User Management")
-                  ? !watch("permissions").some((item) => userManagementCheckbox.includes(item))
-                  : false) ||
-                (watch("permissions").includes("Masterlist")
-                  ? !watch("permissions").some((item) => masterlistCheckbox.includes(item))
-                  : false) ||
-                (watch("permissions").includes("Requestor")
-                  ? !watch("permissions").some((item) => requestCheckbox.includes(item))
-                  : false) ||
-                (watch("permissions").includes("Receiver")
-                  ? !watch("permissions").some((item) => receiverCheckbox.includes(item))
-                  : false) ||
-                (watch("permissions").includes("Approver")
-                  ? !watch("permissions").some((item) => approverCheckbox.includes(item))
-                  : false) ||
-                (watch("permissions").includes("Ticketing")
-                  ? !watch("permissions").some((item) => ticketingCheckbox.includes(item))
-                  : false)
+                (watch("permissions").includes("User Management") ? !watch("permissions").some((item) => userManagementCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Masterlist") ? !watch("permissions").some((item) => masterlistCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Requestor") ? !watch("permissions").some((item) => requestCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Receiver") ? !watch("permissions").some((item) => receiverCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Approver") ? !watch("permissions").some((item) => approverCheckbox.includes(item)) : false) ||
+                (watch("permissions").includes("Ticketing") ? !watch("permissions").some((item) => ticketingCheckbox.includes(item)) : false)
               }
             >
               Save

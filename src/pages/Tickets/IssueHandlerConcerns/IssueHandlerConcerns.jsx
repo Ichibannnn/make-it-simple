@@ -1643,6 +1643,17 @@ const IssueHandlerConcerns = () => {
                         TICKET DESCRIPTION
                       </TableCell>
 
+                      <TableCell
+                        sx={{
+                          background: "#1C2536",
+                          color: "#D65DB1",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                        }}
+                      >
+                        CATEGORY
+                      </TableCell>
+
                       {ticketStatus !== "For Approval" && (
                         <TableCell
                           sx={{
@@ -1869,6 +1880,53 @@ const IssueHandlerConcerns = () => {
                                         ))
                                       : "--"}
                                   </Typography>
+                                </Stack>
+                              </TableCell>
+
+                              <TableCell
+                                className="ellipsis-styling"
+                                sx={{
+                                  color: "#EDF2F7",
+                                  width: "500px",
+                                }}
+                                onClick={() => onViewAction(item)}
+                              >
+                                <Stack gap={0.5}>
+                                  <Stack>
+                                    <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+
+                                    {item?.getOpenTicketCategories?.length > 0 ? (
+                                      <>
+                                        {item?.getOpenTicketCategories?.map((item, i) => (
+                                          <>
+                                            <Typography key={i} sx={{ fontSize: "12px", fontWeight: 500 }}>
+                                              {i + 1}. {item.category_Description}
+                                            </Typography>
+                                          </>
+                                        ))}
+                                      </>
+                                    ) : (
+                                      <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>--</Typography>
+                                    )}
+                                  </Stack>
+
+                                  <Stack>
+                                    <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+
+                                    {item?.getOpenTicketSubCategories?.length > 0 ? (
+                                      <>
+                                        {item?.getOpenTicketSubCategories?.map((item, i) => (
+                                          <>
+                                            <Typography key={i} sx={{ fontSize: "12px", fontWeight: 500 }}>
+                                              {i + 1}. {item.subCategory_Description}
+                                            </Typography>
+                                          </>
+                                        ))}
+                                      </>
+                                    ) : (
+                                      <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>--</Typography>
+                                    )}
+                                  </Stack>
                                 </Stack>
                               </TableCell>
 
