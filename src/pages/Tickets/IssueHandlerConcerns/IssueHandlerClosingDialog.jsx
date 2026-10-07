@@ -524,14 +524,10 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
             >
               {/* Ticket Details */}
               <Stack sx={{ padding: 1, width: "100%" }}>
-                <Stack
-                  direction="row"
-                  gap={0.5}
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Typography sx={sx.titleText}>
-                    {` Ticket Number: ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
+                <Stack>
+                  <Typography sx={sx.titleText}>Close Ticket</Typography>
+                  <Typography sx={sx.captionText}>
+                    {` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
                   </Typography>
                 </Stack>
 
@@ -584,7 +580,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                   {/* Category and Sub-Category */}
                   <Stack sx={sx.categoryBox}>
                     {/* Category */}
-                    <Stack sx={sx.categoryWithField}>
+                    <Stack sx={sx.fieldTwoColsStack}>
                       <Stack sx={sx.fieldTitleWithIconBox}>
                         <Typography sx={sx.fieldText}>Category:</Typography>
                         <FiberManualRecord sx={sx.requiredDot} />
@@ -656,7 +652,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Stack>
 
                     {/* Sub Category */}
-                    <Stack sx={sx.categoryWithField}>
+                    <Stack sx={sx.fieldTwoColsStack}>
                       <Stack sx={sx.fieldTitleWithIconBox}>
                         <Typography sx={sx.fieldText}>Sub Category:</Typography>
                         <FiberManualRecord sx={sx.requiredDot} />
@@ -705,24 +701,14 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     </Stack>
                   </Stack>
 
-                  {/* Concern Category */}
                   <Stack>
-                    <Stack gap={0.5} sx={{ width: "100%" }}>
-                      <Stack
-                        direction="row"
-                        sx={{ alignItems: "center", gap: 0.5 }}
-                      >
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
+                    {/* Concern Category */}
+                    <Stack sx={sx.fieldOneColStack}>
+                      <Stack sx={sx.fieldTitleWithIconBox}>
+                        <Typography sx={sx.fieldText}>
                           Concern Category:
                         </Typography>
-                        <FiberManualRecord
-                          color="error"
-                          sx={{ fontSize: "10px" }}
-                        />
+                        <FiberManualRecord sx={sx.requiredDot} />
                       </Stack>
 
                       <Controller
@@ -742,11 +728,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 <TextField
                                   {...params}
                                   placeholder="Concern Category"
-                                  sx={{
-                                    "& .MuiInputBase-input": {
-                                      fontSize: "13px",
-                                    },
-                                  }}
+                                  sx={sx.autoComplete}
                                 />
                               )}
                               onOpen={() => {
@@ -768,183 +750,123 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 flex: 2,
                               }}
                               fullWidth
-                              disablePortal
+                              // disablePortal
                               disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
+                              componentsProps={sx.automCompleteProp}
                             />
                           );
                         }}
                       />
                     </Stack>
-
-                    {channelNameValidation ===
-                      "HMU - IT Hardware Support (Hardware Concern)" &&
-                      isTodayAfterTarget &&
-                      !isTodayAndTargetSame && (
-                        <>
-                          <Stack gap={0.5} sx={{ width: "100%" }}>
-                            <Stack
-                              direction="row"
-                              sx={{ alignItems: "center", gap: 0.5 }}
-                            >
-                              <Typography
-                                sx={{
-                                  fontSize: "14px",
-                                }}
-                              >
-                                Backdate (Optional):
-                              </Typography>
-                              {/* <FiberManualRecord color="error" sx={{ fontSize: "10px" }} /> */}
-                            </Stack>
-
-                            <LocalizationProvider dateAdapter={AdapterMoment}>
-                              <Controller
-                                control={control}
-                                name="ClosingDate"
-                                render={({ field }) => (
-                                  <DatePicker
-                                    value={
-                                      field.value ? moment(field.value) : null
-                                    }
-                                    onChange={(newValue) => {
-                                      const formattedValue = newValue
-                                        ? moment(newValue).format("YYYY-MM-DD")
-                                        : null;
-                                      field.onChange(formattedValue);
-                                      console.log("FormattedValue: ", newValue);
-                                    }}
-                                    slotProps={{
-                                      textField: {
-                                        variant: "outlined",
-                                        sx: {
-                                          "& .MuiInputBase-input": {
-                                            padding: "8.5px 14px",
-                                          },
-                                          "& .MuiOutlinedInput-root": {
-                                            fontSize: "13px",
-                                          },
-                                        },
-                                      },
-                                    }}
-                                    maxDate={new moment()}
-                                    minDate={minDate}
-                                    error={!!errors.ClosingDate}
-                                    helperText={
-                                      errors.ClosingDate
-                                        ? errors.ClosingDate.message
-                                        : null
-                                    }
-                                    // disabled={!watch("IssueHandler")}
-                                  />
-                                )}
-                              />
-                              {errors.ClosingDate && (
-                                <Typography>
-                                  {errors.ClosingDate.message}
-                                </Typography>
-                              )}
-                            </LocalizationProvider>
-                          </Stack>
-
-                          {watch("ClosingDate") && (
-                            <Stack gap={0.5} sx={{ width: "100%" }}>
-                              <Stack
-                                direction="row"
-                                sx={{ alignItems: "center", gap: 0.5 }}
-                              >
-                                <Typography
-                                  sx={{
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  Backdate Remarks:
-                                </Typography>
-                                <FiberManualRecord
-                                  color="error"
-                                  sx={{ fontSize: "10px" }}
-                                />
-                              </Stack>
-
-                              <Controller
-                                control={control}
-                                name="BackdateRemarks"
-                                render={({
-                                  field: { ref, value, onChange },
-                                }) => {
-                                  return (
-                                    <TextField
-                                      inputRef={ref}
-                                      size="medium"
-                                      value={value}
-                                      onChange={onChange}
-                                      autoComplete="off"
-                                      rows={2}
-                                      multiline
-                                      InputProps={{
-                                        style: {
-                                          fontSize: "13px",
-                                        },
-                                      }}
-                                      InputLabelProps={{
-                                        style: {
-                                          fontSize: "13px",
-                                        },
-                                      }}
-                                      disabled={!watch("ClosingDate")}
-                                      sx={{
-                                        "& .disabled": {
-                                          backgroundColor: !watch("ClosingDate")
-                                            ? "lightgray"
-                                            : "inherit",
-                                          cursor: !watch("ClosingDate")
-                                            ? "not-allowed"
-                                            : "inherit",
-                                        },
-                                      }}
-                                    />
-                                  );
-                                }}
-                              />
-
-                              {errors.BackdateRemarks && (
-                                <Typography
-                                  color="error"
-                                  sx={{ fontSize: "12px" }}
-                                >
-                                  {errors.BackdateRemarks.message}
-                                </Typography>
-                              )}
-                            </Stack>
-                          )}
-                        </>
-                      )}
                   </Stack>
 
+                  {channelNameValidation ===
+                    "HMU - IT Hardware Support (Hardware Concern)" &&
+                    isTodayAfterTarget &&
+                    !isTodayAndTargetSame && (
+                      <>
+                        {/* Backdate */}
+
+                        <Stack sx={sx.fieldOneColStack}>
+                          <Stack sx={sx.fieldTitleWithIconBox}>
+                            <Typography sx={sx.fieldText}>
+                              Backdate (Optional):
+                            </Typography>
+                          </Stack>
+
+                          <LocalizationProvider dateAdapter={AdapterMoment}>
+                            <Controller
+                              control={control}
+                              name="ClosingDate"
+                              render={({ field }) => (
+                                <DatePicker
+                                  value={
+                                    field.value ? moment(field.value) : null
+                                  }
+                                  onChange={(newValue) => {
+                                    const formattedValue = newValue
+                                      ? moment(newValue).format("YYYY-MM-DD")
+                                      : null;
+                                    field.onChange(formattedValue);
+                                    console.log("FormattedValue: ", newValue);
+                                  }}
+                                  slotProps={sx.datePickerSlotProp}
+                                  maxDate={new moment()}
+                                  minDate={minDate}
+                                  error={!!errors.ClosingDate}
+                                  helperText={
+                                    errors.ClosingDate
+                                      ? errors.ClosingDate.message
+                                      : null
+                                  }
+                                />
+                              )}
+                            />
+
+                            {errors.ClosingDate && (
+                              <Typography sx={sx.textErrors}>
+                                {errors.ClosingDate.message}
+                              </Typography>
+                            )}
+                          </LocalizationProvider>
+                        </Stack>
+
+                        {/* Backdate Remarks*/}
+                        {watch("ClosingDate") && (
+                          <Stack sx={sx.fieldOneColStack}>
+                            <Stack sx={sx.fieldTitleWithIconBox}>
+                              <Typography sx={sx.fieldText}>
+                                Backdate Remarks:
+                              </Typography>
+                              <FiberManualRecord sx={sx.requiredDot} />
+                            </Stack>
+
+                            <Controller
+                              control={control}
+                              name="BackdateRemarks"
+                              render={({ field: { ref, value, onChange } }) => {
+                                return (
+                                  <TextField
+                                    inputRef={ref}
+                                    size="medium"
+                                    value={value}
+                                    onChange={onChange}
+                                    autoComplete="off"
+                                    rows={2}
+                                    multiline
+                                    InputProps={sx.textFieldInputProps}
+                                    InputLabelProps={sx.textFieldLabelProps}
+                                    disabled={!watch("ClosingDate")}
+                                    sx={{
+                                      "& .disabled": {
+                                        backgroundColor: !watch("ClosingDate")
+                                          ? "lightgray"
+                                          : "inherit",
+                                        cursor: !watch("ClosingDate")
+                                          ? "not-allowed"
+                                          : "inherit",
+                                      },
+                                    }}
+                                  />
+                                );
+                              }}
+                            />
+
+                            {errors.BackdateRemarks && (
+                              <Typography sx={sx.textErrors}>
+                                {errors.BackdateRemarks.message}
+                              </Typography>
+                            )}
+                          </Stack>
+                        )}
+                      </>
+                    )}
+
                   {/* Resolution */}
-                  <Stack>
-                    <Stack
-                      direction="row"
-                      sx={{ alignItems: "center", gap: 0.5 }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                        }}
-                      >
-                        Resolution:
-                      </Typography>
-                      <FiberManualRecord
-                        color="error"
-                        sx={{ fontSize: "10px" }}
-                      />
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Resolution:</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
                     </Stack>
 
                     <Controller
@@ -960,115 +882,86 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             autoComplete="off"
                             rows={6}
                             multiline
-                            InputProps={{
-                              style: {
-                                fontSize: "13px",
-                              },
-                            }}
-                            InputLabelProps={{
-                              style: {
-                                fontSize: "13px",
-                              },
-                            }}
+                            InputProps={sx.textFieldInputProps}
+                            InputLabelProps={sx.textFieldLabelProps}
                           />
                         );
                       }}
                     />
 
                     {errors.resolution && (
-                      <Typography color="error" sx={{ fontSize: "12px" }}>
+                      <Typography sx={sx.textErrors}>
                         {errors.resolution.message}
                       </Typography>
                     )}
                   </Stack>
 
                   {/* Technicians */}
-                  <Stack>
-                    <Stack sx={{ width: "100%", gap: 1 }}>
-                      <Stack>
-                        <Typography sx={{ fontSize: "14px", mb: 0.5 }}>
-                          Technicians (Optional):
-                        </Typography>
-                        <Controller
-                          control={control}
-                          name="Technicians"
-                          render={({ field: { ref, value, onChange } }) => (
-                            <Stack spacing={0.5} sx={{ flex: 2 }}>
-                              <Autocomplete
-                                multiple
-                                ref={ref}
-                                size="small"
-                                value={value}
-                                options={technicianData?.value || []}
-                                loading={technicianIsLoading}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    placeholder="Add Technicians"
-                                    sx={{
-                                      "& .MuiInputBase-input": {
-                                        fontSize: "13px",
-                                      },
-                                    }}
-                                  />
-                                )}
-                                onOpen={() => {
-                                  if (!technicianIsSuccess) getTechnicians();
-                                }}
-                                onChange={(_, newValue) => {
-                                  if (newValue.length <= 3) {
-                                    onChange(newValue);
-                                  }
-                                }}
-                                getOptionLabel={(option) =>
-                                  option.technician_Name || ""
-                                }
-                                isOptionEqualToValue={(option, val) =>
-                                  option.technicianId === val.technicianId
-                                }
-                                getOptionDisabled={(option) =>
-                                  watch("Technicians").some(
-                                    (item) =>
-                                      item.technicianId === option.technicianId,
-                                  )
-                                }
-                                fullWidth
-                                disablePortal
-                                disableClearable
-                                componentsProps={{
-                                  popper: {
-                                    sx: {
-                                      "& .MuiAutocomplete-listbox": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                              />
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Typography sx={sx.fieldText}>
+                      Technicians (Optional):
+                    </Typography>
 
-                              {value.length >= 3 && (
-                                <FormHelperText
-                                  sx={{ color: theme.palette.warning.main }}
-                                >
-                                  You can only select up to 3 technicians.
-                                </FormHelperText>
-                              )}
-                            </Stack>
+                    <Controller
+                      control={control}
+                      name="Technicians"
+                      render={({ field: { ref, value, onChange } }) => (
+                        <Stack spacing={0.5} sx={{ flex: 2 }}>
+                          <Autocomplete
+                            multiple
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={technicianData?.value || []}
+                            loading={technicianIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Add Technicians"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onOpen={() => {
+                              if (!technicianIsSuccess) getTechnicians();
+                            }}
+                            onChange={(_, newValue) => {
+                              if (newValue.length <= 3) {
+                                onChange(newValue);
+                              }
+                            }}
+                            getOptionLabel={(option) =>
+                              option.technician_Name || ""
+                            }
+                            isOptionEqualToValue={(option, val) =>
+                              option.technicianId === val.technicianId
+                            }
+                            getOptionDisabled={(option) =>
+                              watch("Technicians").some(
+                                (item) =>
+                                  item.technicianId === option.technicianId,
+                              )
+                            }
+                            fullWidth
+                            // disablePortal
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+
+                          {value.length >= 3 && (
+                            <FormHelperText
+                              sx={{ color: theme.palette.warning.main }}
+                            >
+                              You can only select up to 3 technicians.
+                            </FormHelperText>
                           )}
-                        />
-                      </Stack>
-                    </Stack>
+                        </Stack>
+                      )}
+                    />
                   </Stack>
 
                   {/* Notes */}
-                  <Stack>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      Notes (Optional):
-                    </Typography>
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Typography sx={sx.fieldText}>Notes (Optional):</Typography>
 
                     <Controller
                       control={control}
@@ -1083,16 +976,8 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             autoComplete="off"
                             rows={4}
                             multiline
-                            InputProps={{
-                              style: {
-                                fontSize: "13px",
-                              },
-                            }}
-                            InputLabelProps={{
-                              style: {
-                                fontSize: "13px",
-                              },
-                            }}
+                            InputProps={sx.textFieldInputProps}
+                            InputLabelProps={sx.textFieldLabelProps}
                           />
                         );
                       }}
@@ -1101,67 +986,38 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
                   {/* Attachments */}
                   <Stack
-                    gap={0.5}
-                    mt={2}
+                    sx={sx.fieldOneColStack}
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
                   >
-                    <Typography sx={{ fontSize: "14px" }}>
+                    <Typography sx={sx.fieldText}>
                       Attachment (Optional)
                     </Typography>
 
                     <Stack
-                      sx={{
-                        width: "100%",
-                        display: "flex",
-                        border: "2px dashed #2D3748",
-                        justifyContent: "left",
-                        padding: 1,
-                        gap: 1.5,
-                      }}
+                      sx={sx.attachmentDashedBorder}
                       onDragOver={handleDragOver}
                     >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: 1,
-                          alignItems: "center",
-                        }}
-                      >
+                      <Box sx={sx.attachmentFileBox}>
                         <Button
                           size="small"
                           variant="contained"
                           color="warning"
                           onClick={handleUploadButtonClick}
                         >
-                          <Typography sx={{ fontSize: "12px" }}>
+                          <Typography sx={sx.chooseFileText}>
                             Choose File
                           </Typography>
                         </Button>
 
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: "11px",
-                          }}
-                        >
+                        <Typography sx={sx.fileExtText}>
                           .docx, .jpg, .jpeg, .png, .pdf file
                         </Typography>
                       </Box>
 
-                      <Divider
-                        variant="fullWidth"
-                        sx={{
-                          display: !attachments.length ? "none" : "flex",
-                          background: "#2D3748",
-                        }}
-                      />
                       {/* Image thumbnails, grid layout */}
                       {imageAttachments.length > 0 && (
-                        <Box
-                          sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}
-                        >
+                        <Box sx={sx.imgAttachmentSection}>
                           {imageAttachments.map((fileName, index) => (
                             <ImageAttachmentCard
                               key={`img-${index}`}
@@ -1175,7 +1031,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
 
                       {/* Non-image files, row list */}
                       {fileAttachments.length > 0 && (
-                        <Stack sx={{ width: "100%", gap: 1 }}>
+                        <Stack sx={sx.fileAttachmentSection}>
                           {fileAttachments.map((fileName, index) => (
                             <FileAttachmentRow
                               key={`file-${index}`}
@@ -1351,7 +1207,13 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleViewClose}>Close</Button>
+          <Button
+            variant="contained"
+            onClick={handleViewClose}
+            sx={sx.cancelButton}
+          >
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </>
@@ -1374,46 +1236,19 @@ const ImageAttachmentCard = ({ fileName, onView, onDelete }) => {
   const showSpinner = !previewUrl || !imgLoaded;
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        width: 120,
-        height: 116,
-        borderRadius: "10px",
-        overflow: "hidden",
-        border: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.bgForm?.black3 || "#1A202C",
-        cursor: "pointer",
-      }}
-      onClick={() => onView(fileName.file)}
-    >
+    <Box sx={sx.imgAttachmentBox} onClick={() => onView(fileName.file)}>
       <IconButton
         size="small"
         onClick={(e) => {
           e.stopPropagation();
           onDelete(fileName);
         }}
-        sx={{
-          position: "absolute",
-          top: 4,
-          right: 4,
-          zIndex: 2,
-          padding: "2px",
-          backgroundColor: "rgba(0,0,0,0.55)",
-          "&:hover": { backgroundColor: "rgba(0,0,0,0.75)" },
-        }}
+        sx={sx.imgIconButton}
       >
         <CloseOutlined sx={{ fontSize: 14, color: "#fff" }} />
       </IconButton>
 
-      <Box
-        sx={{
-          position: "relative",
-          width: "100%",
-          height: 80,
-          backgroundColor: "rgba(255,255,255,0.04)",
-        }}
-      >
+      <Box sx={sx.imgContainer}>
         {previewUrl && (
           <Box
             component="img"
@@ -1421,63 +1256,26 @@ const ImageAttachmentCard = ({ fileName, onView, onDelete }) => {
             alt={fileName.name}
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgLoaded(true)}
-            sx={{
-              width: "100%",
-              height: 80,
-              objectFit: "cover",
-              display: "block",
-              opacity: showSpinner ? 0 : 1,
-              transition: "opacity 0.15s ease",
-            }}
+            sx={{ ...sx.previewUrlBox, opacity: showSpinner ? 0 : 1 }}
           />
         )}
 
         {showSpinner && (
-          <Box
-            sx={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <Box sx={sx.showSpinnerBox}>
             <CircularProgress
               size={20}
               thickness={4}
-              sx={{ color: theme.palette.text.secondary }}
+              sx={sx.circularProgress}
             />
           </Box>
         )}
       </Box>
 
       <Box sx={{ padding: "6px 8px", overflow: "hidden" }}>
-        <Typography
-          noWrap
-          title={fileName.name}
-          sx={{
-            fontSize: "11px",
-            fontWeight: 500,
-            color: theme.palette.text.main,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "block",
-          }}
-        >
+        <Typography noWrap title={fileName.name} sx={sx.imgFileName}>
           {fileName.name}
         </Typography>
-        <Typography
-          noWrap
-          sx={{
-            fontSize: "10px",
-            color: theme.palette.text.secondary,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "block",
-          }}
-        >
+        <Typography noWrap sx={sx.imgFileSize}>
           {ext} · {fileName.size} MB
         </Typography>
       </Box>
@@ -1490,57 +1288,34 @@ const FileAttachmentRow = ({ fileName, onDelete, uploadProgress }) => {
   const inProgress = typeof uploadProgress === "number" && uploadProgress < 100;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1.5,
-        padding: "8px 10px",
-        borderRadius: "8px",
-        backgroundColor: theme.palette.bgForm?.black3 || "#1A202C",
-        border: `1px solid ${theme.palette.divider}`,
-      }}
-    >
-      <Box
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-      >
-        {getAttachmentIcon(fileName)}
-      </Box>
+    <Box sx={sx.fileAttachmentBox}>
+      <Box sx={sx.iconFile}>{getAttachmentIcon(fileName)}</Box>
 
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography noWrap sx={{ fontSize: "12px", fontWeight: 500 }}>
+      <Box sx={sx.fileNameBox}>
+        <Typography noWrap sx={sx.fileNameText}>
           {fileName.name}
         </Typography>
 
         {inProgress ? (
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            sx={{ mt: 0.5 }}
-          >
+          <Stack sx={sx.inProgressBox}>
             <LinearProgress
               variant="determinate"
               value={uploadProgress}
-              sx={{ flex: 1, height: 4, borderRadius: 2 }}
+              sx={sx.linearProgress}
             />
-            <Typography
-              sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
-            >
+            <Typography sx={sx.uploadProgressText}>
               {uploadProgress}%
             </Typography>
           </Stack>
         ) : (
-          <Typography
-            sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
-          >
+          <Typography sx={sx.fileSizeText}>
             {fileName.name.split(".").pop()?.toUpperCase()} · {fileName.size} MB
           </Typography>
         )}
       </Box>
 
       <IconButton size="small" onClick={() => onDelete(fileName)}>
-        <Close sx={{ fontSize: 16 }} />
+        <Close sx={sx.closeIconButton} />
       </IconButton>
     </Box>
   );

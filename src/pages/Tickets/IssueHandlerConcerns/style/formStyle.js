@@ -1,3 +1,5 @@
+import { theme } from "../../../../theme/theme";
+
 const colorTokens = {
   bg: "#0b1018",
   panel: "#0c1421",
@@ -22,10 +24,11 @@ const t = colorTokens;
 const f = fonts;
 
 export const formStyle = {
-  titleText: { fontSize: f.lg, fontWeight: 700, color: t.text },
-  fieldText: { fontSize: f.md, fontWeight: 500, color: t.text },
-  detailTitleText: { fontSize: f.md, fontWeight: 400, color: t.muted },
-  detailDescText: { fontSize: f.md, fontWeight: 500, color: t.text },
+  titleText: { fontSize: f.lg, fontWeight: 700, color: t.ok },
+  captionText: { fontSize: f.md, fontWeight: 700, color: t.muted },
+  fieldText: { fontSize: f.md, fontWeight: 600, color: t.text },
+  detailTitleText: { fontSize: f.md, fontWeight: 500, color: t.muted },
+  detailDescText: { fontSize: f.md, fontWeight: 600, color: t.text },
   requiredDot: { color: t.error, fontSize: "10px" },
 
   autoComplete: {
@@ -43,7 +46,33 @@ export const formStyle = {
     },
   },
 
-  textField: {},
+  datePickerSlotProp: {
+    textField: {
+      variant: "outlined",
+      sx: {
+        "& .MuiInputBase-input": {
+          padding: "8.5px 14px",
+        },
+        "& .MuiOutlinedInput-root": {
+          fontSize: "13px",
+        },
+      },
+    },
+  },
+
+  textFieldInputProps: {
+    style: {
+      fontSize: "13px",
+    },
+  },
+
+  textFieldLabelProps: {
+    style: {
+      fontSize: "13px",
+    },
+  },
+
+  textErrors: { fontSize: "12px", color: t.error },
   textArea: {},
 
   cancelButton: {
@@ -51,10 +80,12 @@ export const formStyle = {
     "&:hover": { backgroundColor: "#2f3c55" },
   },
 
+  closeIconButton: { fontSize: 16 },
+
   divider: {
     background: t.line,
-    marginTop: 0.5,
-    marginBottom: 0.5,
+    marginTop: 1.2,
+    marginBottom: 1.2,
   },
 
   titleDetailBox: {
@@ -62,11 +93,11 @@ export const formStyle = {
   },
 
   spacer: {
-    width: "5%",
+    width: "8%",
   },
 
   descDetailBox: {
-    width: "75%",
+    width: "72%",
   },
 
   // Closing Dialog
@@ -79,7 +110,7 @@ export const formStyle = {
     border: `1px solid ${t.line}`,
     borderRadius: "10px",
     mt: 1,
-    padding: 1,
+    padding: 2,
   },
 
   closeDetailContent: {
@@ -89,7 +120,7 @@ export const formStyle = {
 
   fieldSection: {
     marginTop: 2,
-    gap: 1,
+    gap: 2,
     padding: 1,
   },
 
@@ -98,7 +129,12 @@ export const formStyle = {
     gap: 1,
   },
 
-  categoryWithField: {
+  fieldOneColStack: {
+    gap: 0.5,
+    width: "100%",
+  },
+
+  fieldTwoColsStack: {
     gap: 0.5,
     width: { xs: "100%", md: "50%" },
   },
@@ -110,4 +146,120 @@ export const formStyle = {
   },
 
   fieldTitle: {},
+
+  // Attachments Dashed
+  attachmentDashedBorder: {
+    width: "100%",
+    display: "flex",
+    border: "2px dashed #2D3748",
+    justifyContent: "left",
+    padding: 1,
+    gap: 1.5,
+  },
+
+  attachmentFileBox: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 1,
+    alignItems: "center",
+  },
+
+  chooseFileText: { fontSize: "12px" },
+  fileExtText: {
+    color: t.muted,
+    fontSize: "11px",
+  },
+
+  // Img Files
+  imgAttachmentSection: { display: "flex", flexWrap: "wrap", gap: 1.5 },
+  imgAttachmentBox: {
+    position: "relative",
+    width: 120,
+    height: 116,
+    borderRadius: "10px",
+    overflow: "hidden",
+    backgroundColor: t.panel,
+    border: `1px solid ${t.line}`,
+    cursor: "pointer",
+  },
+
+  imgContainer: {
+    position: "relative",
+    width: "100%",
+    height: 80,
+    backgroundColor: "rgba(255,255,255,0.04)",
+  },
+
+  imgIconButton: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    zIndex: 2,
+    padding: "2px",
+    backgroundColor: "rgba(0,0,0,0.55)",
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.75)" },
+  },
+
+  imgFileName: {
+    fontSize: "11px",
+    fontWeight: 500,
+    color: t.text,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "block",
+  },
+
+  imgFileSize: {
+    fontSize: "10px",
+    color: t.muted,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "block",
+  },
+
+  previewUrlBox: {
+    width: "100%",
+    height: 80,
+    objectFit: "cover",
+    display: "block",
+    transition: "opacity 0.15s ease",
+  },
+
+  showSpinnerBox: {
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  circularProgress: { color: theme.palette.text.secondary },
+
+  // Non Img Files
+  fileAttachmentSection: { width: "100%", gap: 1 },
+  fileAttachmentBox: {
+    display: "flex",
+    alignItems: "center",
+    gap: 1.5,
+    padding: "8px 10px",
+    borderRadius: "8px",
+    backgroundColor: t.panel,
+    border: `1px solid ${t.line}`,
+  },
+
+  iconFile: { display: "flex", alignItems: "center", justifyContent: "center" },
+  fileNameBox: { flex: 1, minWidth: 0 },
+  fileNameText: { fontSize: f.sm, fontWeight: 500 },
+  fileSizeText: { fontSize: f.xs, color: t.muted },
+
+  inProgressBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    spacing: 1,
+    mt: 0.5,
+  },
+  linearProgress: { flex: 1, height: 4, borderRadius: 2 },
+  uploadProgressText: { fontSize: f.xs, color: t.muted },
 };

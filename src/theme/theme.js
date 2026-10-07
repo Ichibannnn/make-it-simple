@@ -312,9 +312,10 @@ const theme = createTheme({
     MuiFormControlLabel: {
       styleOverrides: {
         root: {
-          "&.MuiFormControlLabel-root .MuiFormControlLabel-label.Mui-disabled": {
-            color: "rgb(255 255 255 / 26%)",
-          },
+          "&.MuiFormControlLabel-root .MuiFormControlLabel-label.Mui-disabled":
+            {
+              color: "rgb(255 255 255 / 26%)",
+            },
         },
       },
     },
