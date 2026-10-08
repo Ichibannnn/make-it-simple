@@ -61,6 +61,7 @@ export const global = {
   },
 
   // Dialog
+  dialog: { borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" },
   dialogContent: {
     padding: 0,
   },

@@ -46,6 +46,8 @@ export const formStyle = {
     },
   },
 
+  textField: { "& .MuiInputBase-input": { fontSize: "14px" } },
+
   datePickerSlotProp: {
     textField: {
       variant: "outlined",
@@ -100,10 +102,9 @@ export const formStyle = {
     width: "72%",
   },
 
-  // Closing Dialog
   dialogTitle: {},
 
-  closeDetailBox: {
+  detailBox: {
     background: t.panel,
     width: "100%",
     height: "auto",
