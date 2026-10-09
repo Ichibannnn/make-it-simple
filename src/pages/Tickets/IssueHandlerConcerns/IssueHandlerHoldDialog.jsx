@@ -290,46 +290,17 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
         <DialogContent>
           <Stack>
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
-              {/* Ticket Number */}
+              {/* Ticket Details */}
+
               <Stack sx={{ padding: 1, width: "100%" }}>
+                {/* Ticket Number */}
                 <Stack>
                   <Typography sx={sx.titleText}>Hold Ticket</Typography>
                   <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                 </Stack>
 
-                {/* {isScreenSmall ? (
-                  <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
+                {/*   Ticket Detail Section*/}
 
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
-                      {data?.concern_Description?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </Typography>
-                  </Stack>
-                ) : (
-                  <Stack direction="row" sx={{ justifyContent: "center", alignItems: "center", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Box sx={{ width: "20%", ml: 2 }}>
-                      <Typography sx={{ textAlign: "left", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Ticket Description:</Typography>
-                    </Box>
-                    <Box sx={{ width: "5%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
-                        {data?.concern_Description?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                )} */}
-
-                {/* Ticket Detail Section */}
                 <Stack sx={sx.detailBox}>
                   <Stack sx={sx.closeDetailContent}>
                     <Box sx={sx.titleDetailBox}>
@@ -351,8 +322,9 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                   </Stack>
                 </Stack>
 
-                <Stack sx={{ marginTop: 4, minHeight: "500px" }}>
-                  <Stack mt={2} gap={0.5}>
+                {/* Fields */}
+                <Stack sx={sx.fieldSection}>
+                  <Stack sx={sx.fieldOneColStack}>
                     {/* Reason */}
                     <Stack gap={0.5}>
                       <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>

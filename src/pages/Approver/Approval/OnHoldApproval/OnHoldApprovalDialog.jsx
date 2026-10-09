@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  Stack,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { AccountCircleRounded, AttachFileOutlined, Check, Close, GetAppOutlined } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
@@ -22,10 +11,7 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 
 import OnHoldApprovalMenuActions from "./MenuActions/OnHoldApprovalMenuActions";
@@ -46,8 +32,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
-  const [approveOnHold, { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching }] =
-    useApproveOnHoldMutation();
+  const [approveOnHold, { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching }] = useApproveOnHoldMutation();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
@@ -232,11 +217,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                 >
                   {data?.fullname}
                 </Typography>
-                <Typography
-                  sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.text.secondary }}
-                >
-                  {data?.channel_Name}
-                </Typography>
+                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.text.secondary }}>{data?.channel_Name}</Typography>
               </Stack>
             </Stack>
 
@@ -261,26 +242,16 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     }}
                   >
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        Ticket Number:
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
-                      >{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                     </Box>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        Ticket Description:
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
                       <Typography
@@ -303,12 +274,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        {" "}
-                        Reason:
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}> Reason:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
                       <Typography
@@ -331,28 +297,16 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        Channel:
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
                     </Box>
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        {data?.channel_Name}
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
                     </Box>
                   </Stack>
 
                   <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        Category:
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Category:</Typography>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
                       {data?.getOnHoldTicketCategories?.map((item, i) => (
@@ -383,11 +337,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     }}
                   >
                     <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}
-                      >
-                        Sub Category:
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Sub Category:</Typography>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
                       {data?.getOnHoldTicketSubCategories?.map((item, i) => (
@@ -411,10 +361,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                 </>
               ) : (
                 <>
-                  <Stack
-                    direction="row"
-                    sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}
-                  >
+                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
                     <Box sx={{ width: "15%", ml: 2 }}>
                       <Typography
                         sx={{
@@ -429,9 +376,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                      >{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                     </Box>
                   </Stack>
 
@@ -516,11 +461,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={{ width: "10%" }} />
                     <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                      >
-                        {data?.channel_Name}
-                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
                     </Box>
                   </Stack>
 
@@ -656,9 +597,7 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                               flexDirection: "column",
                             }}
                           >
-                            <Typography sx={{ fontSize: "14px", wordBreak: "break-word" }}>
-                              {fileName.name}
-                            </Typography>
+                            <Typography sx={{ fontSize: "14px", wordBreak: "break-word" }}>{fileName.name}</Typography>
 
                             <Typography
                               sx={{
@@ -692,43 +631,23 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
         <DialogActions>
           <Stack sx={{ flexDirection: "row", gap: 0.5, padding: 2 }}>
-            <LoadingButton
-              variant="contained"
-              color="success"
-              onClick={onApproveAction}
-              loading={approveOnHoldIsLoading || approveOnHoldIsFetching}
-              startIcon={<Check />}
-            >
+            <LoadingButton variant="contained" color="success" onClick={onApproveAction} loading={approveOnHoldIsLoading || approveOnHoldIsFetching} startIcon={<Check />}>
               Approve
             </LoadingButton>
 
-            <LoadingButton
-              type="submit"
-              variant="outlined"
-              onClick={onDisapproveHandler}
-              color="error"
-              loading={approveOnHoldIsLoading || approveOnHoldIsFetching}
-              startIcon={<Close />}
-            >
+            <LoadingButton type="submit" variant="outlined" onClick={onDisapproveHandler} color="error" loading={approveOnHoldIsLoading || approveOnHoldIsFetching} startIcon={<Close />}>
               Disapprove
             </LoadingButton>
           </Stack>
         </DialogActions>
 
-        <DisapprovedOnHoldDialog
-          data={disapproveData}
-          open={disapproveOpen}
-          onClose={disapproveOnClose}
-          approvalOnClose={onCloseHandler}
-        />
+        <DisapprovedOnHoldDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} />
       </Dialog>
 
       {selectedImage && (
         <>
           <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-            <DialogContent sx={{ height: "auto" }}>
-              {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
-            </DialogContent>
+            <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
             <DialogActions>
               <Button onClick={handleViewClose}>Close</Button>
             </DialogActions>
