@@ -18,12 +18,15 @@ import { useLazyGetCategoryQuery } from "../../../features/api masterlist/catego
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 
-import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
-import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { formStyle as sx } from "./style/formStyle";
+
+import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
+import { global } from "../../../styles/global";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -676,10 +679,24 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
   return (
     <>
-      <Dialog fullWidth maxWidth="md" open={open}>
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={open}
+        onClose={(event, reason) => {
+          if (reason === "backdropClick") {
+            event.stopPropagation();
+            return;
+          }
+          onCloseHandler();
+        }}
+        disableEscapeKeyDown={false}
+        sx={global.dialog}
+        PaperProps={{ style: { overflow: "auto" } }}
+      >
         <DialogContent>
-          <Stack sx={{ minHeight: "600px" }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack>
+            {/* <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" gap={0.5}>
                 <Typography
                   sx={{
@@ -697,14 +714,14 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                   <Close />
                 </IconButton>
               </Stack>
-            </Stack>
+            </Stack> */}
 
-            <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
+            {/* <Divider variant="fullWidth" sx={{ background: "#2D3748" }} /> */}
 
             <Stack id="closeticket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* TICKET DETAILS */}
-              <Stack sx={{ padding: 2, width: "100%", mt: 1 }}>
-                <Stack direction="row" gap={0.5} alignItems="center">
+              <Stack sx={{ padding: 2, width: "100%" }}>
+                {/* <Stack direction="row" gap={0.5} alignItems="center">
                   <FiberManualRecord color="warning" fontSize="20px" />
                   <Typography
                     sx={{
@@ -728,6 +745,28 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                       (Approved)
                     </Typography>
                   )}
+                </Stack> */}
+
+                {/* Ticket Number */}
+                <Stack>
+                  <Typography sx={sx.titleText}>Manage Ticket</Typography>
+
+                  <Stack sx={sx.manageTicketBox}>
+                    <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+
+                    {/* {data?.getForClosingTickets?.[0]?.isApprove === true && ( */}
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        fontStyle: "italic",
+                        color: "#22B4BF",
+                      }}
+                    >
+                      (Approved)
+                    </Typography>
+                    {/* // )} */}
+                  </Stack>
                 </Stack>
 
                 {isScreenSmall ? (

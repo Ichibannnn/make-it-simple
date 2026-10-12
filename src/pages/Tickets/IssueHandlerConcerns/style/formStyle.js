@@ -263,4 +263,11 @@ export const formStyle = {
   },
   linearProgress: { flex: 1, height: 4, borderRadius: 2 },
   uploadProgressText: { fontSize: f.xs, color: t.muted },
+
+  // Manage Ticket
+  manageTicketBox: {
+    flexDirection: "row",
+    gap: 0.5,
+    alignItem: "center",
+  },
 };

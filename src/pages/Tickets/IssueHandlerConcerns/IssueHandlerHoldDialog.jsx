@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, LinearProgress, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
-import { Add, CheckOutlined, Close, CloseOutlined, FiberManualRecord, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, LinearProgress, Stack, TextField, Typography } from "@mui/material";
+import { Close, CloseOutlined, FiberManualRecord, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,16 +10,13 @@ import * as yup from "yup";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { theme } from "../../../theme/theme";
 import { formStyle as sx } from "./style/formStyle";
 
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useHoldIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 
-import OnHoldMenuActions from "./MenuActions/OnHoldMenuActions";
 import getAttachmentIcon from "../../../utils/getAttachmentIcon";
 
 const schema = yup.object().shape({
@@ -30,7 +27,6 @@ const schema = yup.object().shape({
 
 const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
   const [attachments, setAttachments] = useState([]);
-  const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
@@ -48,11 +44,9 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
   const dispatch = useDispatch();
   const fileInputRef = useRef();
-  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
   const [holdIssueHandlerTickets, { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching }] = useHoldIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -291,7 +285,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
           <Stack>
             <Stack id="closeTicket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* Ticket Details */}
-
               <Stack sx={{ padding: 1, width: "100%" }}>
                 {/* Ticket Number */}
                 <Stack>
@@ -300,7 +293,6 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                 </Stack>
 
                 {/*   Ticket Detail Section*/}
-
                 <Stack sx={sx.detailBox}>
                   <Stack sx={sx.closeDetailContent}>
                     <Box sx={sx.titleDetailBox}>
