@@ -1,28 +1,18 @@
 import { LoadingButton } from "@mui/lab";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import {
   Add,
+  AttachFile,
   AttachFileOutlined,
   CheckOutlined,
   Close,
   FiberManualRecord,
   FileDownloadOutlined,
   RemoveCircleOutline,
+  RestartAlt,
   VisibilityOutlined,
+  ZoomIn,
+  ZoomOut,
 } from "@mui/icons-material";
 
 import * as yup from "yup";
@@ -35,12 +25,13 @@ import { theme } from "../../../theme/theme";
 import Swal from "sweetalert2";
 import { useDeleteRequestorAttachmentMutation } from "../../../features/api_request/concerns/concernApi";
 import { useTransferIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import moment from "moment";
+import { global } from "../../../styles/global";
+import { formStyle as sx } from "./style/formStyle";
+import getAttachmentIcon from "../../../utils/getAttachmentIcon";
+import ManageTransferMenuActions from "./MenuActions/ManageTransferMenuActions";
 
 const schema = yup.object().shape({
   TransferTicketId: yup.number(),
@@ -52,35 +43,182 @@ const schema = yup.object().shape({
   Transfer_To: yup.object().required().label("Issue handler"),
 });
 
+const EXT_TO_MIME = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+};
+
+const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
+  const [getAttachmentPreview] = useLazyGetViewAttachmentQuery();
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewError, setPreviewError] = useState(false);
+  const ext = fileName.name?.split(".").pop()?.toLowerCase();
+
+  useEffect(() => {
+    let cancelled = false;
+    let objectUrl;
+
+    setPreviewUrl(null);
+    setPreviewError(false);
+
+    (async () => {
+      try {
+        // New, not-yet-saved file
+        if (fileName.file instanceof File) {
+          objectUrl = URL.createObjectURL(fileName.file);
+          setPreviewUrl(objectUrl);
+          return;
+        }
+
+        // Neither a File nor a saved id (e.g. added by drag & drop) -> icon fallback
+        if (!fileName.ticketAttachmentId) {
+          setPreviewError(true);
+          return;
+        }
+
+        // Saved attachment from a previous submit
+        const response = await getAttachmentPreview(fileName.ticketAttachmentId);
+        if (cancelled) return;
+
+        if (response?.data) {
+          const mime = EXT_TO_MIME[ext] || response.data.type || "application/octet-stream";
+          objectUrl = URL.createObjectURL(new Blob([response.data], { type: mime }));
+          setPreviewUrl(objectUrl);
+        } else {
+          setPreviewError(true);
+        }
+      } catch (error) {
+        console.error("Thumbnail preview error:", error);
+        if (!cancelled) setPreviewError(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [fileName.file, fileName.ticketAttachmentId, ext, getAttachmentPreview]);
+
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: 120,
+        height: 116,
+        borderRadius: "10px",
+        overflow: "hidden",
+        border: "1px solid #2D3748",
+        backgroundColor: theme.palette.bgForm?.black3 || "#1A202C",
+        cursor: isOpening ? "wait" : "pointer",
+      }}
+      onClick={() => {
+        // Ignore extra clicks while the full-size version is already being fetched
+        if (isOpening) return;
+        onView(fileName, previewUrl);
+      }}
+    >
+      {/* Existing menu, repositioned as an overlay. stopPropagation keeps menu clicks
+          (including the portaled MenuItems) from also opening the preview. */}
+      <Box
+        onClick={(e) => e.stopPropagation()}
+        sx={{
+          position: "absolute",
+          top: 2,
+          right: 2,
+          zIndex: 2,
+          display: "flex",
+          borderRadius: "50%",
+          backgroundColor: "rgba(0,0,0,0.55)",
+        }}
+      >
+        {menu}
+      </Box>
+
+      <Box sx={{ position: "relative", zIndex: 1, width: "100%", height: 80, backgroundColor: "rgba(255,255,255,0.04)" }}>
+        {previewUrl && !previewError && (
+          <Box component="img" src={previewUrl} alt={fileName.name} onError={() => setPreviewError(true)} sx={{ width: "100%", height: 80, objectFit: "cover", display: "block" }} />
+        )}
+
+        {!previewUrl && !previewError && (
+          <Box sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
+          </Box>
+        )}
+
+        {previewError && <Box sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{getAttachmentIcon(fileName)}</Box>}
+
+        {isOpening && (
+          <Box sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.5)" }}>
+            <CircularProgress size={22} thickness={4} sx={{ color: "#fff" }} />
+          </Box>
+        )}
+      </Box>
+
+      <Box sx={{ padding: "6px 8px", overflow: "hidden" }}>
+        <Typography
+          noWrap
+          title={fileName.name}
+          sx={{
+            fontSize: "11px",
+            fontWeight: 500,
+            color: theme.palette.text.main,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "block",
+          }}
+        >
+          {fileName.name}
+        </Typography>
+
+        <Stack direction="row" alignItems="center" gap={0.5}>
+          <Typography noWrap sx={{ fontSize: "10px", color: theme.palette.text.secondary, minWidth: 0 }}>
+            {ext?.toUpperCase()} · {fileName.size} MB
+          </Typography>
+          {/* Small check = already saved from a previous submit */}
+          {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: 12 }} titleAccess="Attached file" />}
+        </Stack>
+      </Box>
+    </Box>
+  );
+};
+
 const ManageTransferDialog = ({ data, open, onClose }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
-  const [downloadLoading, setDownloadLoading] = useState(false);
-  const [viewLoading, setViewLoading] = useState(false);
+
+  const [viewIsLoading, setViewIsLoading] = useState(false);
+
+  // Which saved attachment is being fetched for the full-size viewer (spinner on that thumbnail)
+  const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
+  const [downloadIsLoading, setDownloadIsLoading] = useState(false);
+
+  // --- Zoom / pan state for the image viewer (same behavior as IssueViewDialog) ---
+  const [zoom, setZoom] = useState(1);
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 4;
+  const ZOOM_STEP = 0.25;
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const positionStartRef = useRef({ x: 0, y: 0 });
 
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] =
-    useLazyGetChannelsQuery();
-  const [
-    getIssueHandler,
-    { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess },
-  ] = useLazyGetChannelsQuery();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [getIssueHandler, { data: issueHandlerData, isLoading: issueHandlerIsLoading, isSuccess: issueHandlerIsSuccess }] = useLazyGetChannelsQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [
-    manageTransferTickets,
-    { isLoading: manageTransferTicketsIsLoading, isFetching: manageTransferTicketsIsFetching },
-  ] = useTransferIssueHandlerTicketsMutation();
-  const [
-    deleteRequestorAttachment,
-    { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching },
-  ] = useDeleteRequestorAttachmentMutation();
+  const [manageTransferTickets, { isLoading: manageTransferTicketsIsLoading, isFetching: manageTransferTicketsIsFetching }] = useTransferIssueHandlerTicketsMutation();
+  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -103,7 +241,6 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
   });
 
   const handleAttachments = (event) => {
-    // console.log("event: ", event);
     const newFiles = Array.from(event.target.files);
 
     const fileNames = newFiles.map((file) => ({
@@ -112,9 +249,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
       file,
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name),
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -123,14 +258,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
     fileInputRef.current.click();
   };
 
-  const handleUpdateFile = (id) => {
-    setTicketAttachmentId(id);
-    fileInputRef.current.click();
-  };
-
   const handleDeleteFile = async (fileNameToDelete) => {
-    console.log("File name: ", fileNameToDelete);
-
     try {
       if (fileNameToDelete.ticketAttachmentId) {
         const deletePayload = {
@@ -151,8 +279,8 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
       setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
       setValue(
-        "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
+        "AddTransferAttachments",
+        watch("AddTransferAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -177,8 +305,6 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
     const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
-
-    // console.log("Attachments: ", attachments)
   };
 
   const onSubmitAction = (formData) => {
@@ -219,10 +345,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
         // Attachments
         const files = formData.AddTransferAttachments;
         for (let i = 0; i < files.length; i++) {
-          payload.append(
-            `AddTransferAttachments[${i}].ticketAttachmentId`,
-            files[i].ticketAttachmentId || "",
-          );
+          payload.append(`AddTransferAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
           payload.append(`AddTransferAttachments[${i}].attachment`, files[i]);
         }
 
@@ -263,8 +386,6 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      //   console.log("Data: ", data);
-
       setValue("TransferTicketId", data?.getForTransferTickets?.[0]?.transferTicketConcernId);
       setValue("TicketConcernId", data?.ticketConcernId);
       setValue("TransferRemarks", data?.getForTransferTickets?.[0]?.transfer_Remarks);
@@ -303,28 +424,38 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
 
   // Function to open image view dialog
   const handleViewImage = async (file) => {
-    setViewLoading(true);
+    setViewIsLoading(true);
+    setLoadingAttachmentId(file?.ticketAttachmentId);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
       if (response?.data) {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
+        setZoom(1);
+        setPosition({ x: 0, y: 0 });
         setIsViewDialogOpen(true);
-        setViewLoading(false);
       }
+      setViewIsLoading(false);
+      setLoadingAttachmentId(null);
     } catch (error) {
-      console.error("Error fetching image:", error);
+      toast.error("Error!", {
+        description: "View file error!",
+        duration: 1500,
+      });
+      setViewIsLoading(false);
+      setLoadingAttachmentId(null);
     }
   };
 
   const handleViewImageWithoutId = (file) => {
-    setViewLoading(true);
     try {
       const reader = new FileReader();
 
       reader.onload = (e) => {
         setSelectedImage(e.target.result);
+        setZoom(1);
+        setPosition({ x: 0, y: 0 });
         setIsViewDialogOpen(true);
       };
       reader.readAsDataURL(file);
@@ -334,7 +465,7 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
   };
 
   const handleDownloadAttachment = async (file) => {
-    setDownloadLoading(true);
+    setDownloadIsLoading(true);
     try {
       const response = await getDownloadAttachment(file?.ticketAttachmentId);
 
@@ -347,22 +478,110 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link); // Clean up after download
-        setDownloadLoading(false);
-      } else {
-        console.log("No data in the response");
+        setDownloadIsLoading(false);
       }
     } catch (error) {
-      console.log("Error", error);
+      toast.error("Error!", {
+        description: "Download file error!",
+        duration: 1500,
+      });
+      setDownloadIsLoading(false);
     }
   };
 
   const handleViewClose = () => {
     setIsViewDialogOpen(false);
     setSelectedImage(null);
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  // --- Zoom / pan handlers ---
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomReset = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  // React attaches wheel listeners as passive, so preventDefault() isn't allowed here;
+  // the dialog already locks page scroll, so it isn't needed.
+  const handleWheelZoom = (event) => {
+    if (event.deltaY < 0) handleZoomIn();
+    else handleZoomOut();
+  };
+
+  // Snap the pan offset back to center whenever zoom returns to 100% or below.
+  useEffect(() => {
+    if (zoom <= 1) setPosition({ x: 0, y: 0 });
+  }, [zoom]);
+
+  // Dragging to pan: only active once zoomed in. Listens on window so a drag
+  // that ends outside the image still releases cleanly.
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (event) => {
+      const dx = event.clientX - dragStartRef.current.x;
+      const dy = event.clientY - dragStartRef.current.y;
+      setPosition({
+        x: positionStartRef.current.x + dx,
+        y: positionStartRef.current.y + dy,
+      });
+    };
+    const handleMouseUp = () => setIsDragging(false);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
+
+  const handleImageMouseDown = (event) => {
+    if (zoom <= 1) return;
+    event.preventDefault();
+    setIsDragging(true);
+    dragStartRef.current = { x: event.clientX, y: event.clientY };
+    positionStartRef.current = { ...position };
   };
 
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
+  const imageAttachments = attachments?.filter((f) => isImageFile(f.name)) ?? [];
+  const otherAttachments = attachments?.filter((f) => !isImageFile(f.name)) ?? [];
+
+  const renderMenu = (fileName, compact = false) => (
+    <ManageTransferMenuActions
+      data={data}
+      fileName={fileName}
+      onView={handleViewImage}
+      onViewWithoutId={handleViewImageWithoutId}
+      onDelete={handleDeleteFile}
+      onDownload={handleDownloadAttachment}
+      isImageFile={isImageFile}
+      viewIsLoading={viewIsLoading}
+      downloadIsLoading={downloadIsLoading}
+      compact={compact}
+    />
+  );
+
+  // Thumbnail click: reuse the already-loaded thumbnail image when we have it (instant, no
+  // second request); otherwise fall back to the original view handlers.
+  const handleOpenThumbnail = (fileName, src) => {
+    if (src) {
+      setSelectedImage(src);
+      setZoom(1);
+      setPosition({ x: 0, y: 0 });
+      setIsViewDialogOpen(true);
+    } else if (fileName.file) {
+      handleViewImageWithoutId(fileName.file);
+    } else if (fileName.ticketAttachmentId) {
+      handleViewImage(fileName);
+    }
   };
 
   return (
@@ -379,101 +598,32 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
           onCloseHandler();
         }}
         disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        sx={global.dialog}
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <DialogContent>
-          <Stack sx={{ minHeight: "600px" }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Stack direction="row" gap={0.5}>
-                <Typography
-                  sx={{
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    color: theme.palette.success.main,
-                  }}
-                >
-                  Manage Transfer
-                </Typography>
-              </Stack>
-
-              <Stack direction="row" gap={0.5} alignItems="center">
-                <IconButton onClick={onCloseHandler}>
-                  <Close />
-                </IconButton>
-              </Stack>
-            </Stack>
-
-            <Stack
-              id="closeticket"
-              component="form"
-              direction="row"
-              gap={1}
-              sx={{ width: "100%", height: "100%" }}
-              onSubmit={handleSubmit(onSubmitAction)}
-            >
+          <Stack>
+            <Stack id="closeticket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               <Stack sx={{ padding: 1, width: "100%" }}>
-                <Stack direction="row" gap={0.5} alignItems="center" mt={2}>
-                  {/* TICKET DETAILS */}
-                  <Stack direction="row" gap={0.5} alignItems="center">
-                    <FiberManualRecord color="warning" fontSize="20px" />
-                    <Typography
-                      sx={{
-                        fontWeight: 700,
-                        fontSize: "16px",
-                        color: theme.palette.text.main,
-                      }}
-                    >
-                      {` Ticket Number : #${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}
-                    </Typography>
+                {/* Ticket Details */}
+                <Stack>
+                  <Typography sx={sx.titleText}>Manage Transfer</Typography>
+                  <Stack sx={sx.manageTicketBox}>
+                    <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                   </Stack>
                 </Stack>
 
-                {isScreenSmall ? (
-                  <Stack sx={{ width: "100%", border: "1px solid #2D3748", padding: 1, mt: 1 }}>
-                    <Typography
-                      sx={{
-                        textAlign: "left",
-                        color: theme.palette.text.secondary,
-                        fontWeight: "500",
-                        fontSize: "14px",
-                      }}
-                    >
-                      Ticket Description:
-                    </Typography>
-
-                    <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                      {data?.concern_Description?.split("\r\n").map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
-                    </Typography>
-                  </Stack>
-                ) : (
-                  <Stack
-                    direction="row"
-                    sx={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      border: "1px solid #2D3748",
-                      padding: 1,
-                      mt: 1,
-                    }}
-                  >
-                    <Box sx={{ width: "20%", ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}
-                      >
-                        Ticket Description:
-                      </Typography>
+                {/* Ticket Detail Section */}
+                <Stack sx={sx.detailBox}>
+                  <Stack sx={sx.closeDetailContent}>
+                    <Box sx={sx.titleDetailBox}>
+                      <Typography sx={sx.detailTitleText}>Ticket Description:</Typography>
                     </Box>
-                    <Box sx={{ width: "5%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography
-                        sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                      >
+
+                    <Box sx={sx.spacer} />
+
+                    <Box sx={sx.descDetailBox}>
+                      <Typography sx={sx.detailDescText}>
                         {data?.concern_Description?.split("\r\n").map((line, index) => (
                           <span key={index}>
                             {line}
@@ -483,416 +633,327 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
                       </Typography>
                     </Box>
                   </Stack>
-                )}
+                </Stack>
 
-                <Stack gap={0.5} mt={2}>
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                    }}
-                  >
-                    Channel:
-                  </Typography>
-                  <Controller
-                    control={control}
-                    name="ChannelId"
-                    render={({ field: { ref, value, onChange } }) => {
-                      return (
-                        <Autocomplete
-                          ref={ref}
-                          size="small"
-                          value={value}
-                          options={channelData?.value?.channel || []}
-                          loading={channelIsLoading}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              placeholder="Select Channel"
-                              sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
-                            />
-                          )}
-                          onOpen={() => {
-                            if (!channelIsSuccess)
-                              getChannel({
+                {/* Fields */}
+                <Stack sx={sx.fieldSection}>
+                  {/* Channel */}
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Typography sx={sx.fieldText}>Channel:</Typography>
+                    <Controller
+                      control={control}
+                      name="ChannelId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={channelData?.value?.channel || []}
+                            loading={channelIsLoading}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={sx.autoComplete} />}
+                            onOpen={() => {
+                              if (!channelIsSuccess)
+                                getChannel({
+                                  Status: true,
+                                });
+                            }}
+                            onChange={(_, value) => {
+                              onChange(value);
+                              setValue("Transfer_To", null);
+                              getIssueHandler({
                                 Status: true,
                               });
-                          }}
-                          onChange={(_, value) => {
-                            onChange(value);
-
-                            setValue("Transfer_To", null);
-
-                            getIssueHandler({
-                              Status: true,
-                            });
-                          }}
-                          getOptionLabel={(option) => option.channel_Name}
-                          isOptionEqualToValue={(option, value) => option.id === value.id}
-                          fullWidth
-                          disablePortal
-                          disabled
-                          disableClearable
-                          componentsProps={{
-                            popper: {
-                              sx: {
-                                "& .MuiAutocomplete-listbox": {
-                                  fontSize: "13px",
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      );
-                    }}
-                  />
-                </Stack>
-
-                <Stack gap={0.5} mt={2}>
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                    }}
-                  >
-                    Transfer to:
-                  </Typography>
-                  <Controller
-                    control={control}
-                    name="Transfer_To"
-                    render={({ field: { ref, value, onChange } }) => {
-                      return (
-                        <Autocomplete
-                          ref={ref}
-                          size="small"
-                          value={value}
-                          options={
-                            issueHandlerData?.value?.channel?.find(
-                              (item) => item.id === watch("ChannelId")?.id,
-                            )?.channelUsers || []
-                          }
-                          loading={issueHandlerIsLoading}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              placeholder="Issue Handler"
-                              sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
-                            />
-                          )}
-                          onOpen={() => {
-                            if (!issueHandlerIsSuccess) getIssueHandler();
-                          }}
-                          onChange={(_, value) => {
-                            onChange(value);
-                          }}
-                          getOptionLabel={(option) => option.fullname}
-                          isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
-                          fullWidth
-                          disabled
-                          disablePortal
-                          disableClearable
-                          componentsProps={{
-                            popper: {
-                              sx: {
-                                "& .MuiAutocomplete-listbox": {
-                                  fontSize: "14px",
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      );
-                    }}
-                  />
-                </Stack>
-
-                <Stack sx={{ gap: 0.5, mt: 2 }}>
-                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
+                            }}
+                            getOptionLabel={(option) => option.channel_Name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            fullWidth
+                            disablePortal
+                            disabled
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
                       }}
-                    >
-                      Transfer Remarks:
-                    </Typography>
-                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                    />
                   </Stack>
 
-                  <Controller
-                    control={control}
-                    name="TransferRemarks"
-                    render={({ field: { ref, value, onChange } }) => {
-                      return (
-                        <TextField
-                          inputRef={ref}
-                          size="medium"
-                          value={value}
-                          placeholder="Enter Remarks"
-                          onChange={onChange}
-                          autoComplete="off"
-                          rows={6}
-                          multiline
-                          sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
-                        />
-                      );
-                    }}
-                  />
-                </Stack>
-
-                <Stack gap={0.5} mt={2} onDragOver={handleDragOver} onDrop={handleDrop}>
-                  <Stack direction="row" gap={0.5}>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
+                  {/* Transfer to */}
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Typography sx={sx.fieldText}>Transfer to:</Typography>
+                    <Controller
+                      control={control}
+                      name="Transfer_To"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={issueHandlerData?.value?.channel?.find((item) => item.id === watch("ChannelId")?.id)?.channelUsers || []}
+                            loading={issueHandlerIsLoading}
+                            renderInput={(params) => <TextField {...params} placeholder="Issue Handler" sx={sx.autoComplete} />}
+                            onOpen={() => {
+                              if (!issueHandlerIsSuccess) getIssueHandler();
+                            }}
+                            onChange={(_, value) => {
+                              onChange(value);
+                            }}
+                            getOptionLabel={(option) => option.fullname}
+                            isOptionEqualToValue={(option, value) => option?.userId === value?.userId}
+                            fullWidth
+                            disabled
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
                       }}
-                    >
-                      Attachment:
-                    </Typography>
+                    />
+                  </Stack>
 
-                    {data?.getForTransferTickets?.[0]?.isApprove === false && (
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="warning"
-                        startIcon={<Add />}
-                        onClick={handleUploadButtonClick}
-                        sx={{ padding: "2px", borderRadius: "2px" }}
+                  {/* Transfer Remarks */}
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Transfer Remarks:</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
+                    </Stack>
+
+                    <Controller
+                      control={control}
+                      name="TransferRemarks"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <TextField
+                            inputRef={ref}
+                            size="medium"
+                            value={value}
+                            placeholder="Enter Remarks"
+                            onChange={onChange}
+                            autoComplete="off"
+                            rows={6}
+                            multiline
+                            InputProps={sx.textFieldInputProps}
+                            InputLabelProps={sx.textFieldLabelProps}
+                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Attachments */}
+                  <Stack>
+                    <Stack onDragOver={handleDragOver} onDrop={handleDrop}>
+                      <Stack
+                        padding={2}
+                        sx={{
+                          border: "1px solid #2D3748",
+                          borderRadius: "10px",
+                          minHeight: "155px",
+                          gap: 1.5,
+                        }}
                       >
-                        <Typography sx={{ fontSize: "12px" }}>Add</Typography>
-                      </Button>
-                    )}
-                  </Stack>
+                        <Stack sx={sx.attachmentTextBox}>
+                          <AttachFile sx={sx.titleHeaderMutedIcon} />
+                          <Typography sx={sx.detailTitleText}>Attachment(s):</Typography>
 
-                  {attachments?.length === 0 ? (
-                    <Stack
-                      sx={{
-                        flexDirection: "column",
-                        border: "1px solid #2D3748",
-                        minHeight: "195px",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Stack direction="row" gap={0.5} justifyContent="center">
-                        <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
-                        <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
+                          {data?.getForTransferTickets?.[0]?.isApprove === false && (
+                            <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick} sx={sx.addAttachmentBtn}>
+                              <Typography sx={{ fontSize: "11.5px", fontWeight: 500 }}>Add File</Typography>
+                            </Button>
+                          )}
+                        </Stack>
+
+                        {!attachments?.length ? (
+                          <Stack sx={sx.noAttachmentSection}>
+                            <Stack sx={sx.noAttachmentContent}>
+                              <AttachFileOutlined sx={sx.noAttachmentIcon} />
+                              <Typography sx={sx.noAttachmentText}>No attached file</Typography>
+                            </Stack>
+                          </Stack>
+                        ) : (
+                          <Stack sx={{ gap: 1.5 }}>
+                            {/* Image thumbnails, grid layout */}
+                            {imageAttachments.length > 0 && (
+                              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                                {imageAttachments.map((fileName, index) => (
+                                  <ImageAttachmentPreviewCard
+                                    key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`}
+                                    fileName={fileName}
+                                    onView={handleOpenThumbnail}
+                                    menu={renderMenu(fileName, true)}
+                                    isOpening={!!fileName.ticketAttachmentId && loadingAttachmentId === fileName.ticketAttachmentId}
+                                  />
+                                ))}
+                              </Box>
+                            )}
+
+                            {/* Non-image files, row list */}
+                            {otherAttachments.map((fileName, index) => (
+                              <Box key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`} sx={sx.fileAttachmentBox}>
+                                {getAttachmentIcon(fileName)}
+                                <Box sx={sx.attachmentAndMenuBox}>
+                                  <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                    <Typography sx={sx.fileNameText}>{fileName.name}</Typography>
+                                    <Typography sx={sx.fileSizeText}>{fileName.size} Mb</Typography>
+                                    <Box sx={sx.fileDescWithIconBox}>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "12px",
+                                          fontWeight: 500,
+                                          color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
+                                        }}
+                                      >
+                                        {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
+                                      </Typography>
+
+                                      {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: "12px" }} />}
+                                    </Box>
+                                  </Box>
+
+                                  <Box>{renderMenu(fileName)}</Box>
+                                </Box>
+                              </Box>
+                            ))}
+                          </Stack>
+                        )}
                       </Stack>
                     </Stack>
-                  ) : (
-                    <Box
-                      sx={{
-                        border: "1px solid #2D3748",
-                        minHeight: "195px",
-                        display: "flex",
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        padding: 1,
-                      }}
-                    >
-                      {attachments?.map((fileName, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: 0.5,
-                            borderBottom: "1px solid #2D3748",
+
+                    <Controller
+                      control={control}
+                      name="AddTransferAttachments"
+                      render={({ field: { onChange, value } }) => (
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
+                          onChange={(event) => {
+                            if (ticketAttachmentId) {
+                              const files = Array.from(event.target.files);
+                              files[0].ticketAttachmentId = ticketAttachmentId;
+
+                              onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+
+                              setAttachments((prevFiles) => [
+                                ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
+                                {
+                                  ticketAttachmentId: ticketAttachmentId,
+                                  name: files[0].name,
+                                  size: (files[0].size / (1024 * 1024)).toFixed(2),
+                                },
+                              ]);
+
+                              fileInputRef.current.value = "";
+                              setTicketAttachmentId(null);
+                            } else {
+                              handleAttachments(event);
+                              const files = Array.from(event.target.files);
+
+                              const uniqueNewFiles = files.filter((item) => !value?.some((file) => file.name === item.name));
+
+                              onChange([...value, ...uniqueNewFiles]);
+                              fileInputRef.current.value = "";
+                            }
                           }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <Typography sx={{ fontSize: "12px" }}>{fileName.name}</Typography>
-
-                            <Typography
-                              sx={{
-                                fontSize: "11px",
-                                color: theme.palette.text.secondary,
-                              }}
-                            >
-                              {fileName.size} Mb
-                            </Typography>
-
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
-                            >
-                              <Typography
-                                sx={{
-                                  fontSize: 11,
-                                  fontWeight: 500,
-                                  color: !!fileName.ticketAttachmentId
-                                    ? theme.palette.success.main
-                                    : theme.palette.primary.main,
-                                }}
-                              >
-                                {!!fileName.ticketAttachmentId
-                                  ? "Attached file"
-                                  : "Uploaded the file successfully"}
-                              </Typography>
-
-                              {!!fileName.ticketAttachmentId && (
-                                <CheckOutlined color="success" fontSize="small" />
-                              )}
-                            </Box>
-                          </Box>
-
-                          <Box>
-                            {!!fileName.ticketAttachmentId ? (
-                              <>
-                                {isImageFile(fileName.name) && (
-                                  <Tooltip title="View">
-                                    <IconButton
-                                      size="small"
-                                      color="primary"
-                                      onClick={() => handleViewImage(fileName)} // View image in dialog
-                                      style={{ background: "none" }}
-                                    >
-                                      {viewLoading ? <CircularProgress size={14} /> : <VisibilityOutlined />}
-                                    </IconButton>
-                                  </Tooltip>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {isImageFile(fileName.name) && (
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handleViewImageWithoutId(fileName.file)} // View image in dialog
-                                    style={{ background: "none" }}
-                                  >
-                                    <VisibilityOutlined />
-                                  </IconButton>
-                                )}
-                              </>
-                            )}
-
-                            <Tooltip title="Remove">
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => handleDeleteFile(fileName)}
-                                style={{
-                                  background: "none",
-                                }}
-                              >
-                                <RemoveCircleOutline />
-                              </IconButton>
-                            </Tooltip>
-
-                            {!!fileName.ticketAttachmentId && (
-                              <Tooltip title="Download">
-                                {downloadLoading ? (
-                                  <CircularProgress size={14} />
-                                ) : (
-                                  <IconButton
-                                    size="small"
-                                    color="error"
-                                    // onClick={() => {
-                                    //   window.location = fileName.link;
-                                    // }}
-                                    onClick={() => handleDownloadAttachment(fileName)}
-                                    style={{
-                                      background: "none",
-                                    }}
-                                  >
-                                    <FileDownloadOutlined />
-                                  </IconButton>
-                                )}
-                              </Tooltip>
-                            )}
-                          </Box>
-                        </Box>
-                      ))}
-                    </Box>
-                  )}
-                </Stack>
-
-                <Controller
-                  control={control}
-                  name="AddTransferAttachments"
-                  render={({ field: { onChange, value } }) => (
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
-                      onChange={(event) => {
-                        if (ticketAttachmentId) {
-                          const files = Array.from(event.target.files);
-                          files[0].ticketAttachmentId = ticketAttachmentId;
-
-                          onChange([
-                            ...files,
-                            ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                          ]);
-
-                          setAttachments((prevFiles) => [
-                            ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                            {
-                              ticketAttachmentId: ticketAttachmentId,
-                              name: files[0].name,
-                              size: (files[0].size / (1024 * 1024)).toFixed(2),
-                            },
-                          ]);
-
-                          fileInputRef.current.value = "";
-                          setTicketAttachmentId(null);
-                        } else {
-                          handleAttachments(event);
-                          const files = Array.from(event.target.files);
-
-                          const uniqueNewFiles = files.filter(
-                            (item) => !value?.some((file) => file.name === item.name),
-                          );
-
-                          onChange([...value, ...uniqueNewFiles]);
-                          fileInputRef.current.value = "";
-                        }
-                      }}
-                      hidden
-                      multiple={!!ticketAttachmentId}
+                          hidden
+                          multiple={!!ticketAttachmentId}
+                        />
+                      )}
                     />
-                  )}
-                />
+                  </Stack>
+                </Stack>
               </Stack>
             </Stack>
           </Stack>
         </DialogContent>
 
         <DialogActions>
-          <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
-            {data?.getForTransferTickets?.[0]?.isApprove === false && (
-              <LoadingButton
-                type="submit"
-                form="closeticket"
-                variant="contained"
-                loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching}
-                disabled={!watch("TransferRemarks")}
-              >
-                Save
-              </LoadingButton>
-            )}
-          </Stack>
+          <LoadingButton form="closeTicket" variant="contained" loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+            Cancel
+          </LoadingButton>
+
+          {data?.getForTransferTickets?.[0]?.isApprove === false && (
+            <LoadingButton type="submit" form="closeticket" variant="contained" loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching} disabled={!watch("TransferRemarks")}>
+              Save Changes
+            </LoadingButton>
+          )}
         </DialogActions>
       </Dialog>
 
       {selectedImage && (
         <>
           <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-            <DialogContent sx={{ height: "auto" }}>
-              {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+            <DialogContent sx={{ height: "auto", padding: 0 }}>
+              <Box sx={{ position: "relative" }}>
+                {/* Zoom controls */}
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  alignItems="center"
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    zIndex: 2,
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                    borderRadius: "20px",
+                    padding: "2px 6px",
+                  }}
+                >
+                  <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
+                    <ZoomOut fontSize="small" />
+                  </IconButton>
+
+                  <Typography sx={{ color: "#fff", fontSize: "12px", minWidth: 38, textAlign: "center" }}>{Math.round(zoom * 100)}%</Typography>
+
+                  <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
+                    <ZoomIn fontSize="small" />
+                  </IconButton>
+
+                  <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
+                    <RestartAlt fontSize="small" />
+                  </IconButton>
+                </Stack>
+
+                {/* Fixed viewport — wheel zooms, drag pans once zoomed in */}
+                <Box
+                  onWheel={handleWheelZoom}
+                  sx={{
+                    width: "100%",
+                    height: "70vh",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#000",
+                  }}
+                >
+                  {selectedImage && (
+                    <img
+                      src={selectedImage}
+                      alt="Preview"
+                      onMouseDown={handleImageMouseDown}
+                      draggable={false}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "70vh",
+                        display: "block",
+                        userSelect: "none",
+                        transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+                        transformOrigin: "center center",
+                        transition: isDragging ? "none" : "transform 0.15s ease",
+                        cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+                      }}
+                    />
+                  )}
+                </Box>
+              </Box>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleViewClose}>Close</Button>
+              <Button variant="contained" onClick={handleViewClose} sx={sx.cancelButton}>
+                Close
+              </Button>
             </DialogActions>
           </Dialog>
         </>

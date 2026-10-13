@@ -1177,7 +1177,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
               disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || (watch("ClosingDate") && !watch("BackdateRemarks"))}
             >
-              Save
+              Save Changes
             </LoadingButton>
           )}
         </DialogActions>

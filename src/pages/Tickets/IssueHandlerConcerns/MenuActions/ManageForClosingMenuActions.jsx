@@ -1,22 +1,13 @@
-import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
-import { Box, CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline } from "@mui/icons-material";
+import { CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
 
-import React, { useEffect, useRef } from "react";
+import { useRef } from "react";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
-const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, onDelete, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
+const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, onDelete, onDownload, viewIsLoading, downloadIsLoading }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
-
-  const onViewAction = (fileName) => {
-    onView(fileName);
-  };
-
-  const onViewWithoutIdAction = (fileName) => {
-    onToggle();
-    onViewWithoutId(fileName);
-  };
 
   const onDeleteAction = (fileName) => {
     onToggle();
@@ -26,15 +17,6 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
   const onDownloadAction = (fileName) => {
     onDownload(fileName);
   };
-
-  // const handleMenuViewClick = (event, action) => {
-  //   if (viewIsLoading) {
-  //     event.preventDefault();
-  //     event.stopPropagation();
-  //     return;
-  //   }
-  //   action();
-  // };
 
   const handleMenuDownloadClick = (event, action) => {
     if (downloadIsLoading) {
@@ -59,28 +41,6 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
         }}
         disableAutoFocusItem
       >
-        {/* {!!fileName.ticketAttachmentId ? (
-          <Box>
-            {isImageFile(fileName.name) && (
-              <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
-                <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
-                View
-              </MenuItem>
-            )}
-          </Box>
-        ) : (
-          <Box>
-            {isImageFile(fileName.name) && (
-              <MenuItem onClick={() => onViewWithoutIdAction(fileName.file)}>
-                <ListItemIcon>
-                  <VisibilityOutlined fontSize="small" />
-                </ListItemIcon>
-                View
-              </MenuItem>
-            )}
-          </Box>
-        )} */}
-
         {data?.getForClosingTickets?.[0]?.isApprove === false && (
           <MenuItem onClick={() => onDeleteAction(fileName)}>
             <ListItemIcon>
