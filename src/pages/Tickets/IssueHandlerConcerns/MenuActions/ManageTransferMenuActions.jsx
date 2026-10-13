@@ -41,7 +41,7 @@ const ManageTransferMenuActions = ({ data, fileName, onDelete, onDownload, viewI
         }}
         disableAutoFocusItem
       >
-        {data?.getForClosingTickets?.[0]?.isApprove === false && (
+        {data?.getForTransferTickets?.[0]?.isApprove === false && (
           <MenuItem onClick={() => onDeleteAction(fileName)}>
             <ListItemIcon>
               <RemoveCircleOutline fontSize="small" />

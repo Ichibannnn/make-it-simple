@@ -318,105 +318,95 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                 <Stack sx={sx.fieldSection}>
                   <Stack sx={sx.fieldOneColStack}>
                     {/* Reason */}
-                    <Stack gap={0.5}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                          }}
-                        >
-                          Reason:
-                        </Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                      </Stack>
-
-                      <Controller
-                        control={control}
-                        name="Reason"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="medium"
-                              value={value}
-                              // placeholder="Enter resolution"
-                              onChange={onChange}
-                              autoComplete="off"
-                              rows={6}
-                              multiline
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    {/* Attachment */}
-                    <Stack sx={sx.fieldOneColStack} onDragOver={handleDragOver} onDrop={handleDrop}>
-                      <Typography sx={sx.fieldText}>Attachment (Optional)</Typography>
-
-                      <Stack sx={sx.attachmentDashedBorder} onDragOver={handleDragOver}>
-                        <Box sx={sx.attachmentFileBox}>
-                          <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
-                            <Typography sx={sx.chooseFileText}>Choose File</Typography>
-                          </Button>
-
-                          <Typography sx={sx.fileExtText}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
-                        </Box>
-
-                        {/* Image thumbnails, grid layout */}
-                        {imageAttachments.length > 0 && (
-                          <Box sx={sx.imgAttachmentSection}>
-                            {imageAttachments.map((fileName, index) => (
-                              <ImageAttachmentCard key={`img-${index}`} fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} />
-                            ))}
-                          </Box>
-                        )}
-
-                        {/* Non-image files, row list */}
-                        {fileAttachments.length > 0 && (
-                          <Stack sx={sx.fileAttachmentSection}>
-                            {fileAttachments.map((fileName, index) => (
-                              <FileAttachmentRow key={`file-${index}`} fileName={fileName} onDelete={handleDeleteFile} />
-                            ))}
-                          </Stack>
-                        )}
-                      </Stack>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Reason:</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
                     </Stack>
 
                     <Controller
                       control={control}
-                      name="OnHoldAttachments"
-                      render={({ field: { onChange, value } }) => (
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
-                          onChange={(event) => {
-                            handleAttachments(event);
-                            const files = Array.from(event.target.files);
-                            const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
-
-                            console.log("Controller Files: ", files);
-
-                            onChange([...value, ...uniqueNewFiles]);
-                            fileInputRef.current.value = "";
-                          }}
-                          hidden
-                          multiple
-                        />
-                      )}
+                      name="Reason"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <TextField
+                            inputRef={ref}
+                            size="medium"
+                            value={value}
+                            // placeholder="Enter resolution"
+                            onChange={onChange}
+                            autoComplete="off"
+                            rows={6}
+                            multiline
+                            InputProps={{
+                              style: {
+                                fontSize: "13px",
+                              },
+                            }}
+                            InputLabelProps={{
+                              style: {
+                                fontSize: "13px",
+                              },
+                            }}
+                          />
+                        );
+                      }}
                     />
                   </Stack>
+
+                  {/* Attachment */}
+                  <Stack sx={sx.fieldOneColStack} onDragOver={handleDragOver} onDrop={handleDrop}>
+                    <Typography sx={sx.fieldText}>Attachment (Optional)</Typography>
+
+                    <Stack sx={sx.attachmentDashedBorder} onDragOver={handleDragOver}>
+                      <Box sx={sx.attachmentFileBox}>
+                        <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
+                          <Typography sx={sx.chooseFileText}>Choose File</Typography>
+                        </Button>
+
+                        <Typography sx={sx.fileExtText}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
+                      </Box>
+
+                      {/* Image thumbnails, grid layout */}
+                      {imageAttachments.length > 0 && (
+                        <Box sx={sx.imgAttachmentSection}>
+                          {imageAttachments.map((fileName, index) => (
+                            <ImageAttachmentCard key={`img-${index}`} fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} />
+                          ))}
+                        </Box>
+                      )}
+
+                      {/* Non-image files, row list */}
+                      {fileAttachments.length > 0 && (
+                        <Stack sx={sx.fileAttachmentSection}>
+                          {fileAttachments.map((fileName, index) => (
+                            <FileAttachmentRow key={`file-${index}`} fileName={fileName} onDelete={handleDeleteFile} />
+                          ))}
+                        </Stack>
+                      )}
+                    </Stack>
+                  </Stack>
+
+                  <Controller
+                    control={control}
+                    name="OnHoldAttachments"
+                    render={({ field: { onChange, value } }) => (
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
+                        onChange={(event) => {
+                          handleAttachments(event);
+                          const files = Array.from(event.target.files);
+                          const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
+
+                          onChange([...value, ...uniqueNewFiles]);
+                          fileInputRef.current.value = "";
+                        }}
+                        hidden
+                        multiple
+                      />
+                    )}
+                  />
                 </Stack>
               </Stack>
             </Stack>
@@ -424,20 +414,14 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Stack sx={{ width: "100%", paddingRight: 2, paddingLeft: 2 }}>
-            <LoadingButton type="submit" form="closeTicket" variant="contained" loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching} disabled={!watch("Reason")}>
-              Submit
-            </LoadingButton>
-          </Stack>
-        </DialogActions>
+          <LoadingButton form="closeTicket" variant="contained" loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+            Cancel
+          </LoadingButton>
 
-        {/* Dialog to view image */}
-        <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-          <DialogContent sx={{ height: "auto" }}>{selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}</DialogContent>
-          <DialogActions>
-            <Button onClick={handleViewClose}>Close</Button>
-          </DialogActions>
-        </Dialog>
+          <LoadingButton type="submit" form="closeTicket" variant="contained" loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching} disabled={!watch("Reason")}>
+            Submit
+          </LoadingButton>
+        </DialogActions>
       </Dialog>
 
       {/* Dialog to view image */}

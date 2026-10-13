@@ -2315,6 +2315,7 @@ const IssueHandlerConcerns = () => {
           onClose={() => {
             manageTransferOnClose(setTransferTicketData(null));
           }}
+          refetch={refetch}
         />
 
         {approveTransferOpen && (
@@ -2347,6 +2348,7 @@ const IssueHandlerConcerns = () => {
             onClose={() => {
               manageHoldTicketOnClose(setHoldTicketData(null));
             }}
+            refetch={refetch}
           />
         )}
 

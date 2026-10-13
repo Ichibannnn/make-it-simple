@@ -186,7 +186,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
   );
 };
 
-const ManageTransferDialog = ({ data, open, onClose }) => {
+const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   const [attachments, setAttachments] = useState([]);
   const [ticketAttachmentId, setTicketAttachmentId] = useState(null);
 
@@ -266,7 +266,13 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
         };
         await deleteRequestorAttachment(deletePayload)
           .unwrap()
-          .then()
+          .then(() => {
+            toast.success("Success!", {
+              description: "File deleted successfully.",
+              duration: 1500,
+            });
+            refetch();
+          })
           .catch((err) => {
             console.log("error: ", err);
             toast.error("Error!", {
@@ -284,7 +290,6 @@ const ManageTransferDialog = ({ data, open, onClose }) => {
       );
     } catch (error) {}
   };
-
   const handleDragOver = (event) => {
     event.preventDefault();
   };

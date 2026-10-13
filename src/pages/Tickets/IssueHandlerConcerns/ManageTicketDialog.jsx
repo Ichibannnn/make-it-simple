@@ -194,7 +194,6 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false); // To control the view dialog
-
   const [viewIsLoading, setViewIsLoading] = useState(false);
 
   // Which saved attachment is being fetched for the full-size viewer (spinner on that thumbnail)
@@ -436,77 +435,6 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     setAttachments([]);
   };
 
-  useEffect(() => {
-    if (data) {
-      setValue("ticketConcernId", data?.ticketConcernId);
-      setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
-      setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
-
-      setValue("ClosingDate", data?.getForClosingTickets?.[0]?.backDate ? moment(data?.getForClosingTickets?.[0]?.backDate).format("YYYY-MM-DD") : null);
-      setValue("BackdateRemarks", data?.getForClosingTickets?.[0]?.backDateRemarks !== "" ? data?.getForClosingTickets?.[0]?.backDateRemarks : "");
-
-      setValue("ChannelId", {
-        id: data?.channelId,
-        channel_Name: data?.channel_Name,
-      });
-
-      const category = data?.getOpenTicketCategories?.map((item) => ({
-        ticketCategoryId: item.ticketCategoryId,
-        id: item.categoryId,
-        category_Description: item.category_Description,
-      }));
-
-      const subCategory = data?.getOpenTicketSubCategories.map((item) => ({
-        ticketSubCategoryId: item.ticketSubCategoryId,
-        subCategoryId: item.subCategoryId,
-        sub_Category_Description: item.subCategory_Description,
-      }));
-
-      const technicians = data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap((item) => ({
-        ticketTechnicianId: item.ticketTechnicianId,
-        technician_Name: item.fullname,
-        technicianId: item.technician_By,
-      }));
-
-      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
-
-      setValue("CategoryId", category);
-      setValue("SubCategoryId", subCategory);
-      setValue("Technicians", technicians);
-
-      getSubCategory({
-        CategoryId: categoryIdParams,
-      });
-
-      setValue("CategoryConcern", {
-        id: data?.getForClosingTickets?.[0]?.categoryConcernId,
-        categoryConcern: data?.getForClosingTickets?.[0]?.categoryConcernName,
-      });
-
-      setValue("Notes", data?.getForClosingTickets?.[0]?.notes);
-
-      const manageTicketArray = data?.getForClosingTickets?.map((item) =>
-        item?.getAttachmentForClosingTickets?.map((subItem) => {
-          return {
-            ticketAttachmentId: subItem.ticketAttachmentId,
-            name: subItem.fileName,
-            size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
-            link: subItem.attachment,
-          };
-        }),
-      );
-
-      setAttachments(
-        manageTicketArray?.[0]?.map((item) => ({
-          ticketAttachmentId: item.ticketAttachmentId,
-          name: item.name,
-          size: item.size,
-          link: item.link,
-        })),
-      );
-    }
-  }, [data]);
-
   // Function to open image view dialog
   const handleViewImage = async (file) => {
     setViewIsLoading(true);
@@ -635,6 +563,77 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
   };
+
+  useEffect(() => {
+    if (data) {
+      setValue("ticketConcernId", data?.ticketConcernId);
+      setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
+      setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
+
+      setValue("ClosingDate", data?.getForClosingTickets?.[0]?.backDate ? moment(data?.getForClosingTickets?.[0]?.backDate).format("YYYY-MM-DD") : null);
+      setValue("BackdateRemarks", data?.getForClosingTickets?.[0]?.backDateRemarks !== "" ? data?.getForClosingTickets?.[0]?.backDateRemarks : "");
+
+      setValue("ChannelId", {
+        id: data?.channelId,
+        channel_Name: data?.channel_Name,
+      });
+
+      const category = data?.getOpenTicketCategories?.map((item) => ({
+        ticketCategoryId: item.ticketCategoryId,
+        id: item.categoryId,
+        category_Description: item.category_Description,
+      }));
+
+      const subCategory = data?.getOpenTicketSubCategories.map((item) => ({
+        ticketSubCategoryId: item.ticketSubCategoryId,
+        subCategoryId: item.subCategoryId,
+        sub_Category_Description: item.subCategory_Description,
+      }));
+
+      const technicians = data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap((item) => ({
+        ticketTechnicianId: item.ticketTechnicianId,
+        technician_Name: item.fullname,
+        technicianId: item.technician_By,
+      }));
+
+      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
+
+      setValue("CategoryId", category);
+      setValue("SubCategoryId", subCategory);
+      setValue("Technicians", technicians);
+
+      getSubCategory({
+        CategoryId: categoryIdParams,
+      });
+
+      setValue("CategoryConcern", {
+        id: data?.getForClosingTickets?.[0]?.categoryConcernId,
+        categoryConcern: data?.getForClosingTickets?.[0]?.categoryConcernName,
+      });
+
+      setValue("Notes", data?.getForClosingTickets?.[0]?.notes);
+
+      const manageTicketArray = data?.getForClosingTickets?.map((item) =>
+        item?.getAttachmentForClosingTickets?.map((subItem) => {
+          return {
+            ticketAttachmentId: subItem.ticketAttachmentId,
+            name: subItem.fileName,
+            size: (subItem.fileSize / (1024 * 1024)).toFixed(2),
+            link: subItem.attachment,
+          };
+        }),
+      );
+
+      setAttachments(
+        manageTicketArray?.[0]?.map((item) => ({
+          ticketAttachmentId: item.ticketAttachmentId,
+          name: item.name,
+          size: item.size,
+          link: item.link,
+        })),
+      );
+    }
+  }, [data]);
 
   const imageAttachments = attachments?.filter((f) => isImageFile(f.name)) ?? [];
   const otherAttachments = attachments?.filter((f) => !isImageFile(f.name)) ?? [];
