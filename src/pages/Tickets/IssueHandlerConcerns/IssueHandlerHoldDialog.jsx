@@ -292,7 +292,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                   <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                 </Stack>
 
-                {/*   Ticket Detail Section*/}
+                {/* Ticket Detail Section */}
                 <Stack sx={sx.detailBox}>
                   <Stack sx={sx.closeDetailContent}>
                     <Box sx={sx.titleDetailBox}>

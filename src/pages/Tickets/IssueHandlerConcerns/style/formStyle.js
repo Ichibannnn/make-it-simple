@@ -120,7 +120,7 @@ export const formStyle = {
   },
 
   fieldSection: {
-    marginTop: 2,
+    marginTop: 1,
     gap: 2,
     padding: 1,
   },
@@ -253,7 +253,8 @@ export const formStyle = {
   iconFile: { display: "flex", alignItems: "center", justifyContent: "center" },
   fileNameBox: { flex: 1, minWidth: 0 },
   fileNameText: { fontSize: f.sm, fontWeight: 500 },
-  fileSizeText: { fontSize: f.xs, color: t.muted },
+  fileSizeText: { fontSize: f.sm, color: t.muted },
+  fileDescWithIconBox: { display: "flex", flexDirection: "row", alignItems: "center", gap: 0.5 },
 
   inProgressBox: {
     flexDirection: "row",
@@ -269,5 +270,42 @@ export const formStyle = {
     flexDirection: "row",
     gap: 0.5,
     alignItem: "center",
+  },
+
+  approvedText: {
+    fontSize: "14px",
+    fontWeight: 700,
+    fontStyle: "italic",
+    color: "#22B4BF",
+  },
+
+  attachmentTextBox: {
+    flexDirection: "row",
+    gap: 0.5,
+    alignItems: "center",
+  },
+
+  titleHeaderMutedIcon: {
+    fontSize: { xs: "16px", md: "18px" },
+    color: t.muted,
+  },
+
+  addAttachmentBtn: { padding: "2px", borderRadius: "2px" },
+  noAttachmentSection: { flex: 1, minHeight: "120px", justifyContent: "center", alignItems: "center" },
+  noAttachmentContent: {
+    flexDirection: "row",
+    gap: 0.5,
+    justifyContent: "center",
+  },
+  noAttachmentIcon: { color: t.muted },
+  noAttachmentText: { color: t.muted },
+
+  attachmentAndMenuBox: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 0.5,
   },
 };

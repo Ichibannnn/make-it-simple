@@ -474,7 +474,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                                 onChange(value);
 
                                 const categoryIdParams = value?.map((category) => category?.id);
-
                                 if (watch("CategoryId").length === 0) {
                                   setValue("SubCategoryId", []);
                                 }
@@ -486,7 +485,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                               getOptionLabel={(option) => option.category_Description || ""}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
-                              // disablePortal
                               disableClearable
                               componentsProps={sx.automCompleteProp}
                             />
@@ -560,11 +558,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             }}
                             getOptionLabel={(option) => option.categoryConcern || ""}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                            sx={{
-                              flex: 2,
-                            }}
                             fullWidth
-                            // disablePortal
                             disableClearable
                             componentsProps={sx.automCompleteProp}
                           />
@@ -573,10 +567,9 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                     />
                   </Stack>
 
+                  {/* Backdate */}
                   {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && isTodayAfterTarget && !isTodayAndTargetSame && (
                     <>
-                      {/* Backdate */}
-
                       <Stack sx={sx.fieldOneColStack}>
                         <Stack sx={sx.fieldTitleWithIconBox}>
                           <Typography sx={sx.fieldText}>Backdate (Optional):</Typography>
@@ -707,7 +700,6 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
                             isOptionEqualToValue={(option, val) => option.technicianId === val.technicianId}
                             getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
                             fullWidth
-                            // disablePortal
                             disableClearable
                             componentsProps={sx.automCompleteProp}
                           />
