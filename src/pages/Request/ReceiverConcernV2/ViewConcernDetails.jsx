@@ -7,7 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Avatar, Box, Button, Chip, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { AttachFileOutlined, Attachment, Close } from "@mui/icons-material";
 
 import { useLazyGetRequestorAttachmentQuery } from "../../../features/api_request/concerns/concernApi";
@@ -16,6 +16,8 @@ import AssignTicketDrawer from "./AssignTicketDrawer";
 import MenuActions from "./MenuActions";
 import { toast } from "sonner";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import { global } from "../../../styles/global";
+import { receiverStyle as sx } from "./styles/receiverStyle";
 
 const requestorSchema = yup.object().shape({
   RequestAttachmentsFiles: yup.array().nullable(),
@@ -30,8 +32,6 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
 
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
-
-  const [viewPendingData, setViewPendingData] = useState(null);
 
   const fileInputRef = useRef();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -73,7 +73,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
           size: (item.fileSize / (1024 * 1024)).toFixed(2),
           link: item.attachment,
           file: item,
-        }))
+        })),
       );
     } catch (error) {}
   };
@@ -150,6 +150,16 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
     onClose();
   };
 
+  const trimLetters = (name) => {
+    if (!name) return "";
+    const nameArray = name.split(" ").filter((n) => n);
+    const initials = nameArray
+      .slice(0, 2)
+      .map((n) => n[0])
+      .join("");
+    return initials.split("").reverse().join("");
+  };
+
   return (
     <>
       <Dialog
@@ -164,753 +174,386 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
           onCloseHandler();
         }}
         disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
+        sx={global.dialog}
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <DialogContent>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack direction="row" gap={1} alignItems="center">
-              <Stack>
-                <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: isScreenSmall ? "14px" : "16px" }}>
-                  {`Ticket Number - ${moment(data?.created_At).format("YYYY")}-${data?.ticketRequestConcerns[0]?.ticketConcernId}`}
-                </Typography>
+          {/* Header */}
+          <Stack sx={sx.headerSection}>
+            <Stack sx={sx.avatarAndTitleBox}>
+              <Avatar sx={sx.avatarIcon}>{trimLetters(data?.fullName)}</Avatar>
+
+              <Box>
+                <Typography sx={sx.header}>{`Ticket Number ${moment(data?.created_At).format("YYYY")}-${data?.ticketRequestConcerns[0]?.ticketConcernId}`}</Typography>
+                <Typography sx={sx.subHeader}>{`New request from ${data?.fullName}`}</Typography>
+              </Box>
+            </Stack>
+
+            <IconButton onClick={onCloseHandler}>
+              <Close />
+            </IconButton>
+          </Stack>
+
+          {/* Sections */}
+          <Stack>
+            {/* Requestor Details */}
+            <Stack sx={sx.section}>
+              <Stack gap={2} sx={{ borderRadius: "20px" }}>
+                <Stack sx={{ width: "100%" }}>
+                  <Typography sx={sx.sectionHeader}>Requestor Details:</Typography>
+
+                  <Stack sx={sx.detailBox}>
+                    {/* Requestor Type */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Requestor Type:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.request_Type}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Backjob Ticket */}
+                    {data?.request_Type === "Back Job" && (
+                      <>
+                        <Stack sx={sx.rowContent}>
+                          <Box sx={sx.titleDetailBox}>
+                            <Typography sx={sx.label}>Backjob Ticket #:</Typography>
+                          </Box>
+                          <Box sx={sx.spacer} />
+                          <Box sx={sx.descDetailBox}>
+                            <Typography sx={sx.description}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
+                          </Box>
+                        </Stack>
+
+                        <Divider variant="fullWidth" sx={sx.divider} />
+                      </>
+                    )}
+
+                    {/* Requestor Name */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Requestor Name:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.fullName}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Contact Number */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Contact Number:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.contact_Number !== null ? data?.contact_Number : "N/A"}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Company */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Company:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.company_Code} - ${data?.company_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Business Unit */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Business Unit:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.businessUnit_Code} - ${data?.businessUnit_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Business Unit */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Business Unit:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.businessUnit_Code} - ${data?.businessUnit_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Department */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Department:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Unit */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Unit:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.unit_Code} - ${data?.unit_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Sub Unit */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Sub Unit:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.subUnit_Code} - ${data?.subUnit_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Location */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Location:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{`${data?.location_Code} - ${data?.location_Name}`}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Created By */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Created by:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.added_By}</Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </Stack>
               </Stack>
             </Stack>
 
-            <Stack direction="row" gap={0.5} alignItems="center">
-              <IconButton onClick={onCloseHandler}>
-                <Close />
-              </IconButton>
+            {/* Concern Information */}
+            <Stack sx={sx.section}>
+              <Stack gap={2} sx={{ borderRadius: "20px" }}>
+                <Stack sx={{ width: "100%" }}>
+                  <Typography sx={sx.sectionHeader}>Concern Information:</Typography>
+
+                  <Stack sx={sx.detailBox}>
+                    {/* Date Needed */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Date Needed:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{moment(data?.date_Needed).format("LL")}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Target Date */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Target Date:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.targetDate ? moment(data?.targetDate).format("LL") : "--"}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Service Provider */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Service Provider:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.serviceProviderName ? data?.serviceProviderName : "--"}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Channel */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Channel:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.channel_Name ? data?.channel_Name : "--"}</Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Category */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Category:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        {data?.getRequestTicketCategories?.length === 0 ? (
+                          <Typography sx={sx.description}>{`--`}</Typography>
+                        ) : (
+                          <>
+                            {data?.getRequestTicketCategories?.map((item, i) => (
+                              <Typography key={i} sx={sx.description}>{`- ${item.category_Description}`}</Typography>
+                            ))}
+                          </>
+                        )}
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Sub Category */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Sub Category:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        {data?.getRequestSubTicketCategories?.length === 0 ? (
+                          <Typography sx={sx.description}>{`--`}</Typography>
+                        ) : (
+                          <>
+                            {data?.getRequestSubTicketCategories?.map((item, i) => (
+                              <Typography key={i} sx={sx.description}>{`- ${item.subCategory_Description}`}</Typography>
+                            ))}
+                          </>
+                        )}
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Concern */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Concern:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>
+                          {data?.concern?.split("\r\n").map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    <Divider variant="fullWidth" sx={sx.divider} />
+
+                    {/* Notes */}
+                    <Stack sx={sx.rowContent}>
+                      <Box sx={sx.titleDetailBox}>
+                        <Typography sx={sx.label}>Notes:</Typography>
+                      </Box>
+                      <Box sx={sx.spacer} />
+                      <Box sx={sx.descDetailBox}>
+                        <Typography sx={sx.description}>{data?.notes !== null ? data?.notes : "--"}</Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
+
+            {/* Assign To */}
+            {data?.ticketRequestConcerns?.[0]?.is_Assigned === true && (
+              <Stack sx={sx.section}>
+                <Stack gap={2} sx={{ borderRadius: "20px" }}>
+                  <Stack sx={{ width: "100%" }}>
+                    <Typography sx={sx.sectionHeader}>Assign to:</Typography>
+
+                    <Stack sx={sx.detailBox}>
+                      {/* Issue Handler */}
+                      <Stack sx={sx.rowContent}>
+                        <Box sx={sx.titleDetailBox}>
+                          <Typography sx={sx.label}>Issue Handler:</Typography>
+                        </Box>
+                        <Box sx={sx.spacer} />
+                        <Box sx={sx.descDetailBox}>
+                          <Typography sx={sx.description}>{data?.ticketRequestConcerns?.[0]?.issue_Handler}</Typography>
+                        </Box>
+                      </Stack>
+
+                      <Divider variant="fullWidth" sx={sx.divider} />
+
+                      {/* Target Date */}
+                      <Stack sx={sx.rowContent}>
+                        <Box sx={sx.titleDetailBox}>
+                          <Typography sx={sx.label}>Target Date:</Typography>
+                        </Box>
+                        <Box sx={sx.spacer} />
+                        <Box sx={sx.descDetailBox}>
+                          <Typography sx={sx.description}>{moment(data?.ticketRequestConcerns?.[0]?.target_Date).format("LL")}</Typography>
+                        </Box>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
+
+          <Stack sx={sx.section}>
+            <Stack gap={2} sx={{ borderRadius: "20px" }}>
+              <Stack sx={{ width: "100%" }}>
+                <Typography sx={sx.sectionHeader}>Attachments:</Typography>
+              </Stack>
             </Stack>
           </Stack>
 
-          <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: 1 }} />
-
-          {isScreenSmall ? (
-            <>
-              <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-                <Stack gap={2} sx={{ borderRadius: "20px" }}>
-                  <Stack sx={{ width: "100%" }}>
-                    {/* REQUESTOR DETAILS */}
-                    <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
-                      <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: "14px" }}>
-                        Requestor Details:
-                      </Typography>
-
-                      <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "14px" }}></Typography>
-                    </Stack>
-
-                    <Stack sx={{ width: "100%", mt: 1 }}>
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Requestor Type:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.request_Type}</Typography>
-                        </Box>
-                      </Stack>
-
-                      {data?.request_Type === "Rework" && (
-                        <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                          <Box>
-                            <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Backjob Ticket Number:</Typography>
-                          </Box>
-
-                          <Box>
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
-                          </Box>
-                        </Stack>
-                      )}
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Requestor Name:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.fullName}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Contact Number:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
-                            {data?.contact_Number !== null ? data?.contact_Number : "N/A"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Company:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{`${data?.company_Code} - ${data?.company_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Business Unit:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}
-                          >{`${data?.businessUnit_Code} - ${data?.businessUnit_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Department:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}
-                          >{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Unit:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{`${data?.unit_Code} - ${data?.unit_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Sub Unit:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{`${data?.subUnit_Code} - ${data?.subUnit_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Location:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{`${data?.location_Code} - ${data?.location_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Created by:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.added_By}</Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Stack>
-
-              <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-                <Stack gap={2} sx={{ borderRadius: "20px" }}>
-                  <Stack sx={{ width: "100%" }}>
-                    {/* CONCERN INFORMATION */}
-                    <Stack sx={{ width: "100%", justifyContent: "space-between" }}>
-                      <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: isScreenSmall ? "14px" : "16px" }}>
-                        Concern Information:
-                      </Typography>
-
-                      <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: isScreenSmall ? "14px" : "16px" }}></Typography>
-                    </Stack>
-
-                    <Stack sx={{ width: "100%", mt: 1 }}>
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Date Needed:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
-                            {data?.date_Needed ? moment(data?.date_Needed).format("LL") : "-"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Target Date:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
-                            {data?.targetDate ? moment(data?.targetDate).format("LL") : "-"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Service Channel:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.serviceProviderName}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Channel:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.channel_Name ? data?.channel_Name : "-"}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Category:</Typography>
-                        </Box>
-
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                          {data?.getRequestTicketCategories?.length === 0 ? (
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
-                          ) : (
-                            <>
-                              {data?.getRequestTicketCategories?.map((item, i) => (
-                                <Box key={i}>
-                                  <Chip
-                                    variant="filled"
-                                    size="small"
-                                    label={item.category_Description ? item.category_Description : "-"}
-                                    sx={{
-                                      backgroundColor: theme.palette.bgForm.black_1,
-                                      color: "#ffffff",
-                                      borderRadius: "none",
-                                      maxWidth: "300px",
-                                    }}
-                                  />
-                                </Box>
-                              ))}
-                            </>
-                          )}
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Sub Category:</Typography>
-                        </Box>
-
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                          {data?.getRequestSubTicketCategories?.length === 0 ? (
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
-                          ) : (
-                            <>
-                              {data?.getRequestSubTicketCategories?.map((item, i) => (
-                                <Box key={i}>
-                                  <Chip
-                                    variant="filled"
-                                    size="small"
-                                    label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                                    sx={{
-                                      backgroundColor: theme.palette.bgForm.black_1,
-                                      color: "#ffffff",
-                                      borderRadius: "none",
-                                      maxWidth: "300px",
-                                    }}
-                                  />
-                                </Box>
-                              ))}
-                            </>
-                          )}
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Concern:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px", wordBreak: "break-word" }}>
-                            {data?.concern?.split("\r\n").map((line, index) => (
-                              <span key={index}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Notes:</Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px", wordBreak: "break-word" }}>
-                            {data?.notes !== null ? data?.notes : "-"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Stack>
-
-              {data?.ticketRequestConcerns?.[0]?.is_Assigned === true && (
-                <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-                  <Stack gap={2} sx={{ borderRadius: "20px" }}>
-                    <Stack sx={{ width: "100%" }}>
-                      {/* ASSIGNED TO */}
-                      <Stack sx={{ width: "100%", justifyContent: "space-between" }}>
-                        <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: isScreenSmall ? "14px" : "16px" }}>
-                          Assigned To:
-                        </Typography>
-
-                        <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: isScreenSmall ? "14px" : "16px" }}></Typography>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", mt: 1 }}>
-                        <Stack sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                          <Box>
-                            <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Issue Handler:</Typography>
-                          </Box>
-
-                          <Box width={{ width: "75%", ml: 2 }}>
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>{data?.ticketRequestConcerns?.[0]?.issue_Handler}</Typography>
-                          </Box>
-                        </Stack>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%" }}>
-                        <Stack sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                          <Box>
-                            <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "13px" }}>Target Date:</Typography>
-                          </Box>
-
-                          <Box>
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>
-                              {moment(data?.ticketRequestConcerns?.[0]?.target_Date).format("LL")}
-                            </Typography>
-                          </Box>
-                        </Stack>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              )}
-            </>
-          ) : (
-            <>
-              <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-                <Stack gap={2} sx={{ borderRadius: "20px" }}>
-                  <Stack sx={{ width: "100%" }}>
-                    {/* REQUESTOR DETAILS */}
-                    <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
-                      <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: "16px" }}>
-                        Requestor Details:
-                      </Typography>
-
-                      <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "16px" }}></Typography>
-                    </Stack>
-
-                    <Stack sx={{ width: "100%", mt: 1 }}>
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Requestor Type:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.request_Type}</Typography>
-                        </Box>
-                      </Stack>
-
-                      {data?.request_Type === "Back Job" && (
-                        <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                          <Box sx={{ width: "15%" }}>
-                            <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Backjob Ticket Number:</Typography>
-                          </Box>
-
-                          <Box sx={{ width: "10%" }} />
-
-                          <Box width={{ width: "75%" }}>
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.backJobId} - ${data?.back_Job_Concern}`}</Typography>
-                          </Box>
-                        </Stack>
-                      )}
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Requestor Name:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.fullName}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Contact Number:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                            {data?.contact_Number !== null ? data?.contact_Number : "N/A"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Company:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.company_Code} - ${data?.company_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Business Unit:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                          >{`${data?.businessUnit_Code} - ${data?.businessUnit_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Department:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography
-                            sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}
-                          >{`${data?.department_Code} - ${data?.department_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Unit:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.unit_Code} - ${data?.unit_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Unit:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.subUnit_Code} - ${data?.subUnit_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Location:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${data?.location_Code} - ${data?.location_Name}`}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                        <Box sx={{ width: "15%" }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Created by:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%" }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.added_By}</Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Stack>
-
-              <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-                <Stack gap={2} sx={{ borderRadius: "20px" }}>
-                  <Stack sx={{ width: "100%" }}>
-                    {/* CONCERN INFORMATION */}
-                    <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
-                      <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "500", fontSize: "16px" }}>
-                        Concern Information:
-                      </Typography>
-
-                      <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "16px" }}></Typography>
-                    </Stack>
-
-                    <Stack sx={{ width: "100%", mt: 1 }}>
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Date Needed:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{moment(data?.date_Needed).format("LL")}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                            {data?.targetDate ? moment(data?.targetDate).format("LL") : "-"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Service Provider:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                            {data?.serviceProviderName ? data?.serviceProviderName : "-"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Channel:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name ? data?.channel_Name : "-"}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Category:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          {data?.getRequestTicketCategories?.length === 0 ? (
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
-                          ) : (
-                            <>
-                              <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                                {data?.getRequestTicketCategories?.map((item, i) => (
-                                  <Box key={i}>
-                                    <Chip
-                                      variant="filled"
-                                      size="small"
-                                      label={item.category_Description ? item.category_Description : "-"}
-                                      sx={{
-                                        backgroundColor: theme.palette.bgForm.black_1,
-                                        color: "#ffffff",
-                                        borderRadius: "none",
-                                        maxWidth: "300px",
-                                      }}
-                                    />
-                                  </Box>
-                                ))}
-                              </Stack>
-                            </>
-                          )}
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Sub Category:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          {data?.getRequestSubTicketCategories?.length === 0 ? (
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "13px" }}>-</Typography>
-                          ) : (
-                            <>
-                              <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                                {data?.getRequestSubTicketCategories?.map((item, i) => (
-                                  <Box key={i}>
-                                    <Chip
-                                      variant="filled"
-                                      size="small"
-                                      label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                                      sx={{
-                                        backgroundColor: theme.palette.bgForm.black_1,
-                                        color: "#ffffff",
-                                        borderRadius: "none",
-                                        maxWidth: "300px",
-                                      }}
-                                    />
-                                  </Box>
-                                ))}
-                              </Stack>
-                            </>
-                          )}
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Concern:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
-                            {data?.concern?.split("\r\n").map((line, index) => (
-                              <span key={index}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                        <Box sx={{ width: "15%", ml: 2 }}>
-                          <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Notes:</Typography>
-                        </Box>
-
-                        <Box sx={{ width: "10%" }} />
-
-                        <Box width={{ width: "75%", ml: 2 }}>
-                          <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px", wordBreak: "break-word" }}>
-                            {data?.notes !== null ? data?.notes : "-"}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Stack>
-
-              {data?.ticketRequestConcerns?.[0]?.is_Assigned === true && (
-                <Stack sx={{ marginTop: 2, justifyContent: "space-between" }}>
-                  <Stack gap={2} sx={{ borderRadius: "20px" }}>
-                    <Stack sx={{ width: "100%" }}>
-                      {/* ASSIGNED TO */}
-                      <Stack direction="row" sx={{ width: "100%", justifyContent: "space-between" }}>
-                        <Typography variant="h5" sx={{ textAlign: "right", color: theme.palette.primary.main, fontWeight: "500", fontSize: "16px" }}>
-                          Assigned To:
-                        </Typography>
-
-                        <Typography variant="h5" sx={{ color: theme.palette.text.main, fontWeight: "600", fontSize: "16px" }}></Typography>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%", mt: 1 }}>
-                        <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                          <Box sx={{ width: "15%", ml: 2 }}>
-                            <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Issue Handler:</Typography>
-                          </Box>
-
-                          <Box sx={{ width: "10%" }} />
-
-                          <Box width={{ width: "75%", ml: 2 }}>
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.ticketRequestConcerns?.[0]?.issue_Handler}</Typography>
-                          </Box>
-                        </Stack>
-                      </Stack>
-
-                      <Stack sx={{ width: "100%" }}>
-                        <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "0 0 20px 20px" }}>
-                          <Box sx={{ width: "15%", ml: 2 }}>
-                            <Typography sx={{ textAlign: "right", color: theme.palette.text.secondary, fontWeight: "500", fontSize: "14px" }}>Target Date:</Typography>
-                          </Box>
-
-                          <Box sx={{ width: "10%" }} />
-
-                          <Box width={{ width: "75%", ml: 2 }}>
-                            <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>
-                              {moment(data?.ticketRequestConcerns?.[0]?.target_Date).format("LL")}
-                            </Typography>
-                          </Box>
-                        </Stack>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              )}
-            </>
-          )}
-
           {/* ATTACHMENTS */}
           <Stack
-            marginTop={3}
-            padding={2}
             sx={{
               border: "1px solid #2D3748",
-              borderRadius: "20px",
+              borderRadius: "10px",
             }}
           >
-            <Stack direction="row" gap={1} alignItems="center">
-              <Attachment sx={{ color: theme.palette.primary.main }} />
-
-              <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: "600", fontSize: "16px" }}>
-                Attachments
-              </Typography>
-            </Stack>
-
             {!attachments?.length ? (
               <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
                 <Stack direction="row" gap={0.5} justifyContent="center">
@@ -1021,16 +664,6 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
             />
           </Stack>
         </DialogContent>
-
-        {/* <DialogActions>
-          {data?.ticketRequestConcerns?.[0]?.is_Assigned === false && (
-            <Stack sx={{ width: "100%", padding: 2, justifyContent: "end" }}>
-              <Button size="small" variant="contained" color="success" startIcon={<Receipt sx={{ color: "#fff" }} />} onClick={() => onAssignAction()}>
-                <Typography sx={{ fontSize: "12px", color: "#fff" }}>Take Ticket</Typography>
-              </Button>
-            </Stack>
-          )}
-        </DialogActions> */}
       </Dialog>
 
       {/* Dialog to view image */}
