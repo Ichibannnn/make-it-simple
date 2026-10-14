@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,6 +13,7 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  LinearProgress,
   MenuItem,
   Select,
   Skeleton,
@@ -48,22 +50,52 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
-import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
+import {
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+} from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { AddOutlined, FiberManualRecord, RemoveCircleOutline } from "@mui/icons-material";
+import {
+  AddOutlined,
+  Close,
+  CloseOutlined,
+  FiberManualRecord,
+  RemoveCircleOutline,
+  RestartAlt,
+  ZoomIn,
+  ZoomOut,
+} from "@mui/icons-material";
 import { useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import ConcernMenuActions from "./ConcernMenuActions";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
 
 const ConcernDialog = ({ open, onClose }) => {
-  const [attachments, setAttachments] = useState([]);
   const [userInformation, setUserInformation] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [attachments, setAttachments] = useState([]);
+
+  // const [selectedImage, setSelectedImage] = useState(null);
+  // const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+
+  const [attachments, setAttachments] = useState([]);
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
+  // For viewing of attachment picture
+  const [zoom, setZoom] = useState(1);
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 4;
+  const ZOOM_STEP = 0.25;
+
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const positionStartRef = useRef({ x: 0, y: 0 });
+
+  const [isLoading, setIsLoading] = useState(false);
   const dateNeededValidation = new moment();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const userId = useSelector((state) => state?.user?.id);
@@ -122,42 +154,93 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const [
     createEditRequestorConcern,
-    { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching },
+    {
+      isLoading: isCreateEditRequestorConcernLoading,
+      isFetching: isCreateEditRequestorConcernFetching,
+    },
   ] = useCreateEditRequestorConcernMutation();
 
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
-  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] =
-    useLazyGetUsersQuery();
+  const [
+    getUser,
+    { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess },
+  ] = useLazyGetUsersQuery();
   const [
     getBackjobTicket,
-    { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess },
+    {
+      data: backjobTicketData,
+      isLoading: backjobTicketIsLoading,
+      isSuccess: backjobTicketIsSuccess,
+    },
   ] = useLazyGetBackjobTicketsQuery();
-  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] =
-    useLazyGetCompanyQuery();
+  const [
+    getCompany,
+    {
+      data: companyData,
+      isLoading: companyIsLoading,
+      isSuccess: companyIsSuccess,
+    },
+  ] = useLazyGetCompanyQuery();
   const [
     getBusinessUnit,
-    { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess },
+    {
+      data: businessUnitData,
+      isLoading: businessUnitIsLoading,
+      isSuccess: businessUnitIsSuccess,
+    },
   ] = useLazyGetBusinessUnitQuery();
   const [
     getDepartment,
-    { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess },
+    {
+      data: departmentData,
+      isLoading: departmentIsLoading,
+      isSuccess: departmentIsSuccess,
+    },
   ] = useLazyGetDepartmentQuery();
-  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] =
-    useLazyGetUnitQuery();
-  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] =
-    useLazyGetSubUnitQuery();
-  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] =
-    useLazyGetLocationWithPaginationQuery();
+  const [
+    getUnit,
+    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
+  ] = useLazyGetUnitQuery();
+  const [
+    getSubUnit,
+    {
+      data: subUnitData,
+      isLoading: subUnitIsLoading,
+      isSuccess: subUnitIsSuccess,
+    },
+  ] = useLazyGetSubUnitQuery();
+  const [
+    getLocation,
+    {
+      data: locationData,
+      isLoading: locationIsLoading,
+      isSuccess: locationIsSuccess,
+    },
+  ] = useLazyGetLocationWithPaginationQuery();
 
   const [
     getServiceProvider,
-    { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess },
+    {
+      data: serviceProviderData,
+      isLoading: serviceProviderIsLoading,
+      isSuccess: serviceProviderIsSuccess,
+    },
   ] = useLazyGetServiceProviderWithParamsQuery();
-  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] =
-    useLazyGetCategoryQuery();
+  const [
+    getCategory,
+    {
+      data: categoryData,
+      isLoading: categoryIsLoading,
+      isSuccess: categoryIsSuccess,
+    },
+  ] = useLazyGetCategoryQuery();
   const [
     getSubCategory,
-    { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess },
+    {
+      data: subCategoryData,
+      isLoading: subCategoryIsLoading,
+      isSuccess: subCategoryIsSuccess,
+    },
   ] = useLazyGetSubCategoryArrayQuery();
 
   const {
@@ -219,13 +302,27 @@ const ConcernDialog = ({ open, onClose }) => {
 
     payload.append("Request_Type", formData.Request_Type);
     payload.append("Severity", formData.Severity);
-    payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
+    payload.append(
+      "BackJobId",
+      formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId,
+    );
     payload.append("UserId", formData.UserId?.id); // ~~~~ Requestor
     payload.append("Contact_Number", formData.Contact_Number);
     payload.append("ServiceProviderId", formData.ServiceProvider?.id);
-    payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
-    payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
-    payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
+    payload.append(
+      "ChannelId",
+      formData.ChannelId ? formData.ChannelId?.channelId : 0,
+    );
+    payload.append(
+      "DateNeeded",
+      moment(formData.DateNeeded).format("YYYY-MM-DD"),
+    );
+    payload.append(
+      "TargetDate",
+      formData.TargetDate
+        ? moment(formData.TargetDate).format("YYYY-MM-DD")
+        : "",
+    );
     payload.append("AssignTo", formData.IssueHandler);
     payload.append("Notes", formData.Notes);
 
@@ -233,7 +330,10 @@ const ConcernDialog = ({ open, onClose }) => {
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
       payload.append(`AddRequestTicketCategories[${i}].ticketCategoryId`, "");
-      payload.append(`AddRequestTicketCategories[${i}].categoryId`, category[i]?.id);
+      payload.append(
+        `AddRequestTicketCategories[${i}].categoryId`,
+        category[i]?.id,
+      );
     }
     if (category.length === 0) {
       payload.append(`AddRequestTicketCategories[0].ticketCategoryId`, "");
@@ -241,11 +341,20 @@ const ConcernDialog = ({ open, onClose }) => {
     }
     const subCategory = formData.SubCategoryId;
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(`AddRequestTicketSubCategories[${i}].ticketSubCategoryId`, "");
-      payload.append(`AddRequestTicketSubCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+      payload.append(
+        `AddRequestTicketSubCategories[${i}].ticketSubCategoryId`,
+        "",
+      );
+      payload.append(
+        `AddRequestTicketSubCategories[${i}].subCategoryId`,
+        subCategory[i]?.subCategoryId,
+      );
     }
     if (subCategory.length === 0) {
-      payload.append(`AddRequestTicketSubCategories[0].ticketSubCategoryId`, "");
+      payload.append(
+        `AddRequestTicketSubCategories[0].ticketSubCategoryId`,
+        "",
+      );
       payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
     }
 
@@ -394,7 +503,8 @@ const ConcernDialog = ({ open, onClose }) => {
     }));
 
     const uniqueNewFiles = fileNames.filter(
-      (newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name),
+      (newFile) =>
+        !attachments.some((existingFile) => existingFile.name === newFile.name),
     );
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
@@ -404,8 +514,69 @@ const ConcernDialog = ({ open, onClose }) => {
     fileInputRef.current.click();
   };
 
+  const handleDeleteFile = (fileNameToDelete) => {
+    setAttachments((prevFiles) =>
+      prevFiles.filter((fileName) => fileName !== fileNameToDelete),
+    );
+
+    setValue(
+      "RequestAttachmentsFiles",
+      watch("RequestAttachmentsFiles").filter(
+        (file) => file.name !== fileNameToDelete.name,
+      ),
+    );
+  };
+
   const handleDragOver = (event) => {
     event.preventDefault();
+  };
+
+  const handleViewImage = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedImage(e.target.result);
+      setZoom(1);
+      setPosition({ x: 0, y: 0 });
+      setIsViewDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedImage(null);
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const isImageFile = (fileName) => {
+    return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
+  const onCloseAction = () => {
+    onClose();
+    reset();
+    setAttachments([]);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const fileList = event.dataTransfer.files;
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
+    const fileNames = Array.from(fileList)
+      .filter((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        return allowedExtensions.includes(`.${extension}`);
+      })
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
+    const uniqueNewFiles = fileNames.filter(
+      (fileName) => !attachments.includes(fileName),
+    );
+    setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
   const assignCheckboxHandler = (event) => {
@@ -414,45 +585,57 @@ const ConcernDialog = ({ open, onClose }) => {
     }
   };
 
-  const onCloseAction = () => {
-    reset();
-    setAttachments([]);
-    onClose();
+  const handleZoomIn = () =>
+    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () =>
+    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomReset = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
   };
 
-  const handleViewImage = (file) => {
-    try {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setSelectedImage(e.target.result);
-        setIsViewDialogOpen(true);
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      toast.error("Error!", {
-        description: "Error viewing of file",
-        duration: 1500,
+  const handleWheelZoom = (event) => {
+    event.preventDefault();
+    if (event.deltaY < 0) handleZoomIn();
+    else handleZoomOut();
+  };
+
+  useEffect(() => {
+    if (zoom <= 1) setPosition({ x: 0, y: 0 });
+  }, [zoom]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (event) => {
+      const dx = event.clientX - dragStartRef.current.x;
+      const dy = event.clientY - dragStartRef.current.y;
+      setPosition({
+        x: positionStartRef.current.x + dx,
+        y: positionStartRef.current.y + dy,
       });
-    }
+    };
+    const handleMouseUp = () => setIsDragging(false);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
+
+  const handleImageMouseDown = (event) => {
+    if (zoom <= 1) return;
+    event.preventDefault();
+    setIsDragging(true);
+    dragStartRef.current = { x: event.clientX, y: event.clientY };
+    positionStartRef.current = { ...position };
   };
 
-  const handleDeleteFile = (fileNameToDelete) => {
-    setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-    setValue(
-      "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
-    );
-  };
-
-  const handleViewClose = () => {
-    setIsViewDialogOpen(false);
-    setSelectedImage(null);
-  };
-
-  const isImageFile = (fileName) => {
-    return /\.(jpg|jpeg|png)$/i.test(fileName);
-  };
+  // Split into images (grid) vs everything else (row list), matching the target layout.
+  const imageAttachments = attachments.filter((a) => isImageFile(a.name));
+  const fileAttachments = attachments.filter((a) => !isImageFile(a.name));
 
   useEffect(() => {
     if (watch("Request_Type") === "New Request") {
@@ -462,7 +645,9 @@ const ConcernDialog = ({ open, onClose }) => {
 
   useEffect(() => {
     if (userApiIsSuccess && userApiData?.value?.users) {
-      const getUserInfo = userApiData?.value?.users?.find((item) => item?.id === userId);
+      const getUserInfo = userApiData?.value?.users?.find(
+        (item) => item?.id === userId,
+      );
 
       if (getUserInfo) {
         setUserInformation(getUserInfo);
@@ -534,12 +719,15 @@ const ConcernDialog = ({ open, onClose }) => {
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
-        selectedCategories.some((category) =>
-          subCategoryData?.value?.some(
-            (item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id,
+      const filteredSubCategories = selectedSubCategories.filter(
+        (subCategory) =>
+          selectedCategories.some((category) =>
+            subCategoryData?.value?.some(
+              (item) =>
+                item.subCategoryId === subCategory.subCategoryId &&
+                item.categoryId === category.id,
+            ),
           ),
-        ),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -556,7 +744,8 @@ const ConcernDialog = ({ open, onClose }) => {
     ) {
       setValue("ServiceProvider", {
         id: userDetails?.serviceProviders?.[0]?.id,
-        serviceProviderName: userDetails?.serviceProviders?.[0]?.serviceProviderName,
+        serviceProviderName:
+          userDetails?.serviceProviders?.[0]?.serviceProviderName,
       });
 
       setValue("ChannelId", {
@@ -589,7 +778,11 @@ const ConcernDialog = ({ open, onClose }) => {
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <DialogContent sx={{ paddingBottom: 8 }}>
-          <Stack direction="column" spacing={3} sx={{ padding: 2, minHeight: "700px" }}>
+          <Stack
+            direction="column"
+            spacing={3}
+            sx={{ padding: 2, minHeight: "700px" }}
+          >
             {/* Title */}
             <Skeleton variant="text" width={200} height={30} />
 
@@ -685,35 +878,23 @@ const ConcernDialog = ({ open, onClose }) => {
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
-          <DialogContent sx={{ paddingBottom: 8 }} dividers>
-            <Stack direction="column" sx={{ padding: "1px", minHeight: "700px" }}>
-              <Stack>
-                <Stack direction="row" gap={0.5}>
-                  <Typography
-                    sx={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      color: "#48BB78",
-                    }}
-                  >
-                    New Request
-                  </Typography>
-                </Stack>
+          <DialogContent>
+            <Stack sx={{ padding: 1, minHeight: "700px", gap: 1 }}>
+              {/* Header */}
+              <Stack mb={1}>
+                <Typography sx={sx.titleText}>New Request</Typography>
+                <Typography sx={sx.captionText}>
+                  Fill out the form below to submit your concern.
+                </Typography>
               </Stack>
 
-              <Stack padding={5}>
+              {/* Fields */}
+              <Stack sx={sx.fieldSectionTickets}>
                 {/* Request Type */}
-                <Stack
-                  width="100%"
-                  sx={{
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    mb: 1,
-                  }}
-                >
-                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                    <Typography sx={{ fontSize: "13px" }}>Request Type</Typography>
-                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                <Stack sx={sx.fieldOneColStack}>
+                  <Stack sx={sx.fieldTitleWithIconBox}>
+                    <Typography sx={sx.fieldText}>Request Type</Typography>
+                    <FiberManualRecord sx={sx.requiredDot} />
                   </Stack>
 
                   <Controller
@@ -725,13 +906,12 @@ const ConcernDialog = ({ open, onClose }) => {
                         displayEmpty
                         size="small"
                         inputProps={{ "aria-label": "Without label" }}
-                        sx={{ width: "100%", fontSize: "13px" }}
+                        sx={sx.select}
                       >
-                        <MenuItem value="New Request" sx={{ fontSize: "13px" }}>
+                        <MenuItem value="New Request" sx={sx.menuItem}>
                           New Request
                         </MenuItem>
-
-                        <MenuItem value="Rework" sx={{ fontSize: "13px" }}>
+                        <MenuItem value="Rework" sx={sx.menuItem}>
                           Rework
                         </MenuItem>
                       </Select>
@@ -739,11 +919,12 @@ const ConcernDialog = ({ open, onClose }) => {
                   />
                 </Stack>
 
+                {/* Backjob */}
                 {watch("Request_Type") === "Rework" && (
-                  <Stack sx={{ width: "100%", mb: 1 }}>
-                    <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                      <Typography sx={{ fontSize: "13px", mb: 0.5 }}>Ticket Number:</Typography>
-                      <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                  <Stack sx={sx.fieldOneColStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Ticket Number:</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
                     </Stack>
 
                     <Controller
@@ -761,30 +942,25 @@ const ConcernDialog = ({ open, onClose }) => {
                               <TextField
                                 {...params}
                                 placeholder="Select Ticket Number"
-                                sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
+                                sx={sx.autoComplete}
                               />
                             )}
                             onOpen={() => {
                               if (!backjobTicketIsSuccess) getBackjobTicket();
                             }}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
-                            noOptionsText={"No tickets available for backjob request"}
+                            getOptionLabel={(option) =>
+                              `${option?.ticketConcernId} - ${option.concern}`
+                            }
+                            noOptionsText={
+                              "No tickets available for backjob request"
+                            }
                             isOptionEqualToValue={(option, value) =>
                               option.ticketConcernId === value.ticketConcernId
                             }
                             fullWidth
-                            disablePortal
                             disableClearable
-                            componentsProps={{
-                              popper: {
-                                sx: {
-                                  "& .MuiAutocomplete-listbox": {
-                                    fontSize: "13px",
-                                  },
-                                },
-                              },
-                            }}
+                            componentsProps={sx.automCompleteProp}
                           />
                         );
                       }}
@@ -793,18 +969,12 @@ const ConcernDialog = ({ open, onClose }) => {
                 )}
 
                 {/* Severity */}
-                <Stack
-                  width="100%"
-                  sx={{
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    mb: 1,
-                  }}
-                >
-                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                    <Typography sx={{ fontSize: "13px" }}>Severity</Typography>
-                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                <Stack sx={sx.fieldOneColStack}>
+                  <Stack sx={sx.fieldTitleWithIconBox}>
+                    <Typography sx={sx.fieldText}>Severity</Typography>
+                    <FiberManualRecord sx={sx.requiredDot} />
                   </Stack>
+
                   <Controller
                     name="Severity"
                     control={control}
@@ -815,19 +985,12 @@ const ConcernDialog = ({ open, onClose }) => {
                         size="small"
                         placeholder="Select Severity"
                         inputProps={{ "aria-label": "Without label" }}
-                        sx={{
-                          width: "100%",
-                          fontSize: "13px",
-                          "& .MuiSelect-select": {
-                            color: "#fff",
-                          },
-                        }}
+                        sx={sx.select}
                       >
-                        <MenuItem value="Normal" sx={{ fontSize: "13px" }}>
+                        <MenuItem value="Normal" sx={sx.menuItem}>
                           Normal
                         </MenuItem>
-
-                        <MenuItem value="Urgent" sx={{ fontSize: "13px" }}>
+                        <MenuItem value="Urgent" sx={sx.menuItem}>
                           Urgent
                         </MenuItem>
                       </Select>
@@ -835,1051 +998,715 @@ const ConcernDialog = ({ open, onClose }) => {
                   />
                 </Stack>
 
-                {/* REQUESTOR DETAILS */}
-                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>
-                  Requestor Details
-                </Typography>
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Requestor Name */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: "13px" }}>Requestor Name</Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                      </Stack>
+                {/* Request Details*/}
+                <Stack mt={2}>
+                  <Typography sx={sx.sectionHeader}>
+                    Requestor Details:
+                  </Typography>
+                </Stack>
 
-                      <Controller
-                        control={control}
-                        name="UserId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                userDetails?.userRoleName === "Helpdesk Associate" ||
-                                userDetails?.userRoleName === "Helpdesk Associate / Technician" ||
-                                userDetails?.userRoleName === "Technician"
-                                  ? userData?.value?.users || []
-                                  : userData?.value?.users?.filter(
-                                      (item) => item?.departmentId === watch("DepartmentId")?.id,
-                                    ) || []
-                              }
-                              loading={userIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Requestor"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onOpen={() => {
-                                if (!userIsSuccess)
-                                  getUser({
-                                    Status: true,
-                                  });
-                              }}
-                              onChange={(_, value) => {
-                                setValue("ChargingCode", {
-                                  code: value?.oneChargingCode,
-                                  name: value?.oneChargingName,
-                                });
-                                setValue("CompanyId", {
-                                  id: value?.companyId,
-                                  company_Code: value?.company_Code,
-                                  company_Name: value?.company_Name,
-                                });
-                                setValue("BusinessUnitId", {
-                                  id: value?.businessUnitId,
-                                  business_Code: value?.businessUnit_Code,
-                                  business_Name: value?.businessUnit_Name,
-                                });
-                                setValue("DepartmentId", {
-                                  id: value?.departmentId,
-                                  department_Code: value?.department_Code,
-                                  department_Name: value?.department_Name,
-                                });
-                                setValue("UnitId", {
-                                  id: value?.unitId,
-                                  unit_Code: value?.unit_Code,
-                                  unit_Name: value?.unit_Name,
-                                });
-                                setValue("SubUnitId", {
-                                  id: value?.subUnitId,
-                                  subUnit_Code: value?.subUnit_Code,
-                                  subUnit_Name: value?.subUnit_Name,
-                                });
-                                setValue("LocationId", {
-                                  location_Code: value?.location_Code,
-                                  location_Name: value?.location_Name,
-                                });
-
-                                onChange(value);
-                              }}
-                              getOptionLabel={(option) => option?.fullname}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
+                {/* Requestor and Contact Number */}
+                <Stack sx={sx.twoColsBox}>
+                  {/* Requestor Name */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Requestor Name</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
                     </Stack>
 
-                    {/* Conctact Number */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Contact Number (Optional)</Typography>
-                      <Controller
-                        control={control}
-                        name="Contact_Number"
-                        render={({ field: { ref, value, onChange } }) => {
-                          const handleInputChange = (event) => {
-                            let input = event.target.value;
-
-                            if (input && !input.startsWith("09")) {
-                              input = "09" + input.replace(/[^0-9]/g, "");
-                            } else {
-                              input = input.replace(/[^0-9]/g, "");
+                    <Controller
+                      control={control}
+                      name="UserId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              userDetails?.userRoleName ===
+                                "Helpdesk Associate" ||
+                              userDetails?.userRoleName ===
+                                "Helpdesk Associate / Technician" ||
+                              userDetails?.userRoleName === "Technician"
+                                ? userData?.value?.users || []
+                                : userData?.value?.users?.filter(
+                                    (item) =>
+                                      item?.departmentId ===
+                                      watch("DepartmentId")?.id,
+                                  ) || []
                             }
-
-                            if (input.length > 11) {
-                              input = input.slice(0, 11);
-                            }
-
-                            onChange(input || "");
-                          };
-
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="small"
-                              value={value}
-                              placeholder="09"
-                              onChange={handleInputChange}
-                              error={!!errors.Contact_Number}
-                              helperText={errors.Contact_Number ? errors.Contact_Number.message : ""}
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              autoComplete="off"
-                              sx={{
-                                width: "100%",
-                              }}
-                              fullWidth
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Company */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Company</Typography>
-                      <Controller
-                        control={control}
-                        name="CompanyId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={companyData?.value?.company || []}
-                              loading={companyIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Company"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onOpen={() => {
-                                if (!companyIsSuccess) getCompany();
-                              }}
-                              onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) => `${option?.company_Code} - ${option?.company_Name}`}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              disabled
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    {/* Business Unit */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Business Unit</Typography>
-                      <Controller
-                        control={control}
-                        name="BusinessUnitId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                businessUnitData?.value?.businessUnit?.filter(
-                                  (item) => item.companyId === watch("CompanyId")?.id,
-                                ) || []
-                              }
-                              loading={businessUnitIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Business Unit"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              disabled
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Department */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Department</Typography>
-                      <Controller
-                        control={control}
-                        name="DepartmentId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                departmentData?.value?.department?.filter(
-                                  (item) => item.businessUnitId === watch("BusinessUnitId")?.id,
-                                ) || []
-                              }
-                              loading={departmentIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Department"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) =>
-                                `${option.department_Code} - ${option.department_Name}`
-                              }
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disabled
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    {/* Unit */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Unit</Typography>
-                      <Controller
-                        control={control}
-                        name="UnitId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                unitData?.value?.unit?.filter(
-                                  (item) => item.departmentId === watch("DepartmentId")?.id,
-                                ) || []
-                              }
-                              loading={unitIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Unit"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disabled
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Sub Unit */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Sub Unit</Typography>
-                      <Controller
-                        control={control}
-                        name="SubUnitId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                subUnitData?.value?.subUnit?.filter(
-                                  (item) => item.unitId === watch("UnitId")?.id,
-                                ) || []
-                              }
-                              loading={subUnitIsLoading}
-                              onOpen={() => {
-                                if (!subUnitIsSuccess)
-                                  getSubUnit({
-                                    Status: true,
-                                  });
-                              }}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Sub Unit"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disabled
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    {/* Location */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Location</Typography>
-                      <Controller
-                        control={control}
-                        name="LocationId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                locationData?.value?.location?.filter((item) =>
-                                  item?.subUnits?.some(
-                                    (subUnitItem) => subUnitItem?.subUnitId === watch("SubUnitId")?.id,
-                                  ),
-                                ) || []
-                              }
-                              loading={locationIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Location"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => onChange(value)}
-                              getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
-                              isOptionEqualToValue={(option, value) =>
-                                option.location_Code === value.location_Code
-                              }
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disabled
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                {/* CONCERN INFORMATION */}
-                <Typography sx={{ fontSize: "15px", color: theme.palette.primary.main, mt: 2 }}>
-                  Concern Details
-                </Typography>
-
-                <Stack sx={{ width: "100%", mt: 1, display: "none" }}>
-                  {/* Self-Assign (watch("IssueHandler"))*/}
-                  <Controller
-                    name="IssueHandler"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={value === userId}
-                            onChange={(e) => {
-                              assignCheckboxHandler(e);
-                              onChange(e.target.checked ? userId : "");
-                            }}
-                          />
-                        }
-                        label="Self-Assign (Note: This will assign the concern/ticket to you with the target date)"
-                        sx={{ "& .MuiFormControlLabel-label": { fontSize: "14px", fontStyle: "italic" } }}
-                      />
-                    )}
-                  />
-                </Stack>
-
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Service Provider */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: "13px" }}>Service Provider</Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                      </Stack>
-
-                      <Controller
-                        control={control}
-                        name="ServiceProvider"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={serviceProviderData?.value?.serviceProvider || []}
-                              loading={serviceProviderIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Select Service Provider"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onOpen={() => {
-                                if (!serviceProviderIsSuccess)
-                                  getServiceProvider({
-                                    Status: true,
-                                  });
-                              }}
-                              onChange={(_, value) => {
-                                onChange(value);
-
-                                setValue("ChannelId", null);
-                                setValue("CategoryId", []);
-                                setValue("SubCategoryId", []);
-                              }}
-                              getOptionLabel={(option) => option.serviceProviderName}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "12px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    {/* Channel */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: "13px" }}>Channel</Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                      </Stack>
-
-                      <Controller
-                        control={control}
-                        name="ChannelId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={serviceProviderData?.value?.serviceProvider?.[0]?.serviceChannel || []}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Select Channel"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => {
-                                onChange(value);
-
-                                setValue("CategoryId", []);
-                                setValue("SubCategoryId", []);
-                              }}
-                              getOptionLabel={(option) => option.channelName}
-                              isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disabled={!watch("ServiceProvider")}
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "12px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Category */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: "13px" }}>Category</Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                      </Stack>
-                      <Controller
-                        control={control}
-                        name="CategoryId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              multiple
-                              ref={ref}
-                              size="small"
-                              value={value}
-                              options={
-                                categoryData?.value?.category.filter(
-                                  (item) => item.channelId === watch("ChannelId")?.channelId,
-                                ) || []
-                              }
-                              loading={categoryIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Select Category"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onOpen={() => {
-                                if (!categoryIsSuccess)
-                                  getCategory({
-                                    Status: true,
-                                  });
-                              }}
-                              onChange={(_, value) => {
-                                onChange(value);
-                                const categoryIdParams = value?.map((category) => category?.id);
-                                getSubCategory({
-                                  CategoryId: categoryIdParams,
-                                });
-
-                                if (watch("CategoryId").length === 0) {
-                                  setValue("SubCategoryId", []);
-                                }
-                              }}
-                              getOptionLabel={(option) => option.category_Description || ""}
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
-                              getOptionDisabled={(option) =>
-                                watch("CategoryId").some((item) => item.id === option.id)
-                              }
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disabled={!watch("ChannelId")}
-                              disablePortal
-                              disableClearable
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-
-                    {/* Sub Category */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Sub Category</Typography>
-                      <Controller
-                        control={control}
-                        name="SubCategoryId"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <Autocomplete
-                              multiple
-                              ref={ref}
-                              size="small"
-                              value={value || []}
-                              options={subCategoryData?.value || []}
-                              loading={subCategoryIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Select Sub Category"
-                                  sx={{ "& .MuiInputBase-input": { fontSize: "13px" } }}
-                                />
-                              )}
-                              onChange={(_, value) => {
-                                onChange(value || []);
-                              }}
-                              getOptionLabel={(option) => option?.sub_Category_Description || ""}
-                              isOptionEqualToValue={(option, value) =>
-                                option?.subCategoryId === value?.subCategoryId
-                              }
-                              getOptionDisabled={(option) =>
-                                watch("SubCategoryId").some(
-                                  (item) => item.subCategoryId === option.subCategoryId,
-                                )
-                              }
-                              noOptionsText={"No sub category available"}
-                              sx={{
-                                flex: 2,
-                              }}
-                              fullWidth
-                              disablePortal
-                              disableClearable
-                              disabled={!watch("ChannelId") || watch("CategoryId")?.length === 0}
-                              componentsProps={{
-                                popper: {
-                                  sx: {
-                                    "& .MuiAutocomplete-listbox": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                            />
-                          );
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/* Date Needed */}
-                    <Stack sx={{ width: "100%" }}>
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: "13px" }}>Date Needed</Typography>
-                        <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
-                      </Stack>
-
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <Controller
-                          control={control}
-                          name="DateNeeded"
-                          render={({ field }) => {
-                            return (
-                              <DatePicker
-                                value={field.value ? moment(field.value) : moment()}
-                                onChange={(newValue) => {
-                                  const formattedValue = newValue
-                                    ? moment(newValue).format("YYYY-MM-DD")
-                                    : null;
-                                  field.onChange(formattedValue);
-                                }}
-                                slotProps={{
-                                  textField: {
-                                    variant: "outlined",
-                                    sx: {
-                                      "& .MuiInputBase-input": {
-                                        padding: "8.5px 14px",
-                                      },
-                                      "& .MuiOutlinedInput-root": {
-                                        fontSize: "13px",
-                                      },
-                                    },
-                                  },
-                                }}
-                                minDate={dateNeededValidation}
-                                error={!!errors.DateNeeded}
-                                helperText={errors.DateNeeded}
+                            loading={userIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Requestor"
+                                sx={sx.autoComplete}
                               />
-                            );
-                          }}
-                        />
-                        {errors.DateNeeded && (
-                          <Typography sx={{ color: "theme.palette.error.main" }}>
-                            {errors.DateNeeded.message}
-                          </Typography>
-                        )}
-                      </LocalizationProvider>
-                    </Stack>
+                            )}
+                            onOpen={() => {
+                              if (!userIsSuccess)
+                                getUser({
+                                  Status: true,
+                                });
+                            }}
+                            onChange={(_, value) => {
+                              setValue("ChargingCode", {
+                                code: value?.oneChargingCode,
+                                name: value?.oneChargingName,
+                              });
+                              setValue("CompanyId", {
+                                id: value?.companyId,
+                                company_Code: value?.company_Code,
+                                company_Name: value?.company_Name,
+                              });
+                              setValue("BusinessUnitId", {
+                                id: value?.businessUnitId,
+                                business_Code: value?.businessUnit_Code,
+                                business_Name: value?.businessUnit_Name,
+                              });
+                              setValue("DepartmentId", {
+                                id: value?.departmentId,
+                                department_Code: value?.department_Code,
+                                department_Name: value?.department_Name,
+                              });
+                              setValue("UnitId", {
+                                id: value?.unitId,
+                                unit_Code: value?.unit_Code,
+                                unit_Name: value?.unit_Name,
+                              });
+                              setValue("SubUnitId", {
+                                id: value?.subUnitId,
+                                subUnit_Code: value?.subUnit_Code,
+                                subUnit_Name: value?.subUnit_Name,
+                              });
+                              setValue("LocationId", {
+                                location_Code: value?.location_Code,
+                                location_Name: value?.location_Name,
+                              });
 
-                    {/* Target Date */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%", display: "none" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Target Date</Typography>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <Controller
-                          control={control}
-                          name="TargetDate"
-                          render={({ field }) => (
-                            <DatePicker
-                              value={field.value ? moment(field.value) : null}
-                              onChange={(newValue) => {
-                                const formattedValue = newValue
-                                  ? moment(newValue).format("YYYY-MM-DD")
-                                  : null;
-                                field.onChange(formattedValue);
-                              }}
-                              slotProps={{
-                                textField: {
-                                  variant: "outlined",
-                                  sx: {
-                                    "& .MuiInputBase-input": {
-                                      padding: "8.5px 14px",
-                                    },
-                                    "& .MuiOutlinedInput-root": {
-                                      fontSize: "13px",
-                                    },
-                                  },
-                                },
-                              }}
-                              minDate={new moment()}
-                              error={!!errors.TargetDate}
-                              helperText={errors.TargetDate ? errors.TargetDate.message : null}
-                              disabled={!watch("IssueHandler")}
-                            />
-                          )}
-                        />
-                        {errors.TargetDate && <Typography>{errors.TargetDate.message}</Typography>}
-                      </LocalizationProvider>
-                    </Stack>
+                              onChange(value);
+                            }}
+                            getOptionLabel={(option) => option?.fullname}
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Conctact Number */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>
+                      Contact Number (Optional)
+                    </Typography>
+
+                    <Controller
+                      control={control}
+                      name="Contact_Number"
+                      render={({ field: { ref, value, onChange } }) => {
+                        const handleInputChange = (event) => {
+                          let input = event.target.value;
+
+                          if (input && !input.startsWith("09")) {
+                            input = "09" + input.replace(/[^0-9]/g, "");
+                          } else {
+                            input = input.replace(/[^0-9]/g, "");
+                          }
+
+                          if (input.length > 11) {
+                            input = input.slice(0, 11);
+                          }
+
+                          onChange(input || "");
+                        };
+
+                        return (
+                          <TextField
+                            inputRef={ref}
+                            size="small"
+                            value={value}
+                            placeholder="09"
+                            onChange={handleInputChange}
+                            error={!!errors.Contact_Number}
+                            helperText={
+                              errors.Contact_Number
+                                ? errors.Contact_Number.message
+                                : ""
+                            }
+                            InputProps={sx.textFieldInputProps}
+                            InputLabelProps={sx.textFieldLabelProps}
+                            autoComplete="off"
+                            fullWidth
+                          />
+                        );
+                      }}
+                    />
                   </Stack>
                 </Stack>
 
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/*  Asset Tag*/}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Asset Tag</Typography>
-                      <Controller
-                        control={control}
-                        name="AssetTag"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="small"
-                              value={value}
-                              placeholder="Enter Asset Tag"
-                              onChange={onChange}
-                              error={!!errors.AssetTag}
-                              sx={{
-                                width: "100%",
-                              }}
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              autoComplete="off"
-                            />
-                          );
-                        }}
-                      />
-                      {errors.AssetTag && (
-                        <Typography color="error" sx={{ fontSize: "12px" }}>
-                          {errors.AssetTag.message}
-                        </Typography>
-                      )}
-                    </Stack>
+                {/* Company and Business Unit */}
+                <Stack sx={sx.twoColsBox}>
+                  {/* Company */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Company</Typography>
+                    <Controller
+                      control={control}
+                      name="CompanyId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={companyData?.value?.company || []}
+                            loading={companyIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Company"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onOpen={() => {
+                              if (!companyIsSuccess) getCompany();
+                            }}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) =>
+                              `${option?.company_Code} - ${option?.company_Name}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            disableClearable
+                            disabled
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
 
-                    {/* Ongoing 1 */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Ongoing Update</Typography>
-                      <Controller
-                        control={control}
-                        name=""
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="small"
-                              value={value}
-                              placeholder="Ongoing Update"
-                              onChange={onChange}
-                              // error={!!errors.AssetTag}
-                              sx={{
-                                width: "100%",
-                              }}
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              autoComplete="off"
-                              disabled
-                            />
-                          );
-                        }}
-                      />
-                      {/* {errors.AssetTag && (
-                        <Typography color="error" sx={{ fontSize: "12px" }}>
-                          {errors.AssetTag.message}
-                        </Typography>
-                      )} */}
-                    </Stack>
+                  {/* Business Unit */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Business Unit</Typography>
+                    <Controller
+                      control={control}
+                      name="BusinessUnitId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              businessUnitData?.value?.businessUnit?.filter(
+                                (item) =>
+                                  item.companyId === watch("CompanyId")?.id,
+                              ) || []
+                            }
+                            loading={businessUnitIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Business Unit"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) =>
+                              `${option.business_Code} - ${option.business_Name}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            disablePortal
+                            disabled
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
                   </Stack>
                 </Stack>
 
-                <Stack direction="row" sx={{ width: "100%", mt: 1 }}>
-                  <Stack direction={isScreenSmall ? "column" : "row"} sx={{ width: "100%", gap: 1 }}>
-                    {/*  Ongoing 2*/}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Ongoing Update</Typography>
-                      <Controller
-                        control={control}
-                        name="AssetTag"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="small"
-                              value={value}
-                              placeholder="Ongoing Update"
-                              onChange={onChange}
-                              error={!!errors.AssetTag}
-                              sx={{
-                                width: "100%",
-                              }}
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              autoComplete="off"
-                              disabled
-                            />
-                          );
-                        }}
-                      />
-                      {/* {errors.AssetTag && (
-                        <Typography color="error" sx={{ fontSize: "12px" }}>
-                          {errors.AssetTag.message}
-                        </Typography>
-                      )} */}
-                    </Stack>
+                {/* Department and Unit */}
+                <Stack sx={sx.twoColsBox}>
+                  {/* Department */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Department</Typography>
+                    <Controller
+                      control={control}
+                      name="DepartmentId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              departmentData?.value?.department?.filter(
+                                (item) =>
+                                  item.businessUnitId ===
+                                  watch("BusinessUnitId")?.id,
+                              ) || []
+                            }
+                            loading={departmentIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Department"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) =>
+                              `${option.department_Code} - ${option.department_Name}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            disabled
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
 
-                    {/* Ongoing 3 */}
-                    <Stack sx={{ width: isScreenSmall ? "100%" : "50%" }}>
-                      <Typography sx={{ fontSize: "13px" }}>Ongoing Update</Typography>
-                      <Controller
-                        control={control}
-                        name=""
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <TextField
-                              inputRef={ref}
-                              size="small"
-                              value={value}
-                              placeholder="Ongoing Update"
-                              onChange={onChange}
-                              // error={!!errors.AssetTag}
-                              sx={{
-                                width: "100%",
-                              }}
-                              InputProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              InputLabelProps={{
-                                style: {
-                                  fontSize: "13px",
-                                },
-                              }}
-                              autoComplete="off"
-                              disabled
-                            />
-                          );
-                        }}
-                      />
-                      {/* {errors.AssetTag && (
-                        <Typography color="error" sx={{ fontSize: "12px" }}>
-                          {errors.AssetTag.message}
-                        </Typography>
-                      )} */}
-                    </Stack>
+                  {/* Unit */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Unit</Typography>
+                    <Controller
+                      control={control}
+                      name="UnitId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              unitData?.value?.unit?.filter(
+                                (item) =>
+                                  item.departmentId ===
+                                  watch("DepartmentId")?.id,
+                              ) || []
+                            }
+                            loading={unitIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Unit"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) =>
+                              `${option.unit_Code} - ${option.unit_Name}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            disabled
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
                   </Stack>
                 </Stack>
 
-                {/* DESCRIPTION AND ATTACHMENT */}
-                <Stack
-                  sx={{
-                    width: "100%",
-                    paddingTop: 2,
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
+                {/*  Sub Unit and Location*/}
+                <Stack sx={sx.twoColsBox}>
+                  {/* Sub Unit */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Sub Unit</Typography>
+                    <Controller
+                      control={control}
+                      name="SubUnitId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              subUnitData?.value?.subUnit?.filter(
+                                (item) => item.unitId === watch("UnitId")?.id,
+                              ) || []
+                            }
+                            loading={subUnitIsLoading}
+                            onOpen={() => {
+                              if (!subUnitIsSuccess)
+                                getSubUnit({
+                                  Status: true,
+                                });
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Sub Unit"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) =>
+                              `${option.subUnit_Code} - ${option.subUnit_Name}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            disabled
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Location */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Location</Typography>
+                    <Controller
+                      control={control}
+                      name="LocationId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              locationData?.value?.location?.filter((item) =>
+                                item?.subUnits?.some(
+                                  (subUnitItem) =>
+                                    subUnitItem?.subUnitId ===
+                                    watch("SubUnitId")?.id,
+                                ),
+                              ) || []
+                            }
+                            loading={locationIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Location"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => onChange(value)}
+                            getOptionLabel={(option) =>
+                              `${option.location_Code} - ${option.location_Name}`
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.location_Code === value.location_Code
+                            }
+                            fullWidth
+                            disabled
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+                </Stack>
+
+                {/* Concern Details */}
+                <Stack mt={2}>
+                  <Typography sx={sx.sectionHeader}>Concern Details</Typography>
+                </Stack>
+
+                {/* Service Provider and Channel */}
+                <Stack sx={sx.twoColsBox}>
+                  {/* Service Provider */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>
+                        Service Provider
+                      </Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
+                    </Stack>
+
+                    <Controller
+                      control={control}
+                      name="ServiceProvider"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              serviceProviderData?.value?.serviceProvider || []
+                            }
+                            loading={serviceProviderIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Select Service Provider"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onOpen={() => {
+                              if (!serviceProviderIsSuccess)
+                                getServiceProvider({
+                                  Status: true,
+                                });
+                            }}
+                            onChange={(_, value) => {
+                              onChange(value);
+
+                              setValue("ChannelId", null);
+                              setValue("CategoryId", []);
+                              setValue("SubCategoryId", []);
+                            }}
+                            getOptionLabel={(option) =>
+                              option.serviceProviderName
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            fullWidth
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Channel */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Channel</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
+                    </Stack>
+
+                    <Controller
+                      control={control}
+                      name="ChannelId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              serviceProviderData?.value?.serviceProvider?.[0]
+                                ?.serviceChannel || []
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Select Channel"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => {
+                              onChange(value);
+
+                              setValue("CategoryId", []);
+                              setValue("SubCategoryId", []);
+                            }}
+                            getOptionLabel={(option) => option.channelName}
+                            isOptionEqualToValue={(option, value) =>
+                              option.channelId === value.channelId
+                            }
+                            fullWidth
+                            disabled={!watch("ServiceProvider")}
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+                </Stack>
+
+                {/* Category and Sub Category */}
+                <Stack sx={sx.twoColsBox}>
+                  {/* Category */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Stack sx={sx.fieldTitleWithIconBox}>
+                      <Typography sx={sx.fieldText}>Category</Typography>
+                      <FiberManualRecord sx={sx.requiredDot} />
+                    </Stack>
+                    <Controller
+                      control={control}
+                      name="CategoryId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            multiple
+                            ref={ref}
+                            size="small"
+                            value={value}
+                            options={
+                              categoryData?.value?.category.filter(
+                                (item) =>
+                                  item.channelId ===
+                                  watch("ChannelId")?.channelId,
+                              ) || []
+                            }
+                            loading={categoryIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Select Category"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onOpen={() => {
+                              if (!categoryIsSuccess)
+                                getCategory({
+                                  Status: true,
+                                });
+                            }}
+                            onChange={(_, value) => {
+                              onChange(value);
+                              const categoryIdParams = value?.map(
+                                (category) => category?.id,
+                              );
+                              getSubCategory({
+                                CategoryId: categoryIdParams,
+                              });
+
+                              if (watch("CategoryId").length === 0) {
+                                setValue("SubCategoryId", []);
+                              }
+                            }}
+                            getOptionLabel={(option) =>
+                              option.category_Description || ""
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            getOptionDisabled={(option) =>
+                              watch("CategoryId").some(
+                                (item) => item.id === option.id,
+                              )
+                            }
+                            fullWidth
+                            disabled={!watch("ChannelId")}
+                            disableClearable
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+
+                  {/* Sub Category */}
+                  <Stack sx={sx.fieldTwoColsStack}>
+                    <Typography sx={sx.fieldText}>Sub Category</Typography>
+                    <Controller
+                      control={control}
+                      name="SubCategoryId"
+                      render={({ field: { ref, value, onChange } }) => {
+                        return (
+                          <Autocomplete
+                            multiple
+                            ref={ref}
+                            size="small"
+                            value={value || []}
+                            options={subCategoryData?.value || []}
+                            loading={subCategoryIsLoading}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Select Sub Category"
+                                sx={sx.autoComplete}
+                              />
+                            )}
+                            onChange={(_, value) => {
+                              onChange(value || []);
+                            }}
+                            getOptionLabel={(option) =>
+                              option?.sub_Category_Description || ""
+                            }
+                            isOptionEqualToValue={(option, value) =>
+                              option?.subCategoryId === value?.subCategoryId
+                            }
+                            getOptionDisabled={(option) =>
+                              watch("SubCategoryId").some(
+                                (item) =>
+                                  item.subCategoryId === option.subCategoryId,
+                              )
+                            }
+                            noOptionsText={"No sub category available"}
+                            fullWidth
+                            disableClearable
+                            disabled={
+                              !watch("ChannelId") ||
+                              watch("CategoryId")?.length === 0
+                            }
+                            componentsProps={sx.automCompleteProp}
+                          />
+                        );
+                      }}
+                    />
+                  </Stack>
+                </Stack>
+
+                {/* Date Needed */}
+                <Stack sx={sx.fieldOneColStack}>
+                  <Stack sx={sx.fieldTitleWithIconBox}>
+                    <Typography sx={sx.fieldText}>Date Needed</Typography>
+                    <FiberManualRecord sx={sx.requiredDot} />
+                  </Stack>
+
+                  <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <Controller
+                      control={control}
+                      name="DateNeeded"
+                      render={({ field }) => {
+                        return (
+                          <DatePicker
+                            value={field.value ? moment(field.value) : moment()}
+                            onChange={(newValue) => {
+                              const formattedValue = newValue
+                                ? moment(newValue).format("YYYY-MM-DD")
+                                : null;
+                              field.onChange(formattedValue);
+                            }}
+                            slotProps={sx.datePickerSlotProp}
+                            minDate={dateNeededValidation}
+                            error={!!errors.DateNeeded}
+                            helperText={errors.DateNeeded}
+                          />
+                        );
+                      }}
+                    />
+                    {errors.DateNeeded && (
+                      <Typography sx={{ color: "theme.palette.error.main" }}>
+                        {errors.DateNeeded.message}
+                      </Typography>
+                    )}
+                  </LocalizationProvider>
+                </Stack>
+
+                {/* Concern Details */}
+                <Stack sx={sx.concern}>
                   {/* Concern */}
-                  <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
-                    <Typography sx={{ fontSize: "13px" }}>Concern Details</Typography>
-                    <FiberManualRecord color="error" sx={{ fontSize: "10px" }} />
+                  <Stack sx={sx.fieldTitleWithIconBox}>
+                    <Typography sx={sx.fieldText}>Concern</Typography>
+                    <FiberManualRecord sx={sx.requiredDot} />
                   </Stack>
 
                   {fields.map((field, index) => (
-                    <Stack
-                      key={field.id}
-                      direction="row"
-                      alignItems="flex-start"
-                      sx={{ width: "100%", mt: 0.5 }}
-                    >
+                    <Stack key={field.id} direction="row">
                       <Controller
                         control={control}
                         name={`Concern.${index}`}
@@ -1891,12 +1718,16 @@ const ConcernDialog = ({ open, onClose }) => {
                             onChange={onChange}
                             error={!!errors.Concern?.[index]}
                             multiline
-                            rows={3}
+                            rows={4}
                             InputProps={{
                               endAdornment:
                                 fields.length > 1 ? (
                                   <InputAdornment position="end">
-                                    <IconButton edge="end" onClick={() => remove(index)} size="small">
+                                    <IconButton
+                                      edge="end"
+                                      onClick={() => remove(index)}
+                                      size="small"
+                                    >
                                       <RemoveCircleOutline fontSize="small" />
                                     </IconButton>
                                   </InputAdornment>
@@ -1922,7 +1753,11 @@ const ConcernDialog = ({ open, onClose }) => {
                     errors.Concern.map(
                       (err, idx) =>
                         err && (
-                          <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
+                          <Typography
+                            key={idx}
+                            color="error"
+                            sx={{ fontSize: "12px" }}
+                          >
                             Concern #{idx + 1}: {err.message}
                           </Typography>
                         ),
@@ -1934,22 +1769,19 @@ const ConcernDialog = ({ open, onClose }) => {
                       variant="outlined"
                       onClick={() => append("")}
                       startIcon={<AddOutlined />}
+                      // sx={sx.addConcernButton}
                     >
-                      <Typography sx={{ fontSize: "12px" }}>Add Concern</Typography>
+                      Add Concern
+                      {/* <Typography sx={{ fontSize: "12px" }}>
+                        Add Concern
+                      </Typography> */}
                     </Button>
                   </Stack>
                 </Stack>
 
-                <Stack
-                  width="100%"
-                  sx={{
-                    paddingTop: 2,
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    mt: 2,
-                  }}
-                >
-                  <Typography sx={{ fontSize: "13px" }}>Notes (Optional)</Typography>
+                {/* Notes */}
+                <Stack sx={sx.notes}>
+                  <Typography sx={sx.fieldText}>Notes (Optional)</Typography>
 
                   <Controller
                     control={control}
@@ -1962,199 +1794,126 @@ const ConcernDialog = ({ open, onClose }) => {
                           value={value}
                           placeholder="Add notes"
                           onChange={onChange}
-                          sx={{
-                            width: "100%",
-                          }}
-                          InputProps={{
-                            style: {
-                              fontSize: "13px",
-                            },
-                          }}
-                          InputLabelProps={{
-                            style: {
-                              fontSize: "13px",
-                            },
-                          }}
+                          InputProps={sx.textFieldInputProps}
+                          InputLabelProps={sx.textFieldLabelProps}
                           autoComplete="off"
                           rows={4}
                           multiline
+                          sx={{
+                            width: "100%",
+                          }}
                         />
                       );
                     }}
                   />
                 </Stack>
 
-                {/* ATTACHMENTS */}
+                {/* Attachments */}
                 <Stack
-                  width="100%"
-                  sx={{
-                    paddingTop: 2,
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
+                  sx={sx.fieldOneColStack}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
                 >
-                  <Typography sx={{ fontSize: "13px" }}>Attachment (Optional)</Typography>
+                  <Typography sx={sx.fieldText}>
+                    Attachment (Optional)
+                  </Typography>
+
                   <Stack
-                    sx={{
-                      width: "100%",
-                      display: "flex",
-                      border: "2px dashed #2D3748",
-                      justifyContent: "left",
-                      padding: 1,
-                    }}
+                    sx={sx.attachmentDashedBorder}
                     onDragOver={handleDragOver}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: 1,
-                        alignItems: "center",
-                      }}
-                    >
+                    <Box sx={sx.attachmentFileBox}>
                       <Button
                         size="small"
                         variant="contained"
                         color="warning"
                         onClick={handleUploadButtonClick}
                       >
-                        <Typography sx={{ fontSize: "12px" }}>Choose File</Typography>
+                        <Typography sx={sx.chooseFileText}>
+                          Choose File
+                        </Typography>
                       </Button>
 
-                      <Typography sx={{ color: theme.palette.text.secondary, fontSize: "13px" }}>
+                      <Typography sx={sx.fileExtText}>
                         .docx, .jpg, .jpeg, .png, .pdf file
                       </Typography>
                     </Box>
 
-                    <Divider
-                      variant="fullWidth"
-                      sx={{
-                        display: !attachments.length ? "none" : "flex",
-                        background: "#2D3748",
-                        marginTop: 1,
-                      }}
-                    />
-
-                    <Stack
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        maxHeight: "auto",
-                      }}
-                    >
-                      {attachments.map((fileName, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            display: "flex",
-                            width: "100%",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            padding: 1,
-                            maxWidth: "100%",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {getAttachmentIcon(fileName)}
-                          <Box
-                            sx={{
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              padding: 0.5,
-                              borderBottom: "1px solid #2D3748",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <Typography sx={{ fontWeight: 500, fontSize: "13px" }}>
-                                {fileName.name}
-                              </Typography>
-
-                              <Typography
-                                sx={{
-                                  fontSize: "13px",
-                                  fontWeight: 500,
-                                  color: theme.palette.text.secondary,
-                                }}
-                              >
-                                {fileName.size} Mb
-                              </Typography>
-
-                              <Typography
-                                sx={{
-                                  fontSize: "13px",
-                                  fontWeight: 500,
-                                  color: theme.palette.success.main,
-                                }}
-                              >
-                                Uploaded the file successfully
-                              </Typography>
-                            </Box>
-
-                            <Box>
-                              <ConcernMenuActions
-                                fileName={fileName}
-                                onView={handleViewImage}
-                                onDelete={handleDeleteFile}
-                                isImageFile={isImageFile}
-                              />
-                            </Box>
-                          </Box>
-                        </Box>
-                      ))}
-                    </Stack>
-                  </Stack>
-
-                  <Controller
-                    control={control}
-                    name="RequestAttachmentsFiles"
-                    render={({ field: { onChange, value } }) => (
-                      <input
-                        ref={fileInputRef}
-                        accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
-                        style={{ display: "none" }}
-                        multiple
-                        type="file"
-                        onChange={(event) => {
-                          handleAttachments(event);
-                          const files = Array.from(event.target.files);
-                          const uniqueNewFiles = files.filter(
-                            (item) => !value.some((file) => file.name === item.name),
-                          );
-
-                          onChange([...value, ...uniqueNewFiles]);
-                          fileInputRef.current.value = "";
-                        }}
-                      />
+                    {/* Image thumbnails, grid layout */}
+                    {imageAttachments.length > 0 && (
+                      <Box sx={sx.imgAttachmentSection}>
+                        {imageAttachments.map((fileName, index) => (
+                          <ImageAttachmentCard
+                            key={`img-${index}`}
+                            fileName={fileName}
+                            onView={handleViewImage}
+                            onDelete={handleDeleteFile}
+                          />
+                        ))}
+                      </Box>
                     )}
-                  />
+
+                    {/* Non-image files, row list */}
+                    {fileAttachments.length > 0 && (
+                      <Stack sx={sx.fileAttachmentSection}>
+                        {fileAttachments.map((fileName, index) => (
+                          <FileAttachmentRow
+                            key={`file-${index}`}
+                            fileName={fileName}
+                            onDelete={handleDeleteFile}
+                          />
+                        ))}
+                      </Stack>
+                    )}
+                  </Stack>
                 </Stack>
+
+                <Controller
+                  control={control}
+                  name="RequestAttachmentsFiles"
+                  render={({ field: { onChange, value } }) => (
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
+                      onChange={(event) => {
+                        handleAttachments(event);
+                        const files = Array.from(event.target.files);
+                        const uniqueNewFiles = files.filter(
+                          (item) =>
+                            !value.some((file) => file.name === item.name),
+                        );
+
+                        onChange([...value, ...uniqueNewFiles]);
+                        fileInputRef.current.value = "";
+                      }}
+                      hidden
+                      multiple
+                    />
+                  )}
+                />
               </Stack>
             </Stack>
           </DialogContent>
 
-          <DialogActions sx={{ position: "sticky", bottom: 0, backgroundColor: theme.palette.bgForm.black3 }}>
+          <DialogActions
+            sx={{
+              position: "sticky",
+              bottom: 0,
+              backgroundColor: theme.palette.bgForm.black3,
+            }}
+          >
             <LoadingButton
-              variant="outlined"
+              variant="contained"
               disabled={
-                isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading
+                isCreateEditRequestorConcernLoading ||
+                isCreateEditRequestorConcernFetching ||
+                isLoading
               }
               onClick={() => {
                 onCloseAction();
               }}
-              sx={{
-                ":disabled": {
-                  backgroundColor: "none",
-                  color: "black",
-                },
-              }}
+              sx={sx.cancelButton}
             >
               Cancel
             </LoadingButton>
@@ -2165,7 +1924,9 @@ const ConcernDialog = ({ open, onClose }) => {
               color="primary"
               type="submit"
               loading={
-                isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading
+                isCreateEditRequestorConcernLoading ||
+                isCreateEditRequestorConcernFetching ||
+                isLoading
               }
               disabled={
                 !watch("ServiceProvider") ||
@@ -2195,12 +1956,110 @@ const ConcernDialog = ({ open, onClose }) => {
       </Dialog>
 
       {/* Dialog to view image */}
-      <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
-        <DialogContent sx={{ height: "auto" }}>
-          {selectedImage && <img src={selectedImage} alt="Preview" style={{ width: "100%" }} />}
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={isViewDialogOpen}
+        onClose={handleViewClose}
+      >
+        <DialogContent sx={{ height: "auto", padding: 0 }}>
+          <Box sx={{ position: "relative" }}>
+            {/* Zoom controls */}
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                zIndex: 1,
+                backgroundColor: "rgba(0,0,0,0.6)",
+                borderRadius: "20px",
+                padding: "2px 6px",
+              }}
+            >
+              <IconButton
+                size="small"
+                onClick={handleZoomOut}
+                disabled={zoom <= MIN_ZOOM}
+                sx={{ color: "#fff" }}
+              >
+                <ZoomOut fontSize="small" />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  color: "#fff",
+                  fontSize: "12px",
+                  minWidth: 38,
+                  textAlign: "center",
+                }}
+              >
+                {Math.round(zoom * 100)}%
+              </Typography>
+
+              <IconButton
+                size="small"
+                onClick={handleZoomIn}
+                disabled={zoom >= MAX_ZOOM}
+                sx={{ color: "#fff" }}
+              >
+                <ZoomIn fontSize="small" />
+              </IconButton>
+
+              <IconButton
+                size="small"
+                onClick={handleZoomReset}
+                sx={{ color: "#fff" }}
+              >
+                <RestartAlt fontSize="small" />
+              </IconButton>
+            </Stack>
+
+            {/* Fixed viewport — no native scroll, so wheel events go straight to handleWheelZoom instead of competing with browser scroll. Panning is done manually via drag + CSS transform below. */}
+            <Box
+              onWheel={handleWheelZoom}
+              sx={{
+                width: "100%",
+                height: "70vh",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#000",
+              }}
+            >
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="Preview"
+                  onMouseDown={handleImageMouseDown}
+                  draggable={false}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "70vh",
+                    display: "block",
+                    userSelect: "none",
+                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+                    transformOrigin: "center center",
+                    transition: isDragging ? "none" : "transform 0.15s ease",
+                    cursor:
+                      zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleViewClose}>Close</Button>
+          <Button
+            variant="contained"
+            onClick={handleViewClose}
+            sx={sx.cancelButton}
+          >
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </>
@@ -2208,3 +2067,102 @@ const ConcernDialog = ({ open, onClose }) => {
 };
 
 export default ConcernDialog;
+
+const ImageAttachmentCard = ({ fileName, onView, onDelete }) => {
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    const url = URL.createObjectURL(fileName.file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [fileName.file]);
+
+  const ext = fileName.name.split(".").pop()?.toUpperCase();
+  const showSpinner = !previewUrl || !imgLoaded;
+
+  return (
+    <Box sx={sx.imgAttachmentBox} onClick={() => onView(fileName.file)}>
+      <IconButton
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(fileName);
+        }}
+        sx={sx.imgIconButton}
+      >
+        <CloseOutlined sx={{ fontSize: 14, color: "#fff" }} />
+      </IconButton>
+
+      <Box sx={sx.imgContainer}>
+        {previewUrl && (
+          <Box
+            component="img"
+            src={previewUrl}
+            alt={fileName.name}
+            onLoad={() => setImgLoaded(true)}
+            onError={() => setImgLoaded(true)}
+            sx={{ ...sx.previewUrlBox, opacity: showSpinner ? 0 : 1 }}
+          />
+        )}
+
+        {showSpinner && (
+          <Box sx={sx.showSpinnerBox}>
+            <CircularProgress
+              size={20}
+              thickness={4}
+              sx={sx.circularProgress}
+            />
+          </Box>
+        )}
+      </Box>
+
+      <Box sx={{ padding: "6px 8px", overflow: "hidden" }}>
+        <Typography noWrap title={fileName.name} sx={sx.imgFileName}>
+          {fileName.name}
+        </Typography>
+        <Typography noWrap sx={sx.imgFileSize}>
+          {ext} · {fileName.size} MB
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+// One row for a non-image attachment (bottom list in the target design).
+const FileAttachmentRow = ({ fileName, onDelete, uploadProgress }) => {
+  const inProgress = typeof uploadProgress === "number" && uploadProgress < 100;
+
+  return (
+    <Box sx={sx.fileAttachmentBox}>
+      <Box sx={sx.iconFile}>{getAttachmentIcon(fileName)}</Box>
+
+      <Box sx={sx.fileNameBox}>
+        <Typography noWrap sx={sx.fileNameText}>
+          {fileName.name}
+        </Typography>
+
+        {inProgress ? (
+          <Stack sx={sx.inProgressBox}>
+            <LinearProgress
+              variant="determinate"
+              value={uploadProgress}
+              sx={sx.linearProgress}
+            />
+            <Typography sx={sx.uploadProgressText}>
+              {uploadProgress}%
+            </Typography>
+          </Stack>
+        ) : (
+          <Typography sx={sx.fileSizeText}>
+            {fileName.name.split(".").pop()?.toUpperCase()} · {fileName.size} MB
+          </Typography>
+        )}
+      </Box>
+
+      <IconButton size="small" onClick={() => onDelete(fileName)}>
+        <Close sx={sx.closeIconButton} />
+      </IconButton>
+    </Box>
+  );
+};

@@ -14,7 +14,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import {
-  AttachFile,
   AttachFileOutlined,
   Close,
   RestartAlt,
@@ -29,7 +28,7 @@ import { global } from "../../../styles/global";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { receiverStyle as sx } from "./styles/receiverStyle";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import useDisclosure from "../../../hooks/useDisclosure";

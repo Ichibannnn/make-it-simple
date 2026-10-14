@@ -11,6 +11,9 @@ const colorTokens = {
   ok: "#4cd39a",
   warning: "#ffb340",
   error: "#ef5350",
+
+  violet: "#7c5cff",
+  pink: "#ff4fa3",
 };
 
 const fonts = {
@@ -20,8 +23,16 @@ const fonts = {
   xs: "10px",
 };
 
+const weights = {
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+};
+
 const t = colorTokens;
 const f = fonts;
+const w = weights;
 
 export const formStyle = {
   titleText: { fontSize: f.lg, fontWeight: 700, color: t.ok },
@@ -30,6 +41,15 @@ export const formStyle = {
   detailTitleText: { fontSize: f.md, fontWeight: 500, color: t.muted },
   detailDescText: { fontSize: f.md, fontWeight: 600, color: t.text },
   requiredDot: { color: t.error, fontSize: "10px" },
+
+  select: {
+    width: "100%",
+    fontSize: "13px",
+  },
+
+  menuItem: {
+    fontSize: "13px",
+  },
 
   autoComplete: {
     "& .MuiInputBase-input": {
@@ -76,6 +96,11 @@ export const formStyle = {
 
   textErrors: { fontSize: "12px", color: t.error },
   textArea: {},
+
+  addConcernButton: {
+    backgroundColor: "#1C2536",
+    "&:hover": { backgroundColor: "#2f3c55" },
+  },
 
   cancelButton: {
     backgroundColor: "#1C2536",
@@ -125,7 +150,16 @@ export const formStyle = {
     padding: 1,
   },
 
+  fieldSectionTickets: {
+    gap: 1,
+  },
+
   categoryBox: {
+    flexDirection: { xs: "column", md: "row" },
+    gap: 1,
+  },
+
+  twoColsBox: {
     flexDirection: { xs: "column", md: "row" },
     gap: 1,
   },
@@ -254,7 +288,12 @@ export const formStyle = {
   fileNameBox: { flex: 1, minWidth: 0 },
   fileNameText: { fontSize: f.sm, fontWeight: 500 },
   fileSizeText: { fontSize: f.sm, color: t.muted },
-  fileDescWithIconBox: { display: "flex", flexDirection: "row", alignItems: "center", gap: 0.5 },
+  fileDescWithIconBox: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 0.5,
+  },
 
   inProgressBox: {
     flexDirection: "row",
@@ -291,7 +330,12 @@ export const formStyle = {
   },
 
   addAttachmentBtn: { padding: "2px", borderRadius: "2px" },
-  noAttachmentSection: { flex: 1, minHeight: "120px", justifyContent: "center", alignItems: "center" },
+  noAttachmentSection: {
+    flex: 1,
+    minHeight: "120px",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   noAttachmentContent: {
     flexDirection: "row",
     gap: 0.5,
@@ -307,5 +351,25 @@ export const formStyle = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: 0.5,
+  },
+
+  // Section Header
+  sectionHeader: {
+    fontSize: { xs: f.sm, md: f.md },
+    fontWeight: w.semibold,
+    color: t.accent,
+  },
+
+  // Concern Details
+  concern: {
+    gap: 0.5,
+    width: "100%",
+    mt: 1,
+  },
+
+  notes: {
+    gap: 0.5,
+    width: "100%",
+    mt: 1,
   },
 };
