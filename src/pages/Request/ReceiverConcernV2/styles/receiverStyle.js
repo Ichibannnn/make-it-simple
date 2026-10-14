@@ -1,3 +1,5 @@
+import { theme } from "../../../../theme/theme";
+
 const colorTokens = {
   bg: "#080D16",
   panel: "#0E1521",
@@ -41,7 +43,7 @@ export const receiverStyle = {
   },
 
   subHeader: {
-    fontSize: { xs: f.sm, md: f.md },
+    fontSize: { xs: f.xs, md: f.sm },
     fontWeight: w.semibold,
     color: t.muted,
   },
@@ -186,6 +188,20 @@ export const receiverStyle = {
     alignItems: "center",
   },
 
+  fontSize: {
+    fontSize: { xs: "12px", md: "13px" },
+  },
+
+  titleSubIcon: {
+    color: theme.palette.text.secondary,
+    fontSize: { xs: "16px", md: "18px" },
+  },
+
+  titleSubText: {
+    color: theme.palette.text.secondary,
+    fontSize: { xs: "12px", md: "14px" },
+  },
+
   attachmentCards: {
     display: "flex",
     width: "100%",
@@ -193,8 +209,7 @@ export const receiverStyle = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: 1,
-    background: `linear-gradient(${t.panel}, ${t.panel}) padding-box, linear-gradient(135deg, #7c5cff66, ${t.line} 40%, #ff4fa355) border-box`,
-    border: "1px solid transparent",
+    border: `1px solid ${t.line}`,
     borderRadius: "15px",
   },
 
