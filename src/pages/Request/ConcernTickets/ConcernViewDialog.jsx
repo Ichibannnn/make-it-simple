@@ -295,7 +295,6 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
   const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
-  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
 
   const [zoom, setZoom] = useState(1);
   const MIN_ZOOM = 0.5;
@@ -633,14 +632,17 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
       file,
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) =>
-        !attachments?.some(
-          (existingFile) => existingFile.name === newFile.name,
-        ),
-    );
+    // setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+    setAttachments((prevFiles) => {
+      const safePrev = Array.isArray(prevFiles) ? prevFiles : [];
 
-    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+      const uniqueNewFiles = fileNames.filter(
+        (newFile) =>
+          !safePrev.some((existing) => existing.name === newFile.name),
+      );
+
+      return [...safePrev, ...uniqueNewFiles];
+    });
   };
 
   const handleUploadButtonClick = () => {
@@ -725,22 +727,26 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
   const handleViewImage = async (file) => {
     setViewIsLoading(true);
+    setLoadingAttachmentId(file?.ticketAttachmentId);
     try {
       const response = await getViewAttachment(file?.ticketAttachmentId);
 
       if (response?.data) {
         const imageUrl = URL.createObjectURL(response.data); // Create a URL for the fetched image
         setSelectedImage(imageUrl); // Set the image URL to state
+        setZoom(1);
+        setPosition({ x: 0, y: 0 });
         setIsViewDialogOpen(true);
       }
       setViewIsLoading(false);
+      setLoadingAttachmentId(null);
     } catch (error) {
-      console.error("Error fetching image:", error);
       toast.error("Error!", {
         description: "View file error!",
         duration: 1500,
       });
       setViewIsLoading(false);
+      setLoadingAttachmentId(null);
     }
   };
 
@@ -2039,7 +2045,6 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                 </Stack>
 
                 {/* Attachments */}
-
                 <Stack onDragOver={handleDragOver} onDrop={handleDrop}>
                   <Stack
                     padding={2}
@@ -2208,9 +2213,9 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
 
-                          const uniqueNewFiles = files.filter(
+                          const uniqueNewFiles = files?.filter(
                             (item) =>
-                              !value.some((file) => file.name === item.name),
+                              !value?.some((file) => file.name === item.name),
                           );
 
                           onChange([...value, ...uniqueNewFiles]);
@@ -2235,7 +2240,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
           >
             <Button
               variant="contained"
-              disabled={
+              loading={
                 isCreateEditRequestorConcernLoading ||
                 isCreateEditRequestorConcernFetching ||
                 isLoading

@@ -2,10 +2,8 @@ import {
   FileDownloadOutlined,
   MoreHoriz,
   RemoveCircleOutline,
-  VisibilityOutlined,
 } from "@mui/icons-material";
 import {
-  Box,
   CircularProgress,
   IconButton,
   ListItemIcon,
@@ -19,14 +17,10 @@ import useDisclosure from "../../../hooks/useDisclosure";
 const ConcernViewMenuActions = ({
   editData,
   fileName,
-  onView,
-  onViewWithoutId,
   onDelete,
   onDownload,
-  isImageFile,
   viewIsLoading,
   downloadIsLoading,
-  deleteIsLoading,
 }) => {
   const ref = useRef(null);
 

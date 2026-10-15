@@ -1,21 +1,29 @@
-import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline, VisibilityOutlined } from "@mui/icons-material";
-import { Box, CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import {
+  FileDownloadOutlined,
+  MoreHoriz,
+  RemoveCircleOutline,
+} from "@mui/icons-material";
+import {
+  CircularProgress,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 
 import { useRef } from "react";
 import useDisclosure from "../../../hooks/useDisclosure";
 
-const AssignDialogMenuAction = ({ fileName, onView, onViewWithoutId, onDelete, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
+const AssignDialogMenuAction = ({
+  fileName,
+  onDelete,
+  onDownload,
+  viewIsLoading,
+  downloadIsLoading,
+}) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
-
-  const onViewAction = (fileName) => {
-    onView(fileName);
-  };
-
-  const onViewWithoutIdAction = (fileName) => {
-    onViewWithoutId(fileName);
-  };
 
   const onDeleteAction = (fileName) => {
     onToggle();
@@ -26,15 +34,6 @@ const AssignDialogMenuAction = ({ fileName, onView, onViewWithoutId, onDelete, o
     onDownload(fileName);
   };
 
-  const handleMenuViewClick = (event, action) => {
-    if (viewIsLoading) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-    action();
-  };
-
   const handleMenuDownloadClick = (event, action) => {
     if (downloadIsLoading) {
       event.preventDefault();
@@ -43,6 +42,8 @@ const AssignDialogMenuAction = ({ fileName, onView, onViewWithoutId, onDelete, o
     }
     action();
   };
+
+  console.log("Filename: ", fileName);
 
   return (
     <>
@@ -58,38 +59,27 @@ const AssignDialogMenuAction = ({ fileName, onView, onViewWithoutId, onDelete, o
         }}
         disableAutoFocusItem
       >
-        {!!fileName.ticketAttachmentId ? (
-          <Box>
-            {isImageFile(fileName.name) && (
-              <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
-                <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
-                View
-              </MenuItem>
-            )}
-          </Box>
-        ) : (
-          <Box>
-            {isImageFile(fileName.name) && (
-              <MenuItem onClick={() => onViewWithoutIdAction(fileName.file)}>
-                <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
-                View
-              </MenuItem>
-            )}
-          </Box>
-        )}
-
-        {!fileName.ticketAttachmentId && (
-          <MenuItem onClick={() => onDeleteAction(fileName)}>
-            <ListItemIcon>
-              <RemoveCircleOutline fontSize="small" />
-            </ListItemIcon>
-            Delete
-          </MenuItem>
-        )}
+        <MenuItem onClick={() => onDeleteAction(fileName)}>
+          <ListItemIcon>
+            <RemoveCircleOutline fontSize="small" />
+          </ListItemIcon>
+          Delete
+        </MenuItem>
 
         {!!fileName.ticketAttachmentId && (
-          <MenuItem onClick={(e) => handleMenuDownloadClick(e, () => onDownloadAction(fileName))} disabled={downloadIsLoading}>
-            <ListItemIcon>{downloadIsLoading ? <CircularProgress size={18} /> : <FileDownloadOutlined fontSize="small" />}</ListItemIcon>
+          <MenuItem
+            onClick={(e) =>
+              handleMenuDownloadClick(e, () => onDownloadAction(fileName))
+            }
+            disabled={downloadIsLoading}
+          >
+            <ListItemIcon>
+              {downloadIsLoading ? (
+                <CircularProgress size={18} />
+              ) : (
+                <FileDownloadOutlined fontSize="small" />
+              )}
+            </ListItemIcon>
             Download
           </MenuItem>
         )}
