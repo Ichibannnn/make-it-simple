@@ -57,10 +57,22 @@ import ConcernHistory from "./ConcernHistory";
 import ConcernTicketFiltering from "./ConcernTicketFiltering";
 
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
-import { notificationApi, useGetNotificationQuery } from "../../../features/api_notification/notificationApi";
+import {
+  notificationApi,
+  useGetNotificationQuery,
+} from "../../../features/api_notification/notificationApi";
 
-import { setSearchValue, setStatus, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
-import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
+import {
+  setSearchValue,
+  setStatus,
+  setPageNumber,
+  setPageSize,
+} from "../../../features/global/rootSlice";
+import {
+  useCancelConcernMutation,
+  useConfirmConcernMutation,
+  useGetRequestorConcernsQuery,
+} from "../../../features/api_request/concerns/concernApi";
 
 const ConcernTickets = () => {
   const status = useSelector((state) => state.root.status);
@@ -83,23 +95,46 @@ const ConcernTickets = () => {
   const dispatch = useDispatch();
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { open: addConcernOpen, onToggle: addConcernOnToggle, onClose: addConcernOnClose } = useDisclosure();
-  const { open: viewConcernOpen, onToggle: viewConcernOnToggle, onClose: viewConcernOnClose } = useDisclosure();
-  const { open: viewHistoryOpen, onToggle: viewHistoryOnToggle, onClose: viewHistoryOnClose } = useDisclosure();
-  const { open: returnOpen, onToggle: returnOnToggle, onClose: returnOnClose } = useDisclosure();
+  const {
+    open: addConcernOpen,
+    onToggle: addConcernOnToggle,
+    onClose: addConcernOnClose,
+  } = useDisclosure();
+  const {
+    open: viewConcernOpen,
+    onToggle: viewConcernOnToggle,
+    onClose: viewConcernOnClose,
+  } = useDisclosure();
+  const {
+    open: viewHistoryOpen,
+    onToggle: viewHistoryOnToggle,
+    onClose: viewHistoryOnClose,
+  } = useDisclosure();
+  const {
+    open: returnOpen,
+    onToggle: returnOnToggle,
+    onClose: returnOnClose,
+  } = useDisclosure();
 
   const { data: notificationBadge } = useGetNotificationQuery();
-  const { data, isLoading, isFetching, isSuccess, isError, refetch } = useGetRequestorConcernsQuery({
-    Concern_Status: status,
-    Search: search,
-    Ascending: ascending,
-    DateFrom: dateFrom || "",
-    DateTo: dateTo || "",
-    PageNumber: pageNumber,
-    PageSize: pageSize,
-  });
+  const { data, isLoading, isFetching, isSuccess, isError, refetch } =
+    useGetRequestorConcernsQuery({
+      Concern_Status: status,
+      Search: search,
+      Ascending: ascending,
+      DateFrom: dateFrom || "",
+      DateTo: dateTo || "",
+      PageNumber: pageNumber,
+      PageSize: pageSize,
+    });
 
-  const [confirmConcern, { isLoading: confirmConcernIsLoading, isFetching: confirmConcernIsFetching }] = useConfirmConcernMutation();
+  const [
+    confirmConcern,
+    {
+      isLoading: confirmConcernIsLoading,
+      isFetching: confirmConcernIsFetching,
+    },
+  ] = useConfirmConcernMutation();
   const [cancelConcern] = useCancelConcernMutation();
 
   const onPageNumberChange = (_, page) => {
@@ -189,7 +224,9 @@ const ConcernTickets = () => {
         } catch (err) {
           console.log("Error", err);
           Swal.hideLoading();
-          Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+          Swal.showValidationMessage(
+            err?.data?.error?.message || "Something went wrong",
+          );
           return false; // keeps modal open
         }
       },
@@ -301,7 +338,9 @@ const ConcernTickets = () => {
         } catch (err) {
           console.log("Error", err);
           Swal.hideLoading();
-          Swal.showValidationMessage(err?.data?.error?.message || "Something went wrong");
+          Swal.showValidationMessage(
+            err?.data?.error?.message || "Something went wrong",
+          );
           return false; // keeps modal open
         }
       },
@@ -324,7 +363,8 @@ const ConcernTickets = () => {
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      const allTicketIds = data?.value?.requestConcern.map((item) => item.requestConcernId) || [];
+      const allTicketIds =
+        data?.value?.requestConcern.map((item) => item.requestConcernId) || [];
       setSelectedTickets(allTicketIds);
     } else {
       setSelectedTickets([]);
@@ -332,7 +372,11 @@ const ConcernTickets = () => {
   };
 
   const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
+    setSelectedTickets((prevSelected) =>
+      prevSelected.includes(item)
+        ? prevSelected.filter((id) => id !== item)
+        : [...prevSelected, item],
+    );
   };
 
   useEffect(() => {
@@ -366,9 +410,15 @@ const ConcernTickets = () => {
       }}
     >
       <Stack>
-        <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isScreenSmall ? "column" : "row" }}>
+        <Stack
+          width="100%"
+          justifyContent="space-between"
+          sx={{ flexDirection: isScreenSmall ? "column" : "row" }}
+        >
           <Stack justifyItems="left">
-            <Typography variant={isScreenSmall ? "h5" : "h4"}>Request Concerns</Typography>
+            <Typography variant={isScreenSmall ? "h5" : "h4"}>
+              Request Concerns
+            </Typography>
           </Stack>
 
           <Stack justifyItems="space-between" direction="row" marginTop={1}>
@@ -404,12 +454,20 @@ const ConcernTickets = () => {
               <LocalOffer />
               <Typography>
                 {selectedTickets.length} {""}
-                {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
+                {selectedTickets.length > 1
+                  ? "Tickets selected"
+                  : "Ticket selected"}
               </Typography>
             </Stack>
 
             <Stack direction="row" gap={0.5}>
-              <LoadingButton variant="contained" color="success" onClick={onSelectedConfirmAction} loading={confirmConcernIsLoading || confirmConcernIsFetching} startIcon={<Check />}>
+              <LoadingButton
+                variant="contained"
+                color="success"
+                onClick={onSelectedConfirmAction}
+                loading={confirmConcernIsLoading || confirmConcernIsFetching}
+                startIcon={<Check />}
+              >
                 Confirm
               </LoadingButton>
             </Stack>
@@ -451,7 +509,9 @@ const ConcernTickets = () => {
                   label="All Requests"
                   icon={
                     <Badge
-                      badgeContent={notificationBadge?.value?.allRequestTicketNotif}
+                      badgeContent={
+                        notificationBadge?.value?.allRequestTicketNotif
+                      }
                       max={100000}
                       color="primary"
                       anchorOrigin={{
@@ -512,7 +572,9 @@ const ConcernTickets = () => {
                   label="Ongoing"
                   icon={
                     <Badge
-                      badgeContent={notificationBadge?.value?.currentlyFixingNotif}
+                      badgeContent={
+                        notificationBadge?.value?.currentlyFixingNotif
+                      }
                       max={100000}
                       color="warning"
                       anchorOrigin={{
@@ -601,17 +663,38 @@ const ConcernTickets = () => {
                 />
               </Tabs>
 
-              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "center", padding: 2 }}>
-                <ConcernTicketFiltering setDateFrom={setDateFrom} setDateTo={setDateTo} />
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 2,
+                }}
+              >
+                <ConcernTicketFiltering
+                  setDateFrom={setDateFrom}
+                  setDateTo={setDateTo}
+                />
               </Stack>
             </Stack>
 
-            <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
+            <Divider
+              variant="fullWidth"
+              sx={{ background: "#2D3748", marginTop: "1px" }}
+            />
 
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "5px", padding: "15px" }} gap={4}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ marginTop: "5px", padding: "15px" }}
+              gap={4}
+            >
               <OutlinedInput
                 placeholder="Search Request no.: eg 00001"
-                startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+                startAdornment={
+                  <Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />
+                }
                 value={searchValue}
                 onChange={(e) => dispatch(setSearchValue(e.target.value))}
                 sx={{
@@ -628,10 +711,27 @@ const ConcernTickets = () => {
               // Card
               <>
                 {status === "For Confirmation" && (
-                  <Stack direction="row" sx={{ width: "100%", mb: 2, justifyContent: "left", alignItems: "center", backgroundColor: "#2A2C4D" }}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      width: "100%",
+                      mb: 2,
+                      justifyContent: "left",
+                      alignItems: "center",
+                      backgroundColor: "#2A2C4D",
+                    }}
+                  >
                     <Checkbox
-                      indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.requestConcern?.length || 0)}
-                      checked={(data?.value?.requestConcern?.length || 0) > 0 && selectedTickets.length === (data?.value?.requestConcern?.length || 0)}
+                      indeterminate={
+                        selectedTickets.length > 0 &&
+                        selectedTickets.length <
+                          (data?.value?.requestConcern?.length || 0)
+                      }
+                      checked={
+                        (data?.value?.requestConcern?.length || 0) > 0 &&
+                        selectedTickets.length ===
+                          (data?.value?.requestConcern?.length || 0)
+                      }
                       onChange={handleSelectAll}
                       inputProps={{ "aria-label": "select all tickets" }}
                     />
@@ -646,12 +746,20 @@ const ConcernTickets = () => {
                     data?.value?.requestConcern?.map((item, index) => (
                       <Card key={index} sx={sx.cards}>
                         <CardContent sx={sx.cardContent}>
-                          <Stack spacing={1} direction="row" alignItems="center">
+                          <Stack
+                            spacing={1}
+                            direction="row"
+                            alignItems="center"
+                          >
                             {status === "For Confirmation" && (
                               <Stack>
                                 <Checkbox
-                                  checked={selectedTickets.includes(item.requestConcernId)}
-                                  onChange={() => handleSelectTicket(item.requestConcernId)}
+                                  checked={selectedTickets.includes(
+                                    item.requestConcernId,
+                                  )}
+                                  onChange={() =>
+                                    handleSelectTicket(item.requestConcernId)
+                                  }
                                   inputProps={{
                                     "aria-label": `select ticket ${item.requestConcernId}`,
                                   }}
@@ -660,54 +768,113 @@ const ConcernTickets = () => {
                             )}
 
                             <Stack spacing={1}>
-                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={sx.cardTitle}>TICKET NUMBER:</Typography>
-                                <Typography sx={sx.cardDescription}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                                onClick={() => onViewHistoryAction(item)}
+                              >
+                                <Typography sx={sx.cardTitle}>
+                                  TICKET NUMBER:
+                                </Typography>
+                                <Typography
+                                  sx={sx.cardDescription}
+                                >{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
                               </Stack>
 
-                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={sx.cardTitle}>REQUEST DETAILS:</Typography>
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                                onClick={() => onViewHistoryAction(item)}
+                              >
+                                <Typography sx={sx.cardTitle}>
+                                  REQUEST DETAILS:
+                                </Typography>
                                 <Typography sx={sx.cardDescription}>
-                                  {item.concern.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
+                                  {item.concern
+                                    .split("\r\n")
+                                    .map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))}
                                 </Typography>
                               </Stack>
 
-                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={sx.cardTitle}>RESOLUTION:</Typography>
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                                onClick={() => onViewHistoryAction(item)}
+                              >
+                                <Typography sx={sx.cardTitle}>
+                                  RESOLUTION:
+                                </Typography>
                                 <Typography sx={sx.cardDescription}>
                                   {item.resolution
-                                    ? item.resolution?.split("\r\n").map((line, index) => (
-                                        <span key={index}>
-                                          {line}
-                                          <br />
-                                        </span>
-                                      ))
+                                    ? item.resolution
+                                        ?.split("\r\n")
+                                        .map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
                                     : "--"}
                                 </Typography>
                               </Stack>
 
-                              <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                <Typography sx={sx.cardTitle}>DATE CREATED:</Typography>
-                                <Chip variant="filled" size="30px" icon={<CalendarMonthOutlined fontSize="small" color="primary" />} sx={sx.cardChip} label={moment(item.created_At).format("LL")} />
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                                onClick={() => onViewHistoryAction(item)}
+                              >
+                                <Typography sx={sx.cardTitle}>
+                                  DATE CREATED:
+                                </Typography>
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={
+                                    <CalendarMonthOutlined
+                                      fontSize="small"
+                                      color="primary"
+                                    />
+                                  }
+                                  sx={sx.cardChip}
+                                  label={moment(item.created_At).format("LL")}
+                                />
                               </Stack>
 
                               {item?.concern_Status === "" && (
-                                <Stack direction="row" gap={0.5} alignItems="center" onClick={() => onViewHistoryAction(item)}>
-                                  <Typography sx={sx.cardTitle}>STATUS:</Typography>
+                                <Stack
+                                  direction="row"
+                                  gap={0.5}
+                                  alignItems="center"
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
+                                  <Typography sx={sx.cardTitle}>
+                                    STATUS:
+                                  </Typography>
                                   <Chip
                                     variant="filled"
                                     size="30px"
                                     icon={
                                       item.concern_Status === "For Approval" ? (
-                                        <FiberManualRecord fontSize="small" color="info" />
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          color="info"
+                                        />
                                       ) : item.concern_Status === "Ongoing" ? (
-                                        <FiberManualRecord fontSize="small" color="warning" />
-                                      ) : item.concern_Status === "For Confirmation" ? (
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          color="warning"
+                                        />
+                                      ) : item.concern_Status ===
+                                        "For Confirmation" ? (
                                         <FiberManualRecord
                                           fontSize="small"
                                           sx={{
@@ -716,26 +883,37 @@ const ConcernTickets = () => {
                                             },
                                           }}
                                         />
-                                      ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                        <FiberManualRecord fontSize="small" color="warning" />
+                                      ) : item?.ticketRequestConcerns?.[0]
+                                          ?.onHold ? (
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          color="warning"
+                                        />
                                       ) : (
-                                        <FiberManualRecord fontSize="small" color="success" />
+                                        <FiberManualRecord
+                                          fontSize="small"
+                                          color="success"
+                                        />
                                       )
                                     }
                                     sx={{
                                       fontSize: "12px",
-                                      backgroundColor: theme.palette.bgForm.black1,
+                                      backgroundColor:
+                                        theme.palette.bgForm.black1,
                                       color: theme.palette.text.main,
                                       fontWeight: 800,
                                     }}
                                     label={
                                       item.concern_Status === "For Approval"
                                         ? "Verification"
-                                        : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                        : item.concern_Status === "Ongoing" &&
+                                            item?.ticketRequestConcerns?.[0]
+                                              ?.onHold
                                           ? "Ongoing/On Hold"
                                           : item.concern_Status === "Ongoing"
                                             ? "Ongoing"
-                                            : item.concern_Status === "For Confirmation"
+                                            : item.concern_Status ===
+                                                "For Confirmation"
                                               ? "For Confirmation"
                                               : item.concern_Status === "Done"
                                                 ? "Done"
@@ -745,9 +923,21 @@ const ConcernTickets = () => {
                                 </Stack>
                               )}
 
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography sx={sx.cardTitle}>ACTION:</Typography>
-                                <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                              <Stack
+                                direction="row"
+                                gap={0.5}
+                                alignItems="center"
+                              >
+                                <Typography sx={sx.cardTitle}>
+                                  ACTION:
+                                </Typography>
+                                <ConcernActions
+                                  data={item}
+                                  onView={onViewConcernAction}
+                                  onConfirm={onConfirmAction}
+                                  onReturn={onReturnAction}
+                                  onCancel={onCancelAction}
+                                />
                               </Stack>
                             </Stack>
                           </Stack>
@@ -756,8 +946,16 @@ const ConcernTickets = () => {
                     ))}
 
                   {isError && (
-                    <Stack justifyContent="center" alignItems="center" padding={4}>
-                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
+                    <Stack
+                      justifyContent="center"
+                      alignItems="center"
+                      padding={4}
+                    >
+                      <img
+                        src={somethingWentWrong}
+                        alt="Something Went Wrong"
+                        className="something-went-wrong-table"
+                      />
                       <Typography variant="h6" color="error" align="center">
                         Something went wrong.
                       </Typography>
@@ -765,7 +963,11 @@ const ConcernTickets = () => {
                   )}
 
                   {(isLoading || isFetching) && (
-                    <Stack justifyContent="center" alignItems="center" padding={4}>
+                    <Stack
+                      justifyContent="center"
+                      alignItems="center"
+                      padding={4}
+                    >
                       <CircularProgress />
                       <Typography variant="h5" color="#EDF2F7">
                         Please wait...
@@ -773,17 +975,33 @@ const ConcernTickets = () => {
                     </Stack>
                   )}
 
-                  {isSuccess && !data?.value?.requestConcern.length && !isLoading && !isFetching && (
-                    <Stack justifyContent="center" alignItems="center" padding={4}>
-                      <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                      <Typography variant="h6" align="center">
-                        No records found.
-                      </Typography>
-                    </Stack>
-                  )}
+                  {isSuccess &&
+                    !data?.value?.requestConcern.length &&
+                    !isLoading &&
+                    !isFetching && (
+                      <Stack
+                        justifyContent="center"
+                        alignItems="center"
+                        padding={4}
+                      >
+                        <img
+                          src={noRecordsFound}
+                          alt="No Records Found"
+                          className="norecords-found-table"
+                        />
+                        <Typography variant="h6" align="center">
+                          No records found.
+                        </Typography>
+                      </Stack>
+                    )}
 
                   <TablePagination
-                    sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                    sx={{
+                      color: "#A0AEC0",
+                      fontWeight: 400,
+                      background: "#1C2536",
+                      borderRadius: "0px 0px 20px 20px",
+                    }}
                     rowsPerPageOptions={[100, 300, 500]}
                     component="div"
                     count={data?.value?.totalCount || 0}
@@ -798,7 +1016,11 @@ const ConcernTickets = () => {
               <>
                 {/* Table */}
                 <TableContainer>
-                  <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
+                  <Table
+                    size="small"
+                    stickyHeader
+                    sx={{ borderBottom: "none" }}
+                  >
                     <TableHead>
                       <TableRow>
                         {status === "For Confirmation" && (
@@ -810,18 +1032,37 @@ const ConcernTickets = () => {
                             align="center"
                           >
                             <Checkbox
-                              indeterminate={selectedTickets.length > 0 && selectedTickets.length < selectedTickets.length}
-                              checked={selectedTickets.length > 0 && selectedTickets.length === selectedTickets.length}
+                              indeterminate={
+                                selectedTickets.length > 0 &&
+                                selectedTickets.length < selectedTickets.length
+                              }
+                              checked={
+                                selectedTickets.length > 0 &&
+                                selectedTickets.length ===
+                                  selectedTickets.length
+                              }
                               onChange={handleSelectAll}
-                              inputProps={{ "aria-label": "select all tickets" }}
+                              inputProps={{
+                                "aria-label": "select all tickets",
+                              }}
                             />
                           </TableCell>
                         )}
-                        <TableCell sx={sx.tableCellHeader}>TICKET NO.</TableCell>
-                        <TableCell sx={sx.tableCellHeader}>REQUEST DETAILS</TableCell>
-                        <TableCell sx={sx.tableCellHeader}>RESOLUTION</TableCell>
-                        <TableCell sx={sx.tableCellHeader}>DATE CREATED</TableCell>
-                        {status === "" && <TableCell sx={sx.tableCellHeader}>STATUS</TableCell>}
+                        <TableCell sx={sx.tableCellHeader}>
+                          TICKET NO.
+                        </TableCell>
+                        <TableCell sx={sx.tableCellHeader}>
+                          REQUEST DETAILS
+                        </TableCell>
+                        <TableCell sx={sx.tableCellHeader}>
+                          RESOLUTION
+                        </TableCell>
+                        <TableCell sx={sx.tableCellHeader}>
+                          DATE CREATED
+                        </TableCell>
+                        {status === "" && (
+                          <TableCell sx={sx.tableCellHeader}>STATUS</TableCell>
+                        )}
                         <TableCell sx={sx.tableCellHeader} align="center">
                           ACTION
                         </TableCell>
@@ -833,14 +1074,18 @@ const ConcernTickets = () => {
                         !isLoading &&
                         !isFetching &&
                         data?.value?.requestConcern?.map((item, index) => {
-                          const isSelected = selectedTickets.includes(item.requestConcernId);
+                          const isSelected = selectedTickets.includes(
+                            item.requestConcernId,
+                          );
 
                           return (
                             <React.Fragment key={index}>
                               <TableRow
                                 key={index}
                                 sx={{
-                                  backgroundColor: isSelected ? "#1E2034" : theme.palette.bgForm.black3,
+                                  backgroundColor: isSelected
+                                    ? "#1E2034"
+                                    : theme.palette.bgForm.black3,
                                   "&:hover": {
                                     background: "",
                                     color: "#EDF2F7",
@@ -848,10 +1093,20 @@ const ConcernTickets = () => {
                                 }}
                               >
                                 {status === "For Confirmation" && (
-                                  <TableCell padding="checkbox" sx={sx.tableCellBody} align="center">
+                                  <TableCell
+                                    padding="checkbox"
+                                    sx={sx.tableCellBody}
+                                    align="center"
+                                  >
                                     <Checkbox
-                                      checked={selectedTickets.includes(item.requestConcernId)}
-                                      onChange={() => handleSelectTicket(item.requestConcernId)}
+                                      checked={selectedTickets.includes(
+                                        item.requestConcernId,
+                                      )}
+                                      onChange={() =>
+                                        handleSelectTicket(
+                                          item.requestConcernId,
+                                        )
+                                      }
                                       inputProps={{
                                         "aria-label": `select ticket ${item.requestConcernId}`,
                                       }}
@@ -859,35 +1114,55 @@ const ConcernTickets = () => {
                                   </TableCell>
                                 )}
 
-                                <TableCell sx={sx.tableCellBody} onClick={() => onViewHistoryAction(item)}>
+                                <TableCell
+                                  sx={sx.tableCellBody}
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
                                   {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}
                                 </TableCell>
 
-                                <TableCell sx={sx.customTableCellBody} onClick={() => onViewHistoryAction(item)}>
-                                  {item.concern?.split("\r\n").map((line, index) => (
-                                    <span key={index}>
-                                      {line}
-                                      <br />
-                                    </span>
-                                  ))}
+                                <TableCell
+                                  sx={sx.customTableCellBody}
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
+                                  {item.concern
+                                    ?.split("\r\n")
+                                    .map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))}
                                 </TableCell>
 
-                                <TableCell sx={sx.customTableCellBody} onClick={() => onViewHistoryAction(item)}>
+                                <TableCell
+                                  sx={sx.customTableCellBody}
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
                                   {item.resolution
-                                    ? item.resolution?.split("\r\n").map((line, index) => (
-                                        <span key={index}>
-                                          {line}
-                                          <br />
-                                        </span>
-                                      ))
+                                    ? item.resolution
+                                        ?.split("\r\n")
+                                        .map((line, index) => (
+                                          <span key={index}>
+                                            {line}
+                                            <br />
+                                          </span>
+                                        ))
                                     : "--"}
                                 </TableCell>
 
-                                <TableCell onClick={() => onViewHistoryAction(item)}>
+                                <TableCell
+                                  onClick={() => onViewHistoryAction(item)}
+                                >
                                   <Chip
                                     variant="filled"
                                     size="30px"
-                                    icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                    icon={
+                                      <CalendarMonthOutlined
+                                        fontSize="small"
+                                        color="primary"
+                                      />
+                                    }
                                     sx={{
                                       fontSize: "12px",
                                       backgroundColor: "#1D1F3B",
@@ -899,16 +1174,27 @@ const ConcernTickets = () => {
                                 </TableCell>
 
                                 {status === "" && (
-                                  <TableCell onClick={() => onViewHistoryAction(item)}>
+                                  <TableCell
+                                    onClick={() => onViewHistoryAction(item)}
+                                  >
                                     <Chip
                                       variant="filled"
                                       size="30px"
                                       icon={
-                                        item.concern_Status === "For Approval" ? (
-                                          <FiberManualRecord fontSize="small" color="info" />
-                                        ) : item.concern_Status === "Ongoing" ? (
-                                          <FiberManualRecord fontSize="small" color="warning" />
-                                        ) : item.concern_Status === "For Confirmation" ? (
+                                        item.concern_Status ===
+                                        "For Approval" ? (
+                                          <FiberManualRecord
+                                            fontSize="small"
+                                            color="info"
+                                          />
+                                        ) : item.concern_Status ===
+                                          "Ongoing" ? (
+                                          <FiberManualRecord
+                                            fontSize="small"
+                                            color="warning"
+                                          />
+                                        ) : item.concern_Status ===
+                                          "For Confirmation" ? (
                                           <FiberManualRecord
                                             fontSize="small"
                                             sx={{
@@ -917,26 +1203,37 @@ const ConcernTickets = () => {
                                               },
                                             }}
                                           />
-                                        ) : item?.ticketRequestConcerns?.[0]?.onHold ? (
-                                          <FiberManualRecord fontSize="small" color="warning" />
+                                        ) : item?.ticketRequestConcerns?.[0]
+                                            ?.onHold ? (
+                                          <FiberManualRecord
+                                            fontSize="small"
+                                            color="warning"
+                                          />
                                         ) : (
-                                          <FiberManualRecord fontSize="small" color="success" />
+                                          <FiberManualRecord
+                                            fontSize="small"
+                                            color="success"
+                                          />
                                         )
                                       }
                                       sx={{
                                         fontSize: "12px",
-                                        backgroundColor: theme.palette.bgForm.black1,
+                                        backgroundColor:
+                                          theme.palette.bgForm.black1,
                                         color: theme.palette.text.main,
                                         fontWeight: 800,
                                       }}
                                       label={
                                         item.concern_Status === "For Approval"
                                           ? "Verification"
-                                          : item.concern_Status === "Ongoing" && item?.ticketRequestConcerns?.[0]?.onHold
+                                          : item.concern_Status === "Ongoing" &&
+                                              item?.ticketRequestConcerns?.[0]
+                                                ?.onHold
                                             ? "Ongoing/On Hold"
                                             : item.concern_Status === "Ongoing"
                                               ? "Ongoing"
-                                              : item.concern_Status === "For Confirmation"
+                                              : item.concern_Status ===
+                                                  "For Confirmation"
                                                 ? "For Confirmation"
                                                 : item.concern_Status === "Done"
                                                   ? "Done"
@@ -947,7 +1244,13 @@ const ConcernTickets = () => {
                                 )}
 
                                 <TableCell align="center">
-                                  <ConcernActions data={item} onView={onViewConcernAction} onConfirm={onConfirmAction} onReturn={onReturnAction} onCancel={onCancelAction} />
+                                  <ConcernActions
+                                    data={item}
+                                    onView={onViewConcernAction}
+                                    onConfirm={onConfirmAction}
+                                    onReturn={onReturnAction}
+                                    onCancel={onCancelAction}
+                                  />
                                 </TableCell>
                               </TableRow>
                             </React.Fragment>
@@ -957,8 +1260,16 @@ const ConcernTickets = () => {
                       {isError && (
                         <TableRow>
                           <TableCell colSpan={7} align="center">
-                            <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                            <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                            <img
+                              src={somethingWentWrong}
+                              alt="Something Went Wrong"
+                              className="something-went-wrong-table"
+                            />
+                            <Typography
+                              variant="h5"
+                              color="#EDF2F7"
+                              marginLeft={2}
+                            >
                               Something went wrong.
                             </Typography>
                           </TableCell>
@@ -976,22 +1287,38 @@ const ConcernTickets = () => {
                         </TableRow>
                       )}
 
-                      {isSuccess && !data?.value?.requestConcern?.length && !isLoading && !isFetching && (
-                        <TableRow>
-                          <TableCell colSpan={7} align="center">
-                            <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                            <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                              No records found.
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
+                      {isSuccess &&
+                        !data?.value?.requestConcern?.length &&
+                        !isLoading &&
+                        !isFetching && (
+                          <TableRow>
+                            <TableCell colSpan={7} align="center">
+                              <img
+                                src={noRecordsFound}
+                                alt="No Records Found"
+                                className="norecords-found-table"
+                              />
+                              <Typography
+                                variant="h5"
+                                color="#EDF2F7"
+                                marginLeft={2}
+                              >
+                                No records found.
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
                     </TableBody>
                   </Table>
                 </TableContainer>
 
                 <TablePagination
-                  sx={{ color: "#A0AEC0", fontWeight: 400, background: "#1C2536", borderRadius: "0px 0px 20px 20px" }}
+                  sx={{
+                    color: "#A0AEC0",
+                    fontWeight: 400,
+                    background: "#1C2536",
+                    borderRadius: "0px 0px 20px 20px",
+                  }}
                   rowsPerPageOptions={[100, 300, 500]}
                   component="div"
                   count={data?.value?.totalCount || 0}
@@ -1004,15 +1331,24 @@ const ConcernTickets = () => {
                 {status === "For Confirmation" && (
                   <Stack alignItems="center" direction="row" gap={0.5} mt={1}>
                     <Warning color="warning" sx={{ fontSize: "16px" }} />
-                    <Typography sx={{ fontSize: "14px", color: theme.palette.warning.main, fontStyle: "italic" }}>
-                      Note: Concerns exceeding 24 hours without confirmation will be automatically closed
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        color: theme.palette.warning.main,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Note: Concerns exceeding 24 hours without confirmation
+                      will be automatically closed
                     </Typography>
                   </Stack>
                 )}
               </>
             )}
 
-            {addConcernOpen && <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />}
+            {addConcernOpen && (
+              <ConcernDialog open={addConcernOpen} onClose={onDialogClose} />
+            )}
             {viewConcernOpen && (
               <ConcernViewDialog
                 editData={editData}
@@ -1020,10 +1356,24 @@ const ConcernTickets = () => {
                 onClose={() => {
                   viewConcernOnClose(setEditData(null));
                 }}
+                refetch={refetch}
               />
             )}
-            {viewHistoryOpen && <ConcernHistory data={viewHistoryData} status={status} open={viewHistoryOpen} onClose={viewHistoryOnClose} />}
-            {returnOpen && <ConcernReturn data={returnData} open={returnOpen} onClose={returnOnClose} />}
+            {viewHistoryOpen && (
+              <ConcernHistory
+                data={viewHistoryData}
+                status={status}
+                open={viewHistoryOpen}
+                onClose={viewHistoryOnClose}
+              />
+            )}
+            {returnOpen && (
+              <ConcernReturn
+                data={returnData}
+                open={returnOpen}
+                onClose={returnOnClose}
+              />
+            )}
           </Stack>
         </Stack>
       </Stack>

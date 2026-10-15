@@ -1,10 +1,29 @@
-import { FileDownloadOutlined, MoreHoriz, RemoveCircleOutline } from "@mui/icons-material";
-import { CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import {
+  FileDownloadOutlined,
+  MoreHoriz,
+  RemoveCircleOutline,
+} from "@mui/icons-material";
+import {
+  CircularProgress,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 
 import { useRef } from "react";
 import useDisclosure from "../../../../hooks/useDisclosure";
 
-const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, onDelete, onDownload, viewIsLoading, downloadIsLoading }) => {
+const ManageForClosingMenuActions = ({
+  data,
+  fileName,
+  onView,
+  onViewWithoutId,
+  onDelete,
+  onDownload,
+  viewIsLoading,
+  downloadIsLoading,
+}) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
@@ -51,8 +70,19 @@ const ManageForClosingMenuActions = ({ data, fileName, onView, onViewWithoutId, 
         )}
 
         {!!fileName.ticketAttachmentId && (
-          <MenuItem onClick={(e) => handleMenuDownloadClick(e, () => onDownloadAction(fileName))} disabled={downloadIsLoading}>
-            <ListItemIcon>{downloadIsLoading ? <CircularProgress size={18} /> : <FileDownloadOutlined fontSize="small" />}</ListItemIcon>
+          <MenuItem
+            onClick={(e) =>
+              handleMenuDownloadClick(e, () => onDownloadAction(fileName))
+            }
+            disabled={downloadIsLoading}
+          >
+            <ListItemIcon>
+              {downloadIsLoading ? (
+                <CircularProgress size={18} />
+              ) : (
+                <FileDownloadOutlined fontSize="small" />
+              )}
+            </ListItemIcon>
             Download
           </MenuItem>
         )}
