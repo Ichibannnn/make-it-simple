@@ -183,6 +183,7 @@ const IssueViewDialog = ({
     () => attachments.filter((a) => isImagePreview(a.name)),
     [attachments],
   );
+  
   const otherAttachments = useMemo(
     () => attachments.filter((a) => !isImagePreview(a.name)),
     [attachments],

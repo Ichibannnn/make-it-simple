@@ -251,79 +251,6 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     },
   });
 
-  const handleAttachments = (event) => {
-    const newFiles = Array.from(event.target.files);
-
-    const fileNames = newFiles.map((file) => ({
-      name: file.name,
-      size: (file.size / (1024 * 1024)).toFixed(2),
-      file,
-    }));
-
-    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
-
-    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
-  };
-
-  const handleUploadButtonClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleDeleteFile = async (fileNameToDelete) => {
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-        };
-        await deleteRequestorAttachment(deletePayload)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "File deleted successfully.",
-              duration: 1500,
-            });
-            refetch();
-          })
-          .catch((err) => {
-            console.log("error: ", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
-      }
-
-      setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-      setValue(
-        "AddClosingAttachments",
-        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
-      );
-    } catch (error) {}
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const fileList = event.dataTransfer.files;
-    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
-    const fileNames = Array.from(fileList)
-      .filter((file) => {
-        const extension = file.name.split(".").pop().toLowerCase();
-        return allowedExtensions.includes(`.${extension}`);
-      })
-      .map((file) => ({
-        name: file.name,
-        size: (file.size / (1024 * 1024)).toFixed(2),
-      }));
-
-    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
-    setAttachments([...attachments, ...uniqueNewFiles]);
-  };
-
   const onSubmitAction = (formData) => {
     Swal.fire({
       title: "Confirmation",
@@ -429,10 +356,77 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     });
   };
 
-  const onCloseHandler = () => {
-    onClose();
-    reset();
-    setAttachments([]);
+  const handleAttachments = (event) => {
+    const newFiles = Array.from(event.target.files);
+
+    const fileNames = newFiles.map((file) => ({
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2),
+      file,
+    }));
+
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
+
+    setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
+  };
+
+  const handleUploadButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleDeleteFile = async (fileNameToDelete) => {
+    try {
+      if (fileNameToDelete.ticketAttachmentId) {
+        const deletePayload = {
+          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+        };
+        await deleteRequestorAttachment(deletePayload)
+          .unwrap()
+          .then(() => {
+            toast.success("Success!", {
+              description: "File deleted successfully.",
+              duration: 1500,
+            });
+            refetch();
+          })
+          .catch((err) => {
+            console.log("error: ", err);
+            toast.error("Error!", {
+              description: err.data.error.message,
+              duration: 1500,
+            });
+          });
+      }
+
+      setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+
+      setValue(
+        "AddClosingAttachments",
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
+      );
+    } catch (error) {}
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const fileList = event.dataTransfer.files;
+    const allowedExtensions = [".png", ".docx", ".jpg", ".jpeg", ".pdf"];
+    const fileNames = Array.from(fileList)
+      .filter((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        return allowedExtensions.includes(`.${extension}`);
+      })
+      .map((file) => ({
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2),
+      }));
+
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
+    setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
   // Function to open image view dialog
@@ -512,6 +506,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
   // --- Zoom / pan handlers ---
   const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
   const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+
   const handleZoomReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
@@ -562,6 +557,12 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
   const isImageFile = (fileName) => {
     return /\.(jpg|jpeg|png)$/i.test(fileName);
+  };
+
+  const onCloseHandler = () => {
+    onClose();
+    reset();
+    setAttachments([]);
   };
 
   useEffect(() => {

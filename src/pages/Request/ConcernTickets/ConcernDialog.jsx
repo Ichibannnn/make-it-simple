@@ -38,10 +38,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import {
-  useCreateEditRequestorConcernMutation,
-  useLazyGetBackjobTicketsQuery,
-} from "../../../features/api_request/concerns/concernApi";
+import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
@@ -50,22 +47,10 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
-import {
-  useGetUsersQuery,
-  useLazyGetUsersQuery,
-} from "../../../features/user_management_api/user/userApi";
+import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import {
-  AddOutlined,
-  Close,
-  CloseOutlined,
-  FiberManualRecord,
-  RemoveCircleOutline,
-  RestartAlt,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { AddOutlined, Close, CloseOutlined, FiberManualRecord, RemoveCircleOutline, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 import { useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import ConcernMenuActions from "./ConcernMenuActions";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
@@ -103,27 +88,12 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const requestorSchema = yup.object().shape({
     RequestTransactionId: yup.string().nullable(),
-    Concern: yup
-      .array()
-      .of(
-        yup
-          .string()
-          .min(2, "Concern must be at least 2 characters long")
-          .trim()
-          .required("Concern cannot be empty or spaces only"),
-      )
-      .min(1, "At least one concern is required"),
+    Concern: yup.array().of(yup.string().min(2, "Concern must be at least 2 characters long").trim().required("Concern cannot be empty or spaces only")).min(1, "At least one concern is required"),
     RequestConcernId: yup.string().nullable(),
     RequestAttachmentsFiles: yup.array().nullable(),
 
-    Request_Type: yup
-      .string()
-      .oneOf(["New Request", "Rework"], "Invalid Request Type")
-      .required("Request Type is required"),
-    Severity: yup
-      .string()
-      .oneOf(["Normal", "Urgent"], "Invalid Severity")
-      .required("Severity Type is required"),
+    Request_Type: yup.string().oneOf(["New Request", "Rework"], "Invalid Request Type").required("Request Type is required"),
+    Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 12 digits long",
@@ -152,96 +122,21 @@ const ConcernDialog = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
 
-  const [
-    createEditRequestorConcern,
-    {
-      isLoading: isCreateEditRequestorConcernLoading,
-      isFetching: isCreateEditRequestorConcernFetching,
-    },
-  ] = useCreateEditRequestorConcernMutation();
+  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] = useCreateEditRequestorConcernMutation();
 
   const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
-  const [
-    getUser,
-    { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess },
-  ] = useLazyGetUsersQuery();
-  const [
-    getBackjobTicket,
-    {
-      data: backjobTicketData,
-      isLoading: backjobTicketIsLoading,
-      isSuccess: backjobTicketIsSuccess,
-    },
-  ] = useLazyGetBackjobTicketsQuery();
-  const [
-    getCompany,
-    {
-      data: companyData,
-      isLoading: companyIsLoading,
-      isSuccess: companyIsSuccess,
-    },
-  ] = useLazyGetCompanyQuery();
-  const [
-    getBusinessUnit,
-    {
-      data: businessUnitData,
-      isLoading: businessUnitIsLoading,
-      isSuccess: businessUnitIsSuccess,
-    },
-  ] = useLazyGetBusinessUnitQuery();
-  const [
-    getDepartment,
-    {
-      data: departmentData,
-      isLoading: departmentIsLoading,
-      isSuccess: departmentIsSuccess,
-    },
-  ] = useLazyGetDepartmentQuery();
-  const [
-    getUnit,
-    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
-  ] = useLazyGetUnitQuery();
-  const [
-    getSubUnit,
-    {
-      data: subUnitData,
-      isLoading: subUnitIsLoading,
-      isSuccess: subUnitIsSuccess,
-    },
-  ] = useLazyGetSubUnitQuery();
-  const [
-    getLocation,
-    {
-      data: locationData,
-      isLoading: locationIsLoading,
-      isSuccess: locationIsSuccess,
-    },
-  ] = useLazyGetLocationWithPaginationQuery();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
+  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
+  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
 
-  const [
-    getServiceProvider,
-    {
-      data: serviceProviderData,
-      isLoading: serviceProviderIsLoading,
-      isSuccess: serviceProviderIsSuccess,
-    },
-  ] = useLazyGetServiceProviderWithParamsQuery();
-  const [
-    getCategory,
-    {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
-    },
-  ] = useLazyGetCategoryQuery();
-  const [
-    getSubCategory,
-    {
-      data: subCategoryData,
-      isLoading: subCategoryIsLoading,
-      isSuccess: subCategoryIsSuccess,
-    },
-  ] = useLazyGetSubCategoryArrayQuery();
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderWithParamsQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
   const {
     control,
@@ -302,27 +197,13 @@ const ConcernDialog = ({ open, onClose }) => {
 
     payload.append("Request_Type", formData.Request_Type);
     payload.append("Severity", formData.Severity);
-    payload.append(
-      "BackJobId",
-      formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId,
-    );
+    payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id); // ~~~~ Requestor
     payload.append("Contact_Number", formData.Contact_Number);
     payload.append("ServiceProviderId", formData.ServiceProvider?.id);
-    payload.append(
-      "ChannelId",
-      formData.ChannelId ? formData.ChannelId?.channelId : 0,
-    );
-    payload.append(
-      "DateNeeded",
-      moment(formData.DateNeeded).format("YYYY-MM-DD"),
-    );
-    payload.append(
-      "TargetDate",
-      formData.TargetDate
-        ? moment(formData.TargetDate).format("YYYY-MM-DD")
-        : "",
-    );
+    payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
+    payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
+    payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
     payload.append("AssignTo", formData.IssueHandler);
     payload.append("Notes", formData.Notes);
 
@@ -330,10 +211,7 @@ const ConcernDialog = ({ open, onClose }) => {
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
       payload.append(`AddRequestTicketCategories[${i}].ticketCategoryId`, "");
-      payload.append(
-        `AddRequestTicketCategories[${i}].categoryId`,
-        category[i]?.id,
-      );
+      payload.append(`AddRequestTicketCategories[${i}].categoryId`, category[i]?.id);
     }
     if (category.length === 0) {
       payload.append(`AddRequestTicketCategories[0].ticketCategoryId`, "");
@@ -341,20 +219,11 @@ const ConcernDialog = ({ open, onClose }) => {
     }
     const subCategory = formData.SubCategoryId;
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(
-        `AddRequestTicketSubCategories[${i}].ticketSubCategoryId`,
-        "",
-      );
-      payload.append(
-        `AddRequestTicketSubCategories[${i}].subCategoryId`,
-        subCategory[i]?.subCategoryId,
-      );
+      payload.append(`AddRequestTicketSubCategories[${i}].ticketSubCategoryId`, "");
+      payload.append(`AddRequestTicketSubCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
     if (subCategory.length === 0) {
-      payload.append(
-        `AddRequestTicketSubCategories[0].ticketSubCategoryId`,
-        "",
-      );
+      payload.append(`AddRequestTicketSubCategories[0].ticketSubCategoryId`, "");
       payload.append(`AddRequestTicketSubCategories[0].subCategoryId`, "");
     }
 
@@ -450,9 +319,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 res?.value?.requestorDepartment
               }. Your request has been successfully created under Service Ticket #${moment(res?.value?.requestedDate).format("YYYY")}-${
                 res?.value?.ticketConcernId
-              } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${
-                res?.value?.concern
-              }`;
+              } and forwarded to our ${res?.value?.channelName} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${res?.value?.concern}`;
 
               navigator.clipboard.writeText(ticketMessage).then(() => {
                 Swal.fire({
@@ -502,10 +369,7 @@ const ConcernDialog = ({ open, onClose }) => {
       file: file,
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) =>
-        !attachments.some((existingFile) => existingFile.name === newFile.name),
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -515,15 +379,11 @@ const ConcernDialog = ({ open, onClose }) => {
   };
 
   const handleDeleteFile = (fileNameToDelete) => {
-    setAttachments((prevFiles) =>
-      prevFiles.filter((fileName) => fileName !== fileNameToDelete),
-    );
+    setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
     setValue(
       "RequestAttachmentsFiles",
-      watch("RequestAttachmentsFiles").filter(
-        (file) => file.name !== fileNameToDelete.name,
-      ),
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
     );
   };
 
@@ -573,9 +433,7 @@ const ConcernDialog = ({ open, onClose }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName),
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -585,10 +443,8 @@ const ConcernDialog = ({ open, onClose }) => {
     }
   };
 
-  const handleZoomIn = () =>
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () =>
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   const handleZoomReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
@@ -645,9 +501,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
   useEffect(() => {
     if (userApiIsSuccess && userApiData?.value?.users) {
-      const getUserInfo = userApiData?.value?.users?.find(
-        (item) => item?.id === userId,
-      );
+      const getUserInfo = userApiData?.value?.users?.find((item) => item?.id === userId);
 
       if (getUserInfo) {
         setUserInformation(getUserInfo);
@@ -703,31 +557,15 @@ const ConcernDialog = ({ open, onClose }) => {
       location_Code: userInformation?.location_Code,
       location_Name: userInformation?.location_Name,
     });
-  }, [
-    open,
-    userInformation,
-    companyIsLoading,
-    businessUnitIsLoading,
-    departmentIsLoading,
-    unitIsLoading,
-    subUnitIsLoading,
-    locationIsLoading,
-  ]);
+  }, [open, userInformation, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter(
-        (subCategory) =>
-          selectedCategories.some((category) =>
-            subCategoryData?.value?.some(
-              (item) =>
-                item.subCategoryId === subCategory.subCategoryId &&
-                item.categoryId === category.id,
-            ),
-          ),
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -738,14 +576,10 @@ const ConcernDialog = ({ open, onClose }) => {
   useEffect(() => {
     // if (!serviceProviderIsSuccess) getServiceProvider({ Status: true });
 
-    if (
-      userDetails?.userRoleName === "Helpdesk Associate" ||
-      userDetails?.userRoleName === "Helpdesk Associate / Technician"
-    ) {
+    if (userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician") {
       setValue("ServiceProvider", {
         id: userDetails?.serviceProviders?.[0]?.id,
-        serviceProviderName:
-          userDetails?.serviceProviders?.[0]?.serviceProviderName,
+        serviceProviderName: userDetails?.serviceProviders?.[0]?.serviceProviderName,
       });
 
       setValue("ChannelId", {
@@ -778,11 +612,7 @@ const ConcernDialog = ({ open, onClose }) => {
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <DialogContent sx={{ paddingBottom: 8 }}>
-          <Stack
-            direction="column"
-            spacing={3}
-            sx={{ padding: 2, minHeight: "700px" }}
-          >
+          <Stack direction="column" spacing={3} sx={{ padding: 2, minHeight: "700px" }}>
             {/* Title */}
             <Skeleton variant="text" width={200} height={30} />
 
@@ -883,9 +713,7 @@ const ConcernDialog = ({ open, onClose }) => {
               {/* Header */}
               <Stack mb={1}>
                 <Typography sx={sx.titleText}>New Request</Typography>
-                <Typography sx={sx.captionText}>
-                  Fill out the form below to submit your concern.
-                </Typography>
+                <Typography sx={sx.captionText}>Fill out the form below to submit your concern.</Typography>
               </Stack>
 
               {/* Fields */}
@@ -901,13 +729,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     name="Request_Type"
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        {...field}
-                        displayEmpty
-                        size="small"
-                        inputProps={{ "aria-label": "Without label" }}
-                        sx={sx.select}
-                      >
+                      <Select {...field} displayEmpty size="small" inputProps={{ "aria-label": "Without label" }} sx={sx.select}>
                         <MenuItem value="New Request" sx={sx.menuItem}>
                           New Request
                         </MenuItem>
@@ -938,26 +760,14 @@ const ConcernDialog = ({ open, onClose }) => {
                             value={value}
                             options={backjobTicketData?.value || []}
                             loading={backjobTicketIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Ticket Number"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Ticket Number" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!backjobTicketIsSuccess) getBackjobTicket();
                             }}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option?.ticketConcernId} - ${option.concern}`
-                            }
-                            noOptionsText={
-                              "No tickets available for backjob request"
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.ticketConcernId === value.ticketConcernId
-                            }
+                            getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
+                            noOptionsText={"No tickets available for backjob request"}
+                            isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
                             fullWidth
                             disableClearable
                             componentsProps={sx.automCompleteProp}
@@ -979,14 +789,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     name="Severity"
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        {...field}
-                        displayEmpty
-                        size="small"
-                        placeholder="Select Severity"
-                        inputProps={{ "aria-label": "Without label" }}
-                        sx={sx.select}
-                      >
+                      <Select {...field} displayEmpty size="small" placeholder="Select Severity" inputProps={{ "aria-label": "Without label" }} sx={sx.select}>
                         <MenuItem value="Normal" sx={sx.menuItem}>
                           Normal
                         </MenuItem>
@@ -998,11 +801,9 @@ const ConcernDialog = ({ open, onClose }) => {
                   />
                 </Stack>
 
-                {/* Request Details*/}
+                {/* Requestor Details*/}
                 <Stack mt={2}>
-                  <Typography sx={sx.sectionHeader}>
-                    Requestor Details:
-                  </Typography>
+                  <Typography sx={sx.sectionHeader}>Requestor Details:</Typography>
                 </Stack>
 
                 {/* Requestor and Contact Number */}
@@ -1024,26 +825,12 @@ const ConcernDialog = ({ open, onClose }) => {
                             size="small"
                             value={value}
                             options={
-                              userDetails?.userRoleName ===
-                                "Helpdesk Associate" ||
-                              userDetails?.userRoleName ===
-                                "Helpdesk Associate / Technician" ||
-                              userDetails?.userRoleName === "Technician"
+                              userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician" || userDetails?.userRoleName === "Technician"
                                 ? userData?.value?.users || []
-                                : userData?.value?.users?.filter(
-                                    (item) =>
-                                      item?.departmentId ===
-                                      watch("DepartmentId")?.id,
-                                  ) || []
+                                : userData?.value?.users?.filter((item) => item?.departmentId === watch("DepartmentId")?.id) || []
                             }
                             loading={userIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Requestor"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!userIsSuccess)
                                 getUser({
@@ -1088,9 +875,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               onChange(value);
                             }}
                             getOptionLabel={(option) => option?.fullname}
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disableClearable
                             componentsProps={sx.automCompleteProp}
@@ -1102,9 +887,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                   {/* Conctact Number */}
                   <Stack sx={sx.fieldTwoColsStack}>
-                    <Typography sx={sx.fieldText}>
-                      Contact Number (Optional)
-                    </Typography>
+                    <Typography sx={sx.fieldText}>Contact Number (Optional)</Typography>
 
                     <Controller
                       control={control}
@@ -1134,11 +917,7 @@ const ConcernDialog = ({ open, onClose }) => {
                             placeholder="09"
                             onChange={handleInputChange}
                             error={!!errors.Contact_Number}
-                            helperText={
-                              errors.Contact_Number
-                                ? errors.Contact_Number.message
-                                : ""
-                            }
+                            helperText={errors.Contact_Number ? errors.Contact_Number.message : ""}
                             InputProps={sx.textFieldInputProps}
                             InputLabelProps={sx.textFieldLabelProps}
                             autoComplete="off"
@@ -1166,23 +945,13 @@ const ConcernDialog = ({ open, onClose }) => {
                             value={value}
                             options={companyData?.value?.company || []}
                             loading={companyIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Company"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Company" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!companyIsSuccess) getCompany();
                             }}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option?.company_Code} - ${option?.company_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option?.company_Code} - ${option?.company_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disableClearable
                             disabled
@@ -1205,27 +974,12 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              businessUnitData?.value?.businessUnit?.filter(
-                                (item) =>
-                                  item.companyId === watch("CompanyId")?.id,
-                              ) || []
-                            }
+                            options={businessUnitData?.value?.businessUnit?.filter((item) => item.companyId === watch("CompanyId")?.id) || []}
                             loading={businessUnitIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Business Unit"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Business Unit" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.business_Code} - ${option.business_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disablePortal
                             disabled
@@ -1251,28 +1005,12 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              departmentData?.value?.department?.filter(
-                                (item) =>
-                                  item.businessUnitId ===
-                                  watch("BusinessUnitId")?.id,
-                              ) || []
-                            }
+                            options={departmentData?.value?.department?.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
                             loading={departmentIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Department"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Department" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.department_Code} - ${option.department_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1295,28 +1033,12 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              unitData?.value?.unit?.filter(
-                                (item) =>
-                                  item.departmentId ===
-                                  watch("DepartmentId")?.id,
-                              ) || []
-                            }
+                            options={unitData?.value?.unit?.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
                             loading={unitIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Unit"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Unit" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.unit_Code} - ${option.unit_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1342,11 +1064,7 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              subUnitData?.value?.subUnit?.filter(
-                                (item) => item.unitId === watch("UnitId")?.id,
-                              ) || []
-                            }
+                            options={subUnitData?.value?.subUnit?.filter((item) => item.unitId === watch("UnitId")?.id) || []}
                             loading={subUnitIsLoading}
                             onOpen={() => {
                               if (!subUnitIsSuccess)
@@ -1354,20 +1072,10 @@ const ConcernDialog = ({ open, onClose }) => {
                                   Status: true,
                                 });
                             }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Sub Unit"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Sub Unit" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.subUnit_Code} - ${option.subUnit_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1390,30 +1098,12 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              locationData?.value?.location?.filter((item) =>
-                                item?.subUnits?.some(
-                                  (subUnitItem) =>
-                                    subUnitItem?.subUnitId ===
-                                    watch("SubUnitId")?.id,
-                                ),
-                              ) || []
-                            }
+                            options={locationData?.value?.location?.filter((item) => item?.subUnits?.some((subUnitItem) => subUnitItem?.subUnitId === watch("SubUnitId")?.id)) || []}
                             loading={locationIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Location"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Location" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.location_Code} - ${option.location_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.location_Code === value.location_Code
-                            }
+                            getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                            isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
                             fullWidth
                             disabled
                             disableClearable
@@ -1435,9 +1125,7 @@ const ConcernDialog = ({ open, onClose }) => {
                   {/* Service Provider */}
                   <Stack sx={sx.fieldTwoColsStack}>
                     <Stack sx={sx.fieldTitleWithIconBox}>
-                      <Typography sx={sx.fieldText}>
-                        Service Provider
-                      </Typography>
+                      <Typography sx={sx.fieldText}>Service Provider</Typography>
                       <FiberManualRecord sx={sx.requiredDot} />
                     </Stack>
 
@@ -1450,17 +1138,9 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              serviceProviderData?.value?.serviceProvider || []
-                            }
+                            options={serviceProviderData?.value?.serviceProvider || []}
                             loading={serviceProviderIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Service Provider"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!serviceProviderIsSuccess)
                                 getServiceProvider({
@@ -1474,12 +1154,8 @@ const ConcernDialog = ({ open, onClose }) => {
                               setValue("CategoryId", []);
                               setValue("SubCategoryId", []);
                             }}
-                            getOptionLabel={(option) =>
-                              option.serviceProviderName
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => option.serviceProviderName}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             componentsProps={sx.automCompleteProp}
                           />
@@ -1504,17 +1180,8 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              serviceProviderData?.value?.serviceProvider?.[0]
-                                ?.serviceChannel || []
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Channel"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            options={serviceProviderData?.value?.serviceProvider?.[0]?.serviceChannel || []}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={sx.autoComplete} />}
                             onChange={(_, value) => {
                               onChange(value);
 
@@ -1522,9 +1189,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               setValue("SubCategoryId", []);
                             }}
                             getOptionLabel={(option) => option.channelName}
-                            isOptionEqualToValue={(option, value) =>
-                              option.channelId === value.channelId
-                            }
+                            isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                             fullWidth
                             disabled={!watch("ServiceProvider")}
                             componentsProps={sx.automCompleteProp}
@@ -1553,21 +1218,9 @@ const ConcernDialog = ({ open, onClose }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              categoryData?.value?.category.filter(
-                                (item) =>
-                                  item.channelId ===
-                                  watch("ChannelId")?.channelId,
-                              ) || []
-                            }
+                            options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []}
                             loading={categoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Category"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!categoryIsSuccess)
                                 getCategory({
@@ -1576,9 +1229,7 @@ const ConcernDialog = ({ open, onClose }) => {
                             }}
                             onChange={(_, value) => {
                               onChange(value);
-                              const categoryIdParams = value?.map(
-                                (category) => category?.id,
-                              );
+                              const categoryIdParams = value?.map((category) => category?.id);
                               getSubCategory({
                                 CategoryId: categoryIdParams,
                               });
@@ -1587,17 +1238,9 @@ const ConcernDialog = ({ open, onClose }) => {
                                 setValue("SubCategoryId", []);
                               }
                             }}
-                            getOptionLabel={(option) =>
-                              option.category_Description || ""
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
-                            getOptionDisabled={(option) =>
-                              watch("CategoryId").some(
-                                (item) => item.id === option.id,
-                              )
-                            }
+                            getOptionLabel={(option) => option.category_Description || ""}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                             fullWidth
                             disabled={!watch("ChannelId")}
                             disableClearable
@@ -1623,35 +1266,17 @@ const ConcernDialog = ({ open, onClose }) => {
                             value={value || []}
                             options={subCategoryData?.value || []}
                             loading={subCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Sub Category"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={sx.autoComplete} />}
                             onChange={(_, value) => {
                               onChange(value || []);
                             }}
-                            getOptionLabel={(option) =>
-                              option?.sub_Category_Description || ""
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option?.subCategoryId === value?.subCategoryId
-                            }
-                            getOptionDisabled={(option) =>
-                              watch("SubCategoryId").some(
-                                (item) =>
-                                  item.subCategoryId === option.subCategoryId,
-                              )
-                            }
+                            getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                            isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                            getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                             noOptionsText={"No sub category available"}
                             fullWidth
                             disableClearable
-                            disabled={
-                              !watch("ChannelId") ||
-                              watch("CategoryId")?.length === 0
-                            }
+                            disabled={!watch("ChannelId") || watch("CategoryId")?.length === 0}
                             componentsProps={sx.automCompleteProp}
                           />
                         );
@@ -1676,9 +1301,7 @@ const ConcernDialog = ({ open, onClose }) => {
                           <DatePicker
                             value={field.value ? moment(field.value) : moment()}
                             onChange={(newValue) => {
-                              const formattedValue = newValue
-                                ? moment(newValue).format("YYYY-MM-DD")
-                                : null;
+                              const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
                               field.onChange(formattedValue);
                             }}
                             slotProps={sx.datePickerSlotProp}
@@ -1689,11 +1312,7 @@ const ConcernDialog = ({ open, onClose }) => {
                         );
                       }}
                     />
-                    {errors.DateNeeded && (
-                      <Typography sx={{ color: "theme.palette.error.main" }}>
-                        {errors.DateNeeded.message}
-                      </Typography>
-                    )}
+                    {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.DateNeeded.message}</Typography>}
                   </LocalizationProvider>
                 </Stack>
 
@@ -1723,11 +1342,7 @@ const ConcernDialog = ({ open, onClose }) => {
                               endAdornment:
                                 fields.length > 1 ? (
                                   <InputAdornment position="end">
-                                    <IconButton
-                                      edge="end"
-                                      onClick={() => remove(index)}
-                                      size="small"
-                                    >
+                                    <IconButton edge="end" onClick={() => remove(index)} size="small">
                                       <RemoveCircleOutline fontSize="small" />
                                     </IconButton>
                                   </InputAdornment>
@@ -1753,28 +1368,15 @@ const ConcernDialog = ({ open, onClose }) => {
                     errors.Concern.map(
                       (err, idx) =>
                         err && (
-                          <Typography
-                            key={idx}
-                            color="error"
-                            sx={{ fontSize: "12px" }}
-                          >
+                          <Typography key={idx} color="error" sx={{ fontSize: "12px" }}>
                             Concern #{idx + 1}: {err.message}
                           </Typography>
                         ),
                     )}
 
                   <Stack sx={{ width: "100%", mt: 1 }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => append("")}
-                      startIcon={<AddOutlined />}
-                      // sx={sx.addConcernButton}
-                    >
+                    <Button size="small" variant="outlined" onClick={() => append("")} startIcon={<AddOutlined />}>
                       Add Concern
-                      {/* <Typography sx={{ fontSize: "12px" }}>
-                        Add Concern
-                      </Typography> */}
                     </Button>
                   </Stack>
                 </Stack>
@@ -1809,46 +1411,23 @@ const ConcernDialog = ({ open, onClose }) => {
                 </Stack>
 
                 {/* Attachments */}
-                <Stack
-                  sx={sx.fieldOneColStack}
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                >
-                  <Typography sx={sx.fieldText}>
-                    Attachment (Optional)
-                  </Typography>
+                <Stack sx={sx.fieldOneColStack} onDragOver={handleDragOver} onDrop={handleDrop}>
+                  <Typography sx={sx.fieldText}>Attachment (Optional)</Typography>
 
-                  <Stack
-                    sx={sx.attachmentDashedBorder}
-                    onDragOver={handleDragOver}
-                  >
+                  <Stack sx={sx.attachmentDashedBorder} onDragOver={handleDragOver}>
                     <Box sx={sx.attachmentFileBox}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="warning"
-                        onClick={handleUploadButtonClick}
-                      >
-                        <Typography sx={sx.chooseFileText}>
-                          Choose File
-                        </Typography>
+                      <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick}>
+                        <Typography sx={sx.chooseFileText}>Choose File</Typography>
                       </Button>
 
-                      <Typography sx={sx.fileExtText}>
-                        .docx, .jpg, .jpeg, .png, .pdf file
-                      </Typography>
+                      <Typography sx={sx.fileExtText}>.docx, .jpg, .jpeg, .png, .pdf file</Typography>
                     </Box>
 
                     {/* Image thumbnails, grid layout */}
                     {imageAttachments.length > 0 && (
                       <Box sx={sx.imgAttachmentSection}>
                         {imageAttachments.map((fileName, index) => (
-                          <ImageAttachmentCard
-                            key={`img-${index}`}
-                            fileName={fileName}
-                            onView={handleViewImage}
-                            onDelete={handleDeleteFile}
-                          />
+                          <ImageAttachmentCard key={`img-${index}`} fileName={fileName} onView={handleViewImage} onDelete={handleDeleteFile} />
                         ))}
                       </Box>
                     )}
@@ -1857,11 +1436,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     {fileAttachments.length > 0 && (
                       <Stack sx={sx.fileAttachmentSection}>
                         {fileAttachments.map((fileName, index) => (
-                          <FileAttachmentRow
-                            key={`file-${index}`}
-                            fileName={fileName}
-                            onDelete={handleDeleteFile}
-                          />
+                          <FileAttachmentRow key={`file-${index}`} fileName={fileName} onDelete={handleDeleteFile} />
                         ))}
                       </Stack>
                     )}
@@ -1879,10 +1454,7 @@ const ConcernDialog = ({ open, onClose }) => {
                       onChange={(event) => {
                         handleAttachments(event);
                         const files = Array.from(event.target.files);
-                        const uniqueNewFiles = files.filter(
-                          (item) =>
-                            !value.some((file) => file.name === item.name),
-                        );
+                        const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
                         onChange([...value, ...uniqueNewFiles]);
                         fileInputRef.current.value = "";
@@ -1905,11 +1477,7 @@ const ConcernDialog = ({ open, onClose }) => {
           >
             <LoadingButton
               variant="contained"
-              disabled={
-                isCreateEditRequestorConcernLoading ||
-                isCreateEditRequestorConcernFetching ||
-                isLoading
-              }
+              disabled={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
               onClick={() => {
                 onCloseAction();
               }}
@@ -1923,11 +1491,7 @@ const ConcernDialog = ({ open, onClose }) => {
               variant="contained"
               color="primary"
               type="submit"
-              loading={
-                isCreateEditRequestorConcernLoading ||
-                isCreateEditRequestorConcernFetching ||
-                isLoading
-              }
+              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
               disabled={
                 !watch("ServiceProvider") ||
                 !watch("ChannelId") ||
@@ -1956,12 +1520,7 @@ const ConcernDialog = ({ open, onClose }) => {
       </Dialog>
 
       {/* Dialog to view image */}
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={isViewDialogOpen}
-        onClose={handleViewClose}
-      >
+      <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
         <DialogContent sx={{ height: "auto", padding: 0 }}>
           <Box sx={{ position: "relative" }}>
             {/* Zoom controls */}
@@ -1979,12 +1538,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 padding: "2px 6px",
               }}
             >
-              <IconButton
-                size="small"
-                onClick={handleZoomOut}
-                disabled={zoom <= MIN_ZOOM}
-                sx={{ color: "#fff" }}
-              >
+              <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
                 <ZoomOut fontSize="small" />
               </IconButton>
 
@@ -1999,20 +1553,11 @@ const ConcernDialog = ({ open, onClose }) => {
                 {Math.round(zoom * 100)}%
               </Typography>
 
-              <IconButton
-                size="small"
-                onClick={handleZoomIn}
-                disabled={zoom >= MAX_ZOOM}
-                sx={{ color: "#fff" }}
-              >
+              <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
                 <ZoomIn fontSize="small" />
               </IconButton>
 
-              <IconButton
-                size="small"
-                onClick={handleZoomReset}
-                sx={{ color: "#fff" }}
-              >
+              <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
                 <RestartAlt fontSize="small" />
               </IconButton>
             </Stack>
@@ -2044,8 +1589,7 @@ const ConcernDialog = ({ open, onClose }) => {
                     transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
                     transformOrigin: "center center",
                     transition: isDragging ? "none" : "transform 0.15s ease",
-                    cursor:
-                      zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+                    cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
                   }}
                 />
               )}
@@ -2053,11 +1597,7 @@ const ConcernDialog = ({ open, onClose }) => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button
-            variant="contained"
-            onClick={handleViewClose}
-            sx={sx.cancelButton}
-          >
+          <Button variant="contained" onClick={handleViewClose} sx={sx.cancelButton}>
             Close
           </Button>
         </DialogActions>
@@ -2096,23 +1636,12 @@ const ImageAttachmentCard = ({ fileName, onView, onDelete }) => {
 
       <Box sx={sx.imgContainer}>
         {previewUrl && (
-          <Box
-            component="img"
-            src={previewUrl}
-            alt={fileName.name}
-            onLoad={() => setImgLoaded(true)}
-            onError={() => setImgLoaded(true)}
-            sx={{ ...sx.previewUrlBox, opacity: showSpinner ? 0 : 1 }}
-          />
+          <Box component="img" src={previewUrl} alt={fileName.name} onLoad={() => setImgLoaded(true)} onError={() => setImgLoaded(true)} sx={{ ...sx.previewUrlBox, opacity: showSpinner ? 0 : 1 }} />
         )}
 
         {showSpinner && (
           <Box sx={sx.showSpinnerBox}>
-            <CircularProgress
-              size={20}
-              thickness={4}
-              sx={sx.circularProgress}
-            />
+            <CircularProgress size={20} thickness={4} sx={sx.circularProgress} />
           </Box>
         )}
       </Box>
@@ -2144,14 +1673,8 @@ const FileAttachmentRow = ({ fileName, onDelete, uploadProgress }) => {
 
         {inProgress ? (
           <Stack sx={sx.inProgressBox}>
-            <LinearProgress
-              variant="determinate"
-              value={uploadProgress}
-              sx={sx.linearProgress}
-            />
-            <Typography sx={sx.uploadProgressText}>
-              {uploadProgress}%
-            </Typography>
+            <LinearProgress variant="determinate" value={uploadProgress} sx={sx.linearProgress} />
+            <Typography sx={sx.uploadProgressText}>{uploadProgress}%</Typography>
           </Stack>
         ) : (
           <Typography sx={sx.fileSizeText}>
