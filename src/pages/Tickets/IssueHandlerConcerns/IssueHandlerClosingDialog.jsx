@@ -796,7 +796,7 @@ const IssueHandlerClosingDialog = ({ data, open, onClose, viewOnClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton form="closeTicket" variant="contained" loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+          <LoadingButton variant="contained" loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
             Cancel
           </LoadingButton>
 

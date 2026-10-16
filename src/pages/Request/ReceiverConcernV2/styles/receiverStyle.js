@@ -72,6 +72,7 @@ export const receiverStyle = {
     border: `1px solid ${t.line}`,
     borderRadius: "14px",
   },
+
   row: {
     borderBottom: `1px solid ${t.line}`,
     padding: "9px 0",
@@ -90,6 +91,7 @@ export const receiverStyle = {
       fontWeight: w.semibold,
     },
   },
+
   chip: {
     fontSize: f.sm,
     fontWeight: w.medium,
@@ -99,9 +101,10 @@ export const receiverStyle = {
     borderRadius: "20px",
     padding: "3px 10px",
   },
+
   closeButton: {
-    color: t.muted,
-    fontSize: f.lg,
+    backgroundColor: "#1C2536",
+    "&:hover": { backgroundColor: "#2f3c55" },
   },
 
   detailBox: {

@@ -489,18 +489,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
               Cancel
             </LoadingButton>
 
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={transferTicketIsLoading || transferTicketIsFetching}
-              disabled={!watch("TransferRemarks") || !watch("Transfer_To")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
-            >
+            <LoadingButton type="submit" variant="contained" loading={transferTicketIsLoading || transferTicketIsFetching} disabled={!watch("TransferRemarks") || !watch("Transfer_To")}>
               Transfer
             </LoadingButton>
           </DialogActions>

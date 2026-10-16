@@ -1,30 +1,5 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  FormHelperText,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  Add,
-  AttachFile,
-  AttachFileOutlined,
-  Attachment,
-  CheckOutlined,
-  FiberManualRecord,
-  GetAppOutlined,
-  RestartAlt,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, FormHelperText, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Add, AttachFile, AttachFileOutlined, Attachment, CheckOutlined, FiberManualRecord, GetAppOutlined, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import { LoadingButton } from "@mui/lab";
 import { useEffect, useRef, useState } from "react";
@@ -44,15 +19,9 @@ import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
-import {
-  useDeleteRequestorAttachmentMutation,
-  useLazyGetTechniciansQuery,
-} from "../../../features/api_request/concerns/concernApi";
+import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
@@ -62,11 +31,7 @@ import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActio
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
   closingTicketId: yup.number(),
-  resolution: yup
-    .string()
-    .min(20, "Resolution must be more than 20 character long")
-    .required("This field is required")
-    .label("Resolution"),
+  resolution: yup.string().min(20, "Resolution must be more than 20 character long").required("This field is required").label("Resolution"),
   AddClosingAttachments: yup.array().nullable(),
 
   ChannelId: yup.object().required().label("Channel"),
@@ -117,19 +82,12 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
         }
 
         // Saved attachment from a previous submit
-        const response = await getAttachmentPreview(
-          fileName.ticketAttachmentId,
-        );
+        const response = await getAttachmentPreview(fileName.ticketAttachmentId);
         if (cancelled) return;
 
         if (response?.data) {
-          const mime =
-            EXT_TO_MIME[ext] ||
-            response.data.type ||
-            "application/octet-stream";
-          objectUrl = URL.createObjectURL(
-            new Blob([response.data], { type: mime }),
-          );
+          const mime = EXT_TO_MIME[ext] || response.data.type || "application/octet-stream";
+          objectUrl = URL.createObjectURL(new Blob([response.data], { type: mime }));
           setPreviewUrl(objectUrl);
         } else {
           setPreviewError(true);
@@ -215,11 +173,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
               justifyContent: "center",
             }}
           >
-            <CircularProgress
-              size={20}
-              thickness={4}
-              sx={{ color: theme.palette.text.secondary }}
-            />
+            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
           </Box>
         )}
 
@@ -282,13 +236,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
             {ext?.toUpperCase()} · {fileName.size} MB
           </Typography>
           {/* Small check = already saved from a previous submit */}
-          {!!fileName.ticketAttachmentId && (
-            <CheckOutlined
-              color="success"
-              sx={{ fontSize: 12 }}
-              titleAccess="Attached file"
-            />
-          )}
+          {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: 12 }} titleAccess="Attached file" />}
         </Stack>
       </Box>
     </Box>
@@ -316,49 +264,17 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
   const positionStartRef = useRef({ x: 0, y: 0 });
 
   const fileInputRef = useRef();
-  const channelNameValidation = useSelector(
-    (state) => state?.user?.channels?.[0]?.channelName,
-  );
+  const channelNameValidation = useSelector((state) => state?.user?.channels?.[0]?.channelName);
   // useSignalRConnection();
 
-  const [
-    getCategory,
-    {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
-    },
-  ] = useLazyGetCategoryQuery();
-  const [
-    getSubCategory,
-    { data: subCategoryData, isLoading: subCategoryIsLoading },
-  ] = useLazyGetSubCategoryArrayQuery();
-  const [
-    getConcernCategory,
-    {
-      data: concernCategoryData,
-      isLoading: concernCategoryIsLoading,
-      isSuccess: concernCategoryIsSuccess,
-    },
-  ] = useLazyGetCategoryConcernQuery();
-  const [
-    getTechnicians,
-    {
-      data: technicianData,
-      isLoading: technicianIsLoading,
-      isSuccess: technicianIsSuccess,
-    },
-  ] = useLazyGetTechniciansQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading }] = useLazyGetSubCategoryArrayQuery();
+  const [getConcernCategory, { data: concernCategoryData, isLoading: concernCategoryIsLoading, isSuccess: concernCategoryIsSuccess }] = useLazyGetCategoryConcernQuery();
+  const [getTechnicians, { data: technicianData, isLoading: technicianIsLoading, isSuccess: technicianIsSuccess }] = useLazyGetTechniciansQuery();
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [
-    closeIssueHandlerTickets,
-    {
-      isLoading: closeIssueHandlerTicketsIsLoading,
-      isFetching: closeIssueHandlerTicketsIsFetching,
-    },
-  ] = useCloseIssueHandlerTicketsMutation();
+  const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -417,34 +333,17 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         payload.append("TicketConcernId", formData.ticketConcernId);
         payload.append("ClosingTicketId", formData.closingTicketId);
         payload.append("CategoryConcernId", formData.CategoryConcern.id);
-        payload.append(
-          "CategoryConcern",
-          formData.CategoryConcern.categoryConcern,
-        );
+        payload.append("CategoryConcern", formData.CategoryConcern.categoryConcern);
         payload.append("Resolution", formData.resolution);
         payload.append("Notes", formData.Notes);
 
-        payload.append(
-          "BackDate",
-          formData.ClosingDate
-            ? moment(formData.ClosingDate).format("YYYY-MM-DD")
-            : "",
-        );
-        payload.append(
-          "BackDateRemarks",
-          formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "",
-        );
+        payload.append("BackDate", formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "");
+        payload.append("BackDateRemarks", formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "");
 
         const category = formData.CategoryId;
         for (let i = 0; i < category.length; i++) {
-          payload.append(
-            `ClosingTicketCategories[${i}].ticketCategoryId`,
-            category[i].ticketCategoryId || "",
-          );
-          payload.append(
-            `ClosingTicketCategories[${i}].categoryId`,
-            category[i]?.id,
-          );
+          payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+          payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
         }
 
         if (category.length === 0) {
@@ -454,51 +353,30 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
         const subCategory = formData.SubCategoryId;
         for (let i = 0; i < subCategory.length; i++) {
-          payload.append(
-            `ClosingSubTicketCategories[${i}].ticketSubCategoryId`,
-            subCategory[i]?.ticketSubCategoryId || "",
-          );
-          payload.append(
-            `ClosingSubTicketCategories[${i}].subCategoryId`,
-            subCategory[i]?.subCategoryId,
-          );
+          payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
+          payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
         }
 
         if (subCategory.length === 0) {
-          payload.append(
-            `ClosingSubTicketCategories[0].ticketSubCategoryId`,
-            "",
-          );
+          payload.append(`ClosingSubTicketCategories[0].ticketSubCategoryId`, "");
           payload.append(`ClosingSubTicketCategories[0].subCategoryId`, "");
         }
 
         const technicians = formData.Technicians;
         for (let i = 0; i < technicians.length; i++) {
-          payload.append(
-            `AddClosingTicketTechnicians[${i}].ticketTechnicianId`,
-            technicians[i].ticketTechnicianId || "",
-          );
-          payload.append(
-            `AddClosingTicketTechnicians[${i}].technician_By`,
-            technicians[i]?.technicianId,
-          );
+          payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, technicians[i].ticketTechnicianId || "");
+          payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
         }
 
         if (technicians.length === 0) {
-          payload.append(
-            `AddClosingTicketTechnicians[0].ticketTechnicianId`,
-            "",
-          );
+          payload.append(`AddClosingTicketTechnicians[0].ticketTechnicianId`, "");
           payload.append(`AddClosingTicketTechnicians[0].technician_By`, "");
         }
 
         // Attachments
         const files = formData.AddClosingAttachments;
         for (let i = 0; i < files.length; i++) {
-          payload.append(
-            `AddClosingAttachments[${i}].ticketAttachmentId`,
-            files[i].ticketAttachmentId || "",
-          );
+          payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
           payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
         }
 
@@ -540,12 +418,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
       file,
     }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (newFile) =>
-        !attachments?.some(
-          (existingFile) => existingFile.name === newFile.name,
-        ),
-    );
+    const uniqueNewFiles = fileNames.filter((newFile) => !attachments?.some((existingFile) => existingFile.name === newFile.name));
 
     setAttachments((prevFiles) => [...prevFiles, ...uniqueNewFiles]);
   };
@@ -578,15 +451,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
           });
       }
 
-      setAttachments((prevFiles) =>
-        prevFiles.filter((fileName) => fileName !== fileNameToDelete),
-      );
+      setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
 
       setValue(
         "AddClosingAttachments",
-        watch("AddClosingAttachments").filter(
-          (file) => file.name !== fileNameToDelete.name,
-        ),
+        watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
       );
     } catch (error) {}
   };
@@ -609,9 +478,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName),
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -688,10 +555,8 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     setPosition({ x: 0, y: 0 });
   };
 
-  const handleZoomIn = () =>
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () =>
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
 
   const handleZoomReset = () => {
     setZoom(1);
@@ -750,26 +615,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
   useEffect(() => {
     if (data) {
       setValue("ticketConcernId", data?.ticketConcernId);
-      setValue(
-        "closingTicketId",
-        data?.getForClosingTickets?.[0]?.closingTicketId,
-      );
+      setValue("closingTicketId", data?.getForClosingTickets?.[0]?.closingTicketId);
       setValue("resolution", data?.getForClosingTickets?.[0]?.resolution);
 
-      setValue(
-        "ClosingDate",
-        data?.getForClosingTickets?.[0]?.backDate
-          ? moment(data?.getForClosingTickets?.[0]?.backDate).format(
-              "YYYY-MM-DD",
-            )
-          : null,
-      );
-      setValue(
-        "BackdateRemarks",
-        data?.getForClosingTickets?.[0]?.backDateRemarks !== ""
-          ? data?.getForClosingTickets?.[0]?.backDateRemarks
-          : "",
-      );
+      setValue("ClosingDate", data?.getForClosingTickets?.[0]?.backDate ? moment(data?.getForClosingTickets?.[0]?.backDate).format("YYYY-MM-DD") : null);
+      setValue("BackdateRemarks", data?.getForClosingTickets?.[0]?.backDateRemarks !== "" ? data?.getForClosingTickets?.[0]?.backDateRemarks : "");
 
       setValue("ChannelId", {
         id: data?.channelId,
@@ -788,18 +638,13 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         sub_Category_Description: item.subCategory_Description,
       }));
 
-      const technicians =
-        data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap(
-          (item) => ({
-            ticketTechnicianId: item.ticketTechnicianId,
-            technician_Name: item.fullname,
-            technicianId: item.technician_By,
-          }),
-        );
+      const technicians = data?.getForClosingTickets?.[0]?.forClosingTicketTechnicians?.flatMap((item) => ({
+        ticketTechnicianId: item.ticketTechnicianId,
+        technician_Name: item.fullname,
+        technicianId: item.technician_By,
+      }));
 
-      const categoryIdParams = data?.getOpenTicketCategories?.map(
-        (item) => item?.categoryId,
-      );
+      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
 
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
@@ -838,10 +683,8 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     }
   }, [data]);
 
-  const imageAttachments =
-    attachments?.filter((f) => isImageFile(f.name)) ?? [];
-  const otherAttachments =
-    attachments?.filter((f) => !isImageFile(f.name)) ?? [];
+  const imageAttachments = attachments?.filter((f) => isImageFile(f.name)) ?? [];
+  const otherAttachments = attachments?.filter((f) => !isImageFile(f.name)) ?? [];
 
   const renderMenu = (fileName, compact = false) => (
     <ManageForClosingMenuActions
@@ -894,27 +737,17 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
       >
         <DialogContent>
           <Stack>
-            <Stack
-              id="closeticket"
-              component="form"
-              direction="row"
-              gap={1}
-              sx={{ width: "100%", height: "100%" }}
-              onSubmit={handleSubmit(onSubmitAction)}
-            >
+            <Stack id="closeticket" component="form" direction="row" gap={1} sx={{ width: "100%", height: "100%" }} onSubmit={handleSubmit(onSubmitAction)}>
               {/* Ticket Details */}
               <Stack sx={{ padding: 1, width: "100%" }}>
                 {/* Ticket Number */}
                 <Stack>
-                  <Typography sx={sx.titleText}>Manage Ticket</Typography>
-                  <Stack sx={sx.manageTicketBox}>
-                    <Typography
-                      sx={sx.captionText}
-                    >{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                  <Typography sx={sx.titleText}>{data?.getForClosingTickets?.[0]?.isApprove === false ? "Manage Ticket" : "View Ticket"}</Typography>
 
-                    {data?.getForClosingTickets?.[0]?.isApprove === true && (
-                      <Typography sx={sx.approvedText}>(Approved)</Typography>
-                    )}
+                  <Stack sx={sx.manageTicketBox}>
+                    <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+
+                    {data?.getForClosingTickets?.[0]?.isApprove === true && <Typography sx={sx.approvedText}>(Approved)</Typography>}
                   </Stack>
                 </Stack>
 
@@ -922,23 +755,19 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                 <Stack sx={sx.detailBox}>
                   <Stack sx={sx.closeDetailContent}>
                     <Box sx={sx.titleDetailBox}>
-                      <Typography sx={sx.detailTitleText}>
-                        Ticket Description:
-                      </Typography>
+                      <Typography sx={sx.detailTitleText}>Ticket Description:</Typography>
                     </Box>
 
                     <Box sx={sx.spacer} />
 
                     <Box sx={sx.descDetailBox}>
                       <Typography sx={sx.detailDescText}>
-                        {data?.concern_Description
-                          ?.split("\r\n")
-                          .map((line, index) => (
-                            <span key={index}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
+                        {data?.concern_Description?.split("\r\n").map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
                       </Typography>
                     </Box>
                   </Stack>
@@ -947,17 +776,13 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
                   <Stack sx={sx.closeDetailContent}>
                     <Box sx={sx.titleDetailBox}>
-                      <Typography sx={sx.detailTitleText}>
-                        Target Date:
-                      </Typography>
+                      <Typography sx={sx.detailTitleText}>Target Date:</Typography>
                     </Box>
 
                     <Box sx={sx.spacer} />
 
                     <Box sx={sx.descDetailBox}>
-                      <Typography sx={sx.detailDescText}>
-                        {moment(data?.target_Date).format("LL")}
-                      </Typography>
+                      <Typography sx={sx.detailDescText}>{moment(data?.target_Date).format("LL")}</Typography>
                     </Box>
                   </Stack>
                 </Stack>
@@ -983,20 +808,9 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                               ref={ref}
                               size="small"
                               value={value}
-                              options={
-                                categoryData?.value?.category.filter(
-                                  (item) =>
-                                    item.channelId === watch("ChannelId")?.id,
-                                ) || []
-                              }
+                              options={categoryData?.value?.category.filter((item) => item.channelId === watch("ChannelId")?.id) || []}
                               loading={categoryIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Category"
-                                  sx={sx.autoComplete}
-                                />
-                              )}
+                              renderInput={(params) => <TextField {...params} placeholder="Category" sx={sx.autoComplete} />}
                               onOpen={() => {
                                 if (!categoryIsSuccess)
                                   getCategory({
@@ -1006,9 +820,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                               onChange={(_, value) => {
                                 onChange(value);
 
-                                const categoryIdParams = value?.map(
-                                  (category) => category?.id,
-                                );
+                                const categoryIdParams = value?.map((category) => category?.id);
                                 if (watch("CategoryId").length === 0) {
                                   setValue("SubCategoryId", []);
                                 }
@@ -1017,24 +829,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                                   CategoryId: categoryIdParams,
                                 });
                               }}
-                              getOptionLabel={(option) =>
-                                option.category_Description || ""
-                              }
-                              isOptionEqualToValue={(option, value) =>
-                                option.id === value.id
-                              }
-                              getOptionDisabled={(option) =>
-                                watch("CategoryId").some(
-                                  (item) => item.id === option.id,
-                                )
-                              }
+                              getOptionLabel={(option) => option.category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                               fullWidth
-                              disabled={
-                                data?.getForClosingTickets?.[0]?.isApprove ===
-                                true
-                                  ? true
-                                  : false
-                              }
+                              disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                               disableClearable
                               componentsProps={sx.automCompleteProp}
                             />
@@ -1061,36 +860,16 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                               value={value}
                               options={subCategoryData?.value || []}
                               loading={subCategoryIsLoading}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  placeholder="Sub Category"
-                                  sx={sx.autoComplete}
-                                />
-                              )}
+                              renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={sx.autoComplete} />}
                               onChange={(_, value) => {
                                 onChange(value);
                               }}
-                              getOptionLabel={(option) =>
-                                option?.sub_Category_Description || ""
-                              }
-                              isOptionEqualToValue={(option, value) =>
-                                option?.subCategoryId === value?.subCategoryId
-                              }
-                              getOptionDisabled={(option) =>
-                                watch("SubCategoryId").some(
-                                  (item) =>
-                                    item.subCategoryId === option.subCategoryId,
-                                )
-                              }
+                              getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                              isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                              getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                               noOptionsText={"No sub category available"}
                               fullWidth
-                              disabled={
-                                data?.getForClosingTickets?.[0]?.isApprove ===
-                                true
-                                  ? true
-                                  : false
-                              }
+                              disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                               disablePortal
                               disableClearable
                               componentsProps={sx.automCompleteProp}
@@ -1104,9 +883,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                   {/* Concern Category */}
                   <Stack sx={sx.fieldOneColStack}>
                     <Stack sx={sx.fieldTitleWithIconBox}>
-                      <Typography sx={sx.fieldText}>
-                        Concern Category:
-                      </Typography>
+                      <Typography sx={sx.fieldText}>Concern Category:</Typography>
                       <FiberManualRecord sx={sx.requiredDot} />
                     </Stack>
 
@@ -1121,13 +898,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                             value={value}
                             options={concernCategoryData?.value?.category || []}
                             loading={concernCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Concern Category"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Concern Category" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!concernCategoryIsSuccess)
                                 getConcernCategory({
@@ -1137,20 +908,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                             onChange={(_, value) => {
                               onChange(value);
                             }}
-                            getOptionLabel={(option) =>
-                              option.categoryConcern || ""
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => option.categoryConcern || ""}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disableClearable
-                            disabled={
-                              data?.getForClosingTickets?.[0]?.isApprove ===
-                              true
-                                ? true
-                                : false
-                            }
+                            disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                             componentsProps={sx.automCompleteProp}
                           />
                         );
@@ -1159,106 +921,73 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                   </Stack>
 
                   {/* Backdate */}
-                  {channelNameValidation ===
-                    "HMU - IT Hardware Support (Hardware Concern)" &&
-                    data?.getForClosingTickets?.[0]?.backDate && (
-                      <>
-                        <Stack sx={sx.fieldOneColStack}>
-                          <Stack sx={sx.fieldTitleWithIconBox}>
-                            <Typography sx={sx.fieldText}>
-                              Backdate (Optional):
-                            </Typography>
-                          </Stack>
-
-                          <LocalizationProvider dateAdapter={AdapterMoment}>
-                            <Controller
-                              control={control}
-                              name="ClosingDate"
-                              render={({ field }) => (
-                                <DatePicker
-                                  value={
-                                    field.value ? moment(field.value) : null
-                                  }
-                                  onChange={(newValue) => {
-                                    const formattedValue = newValue
-                                      ? moment(newValue).format("YYYY-MM-DD")
-                                      : null;
-                                    field.onChange(formattedValue);
-                                  }}
-                                  slotProps={sx.datePickerSlotProp}
-                                  maxDate={new moment()}
-                                  minDate={minDate}
-                                  error={!!errors.ClosingDate}
-                                  helperText={
-                                    errors.ClosingDate
-                                      ? errors.ClosingDate.message
-                                      : null
-                                  }
-                                  disabled={
-                                    data?.getForClosingTickets?.[0]
-                                      ?.isApprove === true
-                                      ? true
-                                      : false
-                                  }
-                                />
-                              )}
-                            />
-                          </LocalizationProvider>
+                  {channelNameValidation === "HMU - IT Hardware Support (Hardware Concern)" && data?.getForClosingTickets?.[0]?.backDate && (
+                    <>
+                      <Stack sx={sx.fieldOneColStack}>
+                        <Stack sx={sx.fieldTitleWithIconBox}>
+                          <Typography sx={sx.fieldText}>Backdate (Optional):</Typography>
                         </Stack>
 
-                        <Stack sx={sx.fieldOneColStack}>
-                          <Stack sx={sx.fieldTitleWithIconBox}>
-                            <Typography sx={sx.fieldText}>
-                              Backdate Remarks:
-                            </Typography>
-                            <FiberManualRecord sx={sx.requiredDot} />
-                          </Stack>
-
+                        <LocalizationProvider dateAdapter={AdapterMoment}>
                           <Controller
                             control={control}
-                            name="BackdateRemarks"
-                            render={({ field: { ref, value, onChange } }) => {
-                              return (
-                                <TextField
-                                  inputRef={ref}
-                                  size="medium"
-                                  value={value}
-                                  onChange={onChange}
-                                  autoComplete="off"
-                                  rows={2}
-                                  multiline
-                                  InputProps={sx.textFieldInputProps}
-                                  InputLabelProps={sx.textFieldLabelProps}
-                                  disabled={
-                                    !watch("ClosingDate") ||
-                                    data?.getForClosingTickets?.[0]
-                                      ?.isApprove === true
-                                      ? true
-                                      : false
-                                  }
-                                  sx={{
-                                    "& .disabled": {
-                                      backgroundColor: !watch("ClosingDate")
-                                        ? "lightgray"
-                                        : "inherit",
-                                      cursor: !watch("ClosingDate")
-                                        ? "not-allowed"
-                                        : "inherit",
-                                    },
-                                  }}
-                                />
-                              );
-                            }}
+                            name="ClosingDate"
+                            render={({ field }) => (
+                              <DatePicker
+                                value={field.value ? moment(field.value) : null}
+                                onChange={(newValue) => {
+                                  const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
+                                  field.onChange(formattedValue);
+                                }}
+                                slotProps={sx.datePickerSlotProp}
+                                maxDate={new moment()}
+                                minDate={minDate}
+                                error={!!errors.ClosingDate}
+                                helperText={errors.ClosingDate ? errors.ClosingDate.message : null}
+                                disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
+                              />
+                            )}
                           />
+                        </LocalizationProvider>
+                      </Stack>
 
-                          {errors.BackdateRemarks && (
-                            <Typography sx={sx.textErrors}>
-                              {errors.BackdateRemarks.message}
-                            </Typography>
-                          )}
+                      <Stack sx={sx.fieldOneColStack}>
+                        <Stack sx={sx.fieldTitleWithIconBox}>
+                          <Typography sx={sx.fieldText}>Backdate Remarks:</Typography>
+                          <FiberManualRecord sx={sx.requiredDot} />
                         </Stack>
-                      </>
-                    )}
+
+                        <Controller
+                          control={control}
+                          name="BackdateRemarks"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <TextField
+                                inputRef={ref}
+                                size="medium"
+                                value={value}
+                                onChange={onChange}
+                                autoComplete="off"
+                                rows={2}
+                                multiline
+                                InputProps={sx.textFieldInputProps}
+                                InputLabelProps={sx.textFieldLabelProps}
+                                disabled={!watch("ClosingDate") || data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
+                                sx={{
+                                  "& .disabled": {
+                                    backgroundColor: !watch("ClosingDate") ? "lightgray" : "inherit",
+                                    cursor: !watch("ClosingDate") ? "not-allowed" : "inherit",
+                                  },
+                                }}
+                              />
+                            );
+                          }}
+                        />
+
+                        {errors.BackdateRemarks && <Typography sx={sx.textErrors}>{errors.BackdateRemarks.message}</Typography>}
+                      </Stack>
+                    </>
+                  )}
 
                   {/* Resolution */}
                   <Stack sx={sx.fieldOneColStack}>
@@ -1277,12 +1006,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                             size="medium"
                             value={value}
                             onChange={onChange}
-                            disabled={
-                              data?.getForClosingTickets?.[0]?.isApprove ===
-                              true
-                                ? true
-                                : false
-                            }
+                            disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                             autoComplete="off"
                             rows={6}
                             multiline
@@ -1293,18 +1017,12 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                       }}
                     />
 
-                    {errors.resolution && (
-                      <Typography sx={sx.textErrors}>
-                        {errors.resolution.message}
-                      </Typography>
-                    )}
+                    {errors.resolution && <Typography sx={sx.textErrors}>{errors.resolution.message}</Typography>}
                   </Stack>
 
                   {/* Technicians */}
                   <Stack sx={sx.fieldOneColStack}>
-                    <Typography sx={sx.fieldText}>
-                      Technicians (Optional):
-                    </Typography>
+                    <Typography sx={sx.fieldText}>Technicians (Optional):</Typography>
                     <Controller
                       control={control}
                       name="Technicians"
@@ -1317,13 +1035,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                             value={value}
                             options={technicianData?.value || []}
                             loading={technicianIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Add Technicians"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Add Technicians" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!technicianIsSuccess) getTechnicians();
                             }}
@@ -1332,36 +1044,16 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                                 onChange(newValue);
                               }
                             }}
-                            getOptionLabel={(option) =>
-                              option.technician_Name || ""
-                            }
-                            isOptionEqualToValue={(option, val) =>
-                              option.technicianId === val.technicianId
-                            }
-                            getOptionDisabled={(option) =>
-                              watch("Technicians").some(
-                                (item) =>
-                                  item.technicianId === option.technicianId,
-                              )
-                            }
+                            getOptionLabel={(option) => option.technician_Name || ""}
+                            isOptionEqualToValue={(option, val) => option.technicianId === val.technicianId}
+                            getOptionDisabled={(option) => watch("Technicians").some((item) => item.technicianId === option.technicianId)}
                             fullWidth
-                            disabled={
-                              data?.getForClosingTickets?.[0]?.isApprove ===
-                              true
-                                ? true
-                                : false
-                            }
+                            disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                             disableClearable
                             componentsProps={sx.automCompleteProp}
                           />
 
-                          {value.length >= 3 && (
-                            <FormHelperText
-                              sx={{ color: theme.palette.warning.main }}
-                            >
-                              You can only select up to 3 technicians.
-                            </FormHelperText>
-                          )}
+                          {value.length >= 3 && <FormHelperText sx={{ color: theme.palette.warning.main }}>You can only select up to 3 technicians.</FormHelperText>}
                         </Stack>
                       )}
                     />
@@ -1384,12 +1076,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                             autoComplete="off"
                             rows={4}
                             multiline
-                            disabled={
-                              data?.getForClosingTickets?.[0]?.isApprove ===
-                              true
-                                ? true
-                                : false
-                            }
+                            disabled={data?.getForClosingTickets?.[0]?.isApprove === true ? true : false}
                             InputProps={sx.textFieldInputProps}
                             InputLabelProps={sx.textFieldLabelProps}
                           />
@@ -1412,24 +1099,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                       >
                         <Stack sx={sx.attachmentTextBox}>
                           <AttachFile sx={sx.titleHeaderMutedIcon} />
-                          <Typography sx={sx.detailTitleText}>
-                            Attachment(s):
-                          </Typography>
+                          <Typography sx={sx.detailTitleText}>Attachment(s):</Typography>
 
-                          {data?.getForClosingTickets?.[0]?.isApprove ===
-                            false && (
-                            <Button
-                              size="small"
-                              variant="contained"
-                              color="warning"
-                              onClick={handleUploadButtonClick}
-                              sx={sx.addAttachmentBtn}
-                            >
-                              <Typography
-                                sx={{ fontSize: "11.5px", fontWeight: 500 }}
-                              >
-                                Add File
-                              </Typography>
+                          {data?.getForClosingTickets?.[0]?.isApprove === false && (
+                            <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick} sx={sx.addAttachmentBtn}>
+                              <Typography sx={{ fontSize: "11.5px", fontWeight: 500 }}>Add File</Typography>
                             </Button>
                           )}
                         </Stack>
@@ -1438,9 +1112,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                           <Stack sx={sx.noAttachmentSection}>
                             <Stack sx={sx.noAttachmentContent}>
                               <AttachFileOutlined sx={sx.noAttachmentIcon} />
-                              <Typography sx={sx.noAttachmentText}>
-                                No attached file
-                              </Typography>
+                              <Typography sx={sx.noAttachmentText}>No attached file</Typography>
                             </Stack>
                           </Stack>
                         ) : (
@@ -1456,18 +1128,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                               >
                                 {imageAttachments.map((fileName, index) => (
                                   <ImageAttachmentPreviewCard
-                                    key={
-                                      fileName.ticketAttachmentId ??
-                                      `${fileName.name}-${index}`
-                                    }
+                                    key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`}
                                     fileName={fileName}
                                     onView={handleOpenThumbnail}
                                     menu={renderMenu(fileName, true)}
-                                    isOpening={
-                                      !!fileName.ticketAttachmentId &&
-                                      loadingAttachmentId ===
-                                        fileName.ticketAttachmentId
-                                    }
+                                    isOpening={!!fileName.ticketAttachmentId && loadingAttachmentId === fileName.ticketAttachmentId}
                                   />
                                 ))}
                               </Box>
@@ -1475,13 +1140,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
                             {/* Non-image files, row list */}
                             {otherAttachments.map((fileName, index) => (
-                              <Box
-                                key={
-                                  fileName.ticketAttachmentId ??
-                                  `${fileName.name}-${index}`
-                                }
-                                sx={sx.fileAttachmentBox}
-                              >
+                              <Box key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`} sx={sx.fileAttachmentBox}>
                                 {getAttachmentIcon(fileName)}
                                 <Box sx={sx.attachmentAndMenuBox}>
                                   <Box
@@ -1490,33 +1149,20 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                                       flexDirection: "column",
                                     }}
                                   >
-                                    <Typography sx={sx.fileNameText}>
-                                      {fileName.name}
-                                    </Typography>
-                                    <Typography sx={sx.fileSizeText}>
-                                      {fileName.size} Mb
-                                    </Typography>
+                                    <Typography sx={sx.fileNameText}>{fileName.name}</Typography>
+                                    <Typography sx={sx.fileSizeText}>{fileName.size} Mb</Typography>
                                     <Box sx={sx.fileDescWithIconBox}>
                                       <Typography
                                         sx={{
                                           fontSize: "12px",
                                           fontWeight: 500,
-                                          color: !!fileName.ticketAttachmentId
-                                            ? theme.palette.success.main
-                                            : theme.palette.primary.main,
+                                          color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                         }}
                                       >
-                                        {!!fileName.ticketAttachmentId
-                                          ? "Attached file"
-                                          : "Uploaded the file successfully"}
+                                        {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
                                       </Typography>
 
-                                      {!!fileName.ticketAttachmentId && (
-                                        <CheckOutlined
-                                          color="success"
-                                          sx={{ fontSize: "12px" }}
-                                        />
-                                      )}
+                                      {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: "12px" }} />}
                                     </Box>
                                   </Box>
 
@@ -1542,27 +1188,14 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                               const files = Array.from(event.target.files);
                               files[0].ticketAttachmentId = ticketAttachmentId;
 
-                              onChange([
-                                ...files,
-                                ...value.filter(
-                                  (item) =>
-                                    item.ticketAttachmentId !==
-                                    ticketAttachmentId,
-                                ),
-                              ]);
+                              onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
 
                               setAttachments((prevFiles) => [
-                                ...prevFiles.filter(
-                                  (item) =>
-                                    item.ticketAttachmentId !==
-                                    ticketAttachmentId,
-                                ),
+                                ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
                                 {
                                   ticketAttachmentId: ticketAttachmentId,
                                   name: files[0].name,
-                                  size: (files[0].size / (1024 * 1024)).toFixed(
-                                    2,
-                                  ),
+                                  size: (files[0].size / (1024 * 1024)).toFixed(2),
                                 },
                               ]);
 
@@ -1572,12 +1205,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                               handleAttachments(event);
                               const files = Array.from(event.target.files);
 
-                              const uniqueNewFiles = files.filter(
-                                (item) =>
-                                  !value.some(
-                                    (file) => file.name === item.name,
-                                  ),
-                              );
+                              const uniqueNewFiles = files.filter((item) => !value.some((file) => file.name === item.name));
 
                               onChange([...value, ...uniqueNewFiles]);
                               fileInputRef.current.value = "";
@@ -1596,16 +1224,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton
-            form="closeTicket"
-            variant="contained"
-            loading={
-              closeIssueHandlerTicketsIsLoading ||
-              closeIssueHandlerTicketsIsFetching
-            }
-            onClick={onCloseHandler}
-            sx={sx.cancelButton}
-          >
+          <LoadingButton form="closeTicket" variant="contained" loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
             Cancel
           </LoadingButton>
 
@@ -1614,16 +1233,8 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               type="submit"
               form="closeticket"
               variant="contained"
-              loading={
-                closeIssueHandlerTicketsIsLoading ||
-                closeIssueHandlerTicketsIsFetching
-              }
-              disabled={
-                !watch("resolution") ||
-                watch("CategoryId").length === 0 ||
-                watch("SubCategoryId").length === 0 ||
-                (watch("ClosingDate") && !watch("BackdateRemarks"))
-              }
+              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
+              disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || (watch("ClosingDate") && !watch("BackdateRemarks"))}
             >
               Save Changes
             </LoadingButton>
@@ -1633,12 +1244,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
       {selectedImage && (
         <>
-          <Dialog
-            fullWidth
-            maxWidth="md"
-            open={isViewDialogOpen}
-            onClose={handleViewClose}
-          >
+          <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
             <DialogContent sx={{ height: "auto", padding: 0 }}>
               <Box sx={{ position: "relative" }}>
                 {/* Zoom controls */}
@@ -1656,12 +1262,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                     padding: "2px 6px",
                   }}
                 >
-                  <IconButton
-                    size="small"
-                    onClick={handleZoomOut}
-                    disabled={zoom <= MIN_ZOOM}
-                    sx={{ color: "#fff" }}
-                  >
+                  <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
                     <ZoomOut fontSize="small" />
                   </IconButton>
 
@@ -1676,20 +1277,11 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                     {Math.round(zoom * 100)}%
                   </Typography>
 
-                  <IconButton
-                    size="small"
-                    onClick={handleZoomIn}
-                    disabled={zoom >= MAX_ZOOM}
-                    sx={{ color: "#fff" }}
-                  >
+                  <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
                     <ZoomIn fontSize="small" />
                   </IconButton>
 
-                  <IconButton
-                    size="small"
-                    onClick={handleZoomReset}
-                    sx={{ color: "#fff" }}
-                  >
+                  <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
                     <RestartAlt fontSize="small" />
                   </IconButton>
                 </Stack>
@@ -1720,15 +1312,8 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                         userSelect: "none",
                         transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
                         transformOrigin: "center center",
-                        transition: isDragging
-                          ? "none"
-                          : "transform 0.15s ease",
-                        cursor:
-                          zoom > 1
-                            ? isDragging
-                              ? "grabbing"
-                              : "grab"
-                            : "default",
+                        transition: isDragging ? "none" : "transform 0.15s ease",
+                        cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
                       }}
                     />
                   )}
@@ -1736,11 +1321,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button
-                variant="contained"
-                onClick={handleViewClose}
-                sx={sx.cancelButton}
-              >
+              <Button variant="contained" onClick={handleViewClose} sx={sx.cancelButton}>
                 Close
               </Button>
             </DialogActions>
