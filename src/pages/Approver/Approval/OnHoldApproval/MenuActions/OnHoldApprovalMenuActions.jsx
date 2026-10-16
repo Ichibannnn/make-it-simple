@@ -4,26 +4,13 @@ import { Box, CircularProgress, IconButton, ListItemIcon, Menu, MenuItem } from 
 import { useEffect, useRef } from "react";
 import useDisclosure from "../../../../../hooks/useDisclosure";
 
-const OnHoldApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile, viewIsLoading, downloadIsLoading }) => {
+const OnHoldApprovalMenuActions = ({ fileName, onDownload, viewIsLoading, downloadIsLoading }) => {
   const ref = useRef(null);
 
   const { open, onToggle } = useDisclosure();
 
-  const onViewAction = (fileName) => {
-    onView(fileName);
-  };
-
   const onDownloadAction = (fileName) => {
     onDownload(fileName);
-  };
-
-  const handleMenuViewClick = (event, action) => {
-    if (viewIsLoading) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-    action();
   };
 
   const handleMenuDownloadClick = (event, action) => {
@@ -34,12 +21,6 @@ const OnHoldApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile, 
     }
     action();
   };
-
-  // useEffect(() => {
-  //   if (!viewIsLoading && !downloadIsLoading) {
-  //     onToggle();
-  //   }
-  // }, [viewIsLoading, downloadIsLoading]);
 
   return (
     <>
@@ -55,15 +36,6 @@ const OnHoldApprovalMenuActions = ({ fileName, onView, onDownload, isImageFile, 
         }}
         disableAutoFocusItem={true}
       >
-        <Box>
-          {isImageFile(fileName.name) && (
-            <MenuItem onClick={(e) => handleMenuViewClick(e, () => onViewAction(fileName))} disabled={viewIsLoading}>
-              <ListItemIcon>{viewIsLoading ? <CircularProgress size={18} /> : <VisibilityOutlined fontSize="small" />}</ListItemIcon>
-              View
-            </MenuItem>
-          )}
-        </Box>
-
         <MenuItem onClick={(e) => handleMenuDownloadClick(e, () => onDownloadAction(fileName))} disabled={downloadIsLoading}>
           <ListItemIcon>{downloadIsLoading ? <CircularProgress size={18} /> : <FileDownloadOutlined fontSize="small" />}</ListItemIcon>
           Download

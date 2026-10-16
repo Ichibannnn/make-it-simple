@@ -218,24 +218,32 @@ const TransferApprovalDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      setAttachments(
-        data?.transferAttachments?.map((item) => ({
-          ticketAttachmentId: item.ticketAttachmentId,
-          name: item.fileName,
-          size: (item.fileSize / (1024 * 1024)).toFixed(2),
-          link: item.attachment,
-        })),
-      );
+      setLoadingAttachment(true);
+      try {
+        setAttachments(
+          data?.transferAttachments?.map((item) => ({
+            ticketAttachmentId: item.ticketAttachmentId,
+            name: item.fileName,
+            size: (item.fileSize / (1024 * 1024)).toFixed(2),
+            link: item.attachment,
+          })),
+        );
 
-      setValue("transfer_To", {
-        userId: data?.transferToId,
-        fullname: data?.transfer_To,
-      });
+        setValue("transfer_To", {
+          userId: data?.transferToId,
+          fullname: data?.transfer_To,
+        });
 
-      if (data?.approver_Level >= 2) {
-        setValue("targetDate", data?.target_Date);
-      } else {
-        setValue("targetDate", data?.current_Target_Date);
+        if (data?.approver_Level >= 2) {
+          setValue("targetDate", data?.target_Date);
+        } else {
+          setValue("targetDate", data?.current_Target_Date);
+        }
+
+        setLoadingAttachment(false);
+      } catch (error) {
+        console.log("Err: ", error);
+        setLoadingAttachment(false);
       }
     }
   }, [data]);
