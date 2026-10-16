@@ -91,6 +91,17 @@ export const approverStyles = {
     padding: 1,
   },
 
+  formBox: {
+    background: t.panel,
+    width: "100%",
+    height: "auto",
+    border: `1px solid ${t.line}`,
+    borderRadius: "10px",
+    mt: 1,
+    padding: 2,
+    gap: 2,
+  },
+
   divider: {
     background: t.line,
     marginTop: 1,

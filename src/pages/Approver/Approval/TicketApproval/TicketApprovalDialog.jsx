@@ -181,14 +181,22 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
 
   useEffect(() => {
     if (data) {
-      setAttachments(
-        data?.closingAttachments?.map((item) => ({
-          ticketAttachmentId: item.ticketAttachmentId,
-          name: item.fileName,
-          size: (item.fileSize / (1024 * 1024)).toFixed(2),
-          link: item.attachment,
-        })),
-      );
+      setLoadingAttachment(true);
+
+      try {
+        setAttachments(
+          data?.closingAttachments?.map((item) => ({
+            ticketAttachmentId: item.ticketAttachmentId,
+            name: item.fileName,
+            size: (item.fileSize / (1024 * 1024)).toFixed(2),
+            link: item.attachment,
+          })),
+        );
+        setLoadingAttachment(false);
+      } catch (error) {
+        console.log("Err: ", error);
+        setLoadingAttachment(false);
+      }
     }
   }, [data]);
 
@@ -220,34 +228,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
         PaperProps={{ style: { overflow: "auto" } }}
       >
         <DialogContent>
-          {/* REQUESTOR */}
-          {/* <Stack sx={sx.header}>
-            <Stack direction="row" gap={1} alignItems="center">
-              <AccountCircleRounded sx={{ fontSize: isScreenSmall ? "50px" : "70px" }} />
-              <Stack>
-                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.primary.main, fontStyle: "italic", letterSpacing: 1, fontWeight: 400 }}>for closing:</Typography>
-                <Typography
-                  sx={{
-                    fontSize: isScreenSmall ? "13px" : "15px",
-                    color: "#6dc993",
-                    fontWeight: 700,
-                  }}
-                >
-                  {data?.fullname}
-                </Typography>
-                <Typography sx={{ fontSize: isScreenSmall ? "12px" : "14px", color: theme.palette.text.secondary }}>{data?.channel_Name}</Typography>
-              </Stack>
-            </Stack>
-
-            
-
-            <Stack direction="row" gap={0.5} alignItems="center">
-              <IconButton onClick={onCloseHandler}>
-                <Close />
-              </IconButton>
-            </Stack>
-          </Stack> */}
-
+          {/* Requestor */}
           <Stack sx={sx.header}>
             <Stack direction="row" gap={1} alignItems="center">
               <Avatar sx={sx.avatarIcon}>{trimLetters(data?.fullname)}</Avatar>

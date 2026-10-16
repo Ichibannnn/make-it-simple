@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { formStyle as sx } from "./style/formStyle";
 
-import { useDeleteRequestorAttachmentMutation, useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
+import { useLazyGetTechniciansQuery } from "../../../features/api_request/concerns/concernApi";
 import { useCloseIssueHandlerTicketsMutation } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { useDispatch, useSelector } from "react-redux";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
