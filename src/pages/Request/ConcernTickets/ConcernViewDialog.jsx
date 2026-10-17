@@ -7,14 +7,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
   IconButton,
   MenuItem,
   Select,
   Stack,
   TextField,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import {
   AttachFile,
@@ -62,7 +60,6 @@ import { useLazyGetDepartmentQuery } from "../../../features/api masterlist/depa
 import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitApi";
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
-import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
 import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";

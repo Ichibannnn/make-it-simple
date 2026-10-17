@@ -1,5 +1,29 @@
-import { Avatar, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, Check, Close, GetAppOutlined, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  IconButton,
+  Skeleton,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  AccountCircleRounded,
+  AttachFileOutlined,
+  Check,
+  Close,
+  GetAppOutlined,
+  RestartAlt,
+  ZoomIn,
+  ZoomOut,
+} from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { toast } from "sonner";
@@ -11,7 +35,10 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
 import { useApproveOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
-import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
+import {
+  useLazyGetDownloadAttachmentQuery,
+  useLazyGetViewAttachmentQuery,
+} from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 
 import OnHoldApprovalMenuActions from "./MenuActions/OnHoldApprovalMenuActions";
@@ -36,11 +63,18 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   // useSignalRConnection();
 
-  const [approveOnHold, { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching }] = useApproveOnHoldMutation();
+  const [
+    approveOnHold,
+    { isLoading: approveOnHoldIsLoading, isFetching: approveOnHoldIsFetching },
+  ] = useApproveOnHoldMutation();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
 
-  const { open: disapproveOpen, onToggle: disapproveOnToggle, onClose: disapproveOnClose } = useDisclosure();
+  const {
+    open: disapproveOpen,
+    onToggle: disapproveOnToggle,
+    onClose: disapproveOnClose,
+  } = useDisclosure();
 
   const onApproveAction = () => {
     const approvePayload = {
@@ -168,9 +202,15 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
   };
 
   // Filter once per attachments change instead of on every render
-  const imageAttachments = useMemo(() => attachments?.filter((a) => isImagePreview(a.name)), [attachments]);
+  const imageAttachments = useMemo(
+    () => attachments?.filter((a) => isImagePreview(a.name)),
+    [attachments],
+  );
 
-  const otherAttachments = useMemo(() => attachments?.filter((a) => !isImagePreview(a.name)), [attachments]);
+  const otherAttachments = useMemo(
+    () => attachments?.filter((a) => !isImagePreview(a.name)),
+    [attachments],
+  );
 
   useEffect(() => {
     if (data) {
@@ -223,9 +263,13 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
               <Avatar sx={sx.avatarIcon}>{trimLetters(data?.fullname)}</Avatar>
 
               <Stack>
-                <Typography sx={sx.secondaryText}>For on hold approval</Typography>
+                <Typography sx={sx.secondaryText}>
+                  For on hold approval
+                </Typography>
                 <Typography sx={sx.requestorText}>{data?.fullname}</Typography>
-                <Typography sx={sx.channelText}>{data?.channel_Name}</Typography>
+                <Typography sx={sx.channelText}>
+                  {data?.channel_Name}
+                </Typography>
               </Stack>
             </Stack>
 
@@ -250,7 +294,9 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.descDetailBox}>
-                      <Typography sx={sx.description}>{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                      <Typography
+                        sx={sx.description}
+                      >{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
                     </Box>
                   </Stack>
 
@@ -266,12 +312,14 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
                     <Box sx={sx.descDetailBox}>
                       <Typography sx={sx.description}>
-                        {data?.concern_Details?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
+                        {data?.concern_Details
+                          ?.split("\r\n")
+                          .map((line, index) => (
+                            <span key={index}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
                       </Typography>
                     </Box>
                   </Stack>
@@ -307,7 +355,9 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.descDetailBox}>
-                      <Typography sx={sx.description}>{data?.channel_Name}</Typography>
+                      <Typography sx={sx.description}>
+                        {data?.channel_Name}
+                      </Typography>
                     </Box>
                   </Stack>
 
@@ -322,7 +372,11 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
                     <Box sx={sx.descDetailBox}>
                       {data?.getOnHoldTicketCategories?.map((item, i) => (
-                        <Typography sx={sx.description}>{item.category_Description ? item.category_Description : "--"}</Typography>
+                        <Typography sx={sx.description}>
+                          {item.category_Description
+                            ? item.category_Description
+                            : "--"}
+                        </Typography>
                       ))}
                     </Box>
                   </Stack>
@@ -339,7 +393,11 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
 
                     <Box sx={sx.descDetailBox}>
                       {data?.getOnHoldTicketSubCategories?.map((item, i) => (
-                        <Typography sx={sx.description}>{item.subCategory_Description ? item.subCategory_Description : "--"}</Typography>
+                        <Typography sx={sx.description}>
+                          {item.subCategory_Description
+                            ? item.subCategory_Description
+                            : "--"}
+                        </Typography>
                       ))}
                     </Box>
                   </Stack>
@@ -385,7 +443,9 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                           onDownload={handleDownloadAttachment}
                           viewIsLoading={viewIsLoading}
                           downloadIsLoading={downloadIsLoading}
-                          isOpening={loadingAttachmentId === fileName.ticketAttachmentId}
+                          isOpening={
+                            loadingAttachmentId === fileName.ticketAttachmentId
+                          }
                         />
                       ))}
                     </Box>
@@ -397,8 +457,12 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                       {getAttachmentIcon(fileName)}
                       <Box sx={sx.attachmentNameBox}>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
-                          <Typography sx={sx.fontSize}>{fileName.name}</Typography>
-                          <Typography sx={sx.fontSize}>{fileName.size} Mb</Typography>
+                          <Typography sx={sx.fontSize}>
+                            {fileName.name}
+                          </Typography>
+                          <Typography sx={sx.fontSize}>
+                            {fileName.size} Mb
+                          </Typography>
                         </Box>
 
                         <Box>
@@ -428,9 +492,18 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                       alignItems: "center",
                     }}
                   >
-                    <Skeleton animation="wave" variant="circular" width={45} height={40} />
+                    <Skeleton
+                      animation="wave"
+                      variant="circular"
+                      width={45}
+                      height={40}
+                    />
                     <Stack sx={{ width: "100%" }}>
-                      <Skeleton animation="wave" height={20} style={{ marginBottom: 6 }} />
+                      <Skeleton
+                        animation="wave"
+                        height={20}
+                        style={{ marginBottom: 6 }}
+                      />
                       <Skeleton animation="wave" height={20} />
                     </Stack>
                   </Stack>
@@ -441,436 +514,63 @@ const OnHoldApprovalDialog = ({ data, open, onClose }) => {
                 <Stack sx={sx.noAttachmentBox}>
                   <Stack sx={sx.attachmentContent}>
                     <AttachFileOutlined sx={sx.titleSubIcon} />
-                    <Typography sx={sx.titleSubText}>No attached file</Typography>
+                    <Typography sx={sx.titleSubText}>
+                      No attached file
+                    </Typography>
                   </Stack>
                 </Stack>
               )}
-            </Stack>
-          </Stack>
-
-          <Stack gap={2} sx={{ marginTop: 2, justifyContent: "space-between" }}>
-            <Stack sx={{ background: theme.palette.bgForm.black2, padding: 2, borderRadius: "20px" }}>
-              {/* CONCERN DETAILS */}
-              {isScreenSmall ? (
-                <>
-                  <Stack
-                    sx={{
-                      width: "100%",
-                      padding: 1,
-                      border: "1px solid #2D3748",
-                      borderRadius: "20px 20px 0 0",
-                    }}
-                  >
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Number:</Typography>
-                    </Box>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Ticket Description:</Typography>
-                    </Box>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{
-                          color: theme.palette.text.main,
-                          fontWeight: "500",
-                          fontSize: "12px",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {data?.concern_Details?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}> Reason:</Typography>
-                    </Box>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography
-                        sx={{
-                          color: theme.palette.text.main,
-                          fontWeight: "500",
-                          fontSize: "12px",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {data?.reason?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Channel:</Typography>
-                    </Box>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "12px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack sx={{ width: "100%", padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Category:</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
-                      {data?.getOnHoldTicketCategories?.map((item, i) => (
-                        <Box key={i}>
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={item.category_Description ? item.category_Description : "-"}
-                            sx={{
-                              backgroundColor: theme.palette.bgForm.black_1,
-                              fontSize: "11px",
-                              color: "#ffffff",
-                              borderRadius: "none",
-                              maxWidth: "300px",
-                            }}
-                          />
-                        </Box>
-                      ))}
-                    </Box>
-                  </Stack>
-
-                  <Stack
-                    sx={{
-                      width: "100%",
-                      padding: 1,
-                      border: "1px solid #2D3748",
-                      borderRadius: "0 0 20px 20px ",
-                    }}
-                  >
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.secondary, fontWeight: "500", fontSize: "12px" }}>Sub Category:</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1 }}>
-                      {data?.getOnHoldTicketSubCategories?.map((item, i) => (
-                        <Box key={i}>
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                            sx={{
-                              backgroundColor: theme.palette.bgForm.black_1,
-                              fontSize: "11px",
-                              color: "#ffffff",
-                              borderRadius: "none",
-                              maxWidth: "300px",
-                            }}
-                          />
-                        </Box>
-                      ))}
-                    </Box>
-                  </Stack>
-                </>
-              ) : (
-                <>
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748", borderRadius: "20px 20px 0 0" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          textAlign: "right",
-                          color: theme.palette.text.secondary,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Ticket Number:
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          textAlign: "right",
-                          color: theme.palette.text.secondary,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Ticket Description:
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          color: theme.palette.text.main,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {data?.concern_Details?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          textAlign: "right",
-                          color: theme.palette.text.secondary,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Reason:
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          color: theme.palette.text.main,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {data?.reason?.split("\r\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          textAlign: "right",
-                          color: theme.palette.text.secondary,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Channel:
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Typography sx={{ color: theme.palette.text.main, fontWeight: "500", fontSize: "14px" }}>{data?.channel_Name}</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          textAlign: "right",
-                          color: theme.palette.text.secondary,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Category:
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                        {data?.getOnHoldTicketCategories?.map((item, i) => (
-                          <Box key={i}>
-                            <Chip
-                              variant="filled"
-                              size="small"
-                              label={item.category_Description ? item.category_Description : "-"}
-                              sx={{
-                                backgroundColor: theme.palette.bgForm.black_1,
-                                color: "#ffffff",
-                                borderRadius: "none",
-                                maxWidth: "300px",
-                              }}
-                            />
-                          </Box>
-                        ))}
-                      </Stack>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction="row" sx={{ padding: 1, border: "1px solid #2D3748" }}>
-                    <Box sx={{ width: "15%", ml: 2 }}>
-                      <Typography
-                        sx={{
-                          textAlign: "right",
-                          color: theme.palette.text.secondary,
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Sub Category:
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: "10%" }} />
-                    <Box width={{ width: "75%", ml: 2 }}>
-                      <Stack direction="row" gap={1} sx={{ width: "100%" }}>
-                        {data?.getOnHoldTicketSubCategories?.map((item, i) => (
-                          <Box key={i}>
-                            <Chip
-                              variant="filled"
-                              size="small"
-                              label={item.subCategory_Description ? item.subCategory_Description : "-"}
-                              sx={{
-                                backgroundColor: theme.palette.bgForm.black_1,
-                                color: "#ffffff",
-                                borderRadius: "none",
-                                maxWidth: "300px",
-                              }}
-                            />
-                          </Box>
-                        ))}
-                      </Stack>
-                    </Box>
-                  </Stack>
-                </>
-              )}
-
-              {/* ATTACHMENTS */}
-              <Stack
-                marginTop={3}
-                padding={4}
-                sx={{
-                  border: "1px solid #2D3748",
-                  borderRadius: "20px",
-                }}
-              >
-                <Stack direction="row" gap={1} alignItems="center">
-                  <GetAppOutlined sx={{ color: theme.palette.text.secondary }} />
-
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      color: theme.palette.text.secondary,
-                    }}
-                  >
-                    Attachment(s):
-                  </Typography>
-                </Stack>
-
-                {!attachments?.length ? (
-                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                    <Stack direction="row" gap={0.5} justifyContent="center">
-                      <AttachFileOutlined sx={{ color: theme.palette.text.secondary }} />
-                      <Typography sx={{ color: theme.palette.text.secondary }}>No attached file</Typography>
-                    </Stack>
-                  </Stack>
-                ) : (
-                  <Stack sx={{ flexDirection: "column", maxHeight: "auto" }}>
-                    {attachments?.map((fileName, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          width: "100%",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          padding: 1,
-                        }}
-                      >
-                        {getAttachmentIcon(fileName)}
-                        <Box
-                          sx={{
-                            width: "100%",
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: 0.5,
-                            borderBottom: "1px solid #2D3748",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <Typography sx={{ fontSize: "14px", wordBreak: "break-word" }}>{fileName.name}</Typography>
-
-                            <Typography
-                              sx={{
-                                fontSize: isScreenSmall ? "10px" : "12px",
-                                color: theme.palette.text.secondary,
-                              }}
-                            >
-                              {fileName.size} Mb
-                            </Typography>
-                          </Box>
-
-                          <Box>
-                            <OnHoldApprovalMenuActions
-                              fileName={fileName}
-                              onView={handleViewImage}
-                              onDownload={handleDownloadAttachment}
-                              isImageFile={isImageFile}
-                              viewIsLoading={viewIsLoading}
-                              downloadIsLoading={downloadIsLoading}
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    ))}
-                  </Stack>
-                )}
-              </Stack>
             </Stack>
           </Stack>
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton type="submit" variant="outlined" onClick={onDisapproveHandler} color="error" loading={approveOnHoldIsLoading || approveOnHoldIsFetching} startIcon={<Close />}>
+          <LoadingButton
+            type="submit"
+            variant="outlined"
+            onClick={onDisapproveHandler}
+            color="error"
+            loading={approveOnHoldIsLoading || approveOnHoldIsFetching}
+            startIcon={<Close />}
+          >
             Disapprove
           </LoadingButton>
 
-          <LoadingButton variant="contained" color="success" onClick={onApproveAction} loading={approveOnHoldIsLoading || approveOnHoldIsFetching} startIcon={<Check />}>
+          <LoadingButton
+            variant="contained"
+            color="success"
+            onClick={onApproveAction}
+            loading={approveOnHoldIsLoading || approveOnHoldIsFetching}
+            startIcon={<Check />}
+          >
             Approve
           </LoadingButton>
         </DialogActions>
 
-        <DisapprovedOnHoldDialog data={disapproveData} open={disapproveOpen} onClose={disapproveOnClose} approvalOnClose={onCloseHandler} />
+        <DisapprovedOnHoldDialog
+          data={disapproveData}
+          open={disapproveOpen}
+          onClose={disapproveOnClose}
+          approvalOnClose={onCloseHandler}
+        />
       </Dialog>
 
       {/* Dialog to view image */}
-      {selectedImage && <ImageViewerDialog imageUrl={selectedImage} open={isViewDialogOpen} onClose={handleViewClose} />}
+      {selectedImage && (
+        <ImageViewerDialog
+          imageUrl={selectedImage}
+          open={isViewDialogOpen}
+          onClose={handleViewClose}
+        />
+      )}
     </>
   );
 };
 
 export default OnHoldApprovalDialog;
 
-const isImagePreview = (fileName) => /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+const isImagePreview = (fileName) =>
+  /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
 
 const EXT_TO_MIME = {
   png: "image/png",
@@ -884,7 +584,11 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.25;
 
-const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onClose }) {
+const ImageViewerDialog = memo(function ImageViewerDialog({
+  imageUrl,
+  open,
+  onClose,
+}) {
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -892,8 +596,10 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
   const dragStartRef = useRef({ x: 0, y: 0 });
   const positionStartRef = useRef({ x: 0, y: 0 });
 
-  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () =>
+    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () =>
+    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   const handleZoomReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
@@ -904,7 +610,11 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
     if (!viewport) return;
     const onWheel = (event) => {
       event.preventDefault();
-      setZoom((z) => (event.deltaY < 0 ? Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)) : Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2))));
+      setZoom((z) =>
+        event.deltaY < 0
+          ? Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2))
+          : Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)),
+      );
     };
     viewport.addEventListener("wheel", onWheel, { passive: false });
     return () => viewport.removeEventListener("wheel", onWheel);
@@ -913,7 +623,8 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
   // Snap the pan offset back to center whenever zoom returns to 100% or below
   // (only updates state if it actually changes)
   useEffect(() => {
-    if (zoom <= 1) setPosition((p) => (p.x === 0 && p.y === 0 ? p : { x: 0, y: 0 }));
+    if (zoom <= 1)
+      setPosition((p) => (p.x === 0 && p.y === 0 ? p : { x: 0, y: 0 }));
   }, [zoom]);
 
   // Dragging to pan: only active once zoomed in. Listens on window so a drag
@@ -923,8 +634,10 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
 
     const handleMouseMove = (event) => {
       setPosition({
-        x: positionStartRef.current.x + (event.clientX - dragStartRef.current.x),
-        y: positionStartRef.current.y + (event.clientY - dragStartRef.current.y),
+        x:
+          positionStartRef.current.x + (event.clientX - dragStartRef.current.x),
+        y:
+          positionStartRef.current.y + (event.clientY - dragStartRef.current.y),
       });
     };
     const handleMouseUp = () => setIsDragging(false);
@@ -964,7 +677,12 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
               padding: "2px 6px",
             }}
           >
-            <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
+            <IconButton
+              size="small"
+              onClick={handleZoomOut}
+              disabled={zoom <= MIN_ZOOM}
+              sx={{ color: "#fff" }}
+            >
               <ZoomOut fontSize="small" />
             </IconButton>
 
@@ -979,11 +697,20 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
               {Math.round(zoom * 100)}%
             </Typography>
 
-            <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
+            <IconButton
+              size="small"
+              onClick={handleZoomIn}
+              disabled={zoom >= MAX_ZOOM}
+              sx={{ color: "#fff" }}
+            >
               <ZoomIn fontSize="small" />
             </IconButton>
 
-            <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
+            <IconButton
+              size="small"
+              onClick={handleZoomReset}
+              sx={{ color: "#fff" }}
+            >
               <RestartAlt fontSize="small" />
             </IconButton>
           </Stack>
@@ -1013,7 +740,8 @@ const ImageViewerDialog = memo(function ImageViewerDialog({ imageUrl, open, onCl
                 transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
                 transformOrigin: "center center",
                 transition: isDragging ? "none" : "transform 0.15s ease",
-                cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+                cursor:
+                  zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
               }}
             />
           </Box>
@@ -1047,17 +775,28 @@ const createThumbnailBlob = async (blob, mime) => {
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(bitmap.width * scale);
     canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    canvas
+      .getContext("2d")
+      .drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
     const outType = mime === "image/jpeg" ? "image/jpeg" : "image/png";
-    const thumb = await new Promise((resolve) => canvas.toBlob(resolve, outType, 0.8));
+    const thumb = await new Promise((resolve) =>
+      canvas.toBlob(resolve, outType, 0.8),
+    );
     return thumb || typed;
   } catch {
     return typed; // fall back to the original file
   }
 };
 
-const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({ fileName, onView, onDownload, viewIsLoading, downloadIsLoading, isOpening }) {
+const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({
+  fileName,
+  onView,
+  onDownload,
+  viewIsLoading,
+  downloadIsLoading,
+  isOpening,
+}) {
   const [getAttachmentPreview] = useLazyGetViewAttachmentQuery();
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewError, setPreviewError] = useState(false);
@@ -1069,11 +808,16 @@ const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({ fi
 
     (async () => {
       try {
-        const response = await getAttachmentPreview(fileName?.ticketAttachmentId);
+        const response = await getAttachmentPreview(
+          fileName?.ticketAttachmentId,
+        );
         if (cancelled) return;
 
         if (response?.data) {
-          const mime = EXT_TO_MIME[ext] || response.data.type || "application/octet-stream";
+          const mime =
+            EXT_TO_MIME[ext] ||
+            response.data.type ||
+            "application/octet-stream";
           const thumbBlob = await createThumbnailBlob(response.data, mime);
           if (cancelled) return;
           objectUrl = URL.createObjectURL(thumbBlob);
@@ -1121,7 +865,14 @@ const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({ fi
           backgroundColor: "rgba(0,0,0,0.55)",
         }}
       >
-        <OnHoldApprovalMenuActions fileName={fileName} onView={onView} onDownload={onDownload} isImageFile={isImagePreview} viewIsLoading={viewIsLoading} downloadIsLoading={downloadIsLoading} />
+        <OnHoldApprovalMenuActions
+          fileName={fileName}
+          onView={onView}
+          onDownload={onDownload}
+          isImageFile={isImagePreview}
+          viewIsLoading={viewIsLoading}
+          downloadIsLoading={downloadIsLoading}
+        />
       </Box>
 
       <Box
@@ -1158,7 +909,11 @@ const ImageAttachmentPreviewCard = memo(function ImageAttachmentPreviewCard({ fi
               justifyContent: "center",
             }}
           >
-            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
+            <CircularProgress
+              size={20}
+              thickness={4}
+              sx={{ color: theme.palette.text.secondary }}
+            />
           </Box>
         )}
 
