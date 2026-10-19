@@ -90,6 +90,12 @@ export const global = {
     border: "2px solid #293242",
     paddingY: "14px",
   },
+  tablePagination: {
+    color: "#A0AEC0",
+    fontWeight: 400,
+    background: "#1C2536",
+    borderRadius: "0px 0px 20px 20px",
+  },
 
   customButtonText: { fontSize: "12px" },
   ticketNoText: {
@@ -98,5 +104,24 @@ export const global = {
     background: "linear-gradient(90deg, #5c3ced, #ff8cc6)",
     WebkitBackgroundClip: "text",
     color: "transparent",
+  },
+
+  // Card Sections
+  cardDetailBox: {
+    width: "20%",
+  },
+
+  cardSpacer: {
+    width: "10%",
+  },
+
+  cardDescDetailBox: {
+    width: "60%",
+  },
+
+  cardRow: {
+    flexDirection: "row",
+    gap: 0.5,
+    alignItems: "center",
   },
 };

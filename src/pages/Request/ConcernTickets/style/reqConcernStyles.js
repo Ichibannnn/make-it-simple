@@ -1,4 +1,4 @@
-import { alpha, keyframes } from "@mui/system";
+import { alpha, border, flexDirection, justifyContent, keyframes, width } from "@mui/system";
 import { theme } from "../../../../theme/theme";
 
 export const tokens = {
@@ -31,6 +31,33 @@ const pulse = keyframes`
 `;
 
 export const reqConcernStyles = {
+  // Main Page
+  mainContainer: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    backgroundColor: theme.palette.bgForm.black1,
+    color: "#fff",
+    padding: { xs: "20px", md: "24px 94px 34px 94px" },
+  },
+
+  header: {
+    width: "100%",
+    justifyContent: "space-between",
+    flexDirection: { xs: "column", md: "row" },
+    gap: 1,
+  },
+
+  selectionBox: {
+    padding: "10px 20px",
+    backgroundColor: theme.palette.bgForm.black2,
+    borderRadius: "20px",
+    marginBottom: 0.5,
+    marginTop: 0.5,
+    justifyContent: "space-between",
+    gap: 0.5,
+  },
+
   // Request Concern Table
   tableCellHeader: {
     background: t.tablebg,
@@ -57,7 +84,8 @@ export const reqConcernStyles = {
   cards: {
     backgroundColor: theme.palette.bgForm.black3,
     borderRadius: "15px",
-    borderColor: "#2D3748",
+    border: "1px solid #2D3748",
+    // borderColor: "#2D3748",
   },
 
   cardContent: {
@@ -80,6 +108,7 @@ export const reqConcernStyles = {
     fontSize: "0.775rem",
     lineHeight: 1.57,
     color: theme.palette.text.main,
+    wordBreak: "break-word",
   },
 
   cardChip: {
@@ -204,11 +233,7 @@ export const reqConcernStyles = {
   statusText: ({ tone, next }) => ({
     fontSize: { xs: 14, md: 16 },
     fontWeight: 800,
-    color: next
-      ? t.violet
-      : toneColor[tone] === t.muted
-        ? t.text
-        : toneColor[tone],
+    color: next ? t.violet : toneColor[tone] === t.muted ? t.text : toneColor[tone],
   }),
 
   historyDesc: { fontSize: { xs: 12, md: 14 }, color: t.muted, mt: 0.25 },
@@ -241,10 +266,7 @@ export const reqConcernStyles = {
     mt: 1.5,
     p: 1.25,
     borderRadius: "8px",
-    bgcolor: alpha(
-      toneColor[tone] === t.muted ? t.violet : toneColor[tone],
-      0.08,
-    ),
+    bgcolor: alpha(toneColor[tone] === t.muted ? t.violet : toneColor[tone], 0.08),
     border: `1px solid ${alpha(toneColor[tone] === t.muted ? t.violet : toneColor[tone], 0.3)}`,
   }),
 
@@ -281,4 +303,16 @@ export const reqConcernStyles = {
   },
 
   emptyText: { fontSize: 13, color: t.muted, textAlign: "center", py: 3 },
+
+  titleDetailBox: {
+    width: "20%",
+  },
+
+  spacer: {
+    width: "10%",
+  },
+
+  descDetailBox: {
+    width: "60%",
+  },
 };

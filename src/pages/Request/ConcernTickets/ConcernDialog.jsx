@@ -3,13 +3,10 @@ import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
-  FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -20,17 +17,19 @@ import {
   Stack,
   TextField,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
+import { AddOutlined, Close, CloseOutlined, FiberManualRecord, RemoveCircleOutline, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import * as yup from "yup";
 import moment from "moment";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { toast } from "sonner";
+import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
+import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
 
 import Swal from "sweetalert2";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -39,6 +38,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useCreateEditRequestorConcernMutation, useLazyGetBackjobTicketsQuery } from "../../../features/api_request/concerns/concernApi";
+
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
@@ -50,20 +50,11 @@ import { useLazyGetLocationWithPaginationQuery } from "../../../features/api mas
 import { useGetUsersQuery, useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import { AddOutlined, Close, CloseOutlined, FiberManualRecord, RemoveCircleOutline, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 import { useLazyGetServiceProviderWithParamsQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
-import ConcernMenuActions from "./ConcernMenuActions";
-import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
-import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
+import RequestDialogSkeleton from "./RequestConcernSkeleton";
 
 const ConcernDialog = ({ open, onClose }) => {
   const [userInformation, setUserInformation] = useState(null);
-
-  // const [attachments, setAttachments] = useState([]);
-
-  // const [selectedImage, setSelectedImage] = useState(null);
-  // const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-
   const [attachments, setAttachments] = useState([]);
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -82,7 +73,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const dateNeededValidation = new moment();
-  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
+
   const userId = useSelector((state) => state?.user?.id);
   const userDetails = useSelector((state) => state?.user);
 
@@ -122,9 +113,9 @@ const ConcernDialog = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef();
 
+  const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
   const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] = useCreateEditRequestorConcernMutation();
 
-  const { data: userApiData, isSuccess: userApiIsSuccess } = useGetUsersQuery();
   const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
   const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
   const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
@@ -437,12 +428,6 @@ const ConcernDialog = ({ open, onClose }) => {
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
-  const assignCheckboxHandler = (event) => {
-    if (event.target.checked === false) {
-      setValue("TargetDate", null);
-    }
-  };
-
   const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
   const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   const handleZoomReset = () => {
@@ -574,8 +559,6 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [subCategoryData]);
 
   useEffect(() => {
-    // if (!serviceProviderIsSuccess) getServiceProvider({ Status: true });
-
     if (userDetails?.userRoleName === "Helpdesk Associate" || userDetails?.userRoleName === "Helpdesk Associate / Technician") {
       setValue("ServiceProvider", {
         id: userDetails?.serviceProviders?.[0]?.id,
@@ -595,99 +578,7 @@ const ConcernDialog = ({ open, onClose }) => {
   }, [userDetails]);
 
   if (!watch("UserId")) {
-    return (
-      <Dialog
-        fullWidth
-        maxWidth="lg"
-        open={open}
-        onClose={(event, reason) => {
-          if (reason === "backdropClick") {
-            event.stopPropagation();
-            return;
-          }
-          onCloseAction();
-        }}
-        disableEscapeKeyDown={false}
-        sx={{ borderRadius: "none", padding: 0, backdropFilter: "blur(5px)" }}
-        PaperProps={{ style: { overflow: "auto" } }}
-      >
-        <DialogContent sx={{ paddingBottom: 8 }}>
-          <Stack direction="column" spacing={3} sx={{ padding: 2, minHeight: "700px" }}>
-            {/* Title */}
-            <Skeleton variant="text" width={200} height={30} />
-
-            {/* First row: Request Type & Severity */}
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-            </Grid>
-
-            {/* Section: Requestor Details */}
-            <Skeleton variant="text" width={160} height={25} />
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-            </Grid>
-
-            {/* Section: Concern Details */}
-            <Skeleton variant="text" width={160} height={25} />
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-            </Grid>
-
-            {/* Date + Asset Tag */}
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Skeleton height={50} />
-              </Grid>
-            </Grid>
-
-            {/* Concern Details (Textarea) */}
-            <Skeleton height={120} />
-
-            {/* Actions */}
-            <Stack direction="row" justifyContent="flex-end" spacing={2} mt={2}>
-              <Skeleton width={100} height={40} />
-              <Skeleton width={100} height={40} />
-            </Stack>
-          </Stack>
-        </DialogContent>
-      </Dialog>
-    );
+    return <RequestDialogSkeleton open={open} onCloseAction={onCloseAction} />;
   }
 
   return (
@@ -1376,7 +1267,7 @@ const ConcernDialog = ({ open, onClose }) => {
 
                   <Stack sx={{ width: "100%", mt: 1 }}>
                     <Button size="small" variant="outlined" onClick={() => append("")} startIcon={<AddOutlined />}>
-                      Add Concern
+                      Add another concern
                     </Button>
                   </Stack>
                 </Stack>

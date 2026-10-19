@@ -155,7 +155,7 @@ const theme = createTheme({
           fontSize: "0.875rem",
           fontWeight: "600px",
           borderRadius: "5px",
-          textTransform: "capitalize",
+          textTransform: "none",
           boxSizing: "border-box",
           ":disabled": {
             backgroundColor: "#3f305f",
