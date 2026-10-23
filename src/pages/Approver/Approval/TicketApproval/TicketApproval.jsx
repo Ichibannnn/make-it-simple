@@ -47,13 +47,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   // useSignalRConnection();
 
   const { open, onToggle, onClose } = useDisclosure();
-  const {
-    open: disapproveSelectedOpen,
-    onToggle: disapproveSelectedOnToggle,
-    onClose: disapproveSelectedOnClose,
-  } = useDisclosure();
-  const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] =
-    useApproveTicketMutation();
+  const { open: disapproveSelectedOpen, onToggle: disapproveSelectedOnToggle, onClose: disapproveSelectedOnClose } = useDisclosure();
+  const [approveTicket, { isLoading: approveTicketIsLoading, isFetching: approveTicketIsFetching }] = useApproveTicketMutation();
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -84,9 +79,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
   };
 
   const handleSelectTicket = (item) => {
-    setSelectedTickets((prevSelected) =>
-      prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item],
-    );
+    setSelectedTickets((prevSelected) => (prevSelected.includes(item) ? prevSelected.filter((id) => id !== item) : [...prevSelected, item]));
   };
 
   const handleApproveSelected = () => {
@@ -169,23 +162,11 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
           </Stack>
 
           <Stack direction="row" gap={0.5}>
-            <LoadingButton
-              variant="contained"
-              color="success"
-              onClick={handleApproveSelected}
-              loading={approveTicketIsLoading || approveTicketIsFetching}
-              startIcon={<Check />}
-            >
+            <LoadingButton variant="contained" color="success" onClick={handleApproveSelected} loading={approveTicketIsLoading || approveTicketIsFetching} startIcon={<Check />}>
               Approve
             </LoadingButton>
 
-            <LoadingButton
-              variant="contained"
-              color="error"
-              onClick={handleDisapproveSelected}
-              loading={approveTicketIsLoading || approveTicketIsFetching}
-              startIcon={<Close />}
-            >
+            <LoadingButton variant="contained" color="error" onClick={handleDisapproveSelected} loading={approveTicketIsLoading || approveTicketIsFetching} startIcon={<Close />}>
               Disapprove
             </LoadingButton>
           </Stack>
@@ -206,14 +187,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
             }}
           >
             <Checkbox
-              indeterminate={
-                selectedTickets.length > 0 &&
-                selectedTickets.length < (data?.value?.closingTicket?.length || 0)
-              }
-              checked={
-                (data?.value?.closingTicket?.length || 0) > 0 &&
-                selectedTickets.length === (data?.value?.closingTicket?.length || 0)
-              }
+              indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.closingTicket?.length || 0)}
+              checked={(data?.value?.closingTicket?.length || 0) > 0 && selectedTickets.length === (data?.value?.closingTicket?.length || 0)}
               onChange={handleSelectAll}
               inputProps={{ "aria-label": "select all tickets" }}
             />
@@ -263,19 +238,9 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                         <Stack spacing={1} onClick={() => onViewAction(item)}>
                           <Stack mb={2}>
-                            <Typography
-                              sx={{ fontWeight: 500, fontSize: "17px", color: theme.palette.primary.main }}
-                            >
-                              {item.fullname}
-                            </Typography>
-                            <Typography sx={{ fontWeight: 500, fontSize: "14px", color: "#EDF2F7" }}>
-                              {item.department_Name}
-                            </Typography>
-                            <Typography
-                              sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}
-                            >
-                              {item.channel_Name}
-                            </Typography>
+                            <Typography sx={{ fontWeight: 500, fontSize: "17px", color: theme.palette.primary.main }}>{item.fullname}</Typography>
+                            <Typography sx={{ fontWeight: 500, fontSize: "14px", color: "#EDF2F7" }}>{item.department_Name}</Typography>
+                            <Typography sx={{ fontWeight: 500, fontSize: "12px", color: theme.palette.text.secondary }}>{item.channel_Name}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -296,9 +261,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                                 lineHeight: 1.57,
                                 color: theme.palette.text.main,
                               }}
-                            >{`${moment(item.requestedAt).format(
-                              "YYYY",
-                            )}-${item.ticketConcernId}`}</Typography>
+                            >{`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -373,9 +336,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                               }}
                             >
                               {" "}
-                              {item.getClosingTicketCategories
-                                ?.map((item) => item.category_Description)
-                                .join(", ")}
+                              {item.getClosingTicketCategories?.map((item) => item.category_Description).join(", ")}
                             </Typography>
                           </Stack>
 
@@ -398,9 +359,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                                 color: theme.palette.text.main,
                               }}
                             >
-                              {item.getClosingTicketSubCategories
-                                ?.map((item) => item.subCategory_Description)
-                                .join(", ")}
+                              {item.getClosingTicketSubCategories?.map((item) => item.subCategory_Description).join(", ")}
                             </Typography>
                           </Stack>
 
@@ -595,11 +554,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
             {isError && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -658,14 +613,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                     align="center"
                   >
                     <Checkbox
-                      indeterminate={
-                        selectedTickets.length > 0 &&
-                        selectedTickets.length < (data?.value?.closingTicket?.length || 0)
-                      }
-                      checked={
-                        (data?.value?.closingTicket?.length || 0) > 0 &&
-                        selectedTickets.length === (data?.value?.closingTicket?.length || 0)
-                      }
+                      indeterminate={selectedTickets.length > 0 && selectedTickets.length < (data?.value?.closingTicket?.length || 0)}
+                      checked={(data?.value?.closingTicket?.length || 0) > 0 && selectedTickets.length === (data?.value?.closingTicket?.length || 0)}
                       onChange={handleSelectAll}
                       inputProps={{ "aria-label": "select all tickets" }}
                     />{" "}
@@ -844,43 +793,23 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                         >
                           <Stack gap={0.5}>
                             <Stack>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                Channel:
-                              </Typography>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>
-                                {item.channel_Name}
-                              </Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Channel:</Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>{item.channel_Name}</Typography>
                             </Stack>
 
                             <Stack>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                Category:
-                              </Typography>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>
-                                {item.getClosingTicketCategories
-                                  ?.map((item) => item.category_Description)
-                                  .join(", ")}
-                              </Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>{item.getClosingTicketCategories?.map((item) => item.category_Description).join(", ")}</Typography>
                             </Stack>
 
                             <Stack>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                Sub Category:
-                              </Typography>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>
-                                {item.getClosingTicketSubCategories
-                                  ?.map((item) => item.subCategory_Description)
-                                  .join(", ")}
-                              </Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>{item.getClosingTicketSubCategories?.map((item) => item.subCategory_Description).join(", ")}</Typography>
                             </Stack>
 
                             <Stack>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                Concern Category:
-                              </Typography>
-                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>
-                                {item.concernCategory}
-                              </Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Concern Category:</Typography>
+                              <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>{item.concernCategory}</Typography>
                             </Stack>
                           </Stack>
                         </TableCell>
@@ -898,25 +827,15 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                               <>
                                 <Tooltip title={item?.resolution} placement="bottom-start">
                                   <Stack>
-                                    <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                      Backdate:
-                                    </Typography>
-                                    <Typography
-                                      sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}
-                                    >
-                                      {item.backDate ? moment(item.backDate).format("LL") : "--"}
-                                    </Typography>
+                                    <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Backdate:</Typography>
+                                    <Typography sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}>{item.backDate ? moment(item.backDate).format("LL") : "--"}</Typography>
                                   </Stack>
                                 </Tooltip>
 
                                 <Tooltip title={item?.resolution} placement="bottom-start">
                                   <Stack>
-                                    <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                      Backdate Remarks:
-                                    </Typography>
-                                    <Typography
-                                      sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}
-                                    >
+                                    <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Backdate Remarks:</Typography>
+                                    <Typography sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}>
                                       {item.backDateRemarks
                                         ? item.backDateRemarks?.split("\r\n").map((line, index) => (
                                             <span key={index}>
@@ -933,12 +852,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                             <Tooltip title={item?.resolution} placement="bottom-start">
                               <Stack>
-                                <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                  Resolution:
-                                </Typography>
-                                <Typography
-                                  sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}
-                                >
+                                <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Resolution:</Typography>
+                                <Typography sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}>
                                   {item.resolution?.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
@@ -951,12 +866,8 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                             <Tooltip title={item?.notes} placement="bottom-start">
                               <Stack>
-                                <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>
-                                  Notes:
-                                </Typography>
-                                <Typography
-                                  sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}
-                                >
+                                <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#22B4BF" }}>Notes:</Typography>
+                                <Typography sx={{ fontSize: "11px", fontWeight: 500, wordBreak: "break-word" }}>
                                   {item.notes
                                     ? item.notes?.split("\r\n").map((line, index) => (
                                         <span key={index}>
@@ -988,11 +899,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                 {isError && (
                   <TableRow>
                     <TableCell colSpan={13} align="center">
-                      <img
-                        src={somethingWentWrong}
-                        alt="Something Went Wrong"
-                        className="something-went-wrong-table"
-                      />
+                      <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                       <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                         Something went wrong.
                       </Typography>
@@ -1039,12 +946,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
       )}
 
       <TicketApprovalDialog data={viewApprovalData} open={open} onClose={onDialogClose} />
-      <DisapproveSelectedDialog
-        open={disapproveSelectedOpen}
-        onClose={disapproveSelectedOnClose}
-        selectedTickets={selectedTickets}
-        setSelectedTickets={setSelectedTickets}
-      />
+      <DisapproveSelectedDialog open={disapproveSelectedOpen} onClose={disapproveSelectedOnClose} selectedTickets={selectedTickets} setSelectedTickets={setSelectedTickets} />
     </Stack>
   );
 };

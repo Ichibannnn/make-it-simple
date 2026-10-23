@@ -43,7 +43,6 @@ const AssignDialogMenuAction = ({
     action();
   };
 
-  console.log("Filename: ", fileName);
 
   return (
     <>

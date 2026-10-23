@@ -36,6 +36,98 @@ const f = fonts;
 const w = weights;
 
 export const receiverStyle = {
+  // Main Page
+  mainContainer: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    backgroundColor: theme.palette.bgForm.black1,
+    color: "#fff",
+    padding: { xs: "20px", md: "24px 94px 34px 94px" },
+  },
+
+  headerSection: {
+    width: "100%",
+  },
+
+  contentBox: {
+    backgroundColor: theme.palette.bgForm.black3,
+    borderRadius: "20px",
+    marginTop: "10px",
+    width: "100%",
+    // padding: 2,
+  },
+
+  selectionBox: {
+    padding: "10px 20px",
+    backgroundColor: theme.palette.bgForm.black2,
+    borderRadius: "20px",
+    marginBottom: 0.5,
+    marginTop: 0.5,
+    justifyContent: "space-between",
+    gap: 0.5,
+  },
+
+  paramsBox: {
+    width: "100%",
+    padding: 3,
+    gap: 1,
+  },
+
+  // Cards
+  cardContent: {
+    cursor: "pointer",
+    padding: "1px",
+    "&:hover": {
+      backgroundColor: "#1A222F",
+      color: "#9e77ed",
+    },
+  },
+
+  cardDetailBox: {
+    flexDirection: "row",
+    spacing: 1,
+    alignItems: "center",
+    padding: 2,
+  },
+
+  fullnameText: {
+    fontWeight: 500,
+    fontSize: "17px",
+    color: "#EDF2F7",
+  },
+
+  subNameText: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.palette.text.secondary,
+  },
+
+  search: {
+    "& .MuiInputBase-input": { fontSize: "15px" },
+  },
+
+  detailBox: {
+    flexDirection: "row",
+    gap: 0.5,
+    alignItems: "center",
+  },
+
+  searchIcon: {
+    marginRight: 0.5,
+    color: "#A0AEC0",
+  },
+
+  filteringBox: {
+    flexDirection: { xs: "column", md: "row" },
+    width: "100%",
+  },
+
+  textField: {
+    "& .MuiInputBase-input": { fontSize: "13px" },
+  },
+
+  // Form
   header: {
     fontSize: { xs: f.md, md: f.lg },
     fontWeight: w.semibold,

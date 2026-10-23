@@ -95,35 +95,16 @@ body {
   z-index: 99999999 !important;
 }
 
+.confirm-action__container {
+  z-index: 2000; /* above MUI modal (1300) and snackbar (1400) / tooltip (1500) */
+  background: #111927;
+}
+
 .swal2-popup .custom-icon {
   font-size: 1rem !important; /* Adjust this as needed */
   width: 4rem !important;
   height: 4rem !important;
 }
-
-/* .my-swal {
-  z-index: 99999999 !important;
-}
-
-.my-swal-title {
-  font-size: 16px !important;
-}
-
-.my-swal-text {
-  font-size: 30px !important;
-} */
-
-/* .swal-container {
-  z-index: 99999999 !important;
-}
-
-.swal-custom-title {
-  font-size: 20px !important;
-}
-
-.swal-custom-text {
-  font-size: 30px !important;
-} */
 
 .custom-container {
   z-index: 99999999 !important;
@@ -248,6 +229,170 @@ body {
 
 .tabs-styling {
   text-transform: capitalize !important;
+}
+
+/* Swal Deleting Attachment */
+
+.confirm-action__container {
+  z-index: 2000;
+}
+
+.confirm-action__container.swal2-backdrop-show {
+  background: rgba(5, 10, 20, 0.7) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Popup: flex column, so only the gaps defined below apply */
+.swal2-popup.confirm-action {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: min(440px, calc(100% - 32px)) !important;
+  padding: 24px !important;
+  border: 1px solid #1f2a3d;
+  border-radius: 16px !important;
+  background: #111927 !important;
+  color: #ffffff !important;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6) !important;
+  text-align: left !important;
+  box-sizing: border-box;
+}
+
+/* Title */
+.swal2-popup.confirm-action .confirm-action__heading {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  justify-content: flex-start;
+  color: #ffffff !important;
+  text-align: left !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 28px !important;
+}
+
+.confirm-action__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.confirm-action__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--confirm-action-color, #9e77ed) 16%, transparent);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Body */
+.swal2-popup.confirm-action .confirm-action__content {
+  justify-content: flex-start;
+  margin: 12px 0 0 !important;
+  padding: 0 !important;
+  overflow: visible;
+  color: #cbd5e1 !important;
+  text-align: left !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  background: transparent !important;
+}
+
+.confirm-action__body {
+  width: 100%;
+}
+
+.confirm-action__body p {
+  margin: 0;
+}
+
+.confirm-action__note {
+  margin-top: 12px !important;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--confirm-action-color, #9e77ed) 60%, transparent);
+  background: #0e1526;
+  color: #8b9bb4;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Actions: Remove on the right */
+.swal2-popup.confirm-action .confirm-action__actions {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 24px 0 0 !important;
+  padding: 0;
+}
+
+.confirm-action__confirm,
+.confirm-action__cancel {
+  margin: 0;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  transition:
+    background 0.2s ease,
+    filter 0.2s ease;
+}
+
+.confirm-action__confirm {
+  color: #ffffff;
+  background: var(--confirm-action-color, #9e77ed);
+}
+
+.confirm-action__confirm:hover {
+  filter: brightness(0.9);
+}
+
+.confirm-action__cancel {
+  color: #cbd5e1;
+  background: transparent;
+}
+
+.confirm-action__cancel:hover {
+  color: #ffffff;
+  background: #1c2536;
+}
+
+.confirm-action__confirm:focus-visible,
+.confirm-action__cancel:focus-visible {
+  outline: 2px solid var(--confirm-action-color, #9e77ed);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .swal2-popup.confirm-action {
+    padding: 20px !important;
+  }
+
+  .swal2-popup.confirm-action .confirm-action__actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirm-action__confirm,
+  .confirm-action__cancel {
+    width: 100%;
+  }
 }
 
 .column {

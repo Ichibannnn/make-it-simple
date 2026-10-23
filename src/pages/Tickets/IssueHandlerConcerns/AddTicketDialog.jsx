@@ -1292,10 +1292,10 @@ const AddTicketDialog = ({ open, onClose }) => {
                     render={({ field: { onChange, value } }) => (
                       <input
                         ref={fileInputRef}
+                        type="file"
+                        multiple
                         accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
                         style={{ display: "none" }}
-                        multiple
-                        type="file"
                         onChange={(event) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);

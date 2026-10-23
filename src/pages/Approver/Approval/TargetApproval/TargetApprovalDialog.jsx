@@ -2,8 +2,8 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
-import { Avatar, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
-import { AccountCircleRounded, AttachFileOutlined, CalendarMonthOutlined, Check, Close, GetAppOutlined, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
+import { Avatar, Box, Button,  CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
+import {  AttachFileOutlined, Check, Close,  RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
@@ -12,15 +12,17 @@ import useDisclosure from "../../../../hooks/useDisclosure";
 import { useDispatch } from "react-redux";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
 
+import { global } from "../../../../styles/global";
+import { approverStyles as sx } from "../../styles/approverStyles";
+import { getAttachmentIcon } from "../../../../utils/getAttachmentIcon";
+
 import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../../features/api_attachments/attachmentsApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 import { useApproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 
 import TargetApprovalMenuActions from "./MenuActions/TargetApprovalMenuActions";
 import { DisapproveTargetDialog } from "./DisapprovedSelectedTargetDialog";
-import { getAttachmentIcon } from "../../../../utils/getAttachmentIcon";
-import { global } from "../../../../styles/global";
-import { approverStyles as sx } from "../../styles/approverStyles";
+
 
 const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
   const [attachments, setAttachments] = useState([]);

@@ -107,6 +107,14 @@ export const global = {
   },
 
   // Card Sections
+
+  cards: {
+    backgroundColor: theme.palette.bgForm.black3,
+    borderRadius: "15px",
+    border: "1px solid #2D3748",
+    // borderColor: "#2D3748",
+  },
+
   cardDetailBox: {
     width: "20%",
   },
@@ -123,5 +131,108 @@ export const global = {
     flexDirection: "row",
     gap: 0.5,
     alignItems: "center",
+  },
+
+  cardTitle: {
+    fontWeight: 700,
+    fontSize: "0.775rem",
+    lineHeight: 1.57,
+    color: "#D65DB1",
+  },
+
+  cardDescription: {
+    fontWeight: 400,
+    fontSize: "0.775rem",
+    lineHeight: 1.57,
+    color: theme.palette.text.main,
+    wordBreak: "break-word",
+  },
+
+  cardChip: {
+    fontSize: "12px",
+    backgroundColor: "#1D1F3B",
+    color: theme.palette.primary.main,
+    fontWeight: 800,
+  },
+
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mt: "5px",
+    padding: "15px",
+    gap: 4,
+  },
+
+  outlinedSearch: {
+    flex: 1,
+    borderRadius: "15px",
+    fontSize: "small",
+    fontWeight: 400,
+    lineHeight: "1.4375rem",
+  },
+
+  searchIcon: {
+    marginRight: 0.5,
+    color: "#A0AEC0",
+  },
+
+  tabSection: {
+    backgroundColor: theme.palette.bgForm.black3,
+    borderRadius: "20px",
+    marginTop: "10px",
+    width: "100%",
+  },
+
+  tabBox: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+  },
+
+  tabDivider: {
+    background: "#2D3748",
+    marginTop: "1px",
+  },
+
+  tabs: {
+    ".MuiTab-root": {
+      minWidth: { xs: "80px", md: "120px" },
+      fontSize: { xs: "10px", sm: "12px", md: "13px" },
+    },
+    ".MuiTabs-scrollButtons": {
+      color: "#fff",
+      "&.Mui-disabled": {
+        opacity: 0.3,
+      },
+    },
+  },
+
+  tab: {
+    fontSize: "12px",
+    fontWeight: 600,
+  },
+
+  badge: {
+    ".MuiBadge-badge": {
+      fontSize: "0.55rem",
+      fontWeight: 400,
+    },
+  },
+
+  anchorOrigin: {
+    vertical: "top",
+    horizontal: "left",
+  },
+
+  content: {
+    width: "100%",
+    justifyContent: "space-between",
+  },
+
+  dateFilterBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 2,
   },
 };

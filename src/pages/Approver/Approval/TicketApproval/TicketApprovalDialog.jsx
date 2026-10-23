@@ -359,6 +359,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
             </Stack>
           </Stack>
 
+          {/* Attachments */}
           <Stack sx={sx.section}>
             <Stack gap={2} sx={{ borderRadius: "20px" }}>
               <Stack sx={{ width: "100%" }}>
@@ -367,7 +368,6 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
             </Stack>
           </Stack>
 
-          {/* Attachments */}
           <Stack
             sx={{
               border: "1px solid #252D3B",

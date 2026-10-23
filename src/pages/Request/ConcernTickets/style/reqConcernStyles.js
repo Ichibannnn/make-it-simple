@@ -209,6 +209,7 @@ export const reqConcernStyles = {
     color: t.text,
     lineHeight: 1.3,
   },
+
   dateTime: { fontSize: { xs: 10, md: 11 }, color: t.muted, lineHeight: 1.3 },
   pendingBox: {
     display: "flex",

@@ -66,3 +66,46 @@ export const showConfirmAction = async ({ title = "Are you sure?", text = "", ic
 
   return result.isConfirmed;
 };
+
+export const confirmDeleteAttachment = async ({
+  title = "Are you sure?",
+  message = "Do you want to proceed with this action?",
+  note = "",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  confirmColor = "#9e77ed",
+  allowOutsideClick = false,
+  allowEscapeKey = true,
+} = {}) => {
+  const result = await Swal.fire({
+    title,
+    html: `
+      <div class="confirm-action__body">
+        <p class="confirm-action__message">${message}</p>
+        ${note ? `<p class="confirm-action__note">${note}</p>` : ""}
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    buttonsStyling: false,
+    reverseButtons: false,
+    allowOutsideClick,
+    allowEscapeKey,
+    background: "#111927",
+    customClass: {
+      container: "confirm-action__container", // new
+      popup: "confirm-action",
+      title: "confirm-action__heading",
+      htmlContainer: "confirm-action__content",
+      actions: "confirm-action__actions",
+      confirmButton: "confirm-action__confirm",
+      cancelButton: "confirm-action__cancel",
+    },
+    didOpen: (popup) => {
+      popup.style.setProperty("--confirm-action-color", confirmColor);
+    },
+  });
+
+  return result.isConfirmed;
+};

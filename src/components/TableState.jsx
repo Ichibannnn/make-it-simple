@@ -2,7 +2,7 @@ import { Box, Card, CardContent, Skeleton, Stack, TableCell, TableRow, Typograph
 import somethingWentWrong from "../assets/svg/SomethingWentWrong.svg";
 import noRecordsFound from "../assets/svg/noRecordsFound.svg";
 
-// Card Something went wrong
+// Card Something went wrong --
 export const SomethingWentWrong = ({ label }) => {
   return (
     <Stack justifyContent="center" alignItems="center" padding={4}>
@@ -14,7 +14,7 @@ export const SomethingWentWrong = ({ label }) => {
   );
 };
 
-// Card No record
+// Card No record --
 export const NoRecordsFound = ({ label }) => {
   return (
     <Stack justifyContent="center" alignItems="center" padding={4}>
@@ -26,7 +26,7 @@ export const NoRecordsFound = ({ label }) => {
   );
 };
 
-// Table Something went wrong
+// Table Something went wrong -- 
 export const SomethingWentWrongTable = ({ colSpan, label }) => {
   return (
     <TableRow>
@@ -40,7 +40,7 @@ export const SomethingWentWrongTable = ({ colSpan, label }) => {
   );
 };
 
-// Table No record
+// Table No record --
 export const NoRecordsFoundTable = ({ colSpan, label }) => {
   return (
     <TableRow>

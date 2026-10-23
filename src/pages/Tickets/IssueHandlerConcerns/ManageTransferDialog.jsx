@@ -32,6 +32,7 @@ import { global } from "../../../styles/global";
 import { formStyle as sx } from "./style/formStyle";
 import getAttachmentIcon from "../../../utils/getAttachmentIcon";
 import ManageTransferMenuActions from "./MenuActions/ManageTransferMenuActions";
+import { confirmDeleteAttachment } from "../../../utils/sweetAlert";
 
 const schema = yup.object().shape({
   TransferTicketId: yup.number(),
@@ -198,6 +199,7 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   // Which saved attachment is being fetched for the full-size viewer (spinner on that thumbnail)
   const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
+  const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]);
 
   // --- Zoom / pan state for the image viewer (same behavior as IssueViewDialog) ---
   const [zoom, setZoom] = useState(1);
@@ -259,37 +261,65 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-        };
-        await deleteRequestorAttachment(deletePayload)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "File deleted successfully.",
-              duration: 1500,
-            });
-            refetch();
-          })
-          .catch((err) => {
-            console.log("error: ", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
-      }
+    const isSavedAttachment = Boolean(fileNameToDelete.ticketAttachmentId);
 
-      setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+    // Only saved attachments (from the API) need confirmation
+    if (isSavedAttachment) {
+      const confirmed = await confirmDeleteAttachment({
+        title: "Remove Attachment?",
+        message: "Are you sure you want to remove this attachment?",
+        note: "Note: The deletion will only take effect after you save your changes.",
+        confirmText: "Remove",
+        cancelText: "Cancel",
+        // icon: "📎",
+      });
 
-      setValue(
-        "AddTransferAttachments",
-        watch("AddTransferAttachments").filter((file) => file.name !== fileNameToDelete.name),
-      );
-    } catch (error) {}
+      if (!confirmed) return;
+
+      // Queue it for deletion. The DELETE API is called in onSubmitAction.
+      setDeletedAttachmentIds((prev) => (prev.includes(fileNameToDelete.ticketAttachmentId) ? prev : [...prev, fileNameToDelete.ticketAttachmentId]));
+    }
+
+    // UI/form cleanup for both saved and newly added files
+    setAttachments((prevFiles) => prevFiles.filter((file) => file !== fileNameToDelete));
+
+    setValue(
+      "AddTransferAttachments",
+      watch("AddTransferAttachments").filter((file) => file.name !== fileNameToDelete.name),
+    );
+
+    // try {
+    //   if (fileNameToDelete.ticketAttachmentId) {
+    //     const deletePayload = {
+    //       ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+    //     };
+    //     await deleteRequestorAttachment(deletePayload)
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success!", {
+    //           description: "File deleted successfully.",
+    //           duration: 1500,
+    //         });
+    //         refetch();
+    //       })
+    //       .catch((err) => {
+    //         console.log("error: ", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
+    //   }
+
+    //   setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+
+    //   setValue(
+    //     "AddTransferAttachments",
+    //     watch("AddTransferAttachments").filter((file) => file.name !== fileNameToDelete.name),
+    //   );
+    // } catch (error) {}
   };
+
   const handleDragOver = (event) => {
     event.preventDefault();
   };
@@ -313,8 +343,6 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   };
 
   const onSubmitAction = (formData) => {
-    console.log("Form Data: ", formData);
-
     Swal.fire({
       title: "Confirmation",
       text: `Edit transfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
@@ -359,17 +387,35 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
           payload.append(`AddTransferAttachments[0].attachment`, "");
         }
 
-        console.log("Payload Entries: ", [...payload.entries()]);
+        // console.log("Payload Entries: ", [...payload.entries()]);
+
+        const idsToDelete = [...deletedAttachmentIds];
 
         manageTransferTickets(payload)
           .unwrap()
-          .then(() => {
+          .then(async () => {
+            // Ticket saved successfully -> now delete the attachments the user removed
+            if (idsToDelete.length > 0) {
+              const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+
+              const failedCount = results.filter((r) => r.status === "rejected").length;
+              if (failedCount > 0) {
+                toast.error("Error!", {
+                  description: `${failedCount} attachment(s) could not be deleted.`,
+                  duration: 2500,
+                });
+              }
+
+              refetch();
+            }
+
             toast.success("Success!", {
               description: "Transfer updated successfully!",
               duration: 1500,
             });
 
             setAttachments([]);
+            setDeletedAttachmentIds([]);
             reset();
             onClose();
           })
@@ -384,9 +430,10 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   };
 
   const onCloseHandler = () => {
-    onClose();
     reset();
     setAttachments([]);
+    setDeletedAttachmentIds([]);
+    onClose();
   };
 
   useEffect(() => {
@@ -823,49 +870,49 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
                           </Stack>
                         )}
                       </Stack>
+
+                      <Controller
+                        control={control}
+                        name="AddTransferAttachments"
+                        render={({ field: { onChange, value } }) => (
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
+                            onChange={(event) => {
+                              if (ticketAttachmentId) {
+                                const files = Array.from(event.target.files);
+                                files[0].ticketAttachmentId = ticketAttachmentId;
+
+                                onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
+
+                                setAttachments((prevFiles) => [
+                                  ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
+                                  {
+                                    ticketAttachmentId: ticketAttachmentId,
+                                    name: files[0].name,
+                                    size: (files[0].size / (1024 * 1024)).toFixed(2),
+                                  },
+                                ]);
+
+                                fileInputRef.current.value = "";
+                                setTicketAttachmentId(null);
+                              } else {
+                                handleAttachments(event);
+                                const files = Array.from(event.target.files);
+
+                                const uniqueNewFiles = files.filter((item) => !value?.some((file) => file.name === item.name));
+
+                                onChange([...value, ...uniqueNewFiles]);
+                                fileInputRef.current.value = "";
+                              }
+                            }}
+                            hidden
+                            multiple
+                          />
+                        )}
+                      />
                     </Stack>
-
-                    <Controller
-                      control={control}
-                      name="AddTransferAttachments"
-                      render={({ field: { onChange, value } }) => (
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept=".png,.jpg,.jpeg,.docx,.pdf,.xls,.xlsx"
-                          onChange={(event) => {
-                            if (ticketAttachmentId) {
-                              const files = Array.from(event.target.files);
-                              files[0].ticketAttachmentId = ticketAttachmentId;
-
-                              onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
-
-                              setAttachments((prevFiles) => [
-                                ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
-                                {
-                                  ticketAttachmentId: ticketAttachmentId,
-                                  name: files[0].name,
-                                  size: (files[0].size / (1024 * 1024)).toFixed(2),
-                                },
-                              ]);
-
-                              fileInputRef.current.value = "";
-                              setTicketAttachmentId(null);
-                            } else {
-                              handleAttachments(event);
-                              const files = Array.from(event.target.files);
-
-                              const uniqueNewFiles = files.filter((item) => !value?.some((file) => file.name === item.name));
-
-                              onChange([...value, ...uniqueNewFiles]);
-                              fileInputRef.current.value = "";
-                            }
-                          }}
-                          hidden
-                          multiple={!!ticketAttachmentId}
-                        />
-                      )}
-                    />
                   </Stack>
                 </Stack>
               </Stack>

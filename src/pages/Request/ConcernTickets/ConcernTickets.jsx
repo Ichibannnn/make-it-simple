@@ -38,11 +38,14 @@ import {
 
 import moment from "moment";
 import Swal from "sweetalert2";
-import { theme } from "../../../theme/theme";
 import { toast } from "sonner";
+import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
 import { useDispatch, useSelector } from "react-redux";
+
+import { global } from "../../../styles/global";
 import { reqConcernStyles as sx } from "./style/reqConcernStyles";
+
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
 
@@ -58,7 +61,6 @@ import { notificationApi, useGetNotificationQuery } from "../../../features/api_
 
 import { setSearchValue, setStatus, setPageNumber, setPageSize } from "../../../features/global/rootSlice";
 import { useCancelConcernMutation, useConfirmConcernMutation, useGetRequestorConcernsQuery } from "../../../features/api_request/concerns/concernApi";
-import { global } from "../../../styles/global";
 import { CardListSkeleton, NoRecordsFound, NoRecordsFoundTable, SomethingWentWrong, SomethingWentWrongTable, TableSkeleton } from "../../../components/TableState";
 
 const ConcernTickets = () => {
@@ -378,77 +380,38 @@ const ConcernTickets = () => {
         </LoadingButton>
       </Stack>
 
-      <Stack direction={isScreenSmall ? "column" : "row"} alignItems={isScreenSmall ? "left" : "center"} sx={sx.selectionBox}>
-        <Stack direction="row" gap={0.5}>
-          <LocalOffer />
-          <Typography>
-            {selectedTickets.length} {""}
-            {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
-          </Typography>
+      {selectedTickets.length > 0 && (
+        <Stack direction={isScreenSmall ? "column" : "row"} alignItems={isScreenSmall ? "left" : "center"} sx={sx.selectionBox}>
+          <Stack direction="row" gap={0.5}>
+            <LocalOffer />
+            <Typography>
+              {selectedTickets.length} {""}
+              {selectedTickets.length > 1 ? "Tickets selected" : "Ticket selected"}
+            </Typography>
+          </Stack>
+
+          <LoadingButton variant="contained" color="success" onClick={onSelectedConfirmAction} loading={confirmConcernIsLoading || confirmConcernIsFetching} startIcon={<Check />}>
+            Confirm
+          </LoadingButton>
         </Stack>
+      )}
 
-        <LoadingButton variant="contained" color="success" onClick={onSelectedConfirmAction} loading={confirmConcernIsLoading || confirmConcernIsFetching} startIcon={<Check />}>
-          Confirm
-        </LoadingButton>
-      </Stack>
-
-      <Stack direction="row" width="100%" justifyContent="space-between">
+      <Stack sx={global.content}>
         {/* MAIN */}
-        <Stack
-          sx={{
-            backgroundColor: theme.palette.bgForm.black3,
-            borderRadius: "20px",
-            marginTop: "10px",
-            width: "100%",
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between">
-            <Tabs
-              value={status}
-              variant="scrollable"
-              scrollButtons="auto"
-              onChange={onStatusChange}
-              sx={{
-                ".MuiTab-root": {
-                  minWidth: isScreenSmall ? "80px" : "120px",
-                  fontSize: { xs: "10px", sm: "12px", md: "13px" },
-                },
-                ".MuiTabs-scrollButtons": {
-                  color: "#fff",
-                  "&.Mui-disabled": {
-                    opacity: 0.3,
-                  },
-                },
-              }}
-            >
+        <Stack sx={global.tabSection}>
+          <Stack sx={global.tabBox}>
+            <Tabs value={status} variant="scrollable" scrollButtons="auto" onChange={onStatusChange} sx={global.tabs}>
               <Tab
                 value=""
                 className="tabs-styling"
                 label="All Requests"
                 icon={
-                  <Badge
-                    badgeContent={notificationBadge?.value?.allRequestTicketNotif}
-                    max={100000}
-                    color="primary"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
-                    sx={{
-                      ".MuiBadge-badge": {
-                        fontSize: "0.55rem",
-                        fontWeight: 400,
-                      },
-                    }}
-                  >
+                  <Badge badgeContent={notificationBadge?.value?.allRequestTicketNotif} max={100000} color="primary" anchorOrigin={global.anchorOrigin} sx={global.badge}>
                     <ClearAllOutlined />
                   </Badge>
                 }
                 iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
+                sx={global.tab}
               />
 
               <Tab
@@ -459,10 +422,7 @@ const ConcernTickets = () => {
                   <Badge
                     badgeContent={notificationBadge?.value?.forTicketNotif}
                     max={100000}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
+                    anchorOrigin={global.anchorOrigin}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
@@ -476,10 +436,7 @@ const ConcernTickets = () => {
                   </Badge>
                 }
                 iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
+                sx={global.tab}
               />
 
               <Tab
@@ -491,10 +448,7 @@ const ConcernTickets = () => {
                     badgeContent={notificationBadge?.value?.currentlyFixingNotif}
                     max={100000}
                     color="warning"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
+                    anchorOrigin={global.anchorOrigin}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
@@ -507,10 +461,7 @@ const ConcernTickets = () => {
                   </Badge>
                 }
                 iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
+                sx={global.tab}
               />
 
               <Tab
@@ -521,11 +472,7 @@ const ConcernTickets = () => {
                   <Badge
                     badgeContent={notificationBadge?.value?.notConfirmNotif}
                     max={100000}
-                    // color="primary"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
+                    anchorOrigin={global.anchorOrigin}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
@@ -539,10 +486,7 @@ const ConcernTickets = () => {
                   </Badge>
                 }
                 iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
+                sx={global.tab}
               />
 
               <Tab
@@ -554,10 +498,7 @@ const ConcernTickets = () => {
                     badgeContent={notificationBadge?.value?.doneNotif}
                     max={100000}
                     color="success"
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
+                    anchorOrigin={global.anchorOrigin}
                     sx={{
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
@@ -570,40 +511,24 @@ const ConcernTickets = () => {
                   </Badge>
                 }
                 iconPosition="start"
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                }}
+                sx={global.tab}
               />
             </Tabs>
 
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 2,
-              }}
-            >
+            <Stack direction="row" sx={global.dateFilterBox}>
               <ConcernTicketFiltering setDateFrom={setDateFrom} setDateTo={setDateTo} />
             </Stack>
           </Stack>
 
-          <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
+          <Divider variant="fullWidth" sx={global.tabDivider} />
 
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "5px", padding: "15px" }} gap={4}>
+          <Stack sx={global.searchBox}>
             <OutlinedInput
               placeholder="Search"
-              startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
+              startAdornment={<Search sx={global.searchIcon} />}
               value={searchValue}
               onChange={(e) => dispatch(setSearchValue(e.target.value))}
-              sx={{
-                flex: 1,
-                borderRadius: "15px",
-                fontSize: "small",
-                fontWeight: 400,
-                lineHeight: "1.4375rem",
-              }}
+              sx={global.outlinedSearch}
             />
           </Stack>
 
@@ -653,24 +578,24 @@ const ConcernTickets = () => {
                             {/* Ticket Number */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
-                                <Typography sx={sx.cardTitle}>TICKET NUMBER:</Typography>
+                                <Typography sx={global.cardTitle}>TICKET NUMBER:</Typography>
                               </Box>
                               <Box sx={global.cardSpacer} />
 
                               <Box sx={global.cardDescDetailBox}>
-                                <Typography sx={sx.cardDescription}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
+                                <Typography sx={global.cardDescription}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
                               </Box>
                             </Stack>
 
                             {/* Request Details */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
-                                <Typography sx={sx.cardTitle}>REQUEST DETAILS:</Typography>
+                                <Typography sx={global.cardTitle}>REQUEST DETAILS:</Typography>
                               </Box>
                               <Box sx={global.cardSpacer} />
 
                               <Box sx={global.cardDescDetailBox}>
-                                <Typography sx={sx.cardDescription}>
+                                <Typography sx={global.cardDescription}>
                                   {item.concern.split("\r\n").map((line, index) => (
                                     <span key={index}>
                                       {line}
@@ -684,12 +609,12 @@ const ConcernTickets = () => {
                             {/* Resolution */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
-                                <Typography sx={sx.cardTitle}>RESOLUTION:</Typography>
+                                <Typography sx={global.cardTitle}>RESOLUTION:</Typography>
                               </Box>
                               <Box sx={global.cardSpacer} />
 
                               <Box sx={global.cardDescDetailBox}>
-                                <Typography sx={sx.cardDescription}>
+                                <Typography sx={global.cardDescription}>
                                   {item.resolution
                                     ? item.resolution?.split("\r\n").map((line, index) => (
                                         <span key={index}>
@@ -705,19 +630,25 @@ const ConcernTickets = () => {
                             {/* Date Created  */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
-                                <Typography sx={sx.cardTitle}>DATE CREATED:</Typography>
+                                <Typography sx={global.cardTitle}>DATE CREATED:</Typography>
                               </Box>
                               <Box sx={global.cardSpacer} />
 
                               <Box sx={global.cardDescDetailBox}>
-                                <Chip variant="filled" size="30px" icon={<CalendarMonthOutlined fontSize="small" color="primary" />} sx={sx.cardChip} label={moment(item.created_At).format("LL")} />
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                  sx={global.cardChip}
+                                  label={moment(item.created_At).format("LL")}
+                                />
                               </Box>
                             </Stack>
 
-                            {/*  Status */}
+                            {/* Status */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
-                                <Typography sx={sx.cardTitle}>STATUS:</Typography>
+                                <Typography sx={global.cardTitle}>STATUS:</Typography>
                               </Box>
                               <Box sx={global.cardSpacer} />
 
@@ -772,10 +703,10 @@ const ConcernTickets = () => {
                               </Box>
                             </Stack>
 
-                            {/*  Actions */}
+                            {/* Actions */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
-                                <Typography sx={sx.cardTitle}>ACTION:</Typography>
+                                <Typography sx={global.cardTitle}>ACTION:</Typography>
                               </Box>
                               <Box sx={global.cardSpacer} />
 
@@ -806,8 +737,8 @@ const ConcernTickets = () => {
               </Stack>
             </>
           ) : (
+            // Table
             <>
-              {/* Table */}
               <TableContainer>
                 <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead>
@@ -969,7 +900,7 @@ const ConcernTickets = () => {
                         );
                       })}
 
-                    {loading && <TableSkeleton columns={tableColumns} rows={8} cellSx={sx.tableCellBody} />}
+                    {loading && <TableSkeleton columns={tableColumns} rows={10} cellSx={sx.tableCellBody} />}
                     {no_records && <NoRecordsFoundTable colSpan={7} label="No records found" />}
                     {isError && <SomethingWentWrongTable colSpan={7} label="Something went wrong." />}
                   </TableBody>
