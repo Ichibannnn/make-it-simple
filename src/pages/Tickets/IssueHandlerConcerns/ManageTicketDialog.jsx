@@ -277,7 +277,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
   const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
+  const [deleteRequestorAttachment, { isLoading: delIsLoading, isFetching: delIsFetching }] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -1285,7 +1285,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               type="submit"
               form="closeticket"
               variant="contained"
-              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching}
+              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching || delIsLoading || delIsFetching}
               disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || (watch("ClosingDate") && !watch("BackdateRemarks"))}
             >
               Save Changes
