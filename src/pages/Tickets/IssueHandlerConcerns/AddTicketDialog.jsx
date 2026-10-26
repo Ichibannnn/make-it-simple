@@ -391,6 +391,8 @@ const AddTicketDialog = ({ open, onClose }) => {
     }
   }, [watch("IssueHandler"), userDetails]);
 
+  console.log("Token: ", userDetails);
+
   const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
   const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   const handleZoomReset = () => {

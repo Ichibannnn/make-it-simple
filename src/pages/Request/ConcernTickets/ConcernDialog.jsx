@@ -250,12 +250,12 @@ const ConcernDialog = ({ open, onClose }) => {
           dispatch(notificationApi.util.resetApiState());
           dispatch(notificationMessageApi.util.resetApiState());
           setIsLoading(false);
-          replace([{ value: "" }]);
-          setTimeout(() => {
-            reset({ Concern: [""] });
-          }, 0);
+          // replace([{ value: "" }]);
+          // setTimeout(() => {
+          //   reset({ Concern: [""] });
+          // }, 0);
           setAttachments([]);
-          onClose();
+          onCloseAction();
         })
         .catch((err) => {
           console.log("Error: ", err);
@@ -1401,7 +1401,7 @@ const ConcernDialog = ({ open, onClose }) => {
                 (watch("IssueHandler") && !watch("TargetDate")) ||
                 (watch("IssueHandler") && !watch("ChannelId")) ||
                 errors.Concern ||
-                watch("Concern")?.some((c) => !c?.trim())
+                watch("Concern")?.some((c) => typeof c !== "string" || !c.trim())
               }
             >
               Submit

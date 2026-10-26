@@ -1,28 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  AttachFile,
-  AttachFileOutlined,
-  CheckOutlined,
-  FiberManualRecord,
-  RestartAlt,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, IconButton, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { AttachFile, AttachFileOutlined, CheckOutlined, FiberManualRecord, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
 import * as yup from "yup";
 import moment from "moment";
@@ -49,10 +27,7 @@ import { notificationMessageApi } from "../../../features/api_notification_messa
 import { global } from "../../../styles/global";
 import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
 
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { useLazyGetUsersQuery } from "../../../features/user_management_api/user/userApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
 import { useLazyGetBusinessUnitQuery } from "../../../features/api masterlist/business-unit/businessUnitApi";
@@ -66,6 +41,7 @@ import { useLazyGetServiceProviderQuery } from "../../../features/api masterlist
 import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
+import { confirmDeleteAttachment } from "../../../utils/sweetAlert";
 
 const EXT_TO_MIME = {
   png: "image/png",
@@ -104,19 +80,12 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
         }
 
         // Saved attachment from a previous submit
-        const response = await getAttachmentPreview(
-          fileName.ticketAttachmentId,
-        );
+        const response = await getAttachmentPreview(fileName.ticketAttachmentId);
         if (cancelled) return;
 
         if (response?.data) {
-          const mime =
-            EXT_TO_MIME[ext] ||
-            response.data.type ||
-            "application/octet-stream";
-          objectUrl = URL.createObjectURL(
-            new Blob([response.data], { type: mime }),
-          );
+          const mime = EXT_TO_MIME[ext] || response.data.type || "application/octet-stream";
+          objectUrl = URL.createObjectURL(new Blob([response.data], { type: mime }));
           setPreviewUrl(objectUrl);
         } else {
           setPreviewError(true);
@@ -202,11 +171,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
               justifyContent: "center",
             }}
           >
-            <CircularProgress
-              size={20}
-              thickness={4}
-              sx={{ color: theme.palette.text.secondary }}
-            />
+            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
           </Box>
         )}
 
@@ -269,13 +234,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
             {ext?.toUpperCase()} · {fileName.size} MB
           </Typography>
           {/* Small check = already saved from a previous submit */}
-          {!!fileName.ticketAttachmentId && (
-            <CheckOutlined
-              color="success"
-              sx={{ fontSize: 12 }}
-              titleAccess="Attached file"
-            />
-          )}
+          {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: 12 }} titleAccess="Attached file" />}
         </Stack>
       </Box>
     </Box>
@@ -292,6 +251,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
   const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
+  const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]); // pending deletes
 
   const [zoom, setZoom] = useState(1);
   const MIN_ZOOM = 0.5;
@@ -307,18 +267,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
   const requestorSchema = yup.object().shape({
     RequestConcernId: yup.string().nullable(),
-    Concern: yup
-      .string()
-      .min(2, "Concern must be at least 2 characters long")
-      .required("This field is required")
-      .label("Concern Details"),
+    Concern: yup.string().min(2, "Concern must be at least 2 characters long").required("This field is required").label("Concern Details"),
     RequestAttachmentsFiles: yup.array().nullable(),
 
     Request_Type: yup.string().required("Request Type is required"),
-    Severity: yup
-      .string()
-      .oneOf(["Normal", "Urgent"], "Invalid Severity")
-      .required("Severity Type is required"),
+    Severity: yup.string().oneOf(["Normal", "Urgent"], "Invalid Severity").required("Severity Type is required"),
     BackJobId: yup.object().notRequired(),
     Contact_Number: yup.string().matches(/^09\d{9}$/, {
       message: "Must start with 09 and be 11 digits long",
@@ -346,106 +299,24 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
   const fileInputRef = useRef();
   const dispatch = useDispatch();
 
-  const [
-    createEditRequestorConcern,
-    {
-      isLoading: isCreateEditRequestorConcernLoading,
-      isFetching: isCreateEditRequestorConcernFetching,
-    },
-  ] = useEditRequestorConcernMutation();
-  const [
-    getUser,
-    { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess },
-  ] = useLazyGetUsersQuery();
-  const [
-    getBackjobTicket,
-    {
-      data: backjobTicketData,
-      isLoading: backjobTicketIsLoading,
-      isSuccess: backjobTicketIsSuccess,
-    },
-  ] = useLazyGetBackjobTicketsQuery();
-  const [
-    getChargingCode,
-    {
-      data: chargingCodeData,
-      isLoading: chargingCodeIsLoading,
-      isSuccess: chargingCodeIsSuccess,
-    },
-  ] = useLazyGetOneChargingQuery();
-  const [
-    getCompany,
-    {
-      data: companyData,
-      isLoading: companyIsLoading,
-      isSuccess: companyIsSuccess,
-    },
-  ] = useLazyGetCompanyQuery();
-  const [
-    getBusinessUnit,
-    {
-      data: businessUnitData,
-      isLoading: businessUnitIsLoading,
-      isSuccess: businessUnitIsSuccess,
-    },
-  ] = useLazyGetBusinessUnitQuery();
-  const [
-    getDepartment,
-    {
-      data: departmentData,
-      isLoading: departmentIsLoading,
-      isSuccess: departmentIsSuccess,
-    },
-  ] = useLazyGetDepartmentQuery();
-  const [
-    getUnit,
-    { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess },
-  ] = useLazyGetUnitQuery();
-  const [
-    getSubUnit,
-    {
-      data: subUnitData,
-      isLoading: subUnitIsLoading,
-      isSuccess: subUnitIsSuccess,
-    },
-  ] = useLazyGetSubUnitQuery();
-  const [
-    getLocation,
-    {
-      data: locationData,
-      isLoading: locationIsLoading,
-      isSuccess: locationIsSuccess,
-    },
-  ] = useLazyGetLocationWithPaginationQuery();
-  const [
-    getServiceProvider,
-    {
-      data: serviceProviderData,
-      isLoading: serviceProviderIsLoading,
-      isSuccess: serviceProviderIsSuccess,
-    },
-  ] = useLazyGetServiceProviderQuery();
-  const [
-    getCategory,
-    {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
-    },
-  ] = useLazyGetCategoryQuery();
-  const [
-    getSubCategory,
-    {
-      data: subCategoryData,
-      isLoading: subCategoryIsLoading,
-      isSuccess: subCategoryIsSuccess,
-    },
-  ] = useLazyGetSubCategoryArrayQuery();
+  const [createEditRequestorConcern, { isLoading: isCreateEditRequestorConcernLoading, isFetching: isCreateEditRequestorConcernFetching }] = useEditRequestorConcernMutation();
+  const [getUser, { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess }] = useLazyGetUsersQuery();
+  const [getBackjobTicket, { data: backjobTicketData, isLoading: backjobTicketIsLoading, isSuccess: backjobTicketIsSuccess }] = useLazyGetBackjobTicketsQuery();
+  const [getChargingCode, { data: chargingCodeData, isLoading: chargingCodeIsLoading, isSuccess: chargingCodeIsSuccess }] = useLazyGetOneChargingQuery();
+  const [getCompany, { data: companyData, isLoading: companyIsLoading, isSuccess: companyIsSuccess }] = useLazyGetCompanyQuery();
+  const [getBusinessUnit, { data: businessUnitData, isLoading: businessUnitIsLoading, isSuccess: businessUnitIsSuccess }] = useLazyGetBusinessUnitQuery();
+  const [getDepartment, { data: departmentData, isLoading: departmentIsLoading, isSuccess: departmentIsSuccess }] = useLazyGetDepartmentQuery();
+  const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
+  const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
+  const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
+  const [getServiceProvider, { data: serviceProviderData, isLoading: serviceProviderIsLoading, isSuccess: serviceProviderIsSuccess }] = useLazyGetServiceProviderQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
   const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
+  const [deleteRequestorAttachment, { isLoading: delAttachmentIsLoading, isFetching: delAttachmentIsFetching }] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -492,17 +363,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
     const payload = new FormData();
 
     payload.append("RequestConcernId", formData.RequestConcernId);
-    payload.append(
-      "TicketConcernId",
-      editData?.ticketRequestConcerns[0]?.ticketConcernId,
-    );
+    payload.append("TicketConcernId", editData?.ticketRequestConcerns[0]?.ticketConcernId);
 
     payload.append("Request_Type", formData.Request_Type);
     payload.append("Severity", formData.Severity);
-    payload.append(
-      "BackJobId",
-      formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId,
-    );
+    payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
     payload.append("UserId", formData.UserId?.id);
     payload.append("Contact_Number", formData.Contact_Number);
     payload.append("CompanyId", formData.CompanyId?.id);
@@ -513,37 +378,17 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
     payload.append("Location_Code", formData.LocationId?.location_Code);
 
     payload.append("ServiceProviderId", formData.ServiceProvider?.id);
-    payload.append(
-      "ChannelId",
-      formData.ChannelId ? formData.ChannelId?.channelId : 0,
-    );
-    payload.append(
-      "DateNeeded",
-      moment(formData.DateNeeded).format("YYYY-MM-DD"),
-    );
-    payload.append(
-      "TargetDate",
-      formData.TargetDate
-        ? moment(formData.TargetDate).format("YYYY-MM-DD")
-        : "",
-    );
-    payload.append(
-      "AssignTo",
-      formData.IssueHandler ? formData.IssueHandler?.userId : "",
-    );
+    payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
+    payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
+    payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
+    payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler?.userId : "");
     payload.append("Concern", formData.Concern);
     payload.append("Notes", formData.Notes);
 
     const category = formData.CategoryId;
     for (let i = 0; i < category.length; i++) {
-      payload.append(
-        `AddRequestTicketCategory[${i}].ticketCategoryId`,
-        category[i].ticketCategoryId || "",
-      );
-      payload.append(
-        `AddRequestTicketCategory[${i}].categoryId`,
-        category[i]?.id,
-      );
+      payload.append(`AddRequestTicketCategory[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+      payload.append(`AddRequestTicketCategory[${i}].categoryId`, category[i]?.id);
     }
 
     if (category.length === 0) {
@@ -553,14 +398,8 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
     const subCategory = formData.SubCategoryId;
     for (let i = 0; i < subCategory.length; i++) {
-      payload.append(
-        `AddRequestTicketSubCategory[${i}].ticketSubCategoryId`,
-        subCategory[i].ticketSubCategoryId || "",
-      );
-      payload.append(
-        `AddRequestTicketSubCategory[${i}].subCategoryId`,
-        subCategory[i]?.subCategoryId,
-      );
+      payload.append(`AddRequestTicketSubCategory[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+      payload.append(`AddRequestTicketSubCategory[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
     }
 
     if (subCategory.length === 0) {
@@ -570,10 +409,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
-      payload.append(
-        `RequestAttachmentsFile[${i}].ticketAttachmentId`,
-        files[i].ticketAttachmentId || "",
-      );
+      payload.append(`RequestAttachmentsFile[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
       payload.append(`RequestAttachmentsFile[${i}].attachment`, files[i]);
     }
 
@@ -584,9 +420,27 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
     // console.log("Payload Entries: ", [...payload.entries()]);
 
+    const idsToDelete = [...deletedAttachmentIds];
+
     createEditRequestorConcern(payload)
       .unwrap()
-      .then(() => {
+      .then(async () => {
+        // Ticket saved successfully -> now delete the attachments the user removed
+        if (idsToDelete.length > 0) {
+          const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+
+          const failedCount = results.filter((r) => r.status === "rejected").length;
+
+          if (failedCount > 0) {
+            toast.error("Error!", {
+              description: `${failedCount} attachment(s) could not be deleted.`,
+              duration: 2500,
+            });
+          }
+
+          refetch();
+        }
+
         toast.success("Success!", {
           description: "Concern updated successfully!",
           duration: 1500,
@@ -609,6 +463,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
           Notes: "",
         });
         setIsLoading(false);
+        setDeletedAttachmentIds([]);
         onClose();
       })
       .catch((err) => {
@@ -633,10 +488,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
     setAttachments((prevFiles) => {
       const safePrev = Array.isArray(prevFiles) ? prevFiles : [];
 
-      const uniqueNewFiles = fileNames.filter(
-        (newFile) =>
-          !safePrev.some((existing) => existing.name === newFile.name),
-      );
+      const uniqueNewFiles = fileNames.filter((newFile) => !safePrev.some((existing) => existing.name === newFile.name));
 
       return [...safePrev, ...uniqueNewFiles];
     });
@@ -647,40 +499,63 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-        };
-        await deleteRequestorAttachment(deletePayload)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "File deleted successfully.",
-              duration: 1500,
-            });
-            refetch();
-          })
-          .catch((err) => {
-            console.log("error: ", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
-      }
+    const isSavedAttachment = Boolean(fileNameToDelete.ticketAttachmentId);
 
-      setAttachments((prevFiles) =>
-        prevFiles.filter((fileName) => fileName !== fileNameToDelete),
-      );
+    // Only saved attachments (from the API) need confirmation
+    if (isSavedAttachment) {
+      const confirmed = await confirmDeleteAttachment({
+        title: "Remove Attachment?",
+        message: "Are you sure you want to remove this attachment?",
+        note: "Note: The deletion will only take effect after you save your changes.",
+        confirmText: "Remove",
+        cancelText: "Cancel",
+        // icon: "📎",
+      });
 
-      setValue(
-        "RequestAttachmentsFiles",
-        watch("RequestAttachmentsFiles").filter(
-          (file) => file.name !== fileNameToDelete.name,
-        ),
-      );
-    } catch (error) {}
+      if (!confirmed) return;
+
+      // Queue it for deletion. The DELETE API is called in onSubmitAction.
+      setDeletedAttachmentIds((prev) => (prev.includes(fileNameToDelete.ticketAttachmentId) ? prev : [...prev, fileNameToDelete.ticketAttachmentId]));
+    }
+
+    // UI/form cleanup for both saved and newly added files
+    setAttachments((prevFiles) => prevFiles.filter((file) => file !== fileNameToDelete));
+
+    setValue(
+      "RequestAttachmentsFiles",
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
+    );
+
+    // try {
+    //   if (fileNameToDelete.ticketAttachmentId) {
+    //     const deletePayload = {
+    //       ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+    //     };
+    //     await deleteRequestorAttachment(deletePayload)
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success!", {
+    //           description: "File deleted successfully.",
+    //           duration: 1500,
+    //         });
+    //         refetch();
+    //       })
+    //       .catch((err) => {
+    //         console.log("error: ", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
+    //   }
+
+    //   setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+
+    //   setValue(
+    //     "RequestAttachmentsFiles",
+    //     watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
+    //   );
+    // } catch (error) {}
   };
 
   const handleDragOver = (event) => {
@@ -701,9 +576,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName),
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -796,10 +669,8 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
     setPosition({ x: 0, y: 0 });
   };
 
-  const handleZoomIn = () =>
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () =>
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
 
   const handleZoomReset = () => {
     setZoom(1);
@@ -865,13 +736,12 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
       Notes: "",
     });
     setAttachments([]);
+    setDeletedAttachmentIds([]);
     onClose();
   };
 
-  const imageAttachments =
-    attachments?.filter((f) => isImageFile(f.name)) ?? [];
-  const otherAttachments =
-    attachments?.filter((f) => !isImageFile(f.name)) ?? [];
+  const imageAttachments = attachments?.filter((f) => isImageFile(f.name)) ?? [];
+  const otherAttachments = attachments?.filter((f) => !isImageFile(f.name)) ?? [];
 
   const renderMenu = (fileName, compact = false) => (
     <ConcernViewMenuActions
@@ -1024,17 +894,13 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
         category_Description: item.category_Description,
       }));
 
-      const subCategory = editData?.getRequestSubTicketCategories.map(
-        (item) => ({
-          ticketSubCategoryId: item.ticketSubCategoryId,
-          subCategoryId: item.subCategoryId,
-          sub_Category_Description: item.subCategory_Description,
-        }),
-      );
+      const subCategory = editData?.getRequestSubTicketCategories.map((item) => ({
+        ticketSubCategoryId: item.ticketSubCategoryId,
+        subCategoryId: item.subCategoryId,
+        sub_Category_Description: item.subCategory_Description,
+      }));
 
-      const categoryIdParams = editData?.getRequestTicketCategories?.map(
-        (item) => item?.categoryId,
-      );
+      const categoryIdParams = editData?.getRequestTicketCategories?.map((item) => item?.categoryId);
 
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
@@ -1045,37 +911,20 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
         setValue("Notes", editData.notes);
       }
 
-      getAttachmentData(
-        editData.ticketRequestConcerns.map((item) => item.ticketConcernId),
-      );
+      getAttachmentData(editData.ticketRequestConcerns.map((item) => item.ticketConcernId));
       getSubCategory({
         CategoryId: categoryIdParams,
       });
     }
-  }, [
-    editData,
-    companyIsLoading,
-    businessUnitIsLoading,
-    departmentIsLoading,
-    unitIsLoading,
-    subUnitIsLoading,
-    locationIsLoading,
-  ]);
+  }, [editData, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   useEffect(() => {
     const selectedCategories = watch("CategoryId");
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter(
-        (subCategory) =>
-          selectedCategories.some((category) =>
-            subCategoryData?.value?.some(
-              (item) =>
-                item.subCategoryId === subCategory.subCategoryId &&
-                item.categoryId === category.id,
-            ),
-          ),
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -1102,20 +951,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
       >
         <form onSubmit={handleSubmit(onConcernFormSubmit)}>
           <DialogContent>
-            <Stack
-              direction="column"
-              sx={{ padding: "1px", minHeight: "700px", gap: 1 }}
-            >
+            <Stack direction="column" sx={{ padding: "1px", minHeight: "700px", gap: 1 }}>
               {/* Header */}
               <Stack mb={1}>
-                <Typography sx={sx.titleText}>
-                  {" "}
-                  {!editData ? "New Request" : "View Request"}
-                </Typography>
-                <Typography sx={sx.captionText}>
-                  {" "}
-                  {`Ticket Number: ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
-                </Typography>
+                <Typography sx={sx.titleText}>{!editData ? "New Request" : "View Request"}</Typography>
+                <Typography sx={sx.captionText}>{`Ticket Number: ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
               </Stack>
 
               {/* Fields */}
@@ -1131,13 +971,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                     name="Request_Type"
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        {...field}
-                        label="Select Request type"
-                        size="small"
-                        inputProps={{ "aria-label": "Without label" }}
-                        sx={sx.select}
-                      >
+                      <Select {...field} label="Select Request type" size="small" inputProps={{ "aria-label": "Without label" }} sx={sx.select}>
                         <MenuItem value="New Request" sx={sx.menuItem}>
                           New Request
                         </MenuItem>
@@ -1146,12 +980,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                         </MenuItem>
                       </Select>
                     )}
-                    disabled={
-                      editData?.concern_Status === "" ||
-                      editData?.concern_Status === "For Approval"
-                        ? false
-                        : true
-                    }
+                    disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                   />
                 </Stack>
 
@@ -1174,34 +1003,17 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             value={value}
                             options={backjobTicketData?.value || []}
                             loading={backjobTicketIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Ticket Number"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Ticket Number" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!backjobTicketIsSuccess) getBackjobTicket();
                             }}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option?.ticketConcernId} - ${option.concern}`
-                            }
-                            noOptionsText={
-                              "No tickets available for backjob request"
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.ticketConcernId === value.ticketConcernId
-                            }
+                            getOptionLabel={(option) => `${option?.ticketConcernId} - ${option.concern}`}
+                            noOptionsText={"No tickets available for backjob request"}
+                            isOptionEqualToValue={(option, value) => option.ticketConcernId === value.ticketConcernId}
                             fullWidth
                             disableClearable
-                            disabled={
-                              editData?.concern_Status === "" ||
-                              editData?.concern_Status === "For Approval"
-                                ? false
-                                : true
-                            }
+                            disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                             componentsProps={sx.automCompleteProp}
                           />
                         );
@@ -1228,12 +1040,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                         placeholder="Select Severity"
                         inputProps={{ "aria-label": "Without label" }}
                         sx={sx.select}
-                        disabled={
-                          editData?.concern_Status === "" ||
-                          editData?.concern_Status === "For Approval"
-                            ? false
-                            : true
-                        }
+                        disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                       >
                         <MenuItem value="Normal" sx={sx.menuItem}>
                           Normal
@@ -1248,9 +1055,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
                 {/* Requestor Details*/}
                 <Stack mt={2}>
-                  <Typography sx={sx.sectionHeader}>
-                    Requestor Details:
-                  </Typography>
+                  <Typography sx={sx.sectionHeader}>Requestor Details:</Typography>
                 </Stack>
 
                 {/* Requestor and Contact Number */}
@@ -1270,13 +1075,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             value={value}
                             options={userData?.value?.users || []}
                             loading={userIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Requestor"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Requestor" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!userIsSuccess)
                                 getUser({
@@ -1317,9 +1116,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                               onChange(value);
                             }}
                             getOptionLabel={(option) => option?.fullname}
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1332,9 +1129,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
                   {/* Contact Number */}
                   <Stack sx={sx.fieldTwoColsStack}>
-                    <Typography sx={sx.fieldText}>
-                      Contact Number (Optional)
-                    </Typography>
+                    <Typography sx={sx.fieldText}>Contact Number (Optional)</Typography>
                     <Controller
                       control={control}
                       name="Contact_Number"
@@ -1370,20 +1165,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             placeholder="09"
                             onChange={handleInputChange}
                             error={!!errors.Contact_Number}
-                            helperText={
-                              errors.Contact_Number
-                                ? errors.Contact_Number.message
-                                : ""
-                            }
+                            helperText={errors.Contact_Number ? errors.Contact_Number.message : ""}
                             InputProps={sx.textFieldInputProps}
                             InputLabelProps={sx.textFieldLabelProps}
                             autoComplete="off"
-                            disabled={
-                              editData?.concern_Status === "" ||
-                              editData?.concern_Status === "For Approval"
-                                ? false
-                                : true
-                            }
+                            disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                             sx={{
                               width: "100%",
                             }}
@@ -1411,23 +1197,13 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             value={value}
                             options={companyData?.value?.company || []}
                             loading={companyIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Company"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Company" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!companyIsSuccess) getCompany();
                             }}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.company_Code} - ${option.company_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.company_Code} - ${option.company_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1450,12 +1226,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              businessUnitData?.value?.businessUnit?.filter(
-                                (item) =>
-                                  item?.companyId === watch("CompanyId")?.id,
-                              ) || []
-                            }
+                            options={businessUnitData?.value?.businessUnit?.filter((item) => item?.companyId === watch("CompanyId")?.id) || []}
                             loading={businessUnitIsLoading}
                             renderInput={(params) => (
                               <TextField
@@ -1467,12 +1238,8 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                               />
                             )}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.business_Code} - ${option.business_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.business_Code} - ${option.business_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             sx={{
                               flex: 2,
                             }}
@@ -1510,28 +1277,12 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              departmentData?.value?.department?.filter(
-                                (item) =>
-                                  item.businessUnitId ===
-                                  watch("BusinessUnitId")?.id,
-                              ) || []
-                            }
+                            options={departmentData?.value?.department?.filter((item) => item.businessUnitId === watch("BusinessUnitId")?.id) || []}
                             loading={departmentIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Department"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Department" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.department_Code} - ${option.department_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.department_Code} - ${option.department_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1555,28 +1306,12 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              unitData?.value?.unit.filter(
-                                (item) =>
-                                  item.departmentId ===
-                                  watch("DepartmentId")?.id,
-                              ) || []
-                            }
+                            options={unitData?.value?.unit.filter((item) => item.departmentId === watch("DepartmentId")?.id) || []}
                             loading={unitIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Unit"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Unit" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.unit_Code} - ${option.unit_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.unit_Code} - ${option.unit_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1602,11 +1337,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              subUnitData?.value?.subUnit?.filter(
-                                (item) => item.unitId === watch("UnitId")?.id,
-                              ) || []
-                            }
+                            options={subUnitData?.value?.subUnit?.filter((item) => item.unitId === watch("UnitId")?.id) || []}
                             loading={subUnitIsLoading}
                             onOpen={() => {
                               if (!subUnitIsSuccess)
@@ -1614,20 +1345,10 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                                   Status: true,
                                 });
                             }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Sub Unit"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Sub Unit" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.subUnit_Code} - ${option.subUnit_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => `${option.subUnit_Code} - ${option.subUnit_Name}`}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disabled
                             disableClearable
@@ -1650,30 +1371,12 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              locationData?.value?.location.filter((item) =>
-                                item.subUnits.some(
-                                  (subUnitItem) =>
-                                    subUnitItem.subUnitId ===
-                                    watch("SubUnitId")?.id,
-                                ),
-                              ) || []
-                            }
+                            options={locationData?.value?.location.filter((item) => item.subUnits.some((subUnitItem) => subUnitItem.subUnitId === watch("SubUnitId")?.id)) || []}
                             loading={locationIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Location"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Location" sx={sx.autoComplete} />}
                             onChange={(_, value) => onChange(value)}
-                            getOptionLabel={(option) =>
-                              `${option.location_Code} - ${option.location_Name}`
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.location_Code === value.location_Code
-                            }
+                            getOptionLabel={(option) => `${option.location_Code} - ${option.location_Name}`}
+                            isOptionEqualToValue={(option, value) => option.location_Code === value.location_Code}
                             fullWidth
                             disabled
                             disableClearable
@@ -1687,9 +1390,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
                 {/* Concern Details */}
                 <Stack mt={2}>
-                  <Typography sx={sx.sectionHeader}>
-                    Concern Details:
-                  </Typography>
+                  <Typography sx={sx.sectionHeader}>Concern Details:</Typography>
                 </Stack>
 
                 {/* Service Provider and Channel */}
@@ -1706,17 +1407,9 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             ref={ref}
                             size="small"
                             value={value}
-                            options={
-                              serviceProviderData?.value?.serviceProvider || []
-                            }
+                            options={serviceProviderData?.value?.serviceProvider || []}
                             loading={serviceProviderIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Service Provider"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Service Provider" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!serviceProviderIsSuccess)
                                 getServiceProvider({
@@ -1730,12 +1423,8 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                               setValue("CategoryId", []);
                               setValue("SubCategoryId", []);
                             }}
-                            getOptionLabel={(option) =>
-                              option.serviceProviderName
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
+                            getOptionLabel={(option) => option.serviceProviderName}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             fullWidth
                             disableClearable
                             disabled
@@ -1760,19 +1449,10 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             value={value}
                             options={
                               editData
-                                ? serviceProviderData?.value?.serviceProvider?.find(
-                                    (item) =>
-                                      item.id === watch("ServiceProvider")?.id,
-                                  )?.serviceChannel || []
+                                ? serviceProviderData?.value?.serviceProvider?.find((item) => item.id === watch("ServiceProvider")?.id)?.serviceChannel || []
                                 : watch("ServiceProvider")?.serviceChannel || []
                             }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Channel"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Channel" sx={sx.autoComplete} />}
                             onChange={(_, value) => {
                               onChange(value);
 
@@ -1780,9 +1460,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                               setValue("SubCategoryId", []);
                             }}
                             getOptionLabel={(option) => option.channelName}
-                            isOptionEqualToValue={(option, value) =>
-                              option.channelId === value.channelId
-                            }
+                            isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                             fullWidth
                             disabled
                             disableClearable
@@ -1811,24 +1489,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             value={value}
                             options={
                               editData
-                                ? categoryData?.value?.category?.filter(
-                                    (item) =>
-                                      item.channelId ===
-                                      watch("ChannelId")?.channelId,
-                                  ) || []
-                                : categoryData?.value?.category?.filter(
-                                    (item) =>
-                                      item.channelId === watch("ChannelId")?.id,
-                                  ) || []
+                                ? categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []
+                                : categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.id) || []
                             }
                             loading={categoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Category"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Category" sx={sx.autoComplete} />}
                             onOpen={() => {
                               if (!categoryIsSuccess)
                                 getCategory({
@@ -1838,9 +1503,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             onChange={(_, value) => {
                               onChange(value);
 
-                              const categoryIdParams = value?.map(
-                                (category) => category?.id,
-                              );
+                              const categoryIdParams = value?.map((category) => category?.id);
 
                               if (watch("CategoryId").length === 0) {
                                 setValue("SubCategoryId", []);
@@ -1850,17 +1513,9 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                                 CategoryId: categoryIdParams,
                               });
                             }}
-                            getOptionLabel={(option) =>
-                              option.category_Description || ""
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option.id === value.id
-                            }
-                            getOptionDisabled={(option) =>
-                              watch("CategoryId").some(
-                                (item) => item.id === option.id,
-                              )
-                            }
+                            getOptionLabel={(option) => option.category_Description || ""}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                             fullWidth
                             disableClearable
                             disabled
@@ -1886,28 +1541,13 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                             value={value}
                             options={subCategoryData?.value || []}
                             loading={subCategoryIsLoading}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                placeholder="Select Sub Category"
-                                sx={sx.autoComplete}
-                              />
-                            )}
+                            renderInput={(params) => <TextField {...params} placeholder="Select Sub Category" sx={sx.autoComplete} />}
                             onChange={(_, value) => {
                               onChange(value);
                             }}
-                            getOptionLabel={(option) =>
-                              option?.sub_Category_Description || ""
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                              option?.subCategoryId === value?.subCategoryId
-                            }
-                            getOptionDisabled={(option) =>
-                              watch("SubCategoryId").some(
-                                (item) =>
-                                  item.subCategoryId === option.subCategoryId,
-                              )
-                            }
+                            getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                            isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                            getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                             noOptionsText={"No sub category available"}
                             fullWidth
                             disableClearable
@@ -1935,30 +1575,19 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           <DatePicker
                             value={field.value ? moment(field.value) : moment()}
                             onChange={(newValue) => {
-                              const formattedValue = newValue
-                                ? moment(newValue).format("YYYY-MM-DD")
-                                : null;
+                              const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
                               field.onChange(formattedValue);
                             }}
                             slotProps={sx.datePickerSlotProp}
                             minDate={dateNeededValidation}
                             error={!!errors.DateNeeded}
                             helperText={errors.DateNeeded}
-                            disabled={
-                              editData?.concern_Status === "" ||
-                              editData?.concern_Status === "For Approval"
-                                ? false
-                                : true
-                            }
+                            disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                           />
                         );
                       }}
                     />
-                    {errors.DateNeeded && (
-                      <Typography sx={{ color: "theme.palette.error.main" }}>
-                        {errors.DateNeeded.message}
-                      </Typography>
-                    )}
+                    {errors.DateNeeded && <Typography sx={{ color: "theme.palette.error.main" }}>{errors.DateNeeded.message}</Typography>}
                   </LocalizationProvider>
                 </Stack>
 
@@ -1984,13 +1613,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           error={!!errors.Concern}
                           InputProps={sx.textFieldInputProps}
                           InputLabelProps={sx.textFieldLabelProps}
-                          disabled={
-                            editData?.concern_Status === "Ongoing" ||
-                            editData?.concern_Status === "For Confirmation" ||
-                            editData?.concern_Status === "Done"
-                              ? true
-                              : false
-                          }
+                          disabled={editData?.concern_Status === "Ongoing" || editData?.concern_Status === "For Confirmation" || editData?.concern_Status === "Done" ? true : false}
                           autoComplete="off"
                           rows={6}
                           multiline
@@ -1999,11 +1622,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                     }}
                   />
 
-                  {errors.Concern && (
-                    <Typography sx={sx.textErrors}>
-                      {errors.Concern.message}
-                    </Typography>
-                  )}
+                  {errors.Concern && <Typography sx={sx.textErrors}>{errors.Concern.message}</Typography>}
                 </Stack>
 
                 {/* Notes */}
@@ -2026,12 +1645,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           autoComplete="off"
                           rows={6}
                           multiline
-                          disabled={
-                            editData?.concern_Status === "" ||
-                            editData?.concern_Status === "For Approval"
-                              ? false
-                              : true
-                          }
+                          disabled={editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? false : true}
                           sx={{
                             width: "100%",
                           }}
@@ -2054,24 +1668,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                   >
                     <Stack sx={sx.attachmentTextBox}>
                       <AttachFile sx={sx.titleHeaderMutedIcon} />
-                      <Typography sx={sx.detailTitleText}>
-                        Attachment(s):
-                      </Typography>
+                      <Typography sx={sx.detailTitleText}>Attachment(s):</Typography>
 
-                      {(editData?.concern_Status === "For Approval" ||
-                        editData?.concern_Status === "") && (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="warning"
-                          onClick={handleUploadButtonClick}
-                          sx={sx.addAttachmentBtn}
-                        >
-                          <Typography
-                            sx={{ fontSize: "11.5px", fontWeight: 500 }}
-                          >
-                            Add File
-                          </Typography>
+                      {(editData?.concern_Status === "For Approval" || editData?.concern_Status === "") && (
+                        <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick} sx={sx.addAttachmentBtn}>
+                          <Typography sx={{ fontSize: "11.5px", fontWeight: 500 }}>Add File</Typography>
                         </Button>
                       )}
                     </Stack>
@@ -2080,9 +1681,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                       <Stack sx={sx.noAttachmentSection}>
                         <Stack sx={sx.noAttachmentContent}>
                           <AttachFileOutlined sx={sx.noAttachmentIcon} />
-                          <Typography sx={sx.noAttachmentText}>
-                            No attached file
-                          </Typography>
+                          <Typography sx={sx.noAttachmentText}>No attached file</Typography>
                         </Stack>
                       </Stack>
                     ) : (
@@ -2098,18 +1697,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           >
                             {imageAttachments.map((fileName, index) => (
                               <ImageAttachmentPreviewCard
-                                key={
-                                  fileName.ticketAttachmentId ??
-                                  `${fileName.name}-${index}`
-                                }
+                                key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`}
                                 fileName={fileName}
                                 onView={handleOpenThumbnail}
                                 menu={renderMenu(fileName, true)}
-                                isOpening={
-                                  !!fileName.ticketAttachmentId &&
-                                  loadingAttachmentId ===
-                                    fileName.ticketAttachmentId
-                                }
+                                isOpening={!!fileName.ticketAttachmentId && loadingAttachmentId === fileName.ticketAttachmentId}
                               />
                             ))}
                           </Box>
@@ -2117,13 +1709,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
                         {/* Non-image files, row list */}
                         {otherAttachments.map((fileName, index) => (
-                          <Box
-                            key={
-                              fileName.ticketAttachmentId ??
-                              `${fileName.name}-${index}`
-                            }
-                            sx={sx.fileAttachmentBox}
-                          >
+                          <Box key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`} sx={sx.fileAttachmentBox}>
                             {getAttachmentIcon(fileName)}
                             <Box sx={sx.attachmentAndMenuBox}>
                               <Box
@@ -2132,33 +1718,20 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                                   flexDirection: "column",
                                 }}
                               >
-                                <Typography sx={sx.fileNameText}>
-                                  {fileName.name}
-                                </Typography>
-                                <Typography sx={sx.fileSizeText}>
-                                  {fileName.size} Mb
-                                </Typography>
+                                <Typography sx={sx.fileNameText}>{fileName.name}</Typography>
+                                <Typography sx={sx.fileSizeText}>{fileName.size} Mb</Typography>
                                 <Box sx={sx.fileDescWithIconBox}>
                                   <Typography
                                     sx={{
                                       fontSize: "12px",
                                       fontWeight: 500,
-                                      color: !!fileName.ticketAttachmentId
-                                        ? theme.palette.success.main
-                                        : theme.palette.primary.main,
+                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                     }}
                                   >
-                                    {!!fileName.ticketAttachmentId
-                                      ? "Attached file"
-                                      : "Uploaded the file successfully"}
+                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
                                   </Typography>
 
-                                  {!!fileName.ticketAttachmentId && (
-                                    <CheckOutlined
-                                      color="success"
-                                      sx={{ fontSize: "12px" }}
-                                    />
-                                  )}
+                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: "12px" }} />}
                                 </Box>
                               </Box>
 
@@ -2184,19 +1757,10 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           const files = Array.from(event.target.files);
                           files[0].ticketAttachmentId = ticketAttachmentId;
 
-                          onChange([
-                            ...files,
-                            ...value.filter(
-                              (item) =>
-                                item.ticketAttachmentId !== ticketAttachmentId,
-                            ),
-                          ]);
+                          onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
 
                           setAttachments((prevFiles) => [
-                            ...prevFiles.filter(
-                              (item) =>
-                                item.ticketAttachmentId !== ticketAttachmentId,
-                            ),
+                            ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
                             {
                               ticketAttachmentId: ticketAttachmentId,
                               name: files[0].name,
@@ -2210,17 +1774,14 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
 
-                          const uniqueNewFiles = files?.filter(
-                            (item) =>
-                              !value?.some((file) => file.name === item.name),
-                          );
+                          const uniqueNewFiles = files?.filter((item) => !value?.some((file) => file.name === item.name));
 
                           onChange([...value, ...uniqueNewFiles]);
                           fileInputRef.current.value = "";
                         }
                       }}
                       hidden
-                      multiple={!!ticketAttachmentId}
+                      multiple
                     />
                   )}
                 />
@@ -2237,11 +1798,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
           >
             <Button
               variant="contained"
-              loading={
-                isCreateEditRequestorConcernLoading ||
-                isCreateEditRequestorConcernFetching ||
-                isLoading
-              }
+              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
               onClick={onCloseAction}
               sx={{
                 ":disabled": {
@@ -2254,24 +1811,18 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
               Close
             </Button>
 
-            {editData?.concern_Status === "" ||
-            editData?.concern_Status === "For Approval" ? (
+            {editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? (
               <LoadingButton
                 size="large"
                 variant="contained"
                 color="primary"
                 type="submit"
-                loading={
-                  isCreateEditRequestorConcernLoading ||
-                  isCreateEditRequestorConcernFetching ||
-                  isLoading
-                }
+                loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading || delAttachmentIsLoading || delAttachmentIsFetching}
                 disabled={
                   !watch("ServiceProvider") ||
                   !watch("DateNeeded") ||
                   !watch("Concern") ||
-                  moment(watch("DateNeeded")).format("MM-DD-YYYY") <
-                    moment(dateNeededValidation).format("MM-DD-YYYY") ||
+                  moment(watch("DateNeeded")).format("MM-DD-YYYY") < moment(dateNeededValidation).format("MM-DD-YYYY") ||
                   (watch("Request_Type") === "Rework" && !watch("BackJobId"))
                 }
               >
@@ -2287,12 +1838,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
       {/* Dialog to view image */}
       {selectedImage && (
         <>
-          <Dialog
-            fullWidth
-            maxWidth="md"
-            open={isViewDialogOpen}
-            onClose={handleViewClose}
-          >
+          <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
             <DialogContent sx={{ height: "auto", padding: 0 }}>
               <Box sx={{ position: "relative" }}>
                 {/* Zoom controls */}
@@ -2310,12 +1856,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                     padding: "2px 6px",
                   }}
                 >
-                  <IconButton
-                    size="small"
-                    onClick={handleZoomOut}
-                    disabled={zoom <= MIN_ZOOM}
-                    sx={{ color: "#fff" }}
-                  >
+                  <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
                     <ZoomOut fontSize="small" />
                   </IconButton>
 
@@ -2330,20 +1871,11 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                     {Math.round(zoom * 100)}%
                   </Typography>
 
-                  <IconButton
-                    size="small"
-                    onClick={handleZoomIn}
-                    disabled={zoom >= MAX_ZOOM}
-                    sx={{ color: "#fff" }}
-                  >
+                  <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
                     <ZoomIn fontSize="small" />
                   </IconButton>
 
-                  <IconButton
-                    size="small"
-                    onClick={handleZoomReset}
-                    sx={{ color: "#fff" }}
-                  >
+                  <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
                     <RestartAlt fontSize="small" />
                   </IconButton>
                 </Stack>
@@ -2374,15 +1906,8 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                         userSelect: "none",
                         transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
                         transformOrigin: "center center",
-                        transition: isDragging
-                          ? "none"
-                          : "transform 0.15s ease",
-                        cursor:
-                          zoom > 1
-                            ? isDragging
-                              ? "grabbing"
-                              : "grab"
-                            : "default",
+                        transition: isDragging ? "none" : "transform 0.15s ease",
+                        cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
                       }}
                     />
                   )}
@@ -2390,11 +1915,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button
-                variant="contained"
-                onClick={handleViewClose}
-                sx={sx.cancelButton}
-              >
+              <Button variant="contained" onClick={handleViewClose} sx={sx.cancelButton}>
                 Close
               </Button>
             </DialogActions>

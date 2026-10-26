@@ -399,6 +399,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
 
               const failedCount = results.filter((r) => r.status === "rejected").length;
+
               if (failedCount > 0) {
                 toast.error("Error!", {
                   description: `${failedCount} attachment(s) could not be deleted.`,
