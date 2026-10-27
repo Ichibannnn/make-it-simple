@@ -1285,7 +1285,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               type="submit"
               form="closeticket"
               variant="contained"
-              loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching || delIsLoading || delIsFetching}
+              loading={(closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching) && (delIsLoading || delIsFetching)}
               disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || (watch("ClosingDate") && !watch("BackdateRemarks"))}
             >
               Save Changes
