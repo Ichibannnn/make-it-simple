@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,11 +9,11 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import { userManagementStyles as sx } from "../styles/userManagementStyles";
-
 import useDisclosure from "../../../hooks/useDisclosure";
+import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
 import UserAccountWarningDialog from "./UserAccountWarningDialog";
 import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
+
 import { useLazyGetEmployeesQuery } from "../../../features/sedar/sedarApi";
 import { useLazyGetRolesQuery } from "../../../features/user_management_api/role/roleApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
@@ -23,14 +23,14 @@ import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitA
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
-import { useLazyGetActiveUserTypesQuery } from "../../../features/api masterlist/user_types/userTypeApi";
-import { useLazyGetActiveBuildingsQuery } from "../../../features/api masterlist/buildings/buildingApi";
+import { PersonAddAlt1Rounded } from "@mui/icons-material";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
+  const [storeCheckbox, setStoreCheckbox] = useState(false);
+
   const [createUser, { isLoading: isCreateUserIsLoading, isFetching: isCreateUserIsFetching }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdateUserIsLoading, isFetching: isUpdateUserIsFetching }] = useUpdateUserMutation();
 
-  const [getUserTypes, { data: userTypeData, isLoading: userTypeIsLoading, isSuccess: userTypeIsSuccess }] = useLazyGetActiveUserTypesQuery();
   const [getEmployees, { data: employeeData = [], isLoading: emloyeeIsLoading, isSuccess: employeeIsSuccess }] = useLazyGetEmployeesQuery();
   const [getRoles, { data: roleData, isLoading: roleIsLoading, isSuccess: roleIsSuccess }] = useLazyGetRolesQuery();
   const [getOneCharging, { data: oneChargingData, isLoading: oneChargingIsLoading, isSuccess: oneChargingIsSuccess }] = useLazyGetOneChargingQuery();
@@ -40,7 +40,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   const [getUnit, { data: unitData, isLoading: unitIsLoading, isSuccess: unitIsSuccess }] = useLazyGetUnitQuery();
   const [getSubUnit, { data: subUnitData, isLoading: subUnitIsLoading, isSuccess: subUnitIsSuccess }] = useLazyGetSubUnitQuery();
   const [getLocation, { data: locationData, isLoading: locationIsLoading, isSuccess: locationIsSuccess }] = useLazyGetLocationWithPaginationQuery();
-  const [getBuildings, { data: buildingData, isLoading: buildingIsLoading, isSuccess: buildingIsSuccess }] = useLazyGetActiveBuildingsQuery();
 
   const [warningData, setWarningData] = useState("");
 
@@ -50,13 +49,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   const schema = useMemo(
     () =>
       yup.object().shape({
-        userType: yup.object().required().label("User Type"),
-        empId: yup.object().required().label("Employee ID"),
+        empId: !storeCheckbox && !data?.is_Store === true ? yup.object().required().label() : yup.string().nullable(),
         fullname: yup.string().required().label("Fullname"),
         username: yup.string().required().label("Username"),
         userRoleId: yup.object().required().label("Role"),
-        building: yup.object().required().label("Building"),
-
         oneCharging: yup.object().required().label("Charging"),
         companyId: yup.object().required().label("Company"),
         businessUnitId: yup.object().required().label("Business Unit"),
@@ -65,7 +61,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         subUnitId: yup.object().required().label("Sub-Unit"),
         locationId: yup.object().required().label("Location"),
       }),
-    [],
+    [storeCheckbox],
   );
 
   const {
@@ -79,13 +75,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      userType: null,
-      empId: null,
+      empId: !storeCheckbox ? null : "",
       fullname: "",
       username: "",
       userRoleId: null,
-      building: null,
-
       oneCharging: null,
       companyId: null,
       businessUnitId: null,
@@ -107,20 +100,27 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       if (!subUnitIsSuccess) getSubUnit();
       if (!locationIsSuccess) getLocation();
 
-      if (data?.userType) {
-        setValue("userType", {
-          id: data?.userTypeId,
-          name: data?.userType,
-        });
-      } else {
-        setValue("userType", null);
+      // setValue("empId", {
+      //   general_info: {
+      //     full_id_number: data?.empId,id:
+      //   },
+      // });
+
+      if (data?.is_Store === true) {
+        setStoreCheckbox(true);
       }
 
-      setValue("empId", {
-        general_info: {
-          full_id_number: data.empId,
-        },
-      });
+      if (data && data.is_Store !== true) {
+        setValue("empId", {
+          general_info: {
+            full_id_number: data.empId,
+          },
+        });
+      } else if (data && data.is_Store === true) {
+        setValue("empId", data.empId);
+      } else {
+        setValue("empId", "");
+      }
 
       setValue("fullname", data?.fullname);
       setValue("username", data?.username);
@@ -128,15 +128,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         id: data?.userRoleId,
         user_Role_Name: data?.user_Role_Name,
       });
-
-      if (data?.building) {
-        setValue("building", {
-          id: data?.buildingId,
-          name: data?.building,
-        });
-      } else {
-        setValue("building", null);
-      }
 
       if (data?.oneChargingCode === null) {
         setValue("oneCharging", null);
@@ -161,7 +152,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           business_Code: data?.businessUnit_Code,
           business_Name: data?.businessUnit_Name,
         });
-
         setValue("departmentId", {
           id: data?.departmentId,
           department_Code: data?.department_Code,
@@ -188,6 +178,8 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   }, [data, companyIsLoading, businessUnitIsLoading, departmentIsLoading, unitIsLoading, subUnitIsLoading, locationIsLoading]);
 
   const onSubmitHandler = (formData) => {
+    console.log("FormData:", formData);
+
     if (data?.is_Use === true && data?.user_Role_Name !== formData.userRoleId.user_Role_Name) {
       setWarningData({
         id: data.id,
@@ -208,11 +200,9 @@ const UserAccountDialog = ({ data, open, onClose }) => {
       if (data) {
         const submitUpdateUser = {
           id: data.id,
-          userTypeId: formData.userType.id,
           empId: data.empId,
           fullname: data.fullname,
           userRoleId: formData.userRoleId.id,
-          buildingId: formData.building.id,
           oneChargingCode: formData.oneCharging.code,
           oneChargingName: formData.oneCharging.name,
           username: formData.username,
@@ -224,7 +214,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           locationCode: formData.locationId.location_Code,
         };
 
-        // console.log("UpdateUser: ", submitUpdateUser);
+        console.log("UpdateUser: ", submitUpdateUser);
 
         Swal.fire({
           title: "Information",
@@ -267,13 +257,10 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         });
       } else {
         const submitAddUser = {
-          userTypeId: formData.userType.id,
-          empId: formData.empId.general_info.full_id_number,
-          fullname: formData.empId.general_info.full_name,
+          empId: !storeCheckbox ? formData.empId.general_info.full_id_number : formData.empId,
+          fullname: !storeCheckbox ? formData.empId.general_info.full_name : formData.fullname,
           username: formData.username,
           userRoleId: formData.userRoleId.id,
-          buildingId: formData.building.id,
-
           oneChargingCode: formData.oneCharging.code,
           oneChargingName: formData.oneCharging.name,
           companyId: formData.companyId.id,
@@ -282,6 +269,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           unitId: formData.unitId.id,
           subUnitId: formData.subUnitId.id,
           locationCode: formData.locationId.location_Code,
+          is_Store: !storeCheckbox ? false : true,
         };
 
         Swal.fire({
@@ -305,13 +293,14 @@ const UserAccountDialog = ({ data, open, onClose }) => {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            // console.log("Add user: ", submitAddUser);
+            console.log("Add user: ", submitAddUser);
             createUser(submitAddUser)
               .unwrap()
               .then(() => {
                 toast.success("Success!", {
                   description: "User added successfully!",
                 });
+                setStoreCheckbox(false);
                 reset();
                 onClose();
               })
@@ -328,137 +317,229 @@ const UserAccountDialog = ({ data, open, onClose }) => {
   };
 
   const onCloseHandler = () => {
+    setStoreCheckbox(false);
     reset();
     onClose();
+  };
+
+  const storeCheckboxHandler = (event) => {
+    setStoreCheckbox(event.target.checked);
+    reset();
+  };
+
+  const ui = {
+    surface: "#131a2b",
+    field: "#0e1422",
+    fieldDisabled: "#10172a",
+    border: "#2b3650",
+    divider: "#232d45",
+    text: "#eef2fa",
+    title: "#f4f6fb",
+    label: "#aab5cb",
+    muted: "#8c98b0",
+    green: "#4ade80",
+    greenBg: "#12301f",
+    accent: "#6847f0",
+    accentHover: "#5a3bd9",
+    focus: "#8b7bff",
+    iconBg: "#241d52",
+    iconFg: "#b9acff",
+    error: "#f87171",
   };
 
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} PaperProps={{ style: { overflow: "auto" } }}>
-        <DialogTitle sx={{ paddingTop: 0, paddingBottom: 0 }}>{!data ? "Create User Account" : "Update User Account"}</DialogTitle>
-
         <DialogContent>
-          <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={2} paddingTop={3}>
-            <Typography
-              sx={{
-                color: "#48BB78",
-                fontSize: "14px",
-                fontWeight: "bold",
-              }}
-            >
-              Basic Information
-            </Typography>
+          <Stack sx={{ flexDirection: "row", gap: 1, alignItems: "center" }}>
+            <Box sx={{ width: 44, height: 44, borderRadius: "12px", bgcolor: ui.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <PersonAddAlt1Rounded sx={{ color: ui.iconFg }} />
+            </Box>
 
-            {/* User Type */}
-            <Controller
-              control={control}
-              name="userType"
-              render={({ field: { ref, value, onChange } }) => {
-                return (
-                  <Autocomplete
-                    ref={ref}
-                    size="small"
-                    value={value}
-                    options={userTypeData?.value?.pms || []}
-                    loading={userTypeIsLoading}
-                    renderInput={(params) => <TextField {...params} label="User Type" />}
-                    onOpen={() => {
-                      if (!userTypeIsSuccess) getUserTypes();
-                    }}
-                    onChange={(_, value) => onChange(value)}
-                    getOptionLabel={(option) => option.name}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{
-                      flex: 2,
-                    }}
-                    fullWidth
-                    disablePortal
-                  />
-                );
-              }}
-            />
+            <Box sx={{ gap: 0 }}>
+              <Typography sx={{ fontSize: "16px", color: theme.palette.text.main, fontWeight: 700 }}> {!data ? "Create User Account" : "Update User Account"}</Typography>
+              <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>
+                {!data ? "Add a new user and assign their charging details" : "Edit existing user information and charging details"}
+              </Typography>
+            </Box>
+          </Stack>
 
-            <Stack direction={isSmallScreen ? "column" : "row"} gap={1}>
-              {/* Employee ID */}
-              <Controller
-                control={control}
-                name="empId"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <Autocomplete
-                      ref={ref}
-                      size="small"
-                      value={value}
-                      options={employeeData}
-                      loading={emloyeeIsLoading}
-                      renderInput={(params) => <TextField {...params} label="Employee ID" />}
-                      onOpen={() => {
-                        if (!employeeIsSuccess) getEmployees();
-                      }}
-                      onChange={(_, value) => {
-                        setValue("fullname", value?.general_info.full_name);
-                        setValue(
-                          "username",
-                          value?.general_info.first_name
-                            .split(" ")
-                            .map((item) => item.at(0))
-                            .join("")
-                            .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase(),
-                        );
-
-                        onChange(value);
-                      }}
-                      getOptionLabel={(option) => option?.general_info?.full_id_number}
-                      isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
-                      disabled={data ? true : false}
-                      sx={{
-                        flex: 1,
-                      }}
-                      fullWidth
-                      disablePortal
-                      disableClearable
-                    />
-                  );
+          <Stack id="user" component="form" onSubmit={handleSubmit(onSubmitHandler)} gap={1.5} paddingTop={4}>
+            <Stack direction="row" gap={1} sx={{ alignItems: "center" }}>
+              <Typography
+                sx={{
+                  color: "#48BB78",
+                  fontSize: "14px",
+                  fontWeight: "bold",
                 }}
-              />
+              >
+                BASIC INFORMATION
+              </Typography>
 
-              {/* Fullname */}
-              <Controller
-                control={control}
-                name="fullname"
-                render={({ field: { ref, value, onChange } }) => {
-                  return (
-                    <TextField
-                      inputRef={ref}
-                      size="small"
-                      value={value}
-                      label="Fullname"
-                      onChange={onChange}
-                      disabled={data ? true : false}
-                      inputProps={{
-                        readOnly: true,
-                      }}
-                      autoComplete="off"
-                      sx={{
-                        flex: 2,
-                      }}
-                      fullWidth
-                    />
-                  );
+              <Typography
+                sx={{
+                  color: "#828d9b",
+                  fontSize: "11.5px",
+                  fontWeight: 500,
                 }}
-              />
+              >
+                Required
+              </Typography>
             </Stack>
 
-            {/* Username */}
-            <Controller
-              control={control}
-              name="username"
-              render={({ field: { ref, value, onChange } }) => {
-                return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth disabled={data ? true : false} />;
-              }}
-            />
+            {!data && (
+              <Stack direction="row" gap={1} alignItems="center" sx={{ bgcolor: theme.palette.bgForm.black1, padding: 1.5, borderRadius: "10px", border: "1px solid #2b3443" }}>
+                <Checkbox
+                  checked={storeCheckbox || data?.is_Store === true}
+                  onChange={storeCheckboxHandler}
+                  size="small"
+                  disabled={data ? true : false}
+                  sx={{
+                    padding: 0,
+                  }}
+                />
 
-            {/* Role */}
+                <Box sx={{ gap: 0 }}>
+                  <Typography
+                    sx={{
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      color: theme.palette.text.main,
+                    }}
+                  >
+                    Create user for Store
+                  </Typography>
+
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      color: theme.palette.text.secondary,
+                    }}
+                  >
+                    Check if you want to create user for Store
+                  </Typography>
+                </Box>
+              </Stack>
+            )}
+
+            <Stack direction={isSmallScreen ? "column" : "row"} gap={1}>
+              {storeCheckbox === false ? (
+                <Controller
+                  control={control}
+                  name="empId"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <Autocomplete
+                        ref={ref}
+                        size="small"
+                        value={value}
+                        options={employeeData}
+                        loading={emloyeeIsLoading}
+                        renderInput={(params) => <TextField {...params} label="Employee ID" />}
+                        onOpen={() => {
+                          if (!employeeIsSuccess) getEmployees();
+                        }}
+                        onChange={(_, value) => {
+                          setValue("fullname", value?.general_info.full_name);
+                          setValue(
+                            "username",
+                            value?.general_info.first_name
+                              .split(" ")
+                              .map((item) => item.at(0))
+                              .join("")
+                              .toLowerCase() + value?.general_info.last_name.split(" ").join("").toLowerCase(),
+                          );
+
+                          onChange(value);
+                        }}
+                        getOptionLabel={(option) => option?.general_info?.full_id_number}
+                        isOptionEqualToValue={(option, value) => option.general_info.full_id_number === value.general_info.full_id_number}
+                        disabled={data ? true : false}
+                        sx={{
+                          flex: 1,
+                        }}
+                        fullWidth
+                        disablePortal
+                        disableClearable
+                      />
+                    );
+                  }}
+                />
+              ) : (
+                <TextField
+                  {...register("empId")}
+                  helperText={errors?.fullname?.message}
+                  error={!!errors?.fullname?.message}
+                  size="small"
+                  label="Employee ID Store"
+                  sx={{ borderColor: "primary", flex: 1 }}
+                  autoComplete="off"
+                  disabled={data ? true : false}
+                />
+              )}
+
+              {!storeCheckbox ? (
+                <Controller
+                  control={control}
+                  name="fullname"
+                  render={({ field: { ref, value, onChange } }) => {
+                    return (
+                      <TextField
+                        inputRef={ref}
+                        size="small"
+                        value={value}
+                        label="Fullname"
+                        onChange={onChange}
+                        disabled={data ? true : false}
+                        inputProps={{
+                          readOnly: !storeCheckbox ? true : false,
+                        }}
+                        autoComplete="off"
+                        sx={{
+                          flex: 2,
+                        }}
+                        fullWidth
+                      />
+                    );
+                  }}
+                />
+              ) : (
+                <TextField
+                  {...register("fullname")}
+                  helperText={errors?.fullname?.message}
+                  error={!!errors?.fullname?.message}
+                  size="small"
+                  label="Fullname"
+                  sx={{ borderColor: "primary", flex: 1 }}
+                  autoComplete="off"
+                  disabled={data ? true : false}
+                  // onChange={(e) => storeFullnameHandler(e.target.value)}
+                />
+              )}
+            </Stack>
+
+            {!storeCheckbox ? (
+              <Controller
+                control={control}
+                name="username"
+                render={({ field: { ref, value, onChange } }) => {
+                  return <TextField inputRef={ref} size="small" value={value} label="Username" onChange={onChange} autoComplete="off" fullWidth disabled={data ? true : false} />;
+                }}
+              />
+            ) : (
+              <TextField
+                {...register("username")}
+                helperText={errors?.username?.message}
+                error={!!errors?.username?.message}
+                size="small"
+                label="Username"
+                sx={{ borderColor: "primary", flex: 1 }}
+                autoComplete="off"
+                // onChange={(e) => storeUsernameHandler(e.target.value)}
+                disabled={data ? true : false}
+              />
+            )}
+
             <Controller
               control={control}
               name="userRoleId"
@@ -490,48 +571,30 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Building */}
-            <Controller
-              control={control}
-              name="building"
-              render={({ field: { ref, value, onChange } }) => {
-                return (
-                  <Autocomplete
-                    ref={ref}
-                    size="small"
-                    value={value}
-                    options={buildingData?.value?.pms || []}
-                    loading={buildingIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Building" />}
-                    onOpen={() => {
-                      if (!buildingIsSuccess) getBuildings();
-                    }}
-                    onChange={(_, value) => onChange(value)}
-                    getOptionLabel={(option) => option.name}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{
-                      flex: 2,
-                    }}
-                    fullWidth
-                    disablePortal
-                  />
-                );
-              }}
-            />
+            <Divider variant="fullWidth" sx={{ background: "#2D3748", mt: 2, mb: 1.5 }} />
 
-            <Divider variant="fullWidth" sx={{ background: "#2D3748" }} />
+            <Stack direction="row" gap={1} sx={{ alignItems: "center" }}>
+              <Typography
+                sx={{
+                  color: "#48BB78",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                OTHER INFORMATION
+              </Typography>
 
-            <Typography
-              sx={{
-                color: "#48BB78",
-                fontSize: "14px",
-                fontWeight: "bold",
-              }}
-            >
-              Other Information
-            </Typography>
+              <Typography
+                sx={{
+                  color: "#828d9b",
+                  fontSize: "11.5px",
+                  fontWeight: 500,
+                }}
+              >
+                Auto-filled from Charging
+              </Typography>
+            </Stack>
 
-            {/* One Charging */}
             <Controller
               control={control}
               name="oneCharging"
@@ -543,7 +606,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                     value={value}
                     options={oneChargingData?.value?.onecharging || []}
                     loading={oneChargingIsLoading}
-                    renderInput={(params) => <TextField {...params} label="Charging Code" />}
+                    renderInput={(params) => <TextField {...params} label="Charging" />}
                     onOpen={() => {
                       if (!oneChargingIsSuccess) getOneCharging();
                     }}
@@ -599,7 +662,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Company */}
             <Controller
               control={control}
               name="companyId"
@@ -630,7 +692,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Business Unit  */}
             <Controller
               control={control}
               name="businessUnitId"
@@ -658,7 +719,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Department */}
             <Controller
               control={control}
               name="departmentId"
@@ -686,7 +746,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Unit */}
             <Controller
               control={control}
               name="unitId"
@@ -714,7 +773,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Sub Unit */}
             <Controller
               control={control}
               name="subUnitId"
@@ -748,7 +806,6 @@ const UserAccountDialog = ({ data, open, onClose }) => {
               }}
             />
 
-            {/* Location */}
             <Controller
               control={control}
               name="locationId"
@@ -779,31 +836,52 @@ const UserAccountDialog = ({ data, open, onClose }) => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={onCloseHandler} variant="contained" sx={sx.cancelButton}>
-            Close
-          </Button>
-
-          <LoadingButton
-            type="submit"
-            form="user"
-            variant="contained"
-            loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
-            disabled={
-              !watch("userType") ||
-              !watch("empId") ||
-              !watch("username") ||
-              !watch("userRoleId") ||
-              !watch("building") ||
-              !watch("companyId") ||
-              !watch("businessUnitId") ||
-              !watch("departmentId") ||
-              !watch("unitId") ||
-              !watch("subUnitId") ||
-              !watch("locationId")
-            }
-          >
-            {!data ? `Create account` : `Save`}
+          <LoadingButton variant="contained" loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+            Cancel
           </LoadingButton>
+
+          {!storeCheckbox ? (
+            <LoadingButton
+              type="submit"
+              form="user"
+              variant="contained"
+              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
+              disabled={
+                // !watch("empId") ||
+                !watch("username") ||
+                !watch("userRoleId") ||
+                !watch("companyId") ||
+                !watch("businessUnitId") ||
+                !watch("departmentId") ||
+                !watch("unitId") ||
+                !watch("subUnitId") ||
+                !watch("locationId")
+              }
+            >
+              {!data ? "Add User" : "Save"}
+            </LoadingButton>
+          ) : (
+            <LoadingButton
+              type="submit"
+              form="user"
+              variant="contained"
+              loading={isCreateUserIsLoading || isCreateUserIsFetching || isUpdateUserIsLoading || isUpdateUserIsFetching}
+              disabled={
+                !watch("empId") ||
+                !watch("fullname") ||
+                !watch("username") ||
+                !watch("userRoleId") ||
+                !watch("companyId") ||
+                !watch("businessUnitId") ||
+                !watch("departmentId") ||
+                !watch("unitId") ||
+                !watch("subUnitId") ||
+                !watch("locationId")
+              }
+            >
+              {!data ? "Add User" : "Save"}
+            </LoadingButton>
+          )}
         </DialogActions>
       </Dialog>
 

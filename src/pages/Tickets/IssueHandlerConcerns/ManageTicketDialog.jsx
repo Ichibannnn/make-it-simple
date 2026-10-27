@@ -1276,7 +1276,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton form="closeTicket" variant="contained" loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+          <LoadingButton variant="contained" loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
             Cancel
           </LoadingButton>
 
