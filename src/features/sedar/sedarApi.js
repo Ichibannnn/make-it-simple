@@ -21,7 +21,7 @@ export const sedarApi = createApi({
   endpoints: (builder) => ({
     getEmployees: builder.query({
       query: () => ({
-        url: "/data/employees",
+        url: "/data/employee/filter/active",
         method: "GET",
       }),
       transformResponse: (response) => response.data,
