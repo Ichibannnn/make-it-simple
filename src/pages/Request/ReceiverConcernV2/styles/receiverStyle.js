@@ -43,7 +43,7 @@ export const receiverStyle = {
     display: "flex",
     backgroundColor: theme.palette.bgForm.black1,
     color: "#fff",
-    padding: { xs: "20px", md: "24px 94px 34px 94px" },
+    padding: { xs: "20px", md: "2px 64px 24px 64px" },
   },
 
   headerSection: {

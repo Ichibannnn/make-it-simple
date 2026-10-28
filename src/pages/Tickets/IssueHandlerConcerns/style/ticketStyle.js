@@ -13,6 +13,9 @@ export const tokens = {
   ok: "#34d399",
   warn: "#fbbf24",
   error: "#f87171",
+
+  tablebg: "#1C2536",
+  tableheader: "#D65DB1",
 };
 
 const t = tokens;
@@ -172,6 +175,48 @@ export const ticketStyle = {
     gap: 0.5,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  // Cards
+  cards: {
+    backgroundColor: theme.palette.bgForm.black3,
+    borderRadius: "15px",
+    border: "1px solid #2D3748",
+    // borderColor: "#2D3748",
+  },
+
+  cardContent: {
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#1A222F",
+      color: "#9e77ed",
+    },
+  },
+
+  cardTitle: {
+    fontWeight: 700,
+    fontSize: "0.775rem",
+    lineHeight: 1.57,
+    color: "#D65DB1",
+  },
+
+  cardDescription: {
+    fontWeight: 400,
+    fontSize: "0.775rem",
+    lineHeight: 1.57,
+    color: theme.palette.text.main,
+    wordBreak: "break-word",
+  },
+
+  cardChip: {
+    fontSize: "12px",
+    backgroundColor: "#1D1F3B",
+    color: theme.palette.primary.main,
+    fontWeight: 800,
+  },
+
+  titleHeaderIcon: {
+    fontSize: { xs: "16px", md: "18px" },
   },
 
   attachmentCards: {
@@ -383,4 +428,64 @@ export const ticketStyle = {
   },
 
   emptyText: { fontSize: 13, color: t.muted, textAlign: "center", py: 3 },
+
+  // Table
+  tableCellHeader: {
+    background: t.tablebg,
+    color: t.tableheader,
+    fontWeight: 700,
+    fontSize: "12px",
+  },
+
+  tableCellBody: {
+    color: "#EDF2F7",
+    fontSize: "12px",
+    fontWeight: 500,
+  },
+
+  customTableCellBody: {
+    color: "#EDF2F7",
+    fontSize: "12px",
+    fontWeight: 500,
+    width: "400px",
+    wordBreak: "break-word",
+  },
+
+  tableHeaderWithChechBox: {
+    flexDirection: "row",
+    gap: 0.5,
+    alignItems: "center",
+  },
+
+  sortIcon: {
+    color: t.tableheader,
+    fontSize: "20px",
+  },
+
+  titleTableText: {
+    color: "#EDF2F7",
+    fontSize: "12px",
+    fontWeight: 500,
+    wordBreak: "break-word",
+  },
+
+  descTableText: {
+    color: theme.palette.text.secondary,
+    fontSize: "12px",
+    fontWeight: 500,
+    wordBreak: "break-word",
+  },
+
+  titleAccentTableText: {
+    fontSize: "12px",
+    fontWeight: 600,
+    fontWeight: 600,
+    color: "#22B4BF",
+  },
+
+  descAccentTableText: {
+    fontSize: "12px",
+    fontWeight: 600,
+    fontWeight: 600,
+  },
 };

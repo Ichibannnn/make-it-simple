@@ -43,7 +43,7 @@ import ViewConcernDetails from "./ViewConcernDetails";
 import ReceiverAddTicketDialog from "../ConcernTickets_Receiver/ReceiverAddTicketDialog";
 import AssignTicketDrawer from "./AssignTicketDrawer";
 import { global } from "../../../styles/global";
-import { CardListSkeleton, NoRecordsFound, SomethingWentWrong } from "../../../components/TableState";
+import { CardListSkeleton, NoRecordsFound, NoRecordsFoundTable, SomethingWentWrong, SomethingWentWrongTable, TableSkeleton } from "../../../components/TableState";
 
 const NewReceiverConcern = () => {
   const schema = yup.object().shape({
@@ -137,6 +137,8 @@ const NewReceiverConcern = () => {
   const takeTicketHandler = () => {
     takeTicketOnToggle();
   };
+
+  const tableColumns = [{ type: "checkbox" }, { type: "multiline" }, { type: "multiline" }, { type: "text" }, { type: "text" }, { type: "text" }, { type: "chip" }, { type: "chip" }, { type: "text" }];
 
   return (
     <Stack sx={sx.mainContainer}>
@@ -627,9 +629,7 @@ const NewReceiverConcern = () => {
                 </TableHead>
 
                 <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
+                  {success &&
                     data?.value?.requestConcern?.map((item) => {
                       return (
                         <TableRow
@@ -816,7 +816,11 @@ const NewReceiverConcern = () => {
                       );
                     })}
 
-                  {isError && (
+                  {loading && <TableSkeleton columns={tableColumns} rows={10} cellSx={sx.tableCellBody} />}
+                  {no_records && <NoRecordsFoundTable colSpan={9} label="No records found" />}
+                  {isError && <SomethingWentWrongTable colSpan={9} label="Something went wrong." />}
+
+                  {/* {isError && (
                     <TableRow>
                       <TableCell colSpan={12} align="center">
                         <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
@@ -847,7 +851,7 @@ const NewReceiverConcern = () => {
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  )}
+                  )} */}
                 </TableBody>
               </Table>
             </TableContainer>

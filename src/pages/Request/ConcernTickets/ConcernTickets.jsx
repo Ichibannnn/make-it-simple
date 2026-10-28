@@ -574,7 +574,7 @@ const ConcernTickets = () => {
                             </Stack>
                           )}
 
-                          <Stack sx={{ width: "100%", spacing: 1 }}>
+                          <Stack sx={{ width: "100%", gap: 1 }}>
                             {/* Ticket Number */}
                             <Stack sx={global.cardRow} onClick={() => onViewHistoryAction(item)}>
                               <Box sx={global.cardDetailBox}>
@@ -908,12 +908,7 @@ const ConcernTickets = () => {
               </TableContainer>
 
               <TablePagination
-                sx={{
-                  color: "#A0AEC0",
-                  fontWeight: 400,
-                  background: "#1C2536",
-                  borderRadius: "0px 0px 20px 20px",
-                }}
+                sx={global.tablePagination}
                 rowsPerPageOptions={[100, 300, 500]}
                 component="div"
                 count={data?.value?.totalCount || 0}

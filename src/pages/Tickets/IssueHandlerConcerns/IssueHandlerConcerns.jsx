@@ -85,6 +85,8 @@ import RejectDateDialog from "./RejectDateDialog";
 
 import srReport from "../../../pdf/MIS_SRFinal_v2.pdf";
 import { PDFDocument } from "pdf-lib";
+import { global } from "../../../styles/global";
+import { CardListSkeleton, NoRecordsFound, NoRecordsFoundTable, SomethingWentWrong, SomethingWentWrongTable, TableSkeleton } from "../../../components/TableState";
 
 const IssueHandlerConcerns = () => {
   const theming = useTheme();
@@ -145,6 +147,11 @@ const IssueHandlerConcerns = () => {
     PageNumber: pageNumber,
     PageSize: pageSize,
   });
+
+  const success = isSuccess && !isLoading && !isFetching;
+  const no_records = isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching;
+  const loading = isLoading || isFetching;
+  const error = isError;
 
   const onPageNumberChange = (_, page) => {
     dispatch(setPageNumber(page + 1));
@@ -699,6 +706,22 @@ const IssueHandlerConcerns = () => {
     }
   }, [ticketStatus]);
 
+  const tableColumns = [
+    { type: "checkbox", hidden: ticketStatus !== "For Confirmation" }, // Confirmation Checkbox
+    { type: "text", width: 80 }, // Ticket no.
+    { type: "multiline" }, // Requestor
+    { type: "multiline" }, // Ticket Description
+    { type: "multiline" }, // Category
+    { type: "chip", hidden: ticketStatus === "For Approval" }, // Ticketed date
+    { type: "chip" }, // Target date
+    { type: "chip", hidden: ticketStatus !== "Closed" && ticketStatus !== "" }, // Closed date
+    { type: "text", hidden: ticketStatus !== "Closed" && ticketStatus !== "" }, // Aging Days
+    { type: "chip" }, // Remarks
+    { type: "chip", hidden: ticketStatus !== "" }, // Status
+    { type: "chip", hidden: ticketStatus !== "Closed" && ticketStatus !== "" }, // Closing Status
+    { type: "circle", hidden: ticketStatus === "For Approval" }, // Action
+  ];
+
   return (
     <Stack
       sx={{
@@ -1137,27 +1160,10 @@ const IssueHandlerConcerns = () => {
               )}
 
               <Stack spacing={2}>
-                {isSuccess &&
-                  !isLoading &&
-                  !isFetching &&
+                {success &&
                   data?.value?.openTicket?.map((item) => (
-                    <Card
-                      key={item.ticketConcernId}
-                      sx={{
-                        backgroundColor: theme.palette.bgForm.black3,
-                        borderRadius: "15px",
-                        borderColor: "#2D3748",
-                      }}
-                    >
-                      <CardContent
-                        sx={{
-                          cursor: "pointer",
-                          "&:hover": {
-                            backgroundColor: "#1A222F",
-                            color: "#9e77ed",
-                          },
-                        }}
-                      >
+                    <Card key={item.ticketConcernId} sx={sx.cards}>
+                      <CardContent sx={sx.cardContent}>
                         <Stack
                           spacing={1}
                           direction="row"
@@ -1165,6 +1171,7 @@ const IssueHandlerConcerns = () => {
                             alignItems: "center",
                           }}
                         >
+                          {/* Confirmation Checkbox */}
                           {ticketStatus === "For Confirmation" && (
                             <Stack>
                               <Checkbox
@@ -1178,179 +1185,123 @@ const IssueHandlerConcerns = () => {
                             </Stack>
                           )}
 
-                          <Stack spacing={1} onClick={() => onViewAction(item)}>
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: "0.775rem",
-                                  lineHeight: 1.57,
-                                  color: "#D65DB1",
-                                }}
-                              >
-                                TICKET NUMBER:
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontWeight: 400,
-                                  fontSize: "0.775rem",
-                                  lineHeight: 1.57,
-                                  color: theme.palette.text.main,
-                                }}
-                              >
-                                {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
-                              </Typography>
+                          <Stack sx={{ width: "100%", gap: 1 }} onClick={() => onViewAction(item)}>
+                            {/* Ticket Number */}
+                            <Stack sx={global.cardRow}>
+                              <Box sx={global.cardDetailBox}>
+                                <Typography sx={global.cardTitle}>TICKET NUMBER:</Typography>
+                              </Box>
+                              <Box sx={global.cardSpacer} />
+
+                              <Box sx={global.cardDescDetailBox}>
+                                <Typography sx={global.cardDescription}>{`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}</Typography>
+                              </Box>
                             </Stack>
 
-                            <Stack direction="row" gap={0.5} alignItems="center" sx={{ maxWidth: "700px" }}>
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: "0.775rem",
-                                  lineHeight: 1.57,
-                                  color: "#D65DB1",
-                                }}
-                              >
-                                TICKET DESCRIPTION:
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontWeight: 400,
-                                  fontSize: "0.775rem",
-                                  lineHeight: 1.57,
-                                  color: theme.palette.text.main,
-                                }}
-                              >
-                                {item?.concern_Description?.split("\r\n")?.map((line, index) => (
-                                  <span key={index}>
-                                    {line}
-                                    <br />
-                                  </span>
-                                ))}
-                              </Typography>
+                            {/* Ticket Description */}
+                            <Stack sx={global.cardRow}>
+                              <Box sx={global.cardDetailBox}>
+                                <Typography sx={global.cardTitle}>TICKET DESCRIPTION:</Typography>
+                              </Box>
+                              <Box sx={global.cardSpacer} />
+
+                              <Box sx={global.cardDescDetailBox}>
+                                <Typography sx={global.cardDescription}>
+                                  {item?.concern_Description?.split("\r\n")?.map((line, index) => (
+                                    <span key={index}>
+                                      {line}
+                                      <br />
+                                    </span>
+                                  ))}
+                                </Typography>
+                              </Box>
                             </Stack>
 
+                            {/* Ticketed Date */}
                             {ticketStatus !== "For Approval" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography
-                                  sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: "#D65DB1",
-                                  }}
-                                >
-                                  TICKETED DATE:{" "}
-                                </Typography>
-                                <Chip
-                                  variant="filled"
-                                  size="small"
-                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                  label={moment(item?.created_At).format("LL")}
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: "#1D1F3B",
-                                    color: theme.palette.primary.main,
-                                    fontWeight: 800,
-                                  }}
-                                />
+                              <Stack sx={global.cardRow}>
+                                <Box sx={global.cardDetailBox}>
+                                  <Typography sx={global.cardTitle}>TICKETED DATE:</Typography>
+                                </Box>
+                                <Box sx={global.cardSpacer} />
+
+                                <Box sx={global.cardDescDetailBox}>
+                                  <Chip
+                                    variant="filled"
+                                    size="30px"
+                                    icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                    sx={global.cardChip}
+                                    label={moment(item.created_At).format("LL")}
+                                  />
+                                </Box>
                               </Stack>
                             )}
 
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: "0.775rem",
-                                  lineHeight: 1.57,
-                                  color: "#D65DB1",
-                                }}
-                              >
-                                TARGET DATE:{" "}
-                              </Typography>
-                              <Chip
-                                variant="filled"
-                                size="small"
-                                icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
-                                sx={{
-                                  fontSize: "12px",
-                                  backgroundColor: "#1D1F3B",
-                                  color: theme.palette.primary.main,
-                                  fontWeight: 800,
-                                }}
-                                label={moment(item.target_Date).format("LL")}
-                              />
+                            {/* Target Date */}
+                            <Stack sx={global.cardRow}>
+                              <Box sx={global.cardDetailBox}>
+                                <Typography sx={global.cardTitle}>TARGET DATE:</Typography>
+                              </Box>
+                              <Box sx={global.cardSpacer} />
+
+                              <Box sx={global.cardDescDetailBox}>
+                                <Chip
+                                  variant="filled"
+                                  size="30px"
+                                  icon={<CalendarMonthOutlined fontSize="small" color="primary" />}
+                                  sx={global.cardChip}
+                                  label={moment(item.target_Date).format("LL")}
+                                />
+                              </Box>
                             </Stack>
 
+                            {/* Closed Date */}
                             {(ticketStatus === "Closed" || ticketStatus === "") && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography
-                                  sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: "#D65DB1",
-                                  }}
-                                >
-                                  CLOSED DATE:
-                                </Typography>
-                                <Chip
-                                  variant="filled"
-                                  size="small"
-                                  icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
-                                  label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: item?.closed_At !== null ? "#1D1F3B" : "transparent",
-                                    color: theme.palette.primary.main,
-                                    fontWeight: 800,
-                                  }}
-                                />
+                              <Stack sx={global.cardRow}>
+                                <Box sx={global.cardDetailBox}>
+                                  <Typography sx={global.cardTitle}>CLOSED DATE:</Typography>
+                                </Box>
+                                <Box sx={global.cardSpacer} />
+
+                                <Box sx={global.cardDescDetailBox}>
+                                  <Chip
+                                    variant="filled"
+                                    size="30px"
+                                    icon={item?.closed_At !== null ? <CalendarMonthOutlined fontSize="small" color="primary" /> : ""}
+                                    label={item?.closed_At !== null ? moment(item?.closed_At).format("LL") : ""}
+                                    sx={global.cardChip}
+                                  />
+                                </Box>
                               </Stack>
                             )}
 
+                            {/* Aging Days */}
                             {ticketStatus === "Closed" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography
-                                  sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: "#D65DB1",
-                                  }}
-                                >
-                                  AGING DAYS:
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    fontWeight: 400,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: theme.palette.text.main,
-                                  }}
-                                >
-                                  {item.aging_Days} Day(s)
-                                </Typography>
+                              <Stack sx={global.cardRow}>
+                                <Box sx={global.cardDetailBox}>
+                                  <Typography sx={global.cardTitle}>AGING DAYS:</Typography>
+                                </Box>
+                                <Box sx={global.cardSpacer} />
+
+                                <Box sx={global.cardDescDetailBox}>
+                                  <Typography sx={global.cardDescription}>{item.aging_Days} Day(s)</Typography>
+                                </Box>
                               </Stack>
                             )}
 
-                            <Stack direction="row" gap={0.5} alignItems="center">
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: "0.775rem",
-                                  lineHeight: 1.57,
-                                  color: "#D65DB1",
-                                }}
-                              >
-                                REMARKS:
-                              </Typography>
-                              <Box sx={{ maxWidth: "20px" }}>
+                            {/* Remarks */}
+                            <Stack sx={global.cardRow}>
+                              <Box sx={global.cardDetailBox}>
+                                <Typography sx={global.cardTitle}>REMARKS:</Typography>
+                              </Box>
+                              <Box sx={global.cardSpacer} />
+
+                              <Box sx={global.cardDescDetailBox}>
                                 <Tooltip title={item.remarks} placement="bottom-start">
                                   <Chip
                                     variant="filled"
                                     size="small"
-                                    label={item.remarks ? item.remarks : ""}
+                                    label={item.remarks ? item.remarks : "--"}
                                     sx={{
                                       backgroundColor: item.remarks === null ? "transparent" : item.remarks === "Ticket Closed" ? "#00913c" : theme.palette.error.main,
                                       color: "#ffffff",
@@ -1363,161 +1314,156 @@ const IssueHandlerConcerns = () => {
                               </Box>
                             </Stack>
 
+                            {/* Status */}
                             {ticketStatus === "" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography
-                                  sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: "#D65DB1",
-                                  }}
-                                >
-                                  STATUS:
-                                </Typography>
-                                <Chip
-                                  variant="filled"
-                                  size="small"
-                                  label={
-                                    item.ticket_Status === "Pending Request"
-                                      ? "Pending Request"
-                                      : item.ticket_Status === "Open Ticket"
-                                        ? "Open"
-                                        : item.ticket_Status === "For Transfer"
-                                          ? "For Transfer"
-                                          : item.ticket_Status === "For On-Hold"
-                                            ? "Hold Approval"
-                                            : item.ticket_Status === "On-Hold"
-                                              ? "On-Hold"
-                                              : item.ticket_Status === "For Closing Ticket"
-                                                ? "For Closing"
-                                                : item.ticket_Status === "For Confirmation"
-                                                  ? "For Confirmation"
-                                                  : item.ticket_Status === "Closed"
-                                                    ? "Closed"
-                                                    : ""
-                                  }
-                                  sx={{
-                                    backgroundColor:
+                              <Stack sx={global.cardRow}>
+                                <Box sx={global.cardDetailBox}>
+                                  <Typography sx={global.cardTitle}>STATUS:</Typography>
+                                </Box>
+                                <Box sx={global.cardSpacer} />
+
+                                <Box sx={global.cardDescDetailBox}>
+                                  <Chip
+                                    variant="filled"
+                                    size="small"
+                                    label={
                                       item.ticket_Status === "Pending Request"
-                                        ? "#F58900"
+                                        ? "Pending Request"
                                         : item.ticket_Status === "Open Ticket"
-                                          ? "#ec9d29"
+                                          ? "Open"
                                           : item.ticket_Status === "For Transfer"
-                                            ? "#ff7043"
+                                            ? "For Transfer"
                                             : item.ticket_Status === "For On-Hold"
-                                              ? "#ffb74d"
+                                              ? "Hold Approval"
                                               : item.ticket_Status === "On-Hold"
-                                                ? "#ff6d00"
+                                                ? "On-Hold"
                                                 : item.ticket_Status === "For Closing Ticket"
-                                                  ? "#3A96FA"
+                                                  ? "For Closing"
                                                   : item.ticket_Status === "For Confirmation"
-                                                    ? "#009688"
+                                                    ? "For Confirmation"
                                                     : item.ticket_Status === "Closed"
-                                                      ? "#00913c"
-                                                      : "transparent",
-                                    color: "#ffffffde",
-                                    borderRadius: "20px",
-                                  }}
-                                />
+                                                      ? "Closed"
+                                                      : ""
+                                    }
+                                    sx={{
+                                      backgroundColor:
+                                        item.ticket_Status === "Pending Request"
+                                          ? "#F58900"
+                                          : item.ticket_Status === "Open Ticket"
+                                            ? "#ec9d29"
+                                            : item.ticket_Status === "For Transfer"
+                                              ? "#ff7043"
+                                              : item.ticket_Status === "For On-Hold"
+                                                ? "#ffb74d"
+                                                : item.ticket_Status === "On-Hold"
+                                                  ? "#ff6d00"
+                                                  : item.ticket_Status === "For Closing Ticket"
+                                                    ? "#3A96FA"
+                                                    : item.ticket_Status === "For Confirmation"
+                                                      ? "#009688"
+                                                      : item.ticket_Status === "Closed"
+                                                        ? "#00913c"
+                                                        : "transparent",
+                                      color: "#ffffffde",
+                                      borderRadius: "20px",
+                                    }}
+                                  />
+                                </Box>
                               </Stack>
                             )}
 
+                            {/* Closing Status */}
                             {(ticketStatus === "Closed" || ticketStatus === "") && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography
-                                  sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: "#D65DB1",
-                                  }}
-                                >
-                                  CLOSING STATUS:
-                                </Typography>
-                                <Chip
-                                  variant="filled"
-                                  size="small"
-                                  icon={
-                                    item?.closed_Status === "On-Time" ? (
-                                      <FiberManualRecord fontSize="small" color="success" />
-                                    ) : item?.closed_Status === "Delay" ? (
-                                      <FiberManualRecord fontSize="small" color="error" />
-                                    ) : (
-                                      ""
-                                    )
-                                  }
-                                  sx={{
-                                    fontSize: "12px",
-                                    backgroundColor: item?.closed_Status === "On-Time" || item?.closed_Status === "Delay" ? theme.palette.bgForm.black1 : "transparent",
-                                    color: theme.palette.text.main,
-                                    fontWeight: 800,
-                                  }}
-                                  label={
-                                    item?.closed_Status === "On-Time" ? (
-                                      <Typography
-                                        sx={{
-                                          color: theme.palette.success.main,
-                                          fontSize: "13px",
-                                          fontWeight: 800,
-                                        }}
-                                      >
-                                        On-Time
-                                      </Typography>
-                                    ) : item?.closed_Status === "Delay" ? (
-                                      <Typography
-                                        sx={{
-                                          color: theme.palette.error.main,
-                                          fontSize: "13px",
-                                          fontWeight: 800,
-                                        }}
-                                      >
-                                        Delayed
-                                      </Typography>
-                                    ) : (
-                                      <Typography
-                                        sx={{
-                                          color: theme.palette.error.main,
-                                          fontSize: "13px",
-                                          fontWeight: 800,
-                                        }}
-                                      ></Typography>
-                                    )
-                                  }
-                                />
+                              <Stack sx={global.cardRow}>
+                                <Box sx={global.cardDetailBox}>
+                                  <Typography sx={global.cardTitle}>CLOSING STATUS:</Typography>
+                                </Box>
+                                <Box sx={global.cardSpacer} />
+
+                                <Box sx={global.cardDescDetailBox}>
+                                  <Chip
+                                    variant="filled"
+                                    size="small"
+                                    icon={
+                                      item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? (
+                                        <FiberManualRecord fontSize="small" color="success" />
+                                      ) : item?.getForClosingTickets?.[0]?.closed_Status === "Delay" ? (
+                                        <FiberManualRecord fontSize="small" color="error" />
+                                      ) : (
+                                        ""
+                                      )
+                                    }
+                                    sx={{
+                                      fontSize: "12px",
+                                      backgroundColor:
+                                        item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" || item?.getForClosingTickets?.[0]?.closed_Status === "Delay"
+                                          ? theme.palette.bgForm.black1
+                                          : "transparent",
+                                      color: theme.palette.text.main,
+                                      fontWeight: 800,
+                                    }}
+                                    label={
+                                      item?.getForClosingTickets?.[0]?.closed_Status === "On-Time" ? (
+                                        <Typography
+                                          sx={{
+                                            color: theme.palette.success.main,
+                                            fontSize: "13px",
+                                            fontWeight: 800,
+                                          }}
+                                        >
+                                          On-Time
+                                        </Typography>
+                                      ) : item?.getForClosingTickets?.[0]?.closed_Status === "Delay" ? (
+                                        <Typography
+                                          sx={{
+                                            color: theme.palette.error.main,
+                                            fontSize: "13px",
+                                            fontWeight: 800,
+                                          }}
+                                        >
+                                          Delayed
+                                        </Typography>
+                                      ) : (
+                                        <Typography
+                                          sx={{
+                                            color: theme.palette.error.main,
+                                            fontSize: "13px",
+                                            fontWeight: 800,
+                                          }}
+                                        ></Typography>
+                                      )
+                                    }
+                                  />
+                                </Box>
                               </Stack>
                             )}
 
                             {ticketStatus !== "For Approval" && (
-                              <Stack direction="row" gap={0.5} alignItems="center">
-                                <Typography
-                                  sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.775rem",
-                                    lineHeight: 1.57,
-                                    color: "#D65DB1",
-                                  }}
-                                >
-                                  ACTION:
-                                </Typography>
+                              <Stack sx={global.cardRow}>
+                                <Box sx={global.cardDetailBox}>
+                                  <Typography sx={global.cardTitle}>ACTION:</Typography>
+                                </Box>
+                                <Box sx={global.cardSpacer} />
 
-                                <IssueHandlerConcernsActions
-                                  data={item}
-                                  onHoldTicket={onHoldTicketAction}
-                                  onResumeTicket={onResumeTicketAction}
-                                  onHoldManageTicket={onHoldManageTicketAction}
-                                  onCloseTicket={onCloseTicketAction}
-                                  onCancelCloseTicket={onCancelCloseAction}
-                                  onManageTicket={onManageTicketAction}
-                                  onTransferTicket={onTransferTicketAction}
-                                  onRejectTransferTicket={onRejectTransferTicketAction}
-                                  onManageTransfer={onManageTransferAction}
-                                  onApproveTransfer={onApproveTransferAction}
-                                  onCancelTransfer={onCancelTransferAction}
-                                  onPrintTicket={onPrintTicketAction}
-                                  onConfirm={onConfirmAction}
-                                  onRejectDate={onRejectDateAction}
-                                />
+                                <Box sx={global.cardDescDetailBox}>
+                                  <IssueHandlerConcernsActions
+                                    data={item}
+                                    onHoldTicket={onHoldTicketAction}
+                                    onResumeTicket={onResumeTicketAction}
+                                    onHoldManageTicket={onHoldManageTicketAction}
+                                    onCloseTicket={onCloseTicketAction}
+                                    onCancelCloseTicket={onCancelCloseAction}
+                                    onManageTicket={onManageTicketAction}
+                                    onTransferTicket={onTransferTicketAction}
+                                    onRejectTransferTicket={onRejectTransferTicketAction}
+                                    onManageTransfer={onManageTransferAction}
+                                    onApproveTransfer={onApproveTransferAction}
+                                    onCancelTransfer={onCancelTransferAction}
+                                    onPrintTicket={onPrintTicketAction}
+                                    onConfirm={onConfirmAction}
+                                    onRejectDate={onRejectDateAction}
+                                  />
+                                </Box>
                               </Stack>
                             )}
                           </Stack>
@@ -1526,40 +1472,12 @@ const IssueHandlerConcerns = () => {
                     </Card>
                   ))}
 
-                {isError && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                    <Typography variant="h6" color="#EDF2F7" align="center">
-                      Something went wrong.
-                    </Typography>
-                  </Stack>
-                )}
-
-                {(isLoading || isFetching) && (
-                  <Stack justifyContent="center" alignItems="center" padding={4} sx={{ maxHeight: 300 }}>
-                    <CircularProgress />
-                    <Typography variant="h5" color="#EDF2F7">
-                      Please wait...
-                    </Typography>
-                  </Stack>
-                )}
-
-                {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
-                    <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                    <Typography variant="h6" align="center">
-                      No records found.
-                    </Typography>
-                  </Stack>
-                )}
+                {error && <SomethingWentWrong label="Something went wrong" />}
+                {loading && <CardListSkeleton count={5} sx={sx.cards} />}
+                {no_records && <NoRecordsFound label="No records found" />}
 
                 <TablePagination
-                  sx={{
-                    color: "#A0AEC0",
-                    fontWeight: 400,
-                    background: "#1C2536",
-                    borderRadius: "0px 0px 20px 20px",
-                  }}
+                  sx={global.tablePagination}
                   rowsPerPageOptions={[100, 300, 500]}
                   component="div"
                   count={data?.value?.totalCount || 0}
@@ -1571,6 +1489,7 @@ const IssueHandlerConcerns = () => {
               </Stack>
             </>
           ) : (
+            // Table
             <>
               <TableContainer
                 sx={{
@@ -1580,6 +1499,7 @@ const IssueHandlerConcerns = () => {
                 <Table size="small" stickyHeader sx={{ borderBottom: "none" }}>
                   <TableHead sx={{ whiteSpace: "nowrap" }}>
                     <TableRow>
+                      {/* Confirmation checkbox */}
                       {ticketStatus === "For Confirmation" && (
                         <TableCell
                           padding="checkbox"
@@ -1600,27 +1520,10 @@ const IssueHandlerConcerns = () => {
                         </TableCell>
                       )}
 
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                        }}
-                      >
-                        <Stack
-                          sx={{
-                            flexDirection: "row",
-                            gap: 0.5,
-                            alignItems: "center",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              color: "#D65DB1",
-                              fontWeight: 700,
-                              fontSize: "12px",
-                            }}
-                          >
-                            TICKET NO.
-                          </Typography>
+                      {/* Ticket No */}
+                      <TableCell sx={sx.tableCellHeader}>
+                        <Stack sx={sx.tableHeaderWithChechBox}>
+                          <Typography sx={sx.tableCellHeader}>TICKET NO.</Typography>
                           <IconButton
                             size="small"
                             onClick={() => {
@@ -1630,65 +1533,20 @@ const IssueHandlerConcerns = () => {
                               // setAscendingDate(!ascendingDate);
                             }}
                           >
-                            {ascending ? <ArrowUpwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} />}
+                            {ascending ? <ArrowUpwardRounded sx={sx.sortIcon} /> : <ArrowDownwardRounded sx={sx.sortIcon} />}
                           </IconButton>
                         </Stack>
                       </TableCell>
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        REQUESTOR
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        TICKET DESCRIPTION
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        CATEGORY
-                      </TableCell>
-
-                      {ticketStatus !== "For Approval" && (
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          TICKETED DATE
-                        </TableCell>
-                      )}
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
+                      {/* Requestor */}
+                      <TableCell sx={sx.tableCellHeader}>REQUESTOR</TableCell>
+                      {/* Ticket Description */}
+                      <TableCell sx={sx.tableCellHeader}>TICKET DESCRIPTION</TableCell>
+                      {/* Category */}
+                      <TableCell sx={sx.tableCellHeader}>CATEGORY</TableCell>
+                      {/* Ticketed Date */}
+                      {ticketStatus !== "For Approval" && <TableCell sx={sx.tableCellHeader}>TICKETED DATE</TableCell>}
+                      {/* Target Date */}
+                      <TableCell sx={sx.tableCellHeader}>
                         <Stack
                           sx={{
                             flexDirection: "row",
@@ -1709,88 +1567,25 @@ const IssueHandlerConcerns = () => {
                             size="small"
                             onClick={() => {
                               setAscendingDate(!ascendingDate);
-                              // dispatch(setAscending(!ascending));
-                              // refetch();
                             }}
                           >
                             {ascendingDate ? <ArrowUpwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} /> : <ArrowDownwardRounded sx={{ color: "#D65DB1", fontSize: "20px" }} />}
                           </IconButton>
                         </Stack>
                       </TableCell>
-
-                      {(ticketStatus === "Closed" || ticketStatus === "") && (
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          CLOSED DATE
-                        </TableCell>
-                      )}
-
-                      {ticketStatus === "Closed" ||
-                        (ticketStatus === "" && (
-                          <TableCell
-                            sx={{
-                              background: "#1C2536",
-                              color: "#D65DB1",
-                              fontWeight: 700,
-                              fontSize: "12px",
-                            }}
-                          >
-                            AGING DAYS
-                          </TableCell>
-                        ))}
-
-                      <TableCell
-                        sx={{
-                          background: "#1C2536",
-                          color: "#D65DB1",
-                          fontWeight: 700,
-                          fontSize: "12px",
-                        }}
-                      >
-                        REMARKS
-                      </TableCell>
-
-                      {ticketStatus === "" && (
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          STATUS
-                        </TableCell>
-                      )}
-
-                      {(ticketStatus === "Closed" || ticketStatus === "") && (
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
-                          CLOSING STATUS
-                        </TableCell>
-                      )}
-
+                      {/* Closed Date */}
+                      {(ticketStatus === "Closed" || ticketStatus === "") && <TableCell sx={sx.tableCellHeader}>CLOSED DATE</TableCell>}
+                      {/* Aging Days */}
+                      {(ticketStatus === "Closed" || ticketStatus === "") && <TableCell sx={sx.tableCellHeader}>AGING DAYS</TableCell>}
+                      {/* Remarks */}
+                      <TableCell sx={sx.tableCellHeader}>REMARKS</TableCell>
+                      {/* Status */}
+                      {ticketStatus === "" && <TableCell sx={sx.tableCellHeader}>STATUS</TableCell>}
+                      {/* Closing Status */}
+                      {(ticketStatus === "Closed" || ticketStatus === "") && <TableCell sx={sx.tableCellHeader}>CLOSING STATUS</TableCell>}
+                      {/* Action */}
                       {ticketStatus !== "For Approval" && (
-                        <TableCell
-                          sx={{
-                            background: "#1C2536",
-                            color: "#D65DB1",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                          }}
-                        >
+                        <TableCell sx={sx.tableCellHeader} align="center">
                           ACTION
                         </TableCell>
                       )}
@@ -1798,9 +1593,7 @@ const IssueHandlerConcerns = () => {
                   </TableHead>
 
                   <TableBody>
-                    {isSuccess &&
-                      !isLoading &&
-                      !isFetching &&
+                    {success &&
                       data?.value?.openTicket?.map((item) => {
                         const isSelected = selectedTickets.includes(item.ticketConcernId);
 
@@ -1817,15 +1610,7 @@ const IssueHandlerConcerns = () => {
                               }}
                             >
                               {ticketStatus === "For Confirmation" && (
-                                <TableCell
-                                  padding="checkbox"
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                  align="center"
-                                >
+                                <TableCell padding="checkbox" sx={sx.tableCellBody} align="center">
                                   <Checkbox
                                     checked={selectedTickets.includes(item.requestConcernId)}
                                     onChange={() => handleSelectTicket(item.requestConcernId)}
@@ -1837,78 +1622,27 @@ const IssueHandlerConcerns = () => {
                                 </TableCell>
                               )}
 
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  "&:hover": {
-                                    background: "",
-                                    color: "#EDF2F7",
-                                  },
-                                }}
-                                onClick={() => onViewAction(item)}
-                              >
+                              <TableCell sx={sx.tableCellBody} onClick={() => onViewAction(item)}>
                                 {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
                               </TableCell>
 
                               <TableCell onClick={() => onViewAction(item)}>
                                 <Stack sx={{ width: "180px" }}>
-                                  <Typography
-                                    sx={{
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                      wordBreak: "break-word",
-                                    }}
-                                  >
-                                    {item.requestor_Name}
-                                  </Typography>
-
-                                  <Typography
-                                    sx={{
-                                      color: theme.palette.text.secondary,
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                      wordBreak: "break-word",
-                                    }}
-                                  >
-                                    {item.department_Name}
-                                  </Typography>
-
-                                  <Typography
-                                    sx={{
-                                      color: theme.palette.text.secondary,
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                      wordBreak: "break-word",
-                                    }}
-                                  >
-                                    {item.location_Name}
-                                  </Typography>
+                                  <Typography sx={sx.titleTableText}>{item.requestor_Name}</Typography>
+                                  <Typography sx={sx.descTableText}>{item.department_Name}</Typography>
+                                  <Typography sx={sx.descTableText}>{item.location_Name}</Typography>
                                 </Stack>
                               </TableCell>
 
-                              <TableCell onClick={() => onViewAction(item)}>
-                                <Stack sx={{ width: "200px" }}>
-                                  <Typography
-                                    sx={{
-                                      color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                      wordBreak: "break-word",
-                                    }}
-                                  >
-                                    {item.concern_Description
-                                      ? item.concern_Description?.split("\r\n").map((line, index) => (
-                                          <span key={index}>
-                                            {line}
-                                            <br />
-                                          </span>
-                                        ))
-                                      : "--"}
-                                  </Typography>
-                                </Stack>
+                              <TableCell sx={sx.customTableCellBody} onClick={() => onViewAction(item)}>
+                                {item.concern_Description
+                                  ? item.concern_Description?.split("\r\n").map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))
+                                  : "--"}
                               </TableCell>
 
                               <TableCell
@@ -1921,92 +1655,40 @@ const IssueHandlerConcerns = () => {
                               >
                                 <Stack gap={0.5}>
                                   <Stack>
-                                    <Typography
-                                      sx={{
-                                        fontSize: "12px",
-                                        fontWeight: 600,
-                                        fontWeight: 600,
-                                        color: "#22B4BF",
-                                      }}
-                                    >
-                                      Category:
-                                    </Typography>
-
+                                    <Typography sx={sx.titleAccentTableText}>Category:</Typography>
                                     {item?.getOpenTicketCategories?.length > 0 ? (
                                       <>
                                         {item?.getOpenTicketCategories?.map((item, i) => (
-                                          <Typography
-                                            key={i}
-                                            sx={{
-                                              fontSize: "12px",
-                                              fontWeight: 500,
-                                            }}
-                                          >
+                                          <Typography key={i} sx={sx.descAccentTableText}>
                                             {i + 1}. {item.category_Description}
                                           </Typography>
                                         ))}
                                       </>
                                     ) : (
-                                      <Typography
-                                        sx={{
-                                          fontSize: "12px",
-                                          fontWeight: 500,
-                                        }}
-                                      >
-                                        --
-                                      </Typography>
+                                      <Typography sx={sx.descAccentTableText}>--</Typography>
                                     )}
                                   </Stack>
 
                                   <Stack>
-                                    <Typography
-                                      sx={{
-                                        fontSize: "12px",
-                                        fontWeight: 600,
-                                        fontWeight: 600,
-                                        color: "#22B4BF",
-                                      }}
-                                    >
-                                      Sub Category:
-                                    </Typography>
+                                    <Typography sx={sx.titleAccentTableText}>Sub Category:</Typography>
 
                                     {item?.getOpenTicketSubCategories?.length > 0 ? (
                                       <>
                                         {item?.getOpenTicketSubCategories?.map((item, i) => (
-                                          <Typography
-                                            key={i}
-                                            sx={{
-                                              fontSize: "12px",
-                                              fontWeight: 500,
-                                            }}
-                                          >
+                                          <Typography key={i} sx={sx.descAccentTableText}>
                                             {i + 1}. {item.subCategory_Description}
                                           </Typography>
                                         ))}
                                       </>
                                     ) : (
-                                      <Typography
-                                        sx={{
-                                          fontSize: "12px",
-                                          fontWeight: 500,
-                                        }}
-                                      >
-                                        --
-                                      </Typography>
+                                      <Typography sx={sx.descAccentTableText}>--</Typography>
                                     )}
                                   </Stack>
                                 </Stack>
                               </TableCell>
 
                               {ticketStatus !== "For Approval" && (
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                  onClick={() => onViewAction(item)}
-                                >
+                                <TableCell sx={sx.tableCellBody} onClick={() => onViewAction(item)}>
                                   <>
                                     <Chip
                                       variant="filled"
@@ -2024,18 +1706,7 @@ const IssueHandlerConcerns = () => {
                                 </TableCell>
                               )}
 
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  "&:hover": {
-                                    background: "",
-                                    color: "#EDF2F7",
-                                  },
-                                }}
-                                onClick={() => onViewAction(item)}
-                              >
+                              <TableCell sx={sx.tableCellBody} onClick={() => onViewAction(item)}>
                                 {item.target_Date ? (
                                   <>
                                     <Chip
@@ -2057,14 +1728,7 @@ const IssueHandlerConcerns = () => {
                               </TableCell>
 
                               {(ticketStatus === "Closed" || ticketStatus === "") && (
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                  onClick={() => onViewAction(item)}
-                                >
+                                <TableCell sx={sx.tableCellBody} onClick={() => onViewAction(item)}>
                                   {item?.closed_At !== null ? (
                                     <>
                                       <Chip
@@ -2086,24 +1750,23 @@ const IssueHandlerConcerns = () => {
                                 </TableCell>
                               )}
 
-                              {ticketStatus === "Closed" ||
-                                (ticketStatus === "" && (
-                                  <TableCell
-                                    sx={{
+                              {(ticketStatus === "Closed" || ticketStatus === "") && (
+                                <TableCell
+                                  sx={{
+                                    color: "#EDF2F7",
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    "&:hover": {
+                                      background: "",
                                       color: "#EDF2F7",
-                                      fontSize: "12px",
-                                      fontWeight: 500,
-                                      "&:hover": {
-                                        background: "",
-                                        color: "#EDF2F7",
-                                      },
-                                    }}
-                                    align="center"
-                                    onClick={() => onViewAction(item)}
-                                  >
-                                    {item.aging_Days !== null ? `${item.aging_Days} day(s)` : ""}
-                                  </TableCell>
-                                ))}
+                                    },
+                                  }}
+                                  align="center"
+                                  onClick={() => onViewAction(item)}
+                                >
+                                  {item.aging_Days !== null ? `${item.aging_Days} day(s)` : ""}
+                                </TableCell>
+                              )}
 
                               <TableCell onClick={() => onViewAction(item)}>
                                 <Box>
@@ -2246,13 +1909,7 @@ const IssueHandlerConcerns = () => {
                               )}
 
                               {ticketStatus !== "For Approval" && (
-                                <TableCell
-                                  sx={{
-                                    color: "#EDF2F7",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                  }}
-                                >
+                                <TableCell sx={sx.tableCellBody}>
                                   <IssueHandlerConcernsActions
                                     data={item}
                                     onHoldTicket={onHoldTicketAction}
@@ -2277,7 +1934,11 @@ const IssueHandlerConcerns = () => {
                         );
                       })}
 
-                    {isError && (
+                    {loading && <TableSkeleton columns={tableColumns} rows={10} cellSx={sx.tableCellBody} />}
+                    {no_records && <NoRecordsFoundTable colSpan={12} label="No records found" />}
+                    {isError && <SomethingWentWrongTable colSpan={12} label="Something went wrong." />}
+
+                    {/* {isError && (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
                           <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
@@ -2308,7 +1969,7 @@ const IssueHandlerConcerns = () => {
                           </Typography>
                         </TableCell>
                       </TableRow>
-                    )}
+                    )} */}
                   </TableBody>
                 </Table>
               </TableContainer>
