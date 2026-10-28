@@ -22,22 +22,20 @@ import {
 } from "@mui/material";
 import { AddOutlined, Search } from "@mui/icons-material";
 
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { toast } from "sonner";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
+
 import { ListOfChannels } from "./ListOfChannels";
 import { ServiceProviderDialog } from "./ServiceProviderDialog";
 import { ServiceProviderActions } from "./ServiceProviderActions";
-import {
-  useArchiveServiceProviderMutation,
-  useGetServiceProviderQuery,
-} from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { useArchiveServiceProviderMutation, useGetServiceProviderQuery } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const STATUS_TABS = [
@@ -225,6 +223,7 @@ const ServiceProvider = () => {
 
   return (
     <Stack sx={sx.pageContainer}>
+      {/* Header */}
       <Stack sx={sx.pageHeader}>
         <Stack>
           <Stack sx={sx.titleGroup}>
@@ -236,17 +235,12 @@ const ServiceProvider = () => {
           <Typography sx={sx.pageSubtitle}>Manage service providers and their channels</Typography>
         </Stack>
 
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<AddOutlined />}
-          onClick={onToggle}
-          sx={sx.addButton}
-        >
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
           Add
         </Button>
       </Stack>
 
+      {/* Content Container */}
       <Stack sx={sx.contentContainer}>
         <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto" sx={sx.tabs}>
           {STATUS_TABS.map((tab) => (
@@ -256,13 +250,7 @@ const ServiceProvider = () => {
 
         <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={sx.searchContainer}
-          gap={4}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
           <OutlinedInput
             placeholder="Search service provider"
             startAdornment={<Search sx={sx.searchIcon} />}
@@ -283,18 +271,12 @@ const ServiceProvider = () => {
                         <Typography variant="body2" color="text.secondary">
                           LINE NO. {index + 1}
                         </Typography>
-                        <Chip
-                          label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                          size="small"
-                          sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }}
-                        />
+                        <Chip label={item.isActive ? "ACTIVE" : "INACTIVE"} size="small" sx={{ ...sx.statusChip(item.isActive), ...sx.cardChip }} />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>SERVICE PROVIDER:</Typography>
-                        <Typography sx={sx.cardValue}>
-                          {item.serviceProviderName ? item.serviceProviderName : "-"}
-                        </Typography>
+                        <Typography sx={sx.cardValue}>{item.serviceProviderName ? item.serviceProviderName : "-"}</Typography>
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -304,12 +286,7 @@ const ServiceProvider = () => {
 
                       <Stack direction="row" gap={0.5} alignItems="center">
                         <Typography sx={sx.cardLabel}>ACTION:</Typography>
-                        <ServiceProviderActions
-                          data={item}
-                          status={status}
-                          onArchive={onArchiveAction}
-                          onUpdate={onEditAction}
-                        />
+                        <ServiceProviderActions data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -318,11 +295,7 @@ const ServiceProvider = () => {
 
             {isError && (
               <Stack sx={sx.feedbackContainer}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -365,11 +338,7 @@ const ServiceProvider = () => {
                 <TableHead sx={{ whiteSpace: "nowrap" }}>
                   <TableRow>
                     {TABLE_COLUMNS.map((column) => (
-                      <TableCell
-                        key={column}
-                        sx={sx.headCell}
-                        align={column === "SERVICE PROVIDER" || column === "CHANNELS" ? "left" : "center"}
-                      >
+                      <TableCell key={column} sx={sx.headCell} align={column === "SERVICE PROVIDER" || column === "CHANNELS" ? "left" : "center"}>
                         {column}
                       </TableCell>
                     ))}
@@ -382,27 +351,15 @@ const ServiceProvider = () => {
                         <TableCell sx={sx.bodyCell} align="center">
                           {i + 1}
                         </TableCell>
-                        <TableCell sx={sx.bodyCell}>
-                          {item.serviceProviderName ? item.serviceProviderName : "-"}
-                        </TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.serviceProviderName ? item.serviceProviderName : "-"}</TableCell>
                         <TableCell sx={sx.bodyCell}>
                           <ListOfChannels serviceChannel={item.serviceChannel} />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <Chip
-                            variant="filled"
-                            size="small"
-                            sx={sx.statusChip(item.isActive)}
-                            label={item.isActive ? "ACTIVE" : "INACTIVE"}
-                          />
+                          <Chip variant="filled" size="small" sx={sx.statusChip(item.isActive)} label={item.isActive ? "ACTIVE" : "INACTIVE"} />
                         </TableCell>
                         <TableCell sx={sx.bodyCell} align="center">
-                          <ServiceProviderActions
-                            data={item}
-                            status={status}
-                            onUpdate={onEditAction}
-                            onArchive={onArchiveAction}
-                          />
+                          <ServiceProviderActions data={item} status={status} onUpdate={onEditAction} onArchive={onArchiveAction} />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -410,11 +367,7 @@ const ServiceProvider = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
@@ -436,12 +389,7 @@ const ServiceProvider = () => {
                   {isEmpty && (
                     <TableRow>
                       <TableCell colSpan={TABLE_COLUMNS.length} align="center">
-                        <img
-                          src={noRecordsFound}
-                          alt="No Records Found"
-                          className="norecords-found-table"
-                          style={{ width: "100%", maxWidth: "300px" }}
-                        />
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
                         <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
