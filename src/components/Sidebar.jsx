@@ -33,7 +33,6 @@ import { useGetNotificationQuery } from "../features/api_notification/notificati
 import helpDeskLogo from "../assets/images/helpdesk_icon.png";
 import { sidebarStyles as sx } from "./styles/sidebarStyles";
 
-
 const OVERLAY_BREAKPOINT = 1281;
 const MOBILE_BREAKPOINT = 640;
 const RAIL_COLLAPSE_BREAKPOINT = 1639;
@@ -53,7 +52,7 @@ const MOBILE_MENU_ITEMS = [
         icon: "PermIdentityOutlinedIcon",
       },
       { id: 2, name: "User Role", path: "/user-management/user-role", icon: "ManageAccountsOutlinedIcon" },
-      { id: 3, name: "User Type", path: "/user-management/user-type", icon: "SupervisorAccount" },
+      // { id: 3, name: "User Type", path: "/user-management/user-type", icon: "SupervisorAccount" },
     ],
   },
   {
@@ -75,9 +74,9 @@ const MOBILE_MENU_ITEMS = [
       },
       { id: 7, name: "Receiver Setup", path: "/masterlist/receiver-setup", icon: "ContactsOutlined" },
       { id: 8, name: "Approver Setup", path: "/masterlist/approver-setup", icon: "GroupsOutlined" },
-      { id: 9, name: "Sites", path: "/masterlist/sites", icon: "StoreMallDirectoryOutlined" },
-      { id: 10, name: "PMS Type", path: "/masterlist/pms-type", icon: "BackupTableOutlined" },
-      { id: 11, name: "Store List", path: "/masterlist/store-list", icon: "StorefrontOutlined" },
+      // { id: 9, name: "Sites", path: "/masterlist/sites", icon: "StoreMallDirectoryOutlined" },
+      // { id: 10, name: "PMS Type", path: "/masterlist/pms-type", icon: "BackupTableOutlined" },
+      // { id: 11, name: "Store List", path: "/masterlist/store-list", icon: "StorefrontOutlined" },
     ],
   },
   {
@@ -118,11 +117,11 @@ const MOBILE_MENU_ITEMS = [
       },
     ],
   },
-  { id: 8, name: "Checklist Management", path: "/checklist-management", icon: "FolderOutlined" },
-  { id: 9, name: "PMS", path: "/pms", icon: "BuildCircleOutlined" },
-  { id: 10, name: "Reports", path: "/reports", icon: "AssessmentOutlined" },
-  { id: 11, name: "Filing", path: "/filing", icon: "AttachFileOutlined" },
-  { id: 12, name: "Generate", path: "/generate", icon: "BallotOutlined" },
+  // { id: 8, name: "Checklist Management", path: "/checklist-management", icon: "FolderOutlined" },
+  // { id: 9, name: "PMS", path: "/pms", icon: "BuildCircleOutlined" },
+  { id: 8, name: "Reports", path: "/reports", icon: "AssessmentOutlined" },
+  { id: 9, name: "Filing", path: "/filing", icon: "AttachFileOutlined" },
+  { id: 10, name: "Generate", path: "/generate", icon: "BallotOutlined" },
 ];
 
 const Sidebar = () => {
@@ -427,12 +426,12 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
           path: "/user-management/user-role",
           icon: "ManageAccountsOutlinedIcon",
         },
-        {
-          id: 3,
-          name: "User Types",
-          path: "/user-management/user-types",
-          icon: "SupervisorAccount",
-        },
+        // {
+        //   id: 3,
+        //   name: "User Types",
+        //   path: "/user-management/user-types",
+        //   icon: "SupervisorAccount",
+        // },
       ],
     },
     {
@@ -456,7 +455,7 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
           path: "/masterlist/one-charging",
           icon: "BusinessOutlinedIcon",
         },
-                {
+        {
           id: 2,
           name: "Service Provider",
           path: "/masterlist/service-provider",
@@ -499,24 +498,24 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
           path: "/masterlist/approver-setup",
           icon: "GroupsOutlined",
         },
-        {
-          id: 9,
-          name: "Sites",
-          path: "/masterlist/sites",
-          icon: "StoreMallDirectoryOutlined",
-        },
-        {
-          id: 10,
-          name: "PMS Type",
-          path: "/masterlist/pms-type",
-          icon: "BackupTableOutlined",
-        },
-        {
-          id: 11,
-          name: "Buildings",
-          path: "/masterlist/buildings",
-          icon: "ApartmentOutlined",
-        },
+        // {
+        //   id: 9,
+        //   name: "Sites",
+        //   path: "/masterlist/sites",
+        //   icon: "StoreMallDirectoryOutlined",
+        // },
+        // {
+        //   id: 10,
+        //   name: "PMS Type",
+        //   path: "/masterlist/pms-type",
+        //   icon: "BackupTableOutlined",
+        // },
+        // {
+        //   id: 11,
+        //   name: "Buildings",
+        //   path: "/masterlist/buildings",
+        //   icon: "ApartmentOutlined",
+        // },
         //         {
         //   id: 11,
         //   name: "Store List",
@@ -623,36 +622,36 @@ const SidebarList = ({ collapsed, onExpand, onNavigate }) => {
         },
       ],
     },
-    {
-      id: 7,
-      name: "Checklist Management",
-      path: "/checklist-management",
-      icon: "FolderOutlined",
-    },
+    // {
+    //   id: 7,
+    //   name: "Checklist Management",
+    //   path: "/checklist-management",
+    //   icon: "FolderOutlined",
+    // },
+    // {
+    //   id: 8,
+    //   name: "PMS",
+    //   path: "/pms",
+    //   icon: "BuildCircleOutlined",
+    // },
     {
       id: 8,
-      name: "PMS",
-      path: "/pms",
-      icon: "BuildCircleOutlined",
-    },
-    {
-      id: 9,
       name: "Reports",
       path: "/reports",
       icon: "AssessmentOutlined",
     },
-    {
-      id: 10,
-      name: "Filing",
-      path: "/filing",
-      icon: "AttachFileOutlined",
-    },
-    {
-      id: 11,
-      name: "Generate",
-      path: "/generate",
-      icon: "BallotOutlined",
-    },
+    // {
+    //   id: 9,
+    //   name: "Filing",
+    //   path: "/filing",
+    //   icon: "AttachFileOutlined",
+    // },
+    // {
+    //   id: 10,
+    //   name: "Generate",
+    //   path: "/generate",
+    //   icon: "BallotOutlined",
+    // },
   ];
 
   return (

@@ -87,10 +87,10 @@ export const router = createBrowserRouter([
             path: "/user-management/user-role",
             element: <Roles />,
           },
-          {
-            path: "/user-management/user-types",
-            element: <UserType />,
-          },
+          // {
+          //   path: "/user-management/user-types",
+          //   element: <UserType />,
+          // },
         ],
       },
 
@@ -131,18 +131,18 @@ export const router = createBrowserRouter([
             path: "/masterlist/approver-setup",
             element: <NewApprover />,
           },
-          {
-            path: "/masterlist/pms-type",
-            element: <PmsType />,
-          },
-          {
-            path: "/masterlist/sites",
-            element: <Sites />,
-          },
-          {
-            path: "/masterlist/buildings",
-            element: <Buildings />,
-          },
+          // {
+          //   path: "/masterlist/pms-type",
+          //   element: <PmsType />,
+          // },
+          // {
+          //   path: "/masterlist/sites",
+          //   element: <Sites />,
+          // },
+          // {
+          //   path: "/masterlist/buildings",
+          //   element: <Buildings />,
+          // },
           // {
           //   path: "/masterlist/store-list",
           //   element: <StoreList />,

@@ -1,12 +1,15 @@
-import { Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Stack, TextField, useMediaQuery } from "@mui/material";
-import { useEffect } from "react";
+import { Box, Checkbox, Dialog, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormLabel, Stack, TextField, Typography } from "@mui/material";
+import { ManageAccountsRounded } from "@mui/icons-material";
 
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { LoadingButton } from "@mui/lab";
+import { theme } from "../../../theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { LoadingButton } from "@mui/lab";
+import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
 
 import { useCreateRoleMutation, useUpdateRoleNameMutation, useUpdateRolePermissionMutation } from "../../../features/user_management_api/role/roleApi";
 
@@ -15,9 +18,9 @@ const schema = yup.object().shape({
   permissions: yup.array().required(),
 });
 
-const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Checklist Management", "PMS", "Reports"];
-const userManagementCheckbox = ["User Account", "User Role", "User Types"];
-const masterlistCheckbox = ["One Charging", "Service Provider", "Channel Setup", "Category", "Sub Category", "Concern Category", "Receiver Setup", "Approver Setup", "PMS Type", "Sites", "Buildings"];
+const parentCheckbox = ["Overview", "User Management", "Masterlist", "Requestor", "Receiver", "Approver", "Ticketing", "Reports"];
+const userManagementCheckbox = ["User Account", "User Role"];
+const masterlistCheckbox = ["One Charging", "Service Provider", "Channel Setup", "Category", "Sub Category", "Concern Category", "Receiver Setup", "Approver Setup"];
 const requestCheckbox = ["Requestor Concerns"];
 const receiverCheckbox = ["Receiver Concerns"];
 const approverCheckbox = ["Approval", "View Tickets"];
@@ -206,451 +209,463 @@ const RoleAddDialog = ({ data, open, onClose }) => {
   return (
     <>
       <Dialog fullWidth open={open}>
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-            marginBlockEnd: "5.28px",
-          }}
-        >
-          {data ? "Edit Role" : "Add Role"}
-        </DialogTitle>
-
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
-            <Stack sx={{ padding: "5px" }}>
-              <FormLabel>
-                <TextField
-                  {...register("user_Role_Name")}
-                  variant="outlined"
-                  label="Role Name*"
-                  helperText={errors?.user_Role_Name?.message}
-                  error={!!errors?.user_Role_Name?.message}
-                  sx={{ borderColor: "primary" }}
-                  fullWidth
-                  autoComplete="off"
-                />
-              </FormLabel>
+            <Stack sx={{ flexDirection: "row", gap: 1, alignItems: "center", mb: 2 }}>
+              <Box sx={{ width: 44, height: 44, borderRadius: "12px", bgcolor: "#241d52", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <ManageAccountsRounded sx={{ color: "#b9acff" }} />
+              </Box>
+
+              <Box sx={{ gap: 0 }}>
+                <Typography sx={{ fontSize: "16px", color: theme.palette.text.main, fontWeight: 700 }}>{!data ? "Create Role" : "Update Role"}</Typography>
+                <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>
+                  {!data ? "Add a new role and assign its permissions" : "Edit role details and update its assigned permissions"}
+                </Typography>
+              </Box>
             </Stack>
 
-            <Stack direction="column">
-              {/* Permissions */}
-              <FormControl
-                component="fieldset"
-                variant="standard"
-                sx={{
-                  border: "1px solid #2D3748",
-                  borderRadius: "10px",
-                  padding: 2,
-                }}
-              >
-                <FormLabel
-                  component="legend"
-                  sx={{
-                    padding: "0 20px",
-                  }}
-                >
-                  Permissions
+            <Stack gap={1}>
+              <Stack sx={{ padding: "5px" }}>
+                <FormLabel>
+                  <TextField
+                    {...register("user_Role_Name")}
+                    variant="outlined"
+                    label="Role Name*"
+                    helperText={errors?.user_Role_Name?.message}
+                    error={!!errors?.user_Role_Name?.message}
+                    sx={{ borderColor: "primary" }}
+                    fullWidth
+                    autoComplete="off"
+                  />
                 </FormLabel>
+              </Stack>
 
-                <FormGroup>
-                  <Stack direction="row" flexWrap="wrap">
-                    {parentCheckbox.map((item, index) => (
-                      <Controller
-                        key={index}
-                        control={control}
-                        name="permissions"
-                        render={({ field: { ref, value, onChange } }) => {
-                          return (
-                            <FormControlLabel
-                              sx={{
-                                flex: 1,
-                                flexBasis: "40%",
-                              }}
-                              control={
-                                <Checkbox
-                                  ref={ref}
-                                  value={item}
-                                  checked={value?.includes(item)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      onChange([...value, e.target.value]);
-                                    } else {
-                                      onChange([...value.filter((item) => item !== e.target.value)]);
-                                      handleParentCheckboxChange(e);
-                                    }
+              <Stack direction="column">
+                {/* Permissions */}
+                <FormControl
+                  component="fieldset"
+                  variant="standard"
+                  sx={{
+                    border: "1px solid #2D3748",
+                    borderRadius: "10px",
+                    padding: 2,
+                  }}
+                >
+                  <FormLabel
+                    component="legend"
+                    sx={{
+                      padding: "0 20px",
+                    }}
+                  >
+                    Permissions
+                  </FormLabel>
+
+                  <FormGroup>
+                    <Stack direction="row" flexWrap="wrap">
+                      {parentCheckbox.map((item, index) => (
+                        <Controller
+                          key={index}
+                          control={control}
+                          name="permissions"
+                          render={({ field: { ref, value, onChange } }) => {
+                            return (
+                              <FormControlLabel
+                                sx={{
+                                  flex: 1,
+                                  flexBasis: "40%",
+                                }}
+                                control={
+                                  <Checkbox
+                                    ref={ref}
+                                    value={item}
+                                    checked={value?.includes(item)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        onChange([...value, e.target.value]);
+                                      } else {
+                                        onChange([...value.filter((item) => item !== e.target.value)]);
+                                        handleParentCheckboxChange(e);
+                                      }
+                                    }}
+                                  />
+                                }
+                                label={item}
+                              />
+                            );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </FormGroup>
+                </FormControl>
+
+                {/* User Management */}
+                {watch("permissions")?.includes("User Management") && (
+                  <FormControl
+                    component="fieldset"
+                    variant="standard"
+                    sx={{
+                      border: "1px solid #2D3748",
+                      borderRadius: "10px",
+                      padding: 2,
+                    }}
+                  >
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        padding: "0 20px",
+                      }}
+                    >
+                      User Management
+                    </FormLabel>
+
+                    <FormGroup>
+                      <Stack direction="row" flexWrap="wrap">
+                        {userManagementCheckbox.map((item, index) => (
+                          <Controller
+                            key={index}
+                            control={control}
+                            name="permissions"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <FormControlLabel
+                                  sx={{
+                                    flex: 1,
+                                    flexBasis: "40%",
                                   }}
+                                  control={
+                                    <Checkbox
+                                      ref={ref}
+                                      value={item}
+                                      checked={value?.includes(item)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          onChange([...value, e.target.value]);
+                                        } else {
+                                          onChange([...value.filter((item) => item !== e.target.value)]);
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={item}
                                 />
-                              }
-                              label={item}
-                            />
-                          );
-                        }}
-                      />
-                    ))}
-                  </Stack>
-                </FormGroup>
-              </FormControl>
+                              );
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </FormGroup>
+                  </FormControl>
+                )}
 
-              {/* User Management */}
-              {watch("permissions")?.includes("User Management") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
+                {/* Masterlist */}
+                {watch("permissions")?.includes("Masterlist") && (
+                  <FormControl
+                    component="fieldset"
+                    variant="standard"
                     sx={{
-                      padding: "0 20px",
+                      border: "1px solid #2D3748",
+                      borderRadius: "10px",
+                      padding: 2,
                     }}
                   >
-                    User Management
-                  </FormLabel>
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        padding: "0 20px",
+                      }}
+                    >
+                      Masterlist
+                    </FormLabel>
 
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {userManagementCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([...value.filter((item) => item !== e.target.value)]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )}
+                    <FormGroup>
+                      <Stack direction="row" flexWrap="wrap">
+                        {masterlistCheckbox.map((item, index) => (
+                          <Controller
+                            key={index}
+                            control={control}
+                            name="permissions"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <FormControlLabel
+                                  sx={{
+                                    flex: 1,
+                                    flexBasis: "40%",
+                                  }}
+                                  control={
+                                    <Checkbox
+                                      ref={ref}
+                                      value={item}
+                                      checked={value?.includes(item)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          onChange([...value, e.target.value]);
+                                        } else {
+                                          onChange([...value.filter((item) => item !== e.target.value)]);
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={item}
+                                />
+                              );
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </FormGroup>
+                  </FormControl>
+                )}
 
-              {/* Masterlist */}
-              {watch("permissions")?.includes("Masterlist") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
+                {/* Requestor */}
+                {watch("permissions")?.includes("Requestor") && (
+                  <FormControl
+                    component="fieldset"
+                    variant="standard"
                     sx={{
-                      padding: "0 20px",
+                      border: "1px solid #2D3748",
+                      borderRadius: "10px",
+                      padding: 2,
                     }}
                   >
-                    Masterlist
-                  </FormLabel>
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        padding: "0 20px",
+                      }}
+                    >
+                      Requestor
+                    </FormLabel>
 
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {masterlistCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([...value.filter((item) => item !== e.target.value)]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )}
+                    <FormGroup>
+                      <Stack direction="row" flexWrap="wrap">
+                        {requestCheckbox.map((item, index) => (
+                          <Controller
+                            key={index}
+                            control={control}
+                            name="permissions"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <FormControlLabel
+                                  sx={{
+                                    flex: 1,
+                                    flexBasis: "40%",
+                                  }}
+                                  control={
+                                    <Checkbox
+                                      ref={ref}
+                                      value={item}
+                                      checked={value?.includes(item)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          onChange([...value, e.target.value]);
+                                        } else {
+                                          onChange([...value.filter((item) => item !== e.target.value)]);
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={item}
+                                />
+                              );
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </FormGroup>
+                  </FormControl>
+                )}
 
-              {/* Requestor */}
-              {watch("permissions")?.includes("Requestor") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
+                {/* Receiver */}
+                {watch("permissions")?.includes("Receiver") && (
+                  <FormControl
+                    component="fieldset"
+                    variant="standard"
                     sx={{
-                      padding: "0 20px",
+                      border: "1px solid #2D3748",
+                      borderRadius: "10px",
+                      padding: 2,
                     }}
                   >
-                    Requestor
-                  </FormLabel>
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        padding: "0 20px",
+                      }}
+                    >
+                      Receiver
+                    </FormLabel>
 
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {requestCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([...value.filter((item) => item !== e.target.value)]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )}
+                    <FormGroup>
+                      <Stack direction="row" flexWrap="wrap">
+                        {receiverCheckbox.map((item, index) => (
+                          <Controller
+                            key={index}
+                            control={control}
+                            name="permissions"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <FormControlLabel
+                                  sx={{
+                                    flex: 1,
+                                    flexBasis: "40%",
+                                  }}
+                                  control={
+                                    <Checkbox
+                                      ref={ref}
+                                      value={item}
+                                      checked={value?.includes(item)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          onChange([...value, e.target.value]);
+                                        } else {
+                                          onChange([...value.filter((item) => item !== e.target.value)]);
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={item}
+                                />
+                              );
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </FormGroup>
+                  </FormControl>
+                )}
 
-              {/* Receiver */}
-              {watch("permissions")?.includes("Receiver") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
+                {/* Approver */}
+                {watch("permissions")?.includes("Approver") && (
+                  <FormControl
+                    component="fieldset"
+                    variant="standard"
                     sx={{
-                      padding: "0 20px",
+                      border: "1px solid #2D3748",
+                      borderRadius: "10px",
+                      padding: 2,
                     }}
                   >
-                    Receiver
-                  </FormLabel>
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        padding: "0 20px",
+                      }}
+                    >
+                      Approver
+                    </FormLabel>
 
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {receiverCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([...value.filter((item) => item !== e.target.value)]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )}
+                    <FormGroup>
+                      <Stack direction="row" flexWrap="wrap">
+                        {approverCheckbox.map((item, index) => (
+                          <Controller
+                            key={index}
+                            control={control}
+                            name="permissions"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <FormControlLabel
+                                  sx={{
+                                    flex: 1,
+                                    flexBasis: "40%",
+                                  }}
+                                  control={
+                                    <Checkbox
+                                      ref={ref}
+                                      value={item}
+                                      checked={value?.includes(item)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          onChange([...value, e.target.value]);
+                                        } else {
+                                          onChange([...value.filter((item) => item !== e.target.value)]);
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={item}
+                                />
+                              );
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </FormGroup>
+                  </FormControl>
+                )}
 
-              {/* Approver */}
-              {watch("permissions")?.includes("Approver") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
+                {/* Ticketing */}
+                {watch("permissions")?.includes("Ticketing") && (
+                  <FormControl
+                    component="fieldset"
+                    variant="standard"
                     sx={{
-                      padding: "0 20px",
+                      border: "1px solid #2D3748",
+                      borderRadius: "10px",
+                      padding: 2,
                     }}
                   >
-                    Approver
-                  </FormLabel>
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        padding: "0 20px",
+                      }}
+                    >
+                      Ticketing
+                    </FormLabel>
 
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {approverCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([...value.filter((item) => item !== e.target.value)]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )}
-
-              {/* Ticketing */}
-              {watch("permissions")?.includes("Ticketing") && (
-                <FormControl
-                  component="fieldset"
-                  variant="standard"
-                  sx={{
-                    border: "1px solid #2D3748",
-                    borderRadius: "10px",
-                    padding: 2,
-                  }}
-                >
-                  <FormLabel
-                    component="legend"
-                    sx={{
-                      padding: "0 20px",
-                    }}
-                  >
-                    Ticketing
-                  </FormLabel>
-
-                  <FormGroup>
-                    <Stack direction="row" flexWrap="wrap">
-                      {ticketingCheckbox.map((item, index) => (
-                        <Controller
-                          key={index}
-                          control={control}
-                          name="permissions"
-                          render={({ field: { ref, value, onChange } }) => {
-                            return (
-                              <FormControlLabel
-                                sx={{
-                                  flex: 1,
-                                  flexBasis: "40%",
-                                }}
-                                control={
-                                  <Checkbox
-                                    ref={ref}
-                                    value={item}
-                                    checked={value?.includes(item)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        onChange([...value, e.target.value]);
-                                      } else {
-                                        onChange([...value.filter((item) => item !== e.target.value)]);
-                                      }
-                                    }}
-                                  />
-                                }
-                                label={item}
-                              />
-                            );
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </FormGroup>
-                </FormControl>
-              )}
+                    <FormGroup>
+                      <Stack direction="row" flexWrap="wrap">
+                        {ticketingCheckbox.map((item, index) => (
+                          <Controller
+                            key={index}
+                            control={control}
+                            name="permissions"
+                            render={({ field: { ref, value, onChange } }) => {
+                              return (
+                                <FormControlLabel
+                                  sx={{
+                                    flex: 1,
+                                    flexBasis: "40%",
+                                  }}
+                                  control={
+                                    <Checkbox
+                                      ref={ref}
+                                      value={item}
+                                      checked={value?.includes(item)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          onChange([...value, e.target.value]);
+                                        } else {
+                                          onChange([...value.filter((item) => item !== e.target.value)]);
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={item}
+                                />
+                              );
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </FormGroup>
+                  </FormControl>
+                )}
+              </Stack>
             </Stack>
           </DialogContent>
 
           <DialogActions>
+            <LoadingButton
+              variant="contained"
+              onClick={onCloseAction}
+              loading={createRoleIsLoading || createRoleIsFetching || updateRoleNameIsLoading || updateRoleNameIsFetching || updateRolePermissionIsLoading || updateRolePermissionIsFetching}
+              sx={sx.cancelButton}
+            >
+              Cancel
+            </LoadingButton>
+
             <LoadingButton
               type="submit"
               variant="contained"
@@ -666,11 +681,7 @@ const RoleAddDialog = ({ data, open, onClose }) => {
                 (watch("permissions").includes("Ticketing") ? !watch("permissions").some((item) => ticketingCheckbox.includes(item)) : false)
               }
             >
-              Save
-            </LoadingButton>
-
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
-              Close
+              {!data ? "Add role" : "Save"}
             </LoadingButton>
           </DialogActions>
         </form>

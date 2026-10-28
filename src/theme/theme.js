@@ -13,6 +13,26 @@ const black = {
   1000: "#0E1320",
 };
 
+const ui = {
+  surface: "#131a2b",
+  field: "#0e1422",
+  fieldDisabled: "#10172a",
+  border: "#2b3650",
+  divider: "#232d45",
+  text: "#eef2fa",
+  title: "#f4f6fb",
+  label: "#aab5cb",
+  muted: "#8c98b0",
+  green: "#4ade80",
+  greenBg: "#12301f",
+  accent: "#6847f0",
+  accentHover: "#5a3bd9",
+  focus: "#8b7bff",
+  iconBg: "#241d52",
+  iconFg: "#b9acff",
+  error: "#f87171",
+};
+
 // 0D1117
 // 161B22
 

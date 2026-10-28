@@ -1,4 +1,5 @@
-import { Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Autocomplete, Box, Checkbox, Dialog, DialogActions, DialogContent, Divider, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { PersonAddAlt1Rounded } from "@mui/icons-material";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,11 +10,12 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
 import { LoadingButton } from "@mui/lab";
-import useDisclosure from "../../../hooks/useDisclosure";
 import { formStyle as sx } from "../../Tickets/IssueHandlerConcerns/style/formStyle";
-import UserAccountWarningDialog from "./UserAccountWarningDialog";
-import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 
+import useDisclosure from "../../../hooks/useDisclosure";
+import UserAccountWarningDialog from "./UserAccountWarningDialog";
+
+import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one_charging/oneChargingApi";
 import { useLazyGetEmployeesQuery } from "../../../features/sedar/sedarApi";
 import { useLazyGetRolesQuery } from "../../../features/user_management_api/role/roleApi";
 import { useLazyGetCompanyQuery } from "../../../features/api masterlist/company/companyApi";
@@ -23,7 +25,6 @@ import { useLazyGetUnitQuery } from "../../../features/api masterlist/unit/unitA
 import { useLazyGetSubUnitQuery } from "../../../features/api masterlist/sub-unit/subUnitApi";
 import { useLazyGetLocationWithPaginationQuery } from "../../../features/api masterlist/location/locationApi";
 import { useCreateUserMutation, useUpdateUserMutation } from "../../../features/user_management_api/user/userApi";
-import { PersonAddAlt1Rounded } from "@mui/icons-material";
 
 const UserAccountDialog = ({ data, open, onClose }) => {
   const [storeCheckbox, setStoreCheckbox] = useState(false);
@@ -327,37 +328,17 @@ const UserAccountDialog = ({ data, open, onClose }) => {
     reset();
   };
 
-  const ui = {
-    surface: "#131a2b",
-    field: "#0e1422",
-    fieldDisabled: "#10172a",
-    border: "#2b3650",
-    divider: "#232d45",
-    text: "#eef2fa",
-    title: "#f4f6fb",
-    label: "#aab5cb",
-    muted: "#8c98b0",
-    green: "#4ade80",
-    greenBg: "#12301f",
-    accent: "#6847f0",
-    accentHover: "#5a3bd9",
-    focus: "#8b7bff",
-    iconBg: "#241d52",
-    iconFg: "#b9acff",
-    error: "#f87171",
-  };
-
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} PaperProps={{ style: { overflow: "auto" } }}>
         <DialogContent>
           <Stack sx={{ flexDirection: "row", gap: 1, alignItems: "center" }}>
-            <Box sx={{ width: 44, height: 44, borderRadius: "12px", bgcolor: ui.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <PersonAddAlt1Rounded sx={{ color: ui.iconFg }} />
+            <Box sx={{ width: 44, height: 44, borderRadius: "12px", bgcolor: "#241d52", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <PersonAddAlt1Rounded sx={{ color: "#b9acff" }} />
             </Box>
 
             <Box sx={{ gap: 0 }}>
-              <Typography sx={{ fontSize: "16px", color: theme.palette.text.main, fontWeight: 700 }}> {!data ? "Create User Account" : "Update User Account"}</Typography>
+              <Typography sx={{ fontSize: "16px", color: theme.palette.text.main, fontWeight: 700 }}>{!data ? "Create User Account" : "Update User Account"}</Typography>
               <Typography sx={{ fontSize: "12px", color: theme.palette.text.secondary }}>
                 {!data ? "Add a new user and assign their charging details" : "Edit existing user information and charging details"}
               </Typography>
@@ -858,7 +839,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 !watch("locationId")
               }
             >
-              {!data ? "Add User" : "Save"}
+              {!data ? "Add user" : "Save"}
             </LoadingButton>
           ) : (
             <LoadingButton
@@ -879,7 +860,7 @@ const UserAccountDialog = ({ data, open, onClose }) => {
                 !watch("locationId")
               }
             >
-              {!data ? "Add User" : "Save"}
+              {!data ? "Add user" : "Save"}
             </LoadingButton>
           )}
         </DialogActions>

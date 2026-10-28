@@ -19,11 +19,11 @@ export const sidebarNavigationData = [
         name: "User Role",
         path: "/user-management/user-role",
       },
-      {
-        id: 3,
-        name: "User Types",
-        path: "/user-management/user-types",
-      },
+      // {
+      //   id: 3,
+      //   name: "User Types",
+      //   path: "/user-management/user-types",
+      // },
     ],
   },
   {
@@ -73,21 +73,21 @@ export const sidebarNavigationData = [
         name: "Approver",
         path: "/masterlist/approver-setup",
       },
-      {
-        id: 9,
-        name: "PMS Type",
-        path: "/masterlist/pms-type",
-      },
-      {
-        id: 10,
-        name: "Sites",
-        path: "/masterlist/sites",
-      },
-      {
-        id: 11,
-        name: "Buildings",
-        path: "/masterlist/buildings",
-      },
+      // {
+      //   id: 9,
+      //   name: "PMS Type",
+      //   path: "/masterlist/pms-type",
+      // },
+      // {
+      //   id: 10,
+      //   name: "Sites",
+      //   path: "/masterlist/sites",
+      // },
+      // {
+      //   id: 11,
+      //   name: "Buildings",
+      //   path: "/masterlist/buildings",
+      // },
       // {
       //   id: 11,
       //   name: "Store List",
@@ -148,16 +148,16 @@ export const sidebarNavigationData = [
       },
     ],
   },
-  {
-    id: 8,
-    path: "/checklist-management",
-    name: "Checklist Management",
-  },
-  {
-    id: 9,
-    path: "/pms",
-    name: "PMS",
-  },
+  // {
+  //   id: 8,
+  //   path: "/checklist-management",
+  //   name: "Checklist Management",
+  // },
+  // {
+  //   id: 9,
+  //   path: "/pms",
+  //   name: "PMS",
+  // },
   {
     id: 10,
     path: "/reports",
