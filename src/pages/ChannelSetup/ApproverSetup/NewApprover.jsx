@@ -198,23 +198,13 @@ const NewApprover = () => {
     >
       <Stack>
         <Stack>
-          <Stack
-            width="100%"
-            justifyContent="space-between"
-            sx={{ flexDirection: isSmallScreen ? "column" : "row" }}
-          >
+          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
             <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>Approver</Typography>
+              <Typography variant={isSmallScreen ? "h5" : "h4"}>Approversss</Typography>
             </Stack>
 
             <Stack justifyItems="space-between" direction="row">
-              <Button
-                variant="contained"
-                size={isSmallScreen ? "small" : "large"}
-                color="primary"
-                startIcon={<AddOutlined />}
-                onClick={onToggle}
-              >
+              <Button variant="contained" size={isSmallScreen ? "small" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
                 Add
               </Button>
             </Stack>
@@ -229,13 +219,7 @@ const NewApprover = () => {
           marginTop: "20px",
         }}
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ marginTop: "10px", padding: "20px" }}
-          gap={4}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "20px" }} gap={4}>
           <OutlinedInput
             flex="1"
             placeholder="Search approver"
@@ -270,11 +254,7 @@ const NewApprover = () => {
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
-                        >
-                          LINE:
-                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>LINE:</Typography>
                         <Typography
                           sx={{
                             fontWeight: 400,
@@ -288,11 +268,7 @@ const NewApprover = () => {
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
-                        >
-                          APPROVER:
-                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>APPROVER:</Typography>
                         <Typography
                           sx={{
                             fontWeight: 400,
@@ -306,20 +282,12 @@ const NewApprover = () => {
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
-                        >
-                          ISSUE HANDLERS:
-                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ISSUE HANDLERS:</Typography>
                         <NewApproverHandlers issueHandlers={item.userForApprovers} />
                       </Stack>
 
                       <Stack direction="row" gap={0.5} alignItems="center">
-                        <Typography
-                          sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}
-                        >
-                          ACTION:
-                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem", lineHeight: 1.57, color: "#D65DB1" }}>ACTION:</Typography>
                         <ApproverSetupActions data={item} onUpdate={onEditAction} />
                       </Stack>
                     </Stack>
@@ -329,11 +297,7 @@ const NewApprover = () => {
 
             {isError && (
               <Stack justifyContent="center" alignItems="center" padding={4}>
-                <img
-                  src={somethingWentWrong}
-                  alt="Something Went Wrong"
-                  className="something-went-wrong-table"
-                />
+                <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
                 </Typography>
@@ -480,11 +444,7 @@ const NewApprover = () => {
                   {isError && (
                     <TableRow>
                       <TableCell colSpan={7} align="center">
-                        <img
-                          src={somethingWentWrong}
-                          alt="Something Went Wrong"
-                          className="something-went-wrong-table"
-                        />
+                        <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                         <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                           Something went wrong.
                         </Typography>

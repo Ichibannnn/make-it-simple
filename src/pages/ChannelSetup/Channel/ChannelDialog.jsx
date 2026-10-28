@@ -287,9 +287,7 @@ const ChannelDialog = ({ data, open, onClose }) => {
                         isOptionEqualToValue={(option, value) => option.userId === value.userId}
                         getOptionDisabled={(option) => channelFormWatch("userId").some((item) => item.userId === option.userId)}
                         disabled={
-                          data
-                            ? !channelFormWatch("channel_Name") || errorValidationIsError
-                            : !channelFormWatch("channel_Name") || !channelFormWatch("deparmentId").length || errorValidationIsError
+                          data ? !channelFormWatch("channel_Name") || errorValidationIsError : !channelFormWatch("channel_Name") || !channelFormWatch("deparmentId").length || errorValidationIsError
                         }
                         sx={{
                           flex: 2,
@@ -321,39 +319,36 @@ const ChannelDialog = ({ data, open, onClose }) => {
                   }}
                 />
 
-                <Typography sx={{ fontSize: "15px", fontStyle: "italic", color: requestCheckbox ? theme.palette.text.main : theme.palette.text.secondary }}>
-                  For request concern?
-                </Typography>
+                <Typography sx={{ fontSize: "15px", fontStyle: "italic", color: requestCheckbox ? theme.palette.text.main : theme.palette.text.secondary }}>For request concern?</Typography>
               </Stack>
             </Stack>
           </Stack>
         </DialogContent>
 
         <DialogActions>
-          <Stack direction="row" paddingBottom={1} gap={1}>
-            <LoadingButton
-              type="submit"
-              form="channelForm"
-              variant="contained"
-              size="large"
-              color="primary"
-              startIcon={<Save />}
-              loadingPosition="start"
-              loading={createChannelIsLoading || createChannelIsFetching}
-              disabled={!channelFormWatch("channel_Name") || !channelFormWatch("userId").length}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.primary.secondary,
-                  color: "black",
-                },
-              }}
-            >
-              Save Changes
-            </LoadingButton>
-            <Button variant="text" onClick={onCloseAction}>
-              Close
-            </Button>
-          </Stack>
+          <LoadingButton variant="outlined" loading={createChannelIsLoading || createChannelIsFetching} onClick={onCloseAction}>
+            <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
+          </LoadingButton>
+
+          <LoadingButton
+            type="submit"
+            form="channelForm"
+            variant="contained"
+            size="large"
+            color="primary"
+            startIcon={<Save />}
+            loadingPosition="start"
+            loading={createChannelIsLoading || createChannelIsFetching}
+            disabled={!channelFormWatch("channel_Name") || !channelFormWatch("userId").length}
+            sx={{
+              ":disabled": {
+                backgroundColor: theme.palette.primary.secondary,
+                color: "black",
+              },
+            }}
+          >
+            Save
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </>

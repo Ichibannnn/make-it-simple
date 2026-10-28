@@ -1,13 +1,4 @@
-import {
-  Autocomplete,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -18,10 +9,7 @@ import { toast } from "sonner";
 import { AddCircleOutline, EditOutlined, Save } from "@mui/icons-material";
 
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
-import {
-  useCreateEditServiceProviderMutation,
-  useServiceProviderValidationMutation,
-} from "../../../features/api masterlist/service_provider/serviceProviderApi";
+import { useCreateEditServiceProviderMutation, useServiceProviderValidationMutation } from "../../../features/api masterlist/service_provider/serviceProviderApi";
 import { masterlistStyles as sx } from "../styles/masterlistStyles";
 
 const schema = yup.object().shape({
@@ -31,14 +19,9 @@ const schema = yup.object().shape({
 });
 
 export const ServiceProviderDialog = ({ data, open, onClose }) => {
-  const [serviceProviderValidation, { error: errorValidation, isError: errorValidationIsError }] =
-    useServiceProviderValidationMutation();
-  const [
-    createEditServiceProvider,
-    { isLoading: createEditServiceProviderIsLoading, isFetching: createEditServiceProviderIsFetching },
-  ] = useCreateEditServiceProviderMutation();
-  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] =
-    useLazyGetChannelsQuery();
+  const [serviceProviderValidation, { error: errorValidation, isError: errorValidationIsError }] = useServiceProviderValidationMutation();
+  const [createEditServiceProvider, { isLoading: createEditServiceProviderIsLoading, isFetching: createEditServiceProviderIsFetching }] = useCreateEditServiceProviderMutation();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
 
   const {
     control,
@@ -148,9 +131,7 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
     <>
       <Dialog fullWidth maxWidth="xs" open={open} PaperProps={{ sx: sx.dialogPaper }}>
         <Typography sx={sx.dialogTitle}>{data ? "Edit Service Provider" : "Add Service Provider"}</Typography>
-        <Typography sx={sx.dialogSubtitle}>
-          {data ? "Update this service provider and its channels." : "Create a new service provider."}
-        </Typography>
+        <Typography sx={sx.dialogSubtitle}>{data ? "Update this service provider and its channels." : "Create a new service provider."}</Typography>
 
         <form onSubmit={handleSubmit(onSubmitAction)}>
           <DialogContent>
@@ -194,14 +175,7 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
                         size="small"
                         options={channelData?.value?.channel || []}
                         loading={channelIsLoading}
-                        renderInput={(params) => (
-                          <TextField
-                            placeholder="Channel Name"
-                            fullWidth
-                            {...params}
-                            sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }}
-                          />
-                        )}
+                        renderInput={(params) => <TextField placeholder="Channel Name" fullWidth {...params} sx={{ "& .MuiInputBase-input": { fontSize: "14px" } }} />}
                         onOpen={() => {
                           if (!channelIsSuccess)
                             getChannel({
@@ -231,9 +205,10 @@ export const ServiceProviderDialog = ({ data, open, onClose }) => {
           </DialogContent>
 
           <DialogActions>
-            <LoadingButton variant="outlined" onClick={onCloseAction}>
+            <LoadingButton variant="outlined" loading={createEditServiceProviderIsLoading || createEditServiceProviderIsFetching} onClick={onCloseAction}>
               <Typography sx={{ fontSize: "12.5px", fontWeight: 500 }}>Cancel</Typography>
             </LoadingButton>
+
             <LoadingButton
               type="submit"
               variant="contained"
