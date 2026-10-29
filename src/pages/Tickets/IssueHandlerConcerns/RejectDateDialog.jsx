@@ -1,30 +1,5 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  Add,
-  AttachFile,
-  AttachFileOutlined,
-  CheckOutlined,
-  FiberManualRecord,
-  GetAppOutlined,
-  RestartAlt,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Add, AttachFile, AttachFileOutlined, CheckOutlined, FiberManualRecord, GetAppOutlined, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 
 import { Controller, useForm } from "react-hook-form";
@@ -48,28 +23,19 @@ import { useSelector } from "react-redux";
 import { useLazyGetChannelsQuery } from "../../../features/api_channel_setup/channel/channelApi";
 import { useLazyGetCategoryQuery } from "../../../features/api masterlist/category_api/categoryApi";
 import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlist/sub_category_api/subCategoryApi";
-import {
-  useDeleteRequestorAttachmentMutation,
-  useEditRequestorConcernMutation,
-} from "../../../features/api_request/concerns/concernApi";
+import { useDeleteRequestorAttachmentMutation, useEditRequestorConcernMutation } from "../../../features/api_request/concerns/concernApi";
 import { useLazyGetReceiverAttachmentQuery } from "../../../features/api_request/concerns_receiver/concernReceiverApi";
-import {
-  useLazyGetDownloadAttachmentQuery,
-  useLazyGetViewAttachmentQuery,
-} from "../../../features/api_attachments/attachmentsApi";
+import { useLazyGetDownloadAttachmentQuery, useLazyGetViewAttachmentQuery } from "../../../features/api_attachments/attachmentsApi";
 import { notificationApi } from "../../../features/api_notification/notificationApi";
 import { notificationMessageApi } from "../../../features/api_notification_message/notificationMessageApi";
 import AssignDialogMenuAction from "../../Request/ReceiverConcernV2/AssignDialogMenuAction";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
 import { global } from "../../../styles/global";
 import { formStyle as sx } from "./style/formStyle";
+import { confirmDeleteAttachment } from "../../../utils/sweetAlert";
 
 const schema = yup.object().shape({
-  Concern: yup
-    .string()
-    .min(2, "Concern must be more than 1 character long")
-    .required("This field is required")
-    .label("Concern Details"),
+  Concern: yup.string().min(2, "Concern must be more than 1 character long").required("This field is required").label("Concern Details"),
   RequestAttachmentsFiles: yup.array().nullable(),
 
   ChannelId: yup.object().notRequired(),
@@ -116,19 +82,12 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
         }
 
         // Saved attachment from a previous submit
-        const response = await getAttachmentPreview(
-          fileName.ticketAttachmentId,
-        );
+        const response = await getAttachmentPreview(fileName.ticketAttachmentId);
         if (cancelled) return;
 
         if (response?.data) {
-          const mime =
-            EXT_TO_MIME[ext] ||
-            response.data.type ||
-            "application/octet-stream";
-          objectUrl = URL.createObjectURL(
-            new Blob([response.data], { type: mime }),
-          );
+          const mime = EXT_TO_MIME[ext] || response.data.type || "application/octet-stream";
+          objectUrl = URL.createObjectURL(new Blob([response.data], { type: mime }));
           setPreviewUrl(objectUrl);
         } else {
           setPreviewError(true);
@@ -214,11 +173,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
               justifyContent: "center",
             }}
           >
-            <CircularProgress
-              size={20}
-              thickness={4}
-              sx={{ color: theme.palette.text.secondary }}
-            />
+            <CircularProgress size={20} thickness={4} sx={{ color: theme.palette.text.secondary }} />
           </Box>
         )}
 
@@ -281,13 +236,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
             {ext?.toUpperCase()} · {fileName.size} MB
           </Typography>
           {/* Small check = already saved from a previous submit */}
-          {!!fileName.ticketAttachmentId && (
-            <CheckOutlined
-              color="success"
-              sx={{ fontSize: 12 }}
-              titleAccess="Attached file"
-            />
-          )}
+          {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: 12 }} titleAccess="Attached file" />}
         </Stack>
       </Box>
     </Box>
@@ -304,6 +253,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
 
   const [loadingAttachmentId, setLoadingAttachmentId] = useState(null);
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
+  const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]); // pending deletes
 
   const [zoom, setZoom] = useState(1);
   const MIN_ZOOM = 0.5;
@@ -322,43 +272,18 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
   const fileInputRef = useRef();
   // useSignalRConnection();
 
-  const [
-    getChannel,
-    {
-      data: channelData,
-      isLoading: channelIsLoading,
-      isSuccess: channelIsSuccess,
-    },
-  ] = useLazyGetChannelsQuery();
-  const [
-    getCategory,
-    {
-      data: categoryData,
-      isLoading: categoryIsLoading,
-      isSuccess: categoryIsSuccess,
-    },
-  ] = useLazyGetCategoryQuery();
-  const [
-    getSubCategory,
-    {
-      data: subCategoryData,
-      isLoading: subCategoryIsLoading,
-      isSuccess: subCategoryIsSuccess,
-    },
-  ] = useLazyGetSubCategoryArrayQuery();
-  const [
-    createEditReceiverConcern,
-    {
-      isLoading: isCreateEditReceiverConcernLoading,
-      isFetching: isCreateEditReceiverConcernFetching,
-    },
-  ] = useEditRequestorConcernMutation();
+  const [getChannel, { data: channelData, isLoading: channelIsLoading, isSuccess: channelIsSuccess }] = useLazyGetChannelsQuery();
+  const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
+  const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
+  const [createEditReceiverConcern, { isLoading: isCreateEditReceiverConcernLoading, isFetching: isCreateEditReceiverConcernFetching }] = useEditRequestorConcernMutation();
   // const [smsNotification] = useSendSmsNotificationMutation();
 
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
   const [getAddReceiverAttachment] = useLazyGetReceiverAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     control,
@@ -395,10 +320,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
     setAttachments((prevFiles) => {
       const safePrev = Array.isArray(prevFiles) ? prevFiles : [];
 
-      const uniqueNewFiles = fileNames.filter(
-        (newFile) =>
-          !safePrev.some((existing) => existing.name === newFile.name),
-      );
+      const uniqueNewFiles = fileNames.filter((newFile) => !safePrev.some((existing) => existing.name === newFile.name));
 
       return [...safePrev, ...uniqueNewFiles];
     });
@@ -409,40 +331,63 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
   };
 
   const handleDeleteFile = async (fileNameToDelete) => {
-    try {
-      if (fileNameToDelete.ticketAttachmentId) {
-        const deletePayload = {
-          ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-        };
-        await deleteRequestorAttachment(deletePayload)
-          .unwrap()
-          .then(() => {
-            toast.success("Success!", {
-              description: "File deleted successfully.",
-              duration: 1500,
-            });
-            refetch();
-          })
-          .catch((err) => {
-            console.log("error: ", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
-      }
+    const isSavedAttachment = Boolean(fileNameToDelete.ticketAttachmentId);
 
-      setAttachments((prevFiles) =>
-        prevFiles.filter((fileName) => fileName !== fileNameToDelete),
-      );
+    // Only saved attachments (from the API) need confirmation
+    if (isSavedAttachment) {
+      const confirmed = await confirmDeleteAttachment({
+        title: "Remove Attachment?",
+        message: "Are you sure you want to remove this attachment?",
+        note: "Note: The deletion will only take effect after you save your changes.",
+        confirmText: "Remove",
+        cancelText: "Cancel",
+        // icon: "📎",
+      });
 
-      setValue(
-        "RequestAttachmentsFiles",
-        watch("RequestAttachmentsFiles").filter(
-          (file) => file.name !== fileNameToDelete.name,
-        ),
-      );
-    } catch (error) {}
+      if (!confirmed) return;
+
+      // Queue it for deletion. The DELETE API is called in onSubmitAction.
+      setDeletedAttachmentIds((prev) => (prev.includes(fileNameToDelete.ticketAttachmentId) ? prev : [...prev, fileNameToDelete.ticketAttachmentId]));
+    }
+
+    // UI/form cleanup for both saved and newly added files
+    setAttachments((prev) => prev.filter((f) => (isSavedAttachment ? f.ticketAttachmentId !== fileNameToDelete.ticketAttachmentId : f !== fileNameToDelete)));
+
+    setValue(
+      "RequestAttachmentsFiles",
+      watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
+    );
+
+    // try {
+    //   if (fileNameToDelete.ticketAttachmentId) {
+    //     const deletePayload = {
+    //       ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
+    //     };
+    //     await deleteRequestorAttachment(deletePayload)
+    //       .unwrap()
+    //       .then(() => {
+    //         toast.success("Success!", {
+    //           description: "File deleted successfully.",
+    //           duration: 1500,
+    //         });
+    //         refetch();
+    //       })
+    //       .catch((err) => {
+    //         console.log("error: ", err);
+    //         toast.error("Error!", {
+    //           description: err.data.error.message,
+    //           duration: 1500,
+    //         });
+    //       });
+    //   }
+
+    //   setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
+
+    //   setValue(
+    //     "RequestAttachmentsFiles",
+    //     watch("RequestAttachmentsFiles").filter((file) => file.name !== fileNameToDelete.name),
+    //   );
+    // } catch (error) {}
   };
 
   const handleDragOver = (event) => {
@@ -463,9 +408,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
         size: (file.size / (1024 * 1024)).toFixed(2),
       }));
 
-    const uniqueNewFiles = fileNames.filter(
-      (fileName) => !attachments.includes(fileName),
-    );
+    const uniqueNewFiles = fileNames.filter((fileName) => !attachments.includes(fileName));
     setAttachments([...attachments, ...uniqueNewFiles]);
   };
 
@@ -558,10 +501,8 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
     setPosition({ x: 0, y: 0 });
   };
 
-  const handleZoomIn = () =>
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
-  const handleZoomOut = () =>
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
+  const handleZoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
+  const handleZoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
 
   const handleZoomReset = () => {
     setZoom(1);
@@ -615,13 +556,12 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
     reset();
     setFormClosed((prev) => !prev);
     setAttachments([]);
+    setIsSaving(false);
     onClose();
   };
 
-  const imageAttachments =
-    attachments?.filter((f) => isImageFile(f.name)) ?? [];
-  const otherAttachments =
-    attachments?.filter((f) => !isImageFile(f.name)) ?? [];
+  const imageAttachments = attachments?.filter((f) => isImageFile(f.name)) ?? [];
+  const otherAttachments = attachments?.filter((f) => !isImageFile(f.name)) ?? [];
 
   const renderMenu = (fileName, compact = false) => (
     <AssignDialogMenuAction
@@ -652,93 +592,6 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
   };
 
   const onSubmitAction = (formData) => {
-    const payload = new FormData();
-
-    payload.append("RequestConcernId", formData?.RequestConcernId);
-    payload.append("TicketConcernId", data?.ticketConcernId);
-    payload.append("Request_Type", data?.request_Type);
-    payload.append("Severity", data?.severity);
-    payload.append(
-      "BackJobId",
-      data?.backJobId === null ? "" : data?.backJobId,
-    );
-    payload.append("UserId", data?.requestor_By);
-    payload.append(
-      "Contact_Number",
-      data?.contact_Number === null ? "" : data?.contact_Number,
-    );
-
-    payload.append("ServiceProviderId", data?.serviceProviderId);
-    payload.append(
-      "DateNeeded",
-      data.date_Needed ? moment(data.date_Needed).format("YYYY-MM-DD") : "",
-    );
-    payload.append("Notes", data?.notes === null ? "" : data?.notes);
-
-    payload.append(
-      "ChannelId",
-      formData.ChannelId ? formData.ChannelId?.channelId : 0,
-    );
-    payload.append(
-      "TargetDate",
-      moment(formData.TargetDate).format("YYYY-MM-DD"),
-    );
-    payload.append(
-      "AssignTo",
-      formData.IssueHandler ? formData.IssueHandler : "",
-    );
-    payload.append("Concern", formData.Concern);
-
-    const category = formData.CategoryId;
-    for (let i = 0; i < category.length; i++) {
-      payload.append(
-        `AddRequestTicketCategory[${i}].ticketCategoryId`,
-        category[i].ticketCategoryId || "",
-      );
-      payload.append(
-        `AddRequestTicketCategory[${i}].categoryId`,
-        category[i]?.id,
-      );
-    }
-
-    if (category.length === 0) {
-      payload.append(`AddRequestTicketCategory[0].ticketCategoryId`, "");
-      payload.append(`AddRequestTicketCategory[0].categoryId`, "");
-    }
-
-    const subCategory = formData.SubCategoryId;
-    for (let i = 0; i < subCategory.length; i++) {
-      payload.append(
-        `AddRequestTicketSubCategory[${i}].ticketSubCategoryId`,
-        subCategory[i].ticketSubCategoryId || "",
-      );
-      payload.append(
-        `AddRequestTicketSubCategory[${i}].subCategoryId`,
-        subCategory[i]?.subCategoryId,
-      );
-    }
-
-    if (subCategory.length === 0) {
-      payload.append(`AddRequestTicketSubCategory[0].ticketSubCategoryId`, "");
-      payload.append(`AddRequestTicketSubCategory[0].subCategoryId`, "");
-    }
-
-    const files = formData.RequestAttachmentsFiles;
-    for (let i = 0; i < files.length; i++) {
-      payload.append(
-        `RequestAttachmentsFile[${i}].ticketAttachmentId`,
-        files[i].ticketAttachmentId || "",
-      );
-      payload.append(`RequestAttachmentsFile[${i}].attachment`, files[i]);
-    }
-
-    if (files.length === 0) {
-      payload.append(`RequestAttachmentsFile[0].ticketAttachmentId`, "");
-      payload.append(`RequestAttachmentsFile[0].attachment`, "");
-    }
-
-    // console.log("Payload Entries: ", [...payload.entries()]);
-
     // const smsPayload = {
     //   system_name: "Make It Simple",
     //   message: `Fresh Morning! Concern #${data?.requestConcernId} has been assigned to your account. Kindly check your ticket list.`,
@@ -766,42 +619,147 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        createEditReceiverConcern(payload)
-          .unwrap()
-          .then((response) => {
-            toast.success("Success!", {
-              description: "Ticket updated successfully!",
-              duration: 1500,
-            });
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
 
-            dispatch(notificationApi.util.resetApiState());
-            dispatch(notificationMessageApi.util.resetApiState());
+      const payload = new FormData();
 
-            setAttachments([]);
-            reset();
-            onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
+      payload.append("RequestConcernId", formData?.RequestConcernId);
+      payload.append("TicketConcernId", data?.ticketConcernId);
+      payload.append("Request_Type", data?.request_Type);
+      payload.append("Severity", data?.severity);
+      payload.append("BackJobId", data?.backJobId === null ? "" : data?.backJobId);
+      payload.append("UserId", data?.requestor_By);
+      payload.append("Contact_Number", data?.contact_Number === null ? "" : data?.contact_Number);
 
-        // SEND SMS STATUS
-        // try {
-        //   smsNotification(smsPayload).unwrap();
-        // } catch (error) {
-        //   console.log(error);
-        //   toast.error("Error!", {
-        //     description: "Sms notification error!",
-        //     duration: 1500,
-        //   });
-        // }
+      payload.append("ServiceProviderId", data?.serviceProviderId);
+      payload.append("DateNeeded", data.date_Needed ? moment(data.date_Needed).format("YYYY-MM-DD") : "");
+      payload.append("Notes", data?.notes === null ? "" : data?.notes);
+
+      payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
+      payload.append("TargetDate", moment(formData.TargetDate).format("YYYY-MM-DD"));
+      payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler : "");
+      payload.append("Concern", formData.Concern);
+
+      const category = formData.CategoryId;
+      for (let i = 0; i < category.length; i++) {
+        payload.append(`AddRequestTicketCategory[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+        payload.append(`AddRequestTicketCategory[${i}].categoryId`, category[i]?.id);
       }
+
+      if (category.length === 0) {
+        payload.append(`AddRequestTicketCategory[0].ticketCategoryId`, "");
+        payload.append(`AddRequestTicketCategory[0].categoryId`, "");
+      }
+
+      const subCategory = formData.SubCategoryId;
+      for (let i = 0; i < subCategory.length; i++) {
+        payload.append(`AddRequestTicketSubCategory[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+        payload.append(`AddRequestTicketSubCategory[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+      }
+
+      if (subCategory.length === 0) {
+        payload.append(`AddRequestTicketSubCategory[0].ticketSubCategoryId`, "");
+        payload.append(`AddRequestTicketSubCategory[0].subCategoryId`, "");
+      }
+
+      const files = formData.RequestAttachmentsFiles;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(`RequestAttachmentsFile[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+        payload.append(`RequestAttachmentsFile[${i}].attachment`, files[i]);
+      }
+
+      if (files.length === 0) {
+        payload.append(`RequestAttachmentsFile[0].ticketAttachmentId`, "");
+        payload.append(`RequestAttachmentsFile[0].attachment`, "");
+      }
+
+      // console.log("Payload Entries: ", [...payload.entries()]);
+      const idsToDelete = [...deletedAttachmentIds];
+      setIsSaving(true);
+
+      try {
+        await createEditReceiverConcern(payload).unwrap();
+
+        // API 2: delete removed attachments
+        let failedCount = 0;
+
+        for (const id of idsToDelete) {
+          try {
+            await deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap();
+          } catch (err) {
+            failedCount++;
+            console.error("Delete failed:", id, err);
+          }
+        }
+
+        if (failedCount > 0) {
+          toast.error("Error!", {
+            description: `${failedCount} attachment(s) could not be deleted.`,
+            duration: 2500,
+          });
+        }
+
+        if (idsToDelete.length > 0) {
+          await refetch();
+        }
+
+        toast.success("Success!", {
+          description: "Ticket updated successfully!",
+          duration: 1500,
+        });
+
+        dispatch(notificationApi.util.resetApiState());
+        dispatch(notificationMessageApi.util.resetApiState());
+
+        setAttachments([]);
+        setDeletedAttachmentIds([]);
+        setIsSaving(false);
+        reset();
+        onClose();
+      } catch (err) {
+        toast.error("Error!", {
+          description: err?.data?.error?.message || "Something went wrong while saving.",
+          duration: 1500,
+        });
+        setIsSaving(false);
+      } finally {
+        setIsSaving(false);
+      }
+
+      // createEditReceiverConcern(payload)
+      //   .unwrap()
+      //   .then(() => {
+      //     toast.success("Success!", {
+      //       description: "Ticket updated successfully!",
+      //       duration: 1500,
+      //     });
+
+      //     dispatch(notificationApi.util.resetApiState());
+      //     dispatch(notificationMessageApi.util.resetApiState());
+
+      //     setAttachments([]);
+      //     reset();
+      //     onClose();
+      //   })
+      //   .catch((err) => {
+      //     console.log("Error", err);
+      //     toast.error("Error!", {
+      //       description: err.data.error.message,
+      //       duration: 1500,
+      //     });
+      //   });
+
+      // SEND SMS STATUS
+      // try {
+      //   smsNotification(smsPayload).unwrap();
+      // } catch (error) {
+      //   console.log(error);
+      //   toast.error("Error!", {
+      //     description: "Sms notification error!",
+      //     duration: 1500,
+      //   });
+      // }
     });
   };
 
@@ -833,9 +791,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
         sub_Category_Description: item.subCategory_Description,
       }));
 
-      const categoryIdParams = data?.getOpenTicketCategories?.map(
-        (item) => item?.categoryId,
-      );
+      const categoryIdParams = data?.getOpenTicketCategories?.map((item) => item?.categoryId);
 
       setValue("CategoryId", category);
       setValue("SubCategoryId", subCategory);
@@ -854,15 +810,8 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
     const selectedSubCategories = watch("SubCategoryId");
 
     if (selectedCategories.length > 0) {
-      const filteredSubCategories = selectedSubCategories.filter(
-        (subCategory) =>
-          selectedCategories.some((category) =>
-            subCategoryData?.value?.some(
-              (item) =>
-                item.subCategoryId === subCategory.subCategoryId &&
-                item.categoryId === category.id,
-            ),
-          ),
+      const filteredSubCategories = selectedSubCategories.filter((subCategory) =>
+        selectedCategories.some((category) => subCategoryData?.value?.some((item) => item.subCategoryId === subCategory.subCategoryId && item.categoryId === category.id)),
       );
       setValue("SubCategoryId", filteredSubCategories);
     } else {
@@ -893,28 +842,20 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
               {/* Ticket Number */}
               <Stack>
                 <Typography sx={sx.titleText}>Reject Details</Typography>
-                <Typography
-                  sx={sx.captionText}
-                >{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
               </Stack>
 
               {/* Ticket Detail Section */}
               <Stack sx={sx.detailBox}>
                 <Stack sx={sx.closeDetailContent}>
                   <Box sx={sx.titleDetailBox}>
-                    <Typography sx={sx.detailTitleText}>
-                      Date Needed:
-                    </Typography>
+                    <Typography sx={sx.detailTitleText}>Date Needed:</Typography>
                   </Box>
 
                   <Box sx={sx.spacer} />
 
                   <Box sx={sx.descDetailBox}>
-                    <Typography sx={sx.detailDescText}>
-                      {data?.date_Needed
-                        ? moment(data?.date_Needed).format("LL")
-                        : "--"}
-                    </Typography>
+                    <Typography sx={sx.detailDescText}>{data?.date_Needed ? moment(data?.date_Needed).format("LL") : "--"}</Typography>
                   </Box>
                 </Stack>
 
@@ -922,17 +863,13 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
 
                 <Stack sx={sx.closeDetailContent}>
                   <Box sx={sx.titleDetailBox}>
-                    <Typography sx={sx.detailTitleText}>
-                      Service Provider:
-                    </Typography>
+                    <Typography sx={sx.detailTitleText}>Service Provider:</Typography>
                   </Box>
 
                   <Box sx={sx.spacer} />
 
                   <Box sx={sx.descDetailBox}>
-                    <Typography sx={sx.detailDescText}>
-                      {data?.serviceProviderName}
-                    </Typography>
+                    <Typography sx={sx.detailDescText}>{data?.serviceProviderName}</Typography>
                   </Box>
                 </Stack>
               </Stack>
@@ -952,13 +889,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           size="small"
                           value={value}
                           options={userDetails?.channels || []}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              placeholder="Channel Name"
-                              sx={sx.autoComplete}
-                            />
-                          )}
+                          renderInput={(params) => <TextField {...params} placeholder="Channel Name" sx={sx.autoComplete} />}
                           onChange={(_, value) => {
                             onChange(value);
                             setValue("CategoryId", []);
@@ -966,9 +897,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                             setValue("userId", null);
                           }}
                           getOptionLabel={(option) => option.channelName || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.channelId === value.channelId
-                          }
+                          isOptionEqualToValue={(option, value) => option.channelId === value.channelId}
                           componentsProps={sx.automCompleteProp}
                           fullWidth
                           disableClearable
@@ -996,21 +925,9 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           ref={ref}
                           size="small"
                           value={value}
-                          options={
-                            categoryData?.value?.category?.filter(
-                              (item) =>
-                                item.channelId ===
-                                watch("ChannelId")?.channelId,
-                            ) || []
-                          }
+                          options={categoryData?.value?.category?.filter((item) => item.channelId === watch("ChannelId")?.channelId) || []}
                           loading={categoryIsLoading}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              placeholder="Category"
-                              sx={sx.autoComplete}
-                            />
-                          )}
+                          renderInput={(params) => <TextField {...params} placeholder="Category" sx={sx.autoComplete} />}
                           onOpen={() => {
                             if (!categoryIsSuccess)
                               getCategory({
@@ -1019,9 +936,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           }}
                           onChange={(_, value) => {
                             onChange(value);
-                            const categoryIdParams = value?.map(
-                              (category) => category?.id,
-                            );
+                            const categoryIdParams = value?.map((category) => category?.id);
                             if (watch("CategoryId").length === 0) {
                               setValue("SubCategoryId", []);
                             }
@@ -1029,17 +944,9 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                               CategoryId: categoryIdParams,
                             });
                           }}
-                          getOptionLabel={(option) =>
-                            option.category_Description || ""
-                          }
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
-                          getOptionDisabled={(option) =>
-                            watch("CategoryId").some(
-                              (item) => item.id === option.id,
-                            )
-                          }
+                          getOptionLabel={(option) => option.category_Description || ""}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          getOptionDisabled={(option) => watch("CategoryId").some((item) => item.id === option.id)}
                           fullWidth
                           disableClearable
                           componentsProps={sx.automCompleteProp}
@@ -1051,21 +958,9 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
 
                 {/* Sub Category */}
                 <Stack>
-                  <Stack
-                    direction="row"
-                    sx={{ alignItems: "center", gap: 0.5 }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "13px",
-                      }}
-                    >
-                      Sub Category
-                    </Typography>
-                    <FiberManualRecord
-                      color="error"
-                      sx={{ fontSize: "10px" }}
-                    />
+                  <Stack direction="row" sx={sx.fieldTitleWithIconBox}>
+                    <Typography sx={sx.fieldText}>Sub Category</Typography>
+                    <FiberManualRecord color="error" sx={sx.requiredDot} />
                   </Stack>
 
                   <Controller
@@ -1080,50 +975,22 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           value={value}
                           options={subCategoryData?.value || []}
                           loading={subCategoryIsLoading}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              placeholder="Sub Category"
-                              sx={{
-                                "& .MuiInputBase-input": { fontSize: "13px" },
-                              }}
-                            />
-                          )}
+                          renderInput={(params) => <TextField {...params} placeholder="Sub Category" sx={sx.autoComplete} />}
                           onOpen={() => {
                             if (!subCategoryIsSuccess) getSubCategory();
                           }}
                           onChange={(_, value) => {
                             onChange(value);
                           }}
-                          getOptionLabel={(option) =>
-                            option?.sub_Category_Description || ""
-                          }
-                          isOptionEqualToValue={(option, value) =>
-                            option?.subCategoryId === value?.subCategoryId
-                          }
-                          getOptionDisabled={(option) =>
-                            watch("SubCategoryId").some(
-                              (item) =>
-                                item.subCategoryId === option.subCategoryId,
-                            )
-                          }
+                          getOptionLabel={(option) => option?.sub_Category_Description || ""}
+                          isOptionEqualToValue={(option, value) => option?.subCategoryId === value?.subCategoryId}
+                          getOptionDisabled={(option) => watch("SubCategoryId").some((item) => item.subCategoryId === option.subCategoryId)}
                           noOptionsText={"No sub category available"}
-                          sx={{
-                            flex: 2,
-                          }}
                           fullWidth
                           // disablePortal
                           disableClearable
                           disabled={!watch("ChannelId")}
-                          componentsProps={{
-                            popper: {
-                              sx: {
-                                "& .MuiAutocomplete-listbox": {
-                                  fontSize: "13px",
-                                },
-                              },
-                            },
-                          }}
+                          componentsProps={sx.autoComplete}
                         />
                       );
                     }}
@@ -1145,25 +1012,17 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                         <DatePicker
                           value={field.value ? moment(field.value) : null}
                           onChange={(newValue) => {
-                            const formattedValue = newValue
-                              ? moment(newValue).format("YYYY-MM-DD")
-                              : null;
+                            const formattedValue = newValue ? moment(newValue).format("YYYY-MM-DD") : null;
                             field.onChange(formattedValue);
                           }}
                           slotProps={sx.datePickerSlotProp}
                           minDate={new moment()}
                           error={!!errors.TargetDate}
-                          helperText={
-                            errors.TargetDate ? errors.TargetDate.message : null
-                          }
+                          helperText={errors.TargetDate ? errors.TargetDate.message : null}
                         />
                       )}
                     />
-                    {errors.TargetDate && (
-                      <Typography sx={sx.textErrors}>
-                        {errors.TargetDate.message}
-                      </Typography>
-                    )}
+                    {errors.TargetDate && <Typography sx={sx.textErrors}>{errors.TargetDate.message}</Typography>}
                   </LocalizationProvider>
                 </Stack>
 
@@ -1212,22 +1071,10 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                   >
                     <Stack sx={sx.attachmentTextBox}>
                       <AttachFile sx={sx.titleHeaderMutedIcon} />
-                      <Typography sx={sx.detailTitleText}>
-                        Attachment(s):
-                      </Typography>
+                      <Typography sx={sx.detailTitleText}>Attachment(s):</Typography>
 
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="warning"
-                        onClick={handleUploadButtonClick}
-                        sx={sx.addAttachmentBtn}
-                      >
-                        <Typography
-                          sx={{ fontSize: "11.5px", fontWeight: 500 }}
-                        >
-                          Add File
-                        </Typography>
+                      <Button size="small" variant="contained" color="warning" onClick={handleUploadButtonClick} sx={sx.addAttachmentBtn}>
+                        <Typography sx={{ fontSize: "11.5px", fontWeight: 500 }}>Add File</Typography>
                       </Button>
                     </Stack>
 
@@ -1235,9 +1082,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                       <Stack sx={sx.noAttachmentSection}>
                         <Stack sx={sx.noAttachmentContent}>
                           <AttachFileOutlined sx={sx.noAttachmentIcon} />
-                          <Typography sx={sx.noAttachmentText}>
-                            No attached file
-                          </Typography>
+                          <Typography sx={sx.noAttachmentText}>No attached file</Typography>
                         </Stack>
                       </Stack>
                     ) : (
@@ -1253,18 +1098,11 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           >
                             {imageAttachments.map((fileName, index) => (
                               <ImageAttachmentPreviewCard
-                                key={
-                                  fileName.ticketAttachmentId ??
-                                  `${fileName.name}-${index}`
-                                }
+                                key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`}
                                 fileName={fileName}
                                 onView={handleOpenThumbnail}
                                 menu={renderMenu(fileName, true)}
-                                isOpening={
-                                  !!fileName.ticketAttachmentId &&
-                                  loadingAttachmentId ===
-                                    fileName.ticketAttachmentId
-                                }
+                                isOpening={!!fileName.ticketAttachmentId && loadingAttachmentId === fileName.ticketAttachmentId}
                               />
                             ))}
                           </Box>
@@ -1272,13 +1110,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
 
                         {/* Non-image files, row list */}
                         {otherAttachments.map((fileName, index) => (
-                          <Box
-                            key={
-                              fileName.ticketAttachmentId ??
-                              `${fileName.name}-${index}`
-                            }
-                            sx={sx.fileAttachmentBox}
-                          >
+                          <Box key={fileName.ticketAttachmentId ?? `${fileName.name}-${index}`} sx={sx.fileAttachmentBox}>
                             {getAttachmentIcon(fileName)}
                             <Box sx={sx.attachmentAndMenuBox}>
                               <Box
@@ -1287,33 +1119,20 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                                   flexDirection: "column",
                                 }}
                               >
-                                <Typography sx={sx.fileNameText}>
-                                  {fileName.name}
-                                </Typography>
-                                <Typography sx={sx.fileSizeText}>
-                                  {fileName.size} Mb
-                                </Typography>
+                                <Typography sx={sx.fileNameText}>{fileName.name}</Typography>
+                                <Typography sx={sx.fileSizeText}>{fileName.size} Mb</Typography>
                                 <Box sx={sx.fileDescWithIconBox}>
                                   <Typography
                                     sx={{
                                       fontSize: "12px",
                                       fontWeight: 500,
-                                      color: !!fileName.ticketAttachmentId
-                                        ? theme.palette.success.main
-                                        : theme.palette.primary.main,
+                                      color: !!fileName.ticketAttachmentId ? theme.palette.success.main : theme.palette.primary.main,
                                     }}
                                   >
-                                    {!!fileName.ticketAttachmentId
-                                      ? "Attached file"
-                                      : "Uploaded the file successfully"}
+                                    {!!fileName.ticketAttachmentId ? "Attached file" : "Uploaded the file successfully"}
                                   </Typography>
 
-                                  {!!fileName.ticketAttachmentId && (
-                                    <CheckOutlined
-                                      color="success"
-                                      sx={{ fontSize: "12px" }}
-                                    />
-                                  )}
+                                  {!!fileName.ticketAttachmentId && <CheckOutlined color="success" sx={{ fontSize: "12px" }} />}
                                 </Box>
                               </Box>
 
@@ -1339,19 +1158,10 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           const files = Array.from(event.target.files);
                           files[0].ticketAttachmentId = ticketAttachmentId;
 
-                          onChange([
-                            ...files,
-                            ...value.filter(
-                              (item) =>
-                                item.ticketAttachmentId !== ticketAttachmentId,
-                            ),
-                          ]);
+                          onChange([...files, ...value.filter((item) => item.ticketAttachmentId !== ticketAttachmentId)]);
 
                           setAttachments((prevFiles) => [
-                            ...prevFiles.filter(
-                              (item) =>
-                                item.ticketAttachmentId !== ticketAttachmentId,
-                            ),
+                            ...prevFiles.filter((item) => item.ticketAttachmentId !== ticketAttachmentId),
                             {
                               ticketAttachmentId: ticketAttachmentId,
                               name: files[0].name,
@@ -1365,17 +1175,14 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           handleAttachments(event);
                           const files = Array.from(event.target.files);
 
-                          const uniqueNewFiles = files?.filter(
-                            (item) =>
-                              !value?.some((file) => file.name === item.name),
-                          );
+                          const uniqueNewFiles = files?.filter((item) => !value?.some((file) => file.name === item.name));
 
                           onChange([...value, ...uniqueNewFiles]);
                           fileInputRef.current.value = "";
                         }
                       }}
                       hidden
-                      multiple={!!ticketAttachmentId}
+                      multiple
                     />
                   )}
                 />
@@ -1384,16 +1191,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
           </DialogContent>
 
           <DialogActions>
-            <LoadingButton
-              variant="contained"
-              onClick={onCloseAction}
-              size="small"
-              loading={
-                isCreateEditReceiverConcernLoading ||
-                isCreateEditReceiverConcernFetching
-              }
-              sx={sx.cancelButton}
-            >
+            <LoadingButton variant="contained" onClick={onCloseAction} size="small" loading={isSaving} sx={sx.cancelButton}>
               Cancel
             </LoadingButton>
 
@@ -1401,25 +1199,10 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
               size="small"
               type="submit"
               variant="contained"
-              loading={
-                isCreateEditReceiverConcernLoading ||
-                isCreateEditReceiverConcernFetching
-              }
-              disabled={
-                !watch("ChannelId") ||
-                watch("CategoryId").length === 0 ||
-                watch("SubCategoryId").length === 0 ||
-                !watch("IssueHandler") ||
-                !watch("TargetDate")
-              }
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
+              loading={isSaving}
+              disabled={!watch("ChannelId") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || !watch("IssueHandler") || !watch("TargetDate")}
             >
-              Save Changes
+              Save
             </LoadingButton>
           </DialogActions>
         </form>
@@ -1427,12 +1210,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
         {/* Dialog to view image */}
         {selectedImage && (
           <>
-            <Dialog
-              fullWidth
-              maxWidth="md"
-              open={isViewDialogOpen}
-              onClose={handleViewClose}
-            >
+            <Dialog fullWidth maxWidth="md" open={isViewDialogOpen} onClose={handleViewClose}>
               <DialogContent sx={{ height: "auto", padding: 0 }}>
                 <Box sx={{ position: "relative" }}>
                   {/* Zoom controls */}
@@ -1450,12 +1228,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                       padding: "2px 6px",
                     }}
                   >
-                    <IconButton
-                      size="small"
-                      onClick={handleZoomOut}
-                      disabled={zoom <= MIN_ZOOM}
-                      sx={{ color: "#fff" }}
-                    >
+                    <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= MIN_ZOOM} sx={{ color: "#fff" }}>
                       <ZoomOut fontSize="small" />
                     </IconButton>
 
@@ -1470,20 +1243,11 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                       {Math.round(zoom * 100)}%
                     </Typography>
 
-                    <IconButton
-                      size="small"
-                      onClick={handleZoomIn}
-                      disabled={zoom >= MAX_ZOOM}
-                      sx={{ color: "#fff" }}
-                    >
+                    <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= MAX_ZOOM} sx={{ color: "#fff" }}>
                       <ZoomIn fontSize="small" />
                     </IconButton>
 
-                    <IconButton
-                      size="small"
-                      onClick={handleZoomReset}
-                      sx={{ color: "#fff" }}
-                    >
+                    <IconButton size="small" onClick={handleZoomReset} sx={{ color: "#fff" }}>
                       <RestartAlt fontSize="small" />
                     </IconButton>
                   </Stack>
@@ -1514,15 +1278,8 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                           userSelect: "none",
                           transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
                           transformOrigin: "center center",
-                          transition: isDragging
-                            ? "none"
-                            : "transform 0.15s ease",
-                          cursor:
-                            zoom > 1
-                              ? isDragging
-                                ? "grabbing"
-                                : "grab"
-                              : "default",
+                          transition: isDragging ? "none" : "transform 0.15s ease",
+                          cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
                         }}
                       />
                     )}
@@ -1530,11 +1287,7 @@ const RejectDateDialog = ({ data, open, onClose, refetch }) => {
                 </Box>
               </DialogContent>
               <DialogActions>
-                <Button
-                  variant="contained"
-                  onClick={handleViewClose}
-                  sx={sx.cancelButton}
-                >
+                <Button variant="contained" onClick={handleViewClose} sx={sx.cancelButton}>
                   Close
                 </Button>
               </DialogActions>

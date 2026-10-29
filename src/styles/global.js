@@ -101,9 +101,7 @@ export const global = {
   ticketNoText: {
     fontSize: { xs: "12px", md: "14px" },
     fontWeight: 700,
-    background: "linear-gradient(90deg, #5c3ced, #ff8cc6)",
-    WebkitBackgroundClip: "text",
-    color: "transparent",
+    color: "#6847f0",
   },
 
   // Card Sections

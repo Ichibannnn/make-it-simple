@@ -34,10 +34,10 @@ import TicketForTransferDialog from "./TicketForTransferDialog";
 import IssueHandlerHoldDialog from "./IssueHandlerHoldDialog";
 
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 import { global } from "../../../styles/global";
 import { ticketStyle as sx } from "./style/ticketStyle";
 import { getAttachmentIcon } from "../../../utils/getAttachmentIcon";
-import { useSelector } from "react-redux";
 
 const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, onHold }) => {
   const [attachments, setAttachments] = useState([]);

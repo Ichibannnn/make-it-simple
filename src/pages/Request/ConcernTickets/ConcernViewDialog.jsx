@@ -42,6 +42,7 @@ import { useLazyGetOneChargingQuery } from "../../../features/api masterlist/one
 
 import ConcernViewMenuActions from "./ConcernViewMenuAction";
 import { confirmDeleteAttachment } from "../../../utils/sweetAlert";
+import Swal from "sweetalert2";
 
 const EXT_TO_MIME = {
   png: "image/png",
@@ -264,6 +265,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const dateNeededValidation = new moment();
+  const [isSaving, setIsSaving] = useState(false);
 
   const requestorSchema = yup.object().shape({
     RequestConcernId: yup.string().nullable(),
@@ -313,10 +315,10 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
   const [getCategory, { data: categoryData, isLoading: categoryIsLoading, isSuccess: categoryIsSuccess }] = useLazyGetCategoryQuery();
   const [getSubCategory, { data: subCategoryData, isLoading: subCategoryIsLoading, isSuccess: subCategoryIsSuccess }] = useLazyGetSubCategoryArrayQuery();
 
-  const [getRequestorAttachment] = useLazyGetRequestorAttachmentQuery();
+  const [getRequestorAttachment, { isLoading: attachmentIsLoading, isFetching: attachmentIsFetching }] = useLazyGetRequestorAttachmentQuery();
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [deleteRequestorAttachment, { isLoading: delAttachmentIsLoading, isFetching: delAttachmentIsFetching }] = useDeleteRequestorAttachmentMutation();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -360,91 +362,123 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
   });
 
   const onConcernFormSubmit = (formData) => {
-    const payload = new FormData();
+    Swal.fire({
+      title: "Confirmation",
+      text: `Edit this ticket number ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}?`,
+      icon: "info",
+      color: "white",
+      showCancelButton: true,
+      background: "#111927",
+      confirmButtonColor: "#9e77ed",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      cancelButtonColor: "#1C2536",
+      heightAuto: false,
+      width: "30em",
+      customClass: {
+        container: "custom-container",
+        title: "custom-title",
+        htmlContainer: "custom-text",
+        icon: "custom-icon",
+        confirmButton: "custom-confirm-btn",
+        cancelButton: "custom-cancel-btn",
+      },
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+      const payload = new FormData();
 
-    payload.append("RequestConcernId", formData.RequestConcernId);
-    payload.append("TicketConcernId", editData?.ticketRequestConcerns[0]?.ticketConcernId);
+      payload.append("RequestConcernId", formData.RequestConcernId);
+      payload.append("TicketConcernId", editData?.ticketRequestConcerns[0]?.ticketConcernId);
 
-    payload.append("Request_Type", formData.Request_Type);
-    payload.append("Severity", formData.Severity);
-    payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
-    payload.append("UserId", formData.UserId?.id);
-    payload.append("Contact_Number", formData.Contact_Number);
-    payload.append("CompanyId", formData.CompanyId?.id);
-    payload.append("BusinessUnitId", formData.BusinessUnitId?.id);
-    payload.append("DepartmentId", formData.DepartmentId?.id);
-    payload.append("UnitId", formData.UnitId?.id);
-    payload.append("SubUnitId", formData.SubUnitId?.id);
-    payload.append("Location_Code", formData.LocationId?.location_Code);
+      payload.append("Request_Type", formData.Request_Type);
+      payload.append("Severity", formData.Severity);
+      payload.append("BackJobId", formData?.BackJobId === null ? "" : formData.BackJobId?.ticketConcernId);
+      payload.append("UserId", formData.UserId?.id);
+      payload.append("Contact_Number", formData.Contact_Number);
+      payload.append("CompanyId", formData.CompanyId?.id);
+      payload.append("BusinessUnitId", formData.BusinessUnitId?.id);
+      payload.append("DepartmentId", formData.DepartmentId?.id);
+      payload.append("UnitId", formData.UnitId?.id);
+      payload.append("SubUnitId", formData.SubUnitId?.id);
+      payload.append("Location_Code", formData.LocationId?.location_Code);
 
-    payload.append("ServiceProviderId", formData.ServiceProvider?.id);
-    payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
-    payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
-    payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
-    payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler?.userId : "");
-    payload.append("Concern", formData.Concern);
-    payload.append("Notes", formData.Notes);
+      payload.append("ServiceProviderId", formData.ServiceProvider?.id);
+      payload.append("ChannelId", formData.ChannelId ? formData.ChannelId?.channelId : 0);
+      payload.append("DateNeeded", moment(formData.DateNeeded).format("YYYY-MM-DD"));
+      payload.append("TargetDate", formData.TargetDate ? moment(formData.TargetDate).format("YYYY-MM-DD") : "");
+      payload.append("AssignTo", formData.IssueHandler ? formData.IssueHandler?.userId : "");
+      payload.append("Concern", formData.Concern);
+      payload.append("Notes", formData.Notes);
 
-    const category = formData.CategoryId;
-    for (let i = 0; i < category.length; i++) {
-      payload.append(`AddRequestTicketCategory[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
-      payload.append(`AddRequestTicketCategory[${i}].categoryId`, category[i]?.id);
-    }
+      const category = formData.CategoryId;
+      for (let i = 0; i < category.length; i++) {
+        payload.append(`AddRequestTicketCategory[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+        payload.append(`AddRequestTicketCategory[${i}].categoryId`, category[i]?.id);
+      }
 
-    if (category.length === 0) {
-      payload.append(`AddRequestTicketCategory[0].ticketCategoryId`, "");
-      payload.append(`AddRequestTicketCategory[0].categoryId`, "");
-    }
+      if (category.length === 0) {
+        payload.append(`AddRequestTicketCategory[0].ticketCategoryId`, "");
+        payload.append(`AddRequestTicketCategory[0].categoryId`, "");
+      }
 
-    const subCategory = formData.SubCategoryId;
-    for (let i = 0; i < subCategory.length; i++) {
-      payload.append(`AddRequestTicketSubCategory[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
-      payload.append(`AddRequestTicketSubCategory[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
-    }
+      const subCategory = formData.SubCategoryId;
+      for (let i = 0; i < subCategory.length; i++) {
+        payload.append(`AddRequestTicketSubCategory[${i}].ticketSubCategoryId`, subCategory[i].ticketSubCategoryId || "");
+        payload.append(`AddRequestTicketSubCategory[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+      }
 
-    if (subCategory.length === 0) {
-      payload.append(`AddRequestTicketSubCategory[0].ticketSubCategoryId`, "");
-      payload.append(`AddRequestTicketSubCategory[0].subCategoryId`, "");
-    }
+      if (subCategory.length === 0) {
+        payload.append(`AddRequestTicketSubCategory[0].ticketSubCategoryId`, "");
+        payload.append(`AddRequestTicketSubCategory[0].subCategoryId`, "");
+      }
 
-    const files = formData.RequestAttachmentsFiles;
-    for (let i = 0; i < files.length; i++) {
-      payload.append(`RequestAttachmentsFile[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-      payload.append(`RequestAttachmentsFile[${i}].attachment`, files[i]);
-    }
+      const files = formData.RequestAttachmentsFiles;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(`RequestAttachmentsFile[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+        payload.append(`RequestAttachmentsFile[${i}].attachment`, files[i]);
+      }
 
-    if (files.length === 0) {
-      payload.append(`RequestAttachmentsFile[0].ticketAttachmentId`, "");
-      payload.append(`RequestAttachmentsFile[0].attachment`, "");
-    }
+      if (files.length === 0) {
+        payload.append(`RequestAttachmentsFile[0].ticketAttachmentId`, "");
+        payload.append(`RequestAttachmentsFile[0].attachment`, "");
+      }
 
-    // console.log("Payload Entries: ", [...payload.entries()]);
+      // console.log("Payload Entries: ", [...payload.entries()]);
 
-    const idsToDelete = [...deletedAttachmentIds];
+      const idsToDelete = [...deletedAttachmentIds];
+      setIsSaving(true);
 
-    createEditRequestorConcern(payload)
-      .unwrap()
-      .then(async () => {
-        // Ticket saved successfully -> now delete the attachments the user removed
-        if (idsToDelete.length > 0) {
-          const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+      try {
+        await createEditRequestorConcern(payload).unwrap();
 
-          const failedCount = results.filter((r) => r.status === "rejected").length;
+        // API 2: delete removed attachments
+        let failedCount = 0;
 
-          if (failedCount > 0) {
-            toast.error("Error!", {
-              description: `${failedCount} attachment(s) could not be deleted.`,
-              duration: 2500,
-            });
+        for (const id of idsToDelete) {
+          try {
+            await deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap();
+          } catch (err) {
+            failedCount++;
+            console.error("Delete failed:", id, err);
           }
+        }
 
-          refetch();
+        if (failedCount > 0) {
+          toast.error("Error!", {
+            description: `${failedCount} attachment(s) could not be deleted.`,
+            duration: 2500,
+          });
+        }
+
+        if (idsToDelete.length > 0) {
+          await refetch();
         }
 
         toast.success("Success!", {
           description: "Concern updated successfully!",
           duration: 1500,
         });
+
         dispatch(notificationApi.util.resetApiState());
         dispatch(notificationMessageApi.util.resetApiState());
         setAttachments([]);
@@ -463,16 +497,73 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
           Notes: "",
         });
         setIsLoading(false);
+        setIsSaving(false);
         setDeletedAttachmentIds([]);
         onClose();
-      })
-      .catch((err) => {
-        console.log("Error", err);
+      } catch (err) {
         toast.error("Error!", {
-          description: err.data.error.message,
+          description: err?.data?.error?.message || "Something went wrong while saving.",
           duration: 1500,
         });
-      });
+        setIsSaving(false);
+      } finally {
+        setIsSaving(false);
+      }
+
+      // Old payload
+      // createEditRequestorConcern(payload)
+      //   .unwrap()
+      //   .then(async () => {
+      //     // Ticket saved successfully -> now delete the attachments the user removed
+      //     if (idsToDelete.length > 0) {
+      //       const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+
+      //       const failedCount = results.filter((r) => r.status === "rejected").length;
+
+      //       if (failedCount > 0) {
+      //         toast.error("Error!", {
+      //           description: `${failedCount} attachment(s) could not be deleted.`,
+      //           duration: 2500,
+      //         });
+      //       }
+
+      //       refetch();
+      //     }
+
+      //     toast.success("Success!", {
+      //       description: "Concern updated successfully!",
+      //       duration: 1500,
+      //     });
+
+      //     dispatch(notificationApi.util.resetApiState());
+      //     dispatch(notificationMessageApi.util.resetApiState());
+      //     setAttachments([]);
+      //     reset({
+      //       Request_Type: "New Request",
+      //       Severity: "Normal",
+      //       BackJobId: null,
+      //       Contact_Number: "",
+
+      //       DateNeeded: moment().format("YYYY-MM-DD"),
+      //       ChannelId: null,
+      //       CategoryId: [],
+      //       SubCategoryId: [],
+
+      //       Concern: "",
+      //       Notes: "",
+      //     });
+      //     setIsLoading(false);
+      //     setDeletedAttachmentIds([]);
+      //     onClose();
+      //   })
+      //   .catch((err) => {
+      //     console.log("Error", err);
+      //     toast.error("Error!", {
+      //       description: err.data.error.message,
+      //       duration: 1500,
+      //     });
+      //   });
+    });
   };
 
   const handleAttachments = (event) => {
@@ -737,6 +828,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
     });
     setAttachments([]);
     setDeletedAttachmentIds([]);
+    setIsSaving(false);
     onClose();
   };
 
@@ -939,6 +1031,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
         maxWidth="lg"
         open={open}
         onClose={(event, reason) => {
+          if (isSaving) return;
           if (reason === "backdropClick") {
             event.stopPropagation();
             return;
@@ -1796,20 +1889,9 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
               backgroundColor: theme.palette.bgForm.black3,
             }}
           >
-            <Button
-              variant="contained"
-              loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading}
-              onClick={onCloseAction}
-              sx={{
-                ":disabled": {
-                  backgroundColor: "none",
-                  color: "black",
-                },
-                ...sx.cancelButton,
-              }}
-            >
+            <LoadingButton variant="contained" loading={isSaving} onClick={onCloseAction} sx={sx.cancelButton}>
               Close
-            </Button>
+            </LoadingButton>
 
             {editData?.concern_Status === "" || editData?.concern_Status === "For Approval" ? (
               <LoadingButton
@@ -1817,7 +1899,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                 variant="contained"
                 color="primary"
                 type="submit"
-                loading={isCreateEditRequestorConcernLoading || isCreateEditRequestorConcernFetching || isLoading || delAttachmentIsLoading || delAttachmentIsFetching}
+                loading={isSaving}
                 disabled={
                   !watch("ServiceProvider") ||
                   !watch("DateNeeded") ||
@@ -1826,7 +1908,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
                   (watch("Request_Type") === "Rework" && !watch("BackJobId"))
                 }
               >
-                Save Changes
+                Save
               </LoadingButton>
             ) : (
               ""

@@ -27,7 +27,7 @@ import { useLazyGetSubCategoryArrayQuery } from "../../../features/api masterlis
 import { useLazyGetCategoryConcernQuery } from "../../../features/api masterlist/category_concern/categoryConcernApi";
 
 import ManageForClosingMenuActions from "./MenuActions/ManageForClosingMenuActions";
-import { confirmDeleteAttachment, showConfirmAction } from "../../../utils/sweetAlert";
+import { confirmDeleteAttachment } from "../../../utils/sweetAlert";
 
 const schema = yup.object().shape({
   ticketConcernId: yup.number(),
@@ -276,8 +276,10 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [closeIssueHandlerTickets, { isLoading: closeIssueHandlerTicketsIsLoading, isFetching: closeIssueHandlerTicketsIsFetching }] = useCloseIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment, { isLoading: delIsLoading, isFetching: delIsFetching }] = useDeleteRequestorAttachmentMutation();
+  const [closeIssueHandlerTickets] = useCloseIssueHandlerTicketsMutation();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     control,
@@ -328,105 +330,152 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const payload = new FormData();
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
 
-        payload.append("TicketConcernId", formData.ticketConcernId);
-        payload.append("ClosingTicketId", formData.closingTicketId);
-        payload.append("CategoryConcernId", formData.CategoryConcern.id);
-        payload.append("CategoryConcern", formData.CategoryConcern.categoryConcern);
-        payload.append("Resolution", formData.resolution);
-        payload.append("Notes", formData.Notes);
+      const payload = new FormData();
 
-        payload.append("BackDate", formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "");
-        payload.append("BackDateRemarks", formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "");
+      payload.append("TicketConcernId", formData.ticketConcernId);
+      payload.append("ClosingTicketId", formData.closingTicketId);
+      payload.append("CategoryConcernId", formData.CategoryConcern.id);
+      payload.append("CategoryConcern", formData.CategoryConcern.categoryConcern);
+      payload.append("Resolution", formData.resolution);
+      payload.append("Notes", formData.Notes);
 
-        const category = formData.CategoryId;
-        for (let i = 0; i < category.length; i++) {
-          payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
-          payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
-        }
+      payload.append("BackDate", formData.ClosingDate ? moment(formData.ClosingDate).format("YYYY-MM-DD") : "");
+      payload.append("BackDateRemarks", formData.BackdateRemarks !== "" ? formData.BackdateRemarks : "");
 
-        if (category.length === 0) {
-          payload.append(`ClosingTicketCategories[0].ticketAttachmentId`, "");
-          payload.append(`ClosingTicketCategories[0].categoryId`, "");
-        }
-
-        const subCategory = formData.SubCategoryId;
-        for (let i = 0; i < subCategory.length; i++) {
-          payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
-          payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
-        }
-
-        if (subCategory.length === 0) {
-          payload.append(`ClosingSubTicketCategories[0].ticketSubCategoryId`, "");
-          payload.append(`ClosingSubTicketCategories[0].subCategoryId`, "");
-        }
-
-        const technicians = formData.Technicians;
-        for (let i = 0; i < technicians.length; i++) {
-          payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, technicians[i].ticketTechnicianId || "");
-          payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
-        }
-
-        if (technicians.length === 0) {
-          payload.append(`AddClosingTicketTechnicians[0].ticketTechnicianId`, "");
-          payload.append(`AddClosingTicketTechnicians[0].technician_By`, "");
-        }
-
-        // Attachments
-        const files = formData.AddClosingAttachments;
-        for (let i = 0; i < files.length; i++) {
-          payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-          payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
-        }
-
-        if (files.length === 0) {
-          payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
-          payload.append(`AddClosingAttachments[0].attachment`, "");
-        }
-
-        // console.log("Payload Entries: ", [...payload.entries()]);
-
-        const idsToDelete = [...deletedAttachmentIds];
-
-        closeIssueHandlerTickets(payload)
-          .unwrap()
-          .then(async () => {
-            // Ticket saved successfully -> now delete the attachments the user removed
-            if (idsToDelete.length > 0) {
-              const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
-
-              const failedCount = results.filter((r) => r.status === "rejected").length;
-
-              if (failedCount > 0) {
-                toast.error("Error!", {
-                  description: `${failedCount} attachment(s) could not be deleted.`,
-                  duration: 2500,
-                });
-              }
-
-              refetch();
-            }
-
-            toast.success("Success!", {
-              description: "Ticket updated successfully!",
-              duration: 1500,
-            });
-
-            setAttachments([]);
-            setDeletedAttachmentIds([]);
-            reset();
-            onClose();
-          })
-          .catch((err) => {
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
+      const category = formData.CategoryId;
+      for (let i = 0; i < category.length; i++) {
+        payload.append(`ClosingTicketCategories[${i}].ticketCategoryId`, category[i].ticketCategoryId || "");
+        payload.append(`ClosingTicketCategories[${i}].categoryId`, category[i]?.id);
       }
+
+      if (category.length === 0) {
+        payload.append(`ClosingTicketCategories[0].ticketAttachmentId`, "");
+        payload.append(`ClosingTicketCategories[0].categoryId`, "");
+      }
+
+      const subCategory = formData.SubCategoryId;
+      for (let i = 0; i < subCategory.length; i++) {
+        payload.append(`ClosingSubTicketCategories[${i}].ticketSubCategoryId`, subCategory[i]?.ticketSubCategoryId || "");
+        payload.append(`ClosingSubTicketCategories[${i}].subCategoryId`, subCategory[i]?.subCategoryId);
+      }
+
+      if (subCategory.length === 0) {
+        payload.append(`ClosingSubTicketCategories[0].ticketSubCategoryId`, "");
+        payload.append(`ClosingSubTicketCategories[0].subCategoryId`, "");
+      }
+
+      const technicians = formData.Technicians;
+      for (let i = 0; i < technicians.length; i++) {
+        payload.append(`AddClosingTicketTechnicians[${i}].ticketTechnicianId`, technicians[i].ticketTechnicianId || "");
+        payload.append(`AddClosingTicketTechnicians[${i}].technician_By`, technicians[i]?.technicianId);
+      }
+
+      if (technicians.length === 0) {
+        payload.append(`AddClosingTicketTechnicians[0].ticketTechnicianId`, "");
+        payload.append(`AddClosingTicketTechnicians[0].technician_By`, "");
+      }
+
+      // Attachments
+      const files = formData.AddClosingAttachments;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(`AddClosingAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+        payload.append(`AddClosingAttachments[${i}].attachment`, files[i]);
+      }
+
+      if (files.length === 0) {
+        payload.append(`AddClosingAttachments[0].ticketAttachmentId`, "");
+        payload.append(`AddClosingAttachments[0].attachment`, "");
+      }
+
+      const idsToDelete = [...deletedAttachmentIds];
+      setIsSaving(true);
+
+      try {
+        // API 1: save the ticket
+        await closeIssueHandlerTickets(payload).unwrap();
+
+        // API 2: delete removed attachments
+        let failedCount = 0;
+
+        for (const id of idsToDelete) {
+          try {
+            await deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap();
+          } catch (err) {
+            failedCount++;
+            console.error("Delete failed:", id, err);
+          }
+        }
+
+        if (failedCount > 0) {
+          toast.error("Error!", {
+            description: `${failedCount} attachment(s) could not be deleted.`,
+            duration: 2500,
+          });
+        }
+
+        if (idsToDelete.length > 0) {
+          await refetch();
+        }
+
+        toast.success("Success!", {
+          description: "Ticket updated successfully!",
+          duration: 1500,
+        });
+
+        setAttachments([]);
+        setDeletedAttachmentIds([]);
+        setIsSaving(false);
+        reset();
+        onClose();
+      } catch (err) {
+        toast.error("Error!", {
+          description: err?.data?.error?.message || "Something went wrong while saving.",
+          duration: 1500,
+        });
+        setIsSaving(false);
+      } finally {
+        setIsSaving(false); // loading OFF only after everything finished or failed
+      }
+
+      // Old payload
+      // closeIssueHandlerTickets(payload)
+      //   .unwrap()
+      //   .then(async () => {
+      //     // Ticket saved successfully -> now delete the attachments the user removed
+      //     if (idsToDelete.length > 0) {
+      //       const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+
+      //       const failedCount = results.filter((r) => r.status === "rejected").length;
+
+      //       if (failedCount > 0) {
+      //         toast.error("Error!", {
+      //           description: `${failedCount} attachment(s) could not be deleted.`,
+      //           duration: 2500,
+      //         });
+      //       }
+
+      //       refetch();
+      //     }
+
+      //     toast.success("Success!", {
+      //       description: "Ticket updated successfully!",
+      //       duration: 1500,
+      //     });
+
+      //     setAttachments([]);
+      //     setDeletedAttachmentIds([]);
+      //     reset();
+      //     onClose();
+      //   })
+      //   .catch((err) => {
+      //     toast.error("Error!", {
+      //       description: err.data.error.message,
+      //       duration: 1500,
+      //     });
+      //   });
     });
   };
 
@@ -469,44 +518,12 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     }
 
     // UI/form cleanup for both saved and newly added files
-    setAttachments((prevFiles) => prevFiles.filter((file) => file !== fileNameToDelete));
+    setAttachments((prev) => prev.filter((f) => (isSavedAttachment ? f.ticketAttachmentId !== fileNameToDelete.ticketAttachmentId : f !== fileNameToDelete)));
 
     setValue(
       "AddClosingAttachments",
       watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
     );
-
-    // try {
-    //   if (fileNameToDelete.ticketAttachmentId) {
-    //     const deletePayload = {
-    //       ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-    //     };
-    //     await deleteRequestorAttachment(deletePayload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "File deleted successfully.",
-    //           duration: 1500,
-    //         });
-    //         refetch();
-    //       })
-    //       .catch((err) => {
-    //         console.log("error: ", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-
-    //   setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-    //   setValue(
-    //     "AddClosingAttachments",
-    //     watch("AddClosingAttachments").filter((file) => file.name !== fileNameToDelete.name),
-    //   );
-    // } catch (error) {
-    // }
   };
 
   const handleDragOver = (event) => {
@@ -659,6 +676,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
     reset();
     setAttachments([]);
     setDeletedAttachmentIds([]);
+    setIsSaving(false);
     onClose();
   };
 
@@ -777,6 +795,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         maxWidth="md"
         open={open}
         onClose={(event, reason) => {
+          if (isSaving) return;
           if (reason === "backdropClick") {
             event.stopPropagation();
             return;
@@ -1276,7 +1295,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton variant="contained" loading={closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+          <LoadingButton variant="contained" loading={isSaving} onClick={onCloseHandler} sx={sx.cancelButton}>
             Cancel
           </LoadingButton>
 
@@ -1285,10 +1304,10 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
               type="submit"
               form="closeticket"
               variant="contained"
-              loading={(closeIssueHandlerTicketsIsLoading || closeIssueHandlerTicketsIsFetching) && (delIsLoading || delIsFetching)}
+              loading={isSaving}
               disabled={!watch("resolution") || watch("CategoryId").length === 0 || watch("SubCategoryId").length === 0 || (watch("ClosingDate") && !watch("BackdateRemarks"))}
             >
-              Save Changes
+              Save
             </LoadingButton>
           )}
         </DialogActions>

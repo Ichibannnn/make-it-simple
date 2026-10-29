@@ -442,20 +442,7 @@ const ReportsPage = () => {
             </Stack>
           </Stack>
 
-          <LoadingButton
-            size="small"
-            variant="contained"
-            startIcon={<IosShare />}
-            loading={isLoading}
-            onClick={handleExport}
-            disabled={sheetData?.length === 0 || reportNavigation === null}
-            sx={{
-              ":disabled": {
-                backgroundColor: theme.palette.secondary.main,
-                color: "black",
-              },
-            }}
-          >
+          <LoadingButton size="small" variant="contained" startIcon={<IosShare />} loading={isLoading} onClick={handleExport} disabled={sheetData?.length === 0 || reportNavigation === null}>
             <Typography sx={{ fontSize: "12px" }}>Export</Typography>
           </LoadingButton>
         </Stack>

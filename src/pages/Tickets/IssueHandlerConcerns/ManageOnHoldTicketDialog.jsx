@@ -1,24 +1,11 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import {
-  Add,
-  AttachFile,
-  AttachFileOutlined,
-  CheckOutlined,
-  Close,
-  FiberManualRecord,
-  FileDownloadOutlined,
-  RemoveCircleOutline,
-  RestartAlt,
-  VisibilityOutlined,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
+import { AttachFile, AttachFileOutlined, CheckOutlined, FiberManualRecord, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 
+import * as yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 import { toast } from "sonner";
 import { theme } from "../../../theme/theme";
@@ -185,6 +172,7 @@ const ImageAttachmentPreviewCard = ({ fileName, onView, menu, isOpening }) => {
 };
 
 const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
+  const [isSaving, setIsSaving] = useState(false);
   const [attachments, setAttachments] = useState([]);
 
   const [selectedImage, setSelectedImage] = useState(null); // To handle the selected image
@@ -211,7 +199,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [holdIssueHandlerTickets, { isLoading: holdIssueHandlerTicketsIsLoading, isFetching: holdIssueHandlerTicketsIsFetching }] = useHoldIssueHandlerTicketsMutation();
+  const [holdIssueHandlerTickets] = useHoldIssueHandlerTicketsMutation();
   const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
@@ -253,66 +241,111 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const payload = new FormData();
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+      const payload = new FormData();
 
-        payload.append("Id", formData.id);
-        payload.append("TicketConcernId", formData.ticketConcernId);
-        payload.append("Reason", formData.Reason);
+      payload.append("Id", formData.id);
+      payload.append("TicketConcernId", formData.ticketConcernId);
+      payload.append("Reason", formData.Reason);
 
-        // Attachments
-        const files = formData.OnHoldAttachments;
-        for (let i = 0; i < files.length; i++) {
-          payload.append(`OnHoldAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-          payload.append(`OnHoldAttachments[${i}].attachment`, files[i]);
-        }
-
-        if (files.length === 0) {
-          payload.append(`OnHoldAttachments[0].ticketAttachmentId`, "");
-          payload.append(`OnHoldAttachments[0].attachment`, "");
-        }
-
-        // console.log("Payload Entries: ", [...payload.entries()]);
-
-        const idsToDelete = [...deletedAttachmentIds];
-
-        holdIssueHandlerTickets(payload)
-          .unwrap()
-          .then(async () => {
-            // Ticket saved successfully -> now delete the attachments the user removed
-            // if (idsToDelete.length > 0) {
-            //   const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
-
-            //   const failedCount = results.filter((r) => r.status === "rejected").length;
-            //   if (failedCount > 0) {
-            //     toast.error("Error!", {
-            //       description: `${failedCount} attachment(s) could not be deleted.`,
-            //       duration: 2500,
-            //     });
-            //   }
-
-            //   refetch();
-            // }
-
-            toast.success("Success!", {
-              description: "On-Hold updated successfully!",
-              duration: 1500,
-            });
-
-            setAttachments([]);
-            setDeletedAttachmentIds([]);
-            reset();
-            onClose();
-          })
-          .catch((err) => {
-            console.log("Error", err);
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
+      // Attachments
+      const files = formData.OnHoldAttachments;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(`OnHoldAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+        payload.append(`OnHoldAttachments[${i}].attachment`, files[i]);
       }
+
+      if (files.length === 0) {
+        payload.append(`OnHoldAttachments[0].ticketAttachmentId`, "");
+        payload.append(`OnHoldAttachments[0].attachment`, "");
+      }
+
+      // console.log("Payload Entries: ", [...payload.entries()]);
+      const idsToDelete = [...deletedAttachmentIds];
+      setIsSaving(true);
+
+      try {
+        holdIssueHandlerTickets(payload).unwrap();
+
+        let failedCount = 0;
+
+        for (const id of idsToDelete) {
+          try {
+            await deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap();
+          } catch (err) {
+            failedCount++;
+            console.error("Delete failed:", id, err);
+          }
+        }
+
+        if (failedCount > 0) {
+          toast.error("Error!", {
+            description: `${failedCount} attachment(s) could not be deleted.`,
+            duration: 2500,
+          });
+        }
+
+        if (idsToDelete.length > 0) {
+          await refetch();
+        }
+
+        toast.success("Success!", {
+          description: "On-Hold updated successfully!",
+          duration: 1500,
+        });
+
+        setAttachments([]);
+        setDeletedAttachmentIds([]);
+        setIsSaving(false);
+        reset();
+        onClose();
+      } catch (err) {
+        toast.error("Error!", {
+          description: err?.data?.error?.message || "Something went wrong while saving.",
+          duration: 1500,
+        });
+        setIsSaving(false);
+      } finally {
+        setIsSaving(false);
+      }
+
+      // Old payload
+      // holdIssueHandlerTickets(payload)
+      //   .unwrap()
+      //   .then(async () => {
+      //     // Ticket saved successfully -> now delete the attachments the user removed
+      //     if (idsToDelete.length > 0) {
+      //       const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+
+      //       const failedCount = results.filter((r) => r.status === "rejected").length;
+      //       if (failedCount > 0) {
+      //         toast.error("Error!", {
+      //           description: `${failedCount} attachment(s) could not be deleted.`,
+      //           duration: 2500,
+      //         });
+      //       }
+
+      //       refetch();
+      //     }
+
+      //     toast.success("Success!", {
+      //       description: "On-Hold updated successfully!",
+      //       duration: 1500,
+      //     });
+
+      //     setAttachments([]);
+      //     setDeletedAttachmentIds([]);
+      //     reset();
+      //     onClose();
+      //   })
+      //   .catch((err) => {
+      //     console.log("Error", err);
+      //     toast.error("Error!", {
+      //       description: err.data.error.message,
+      //       duration: 1500,
+      //     });
+      //   });
     });
   };
 
@@ -420,6 +453,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
     reset();
     setAttachments([]);
     setDeletedAttachmentIds([]);
+    setIsSaving(false);
     onClose();
   };
 
@@ -621,6 +655,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
         maxWidth="md"
         open={open}
         onClose={(event, reason) => {
+          if (isSaving) return;
           if (reason === "backdropClick") {
             event.stopPropagation();
             return;
@@ -828,12 +863,12 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton form="closeTicket" variant="contained" loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+          <LoadingButton form="closeTicket" variant="contained" loading={isSaving} onClick={onCloseHandler} sx={sx.cancelButton}>
             Cancel
           </LoadingButton>
 
-          <LoadingButton type="submit" form="closeTicket" variant="contained" loading={holdIssueHandlerTicketsIsLoading || holdIssueHandlerTicketsIsFetching} disabled={!watch("Reason")}>
-            Save Changes
+          <LoadingButton type="submit" form="closeTicket" variant="contained" loading={isSaving} disabled={!watch("Reason")}>
+            Save
           </LoadingButton>
         </DialogActions>
 

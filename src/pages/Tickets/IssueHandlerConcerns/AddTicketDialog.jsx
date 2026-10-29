@@ -228,8 +228,6 @@ const AddTicketDialog = ({ open, onClose }) => {
 
     const files = formData.RequestAttachmentsFiles;
     for (let i = 0; i < files.length; i++) {
-      console.log("i: ", i);
-
       payload.append(`RequestAttachmentsFiles[${i}].ticketAttachmentId`, "");
       payload.append(`RequestAttachmentsFiles[${i}].attachment`, files[i]);
     }

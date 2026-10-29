@@ -344,6 +344,7 @@ const ServiceProvider = () => {
                     ))}
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
                   {hasRows &&
                     rows.map((item, i) => (

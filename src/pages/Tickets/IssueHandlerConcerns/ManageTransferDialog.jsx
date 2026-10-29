@@ -201,6 +201,8 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   const [downloadIsLoading, setDownloadIsLoading] = useState(false);
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]);
 
+  const [isSaving, setIsSaving] = useState(false);
+
   // --- Zoom / pan state for the image viewer (same behavior as IssueViewDialog) ---
   const [zoom, setZoom] = useState(1);
   const MIN_ZOOM = 0.5;
@@ -219,8 +221,8 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
 
   const [getViewAttachment] = useLazyGetViewAttachmentQuery();
   const [getDownloadAttachment] = useLazyGetDownloadAttachmentQuery();
-  const [manageTransferTickets, { isLoading: manageTransferTicketsIsLoading, isFetching: manageTransferTicketsIsFetching }] = useTransferIssueHandlerTicketsMutation();
-  const [deleteRequestorAttachment, { isLoading: isDeleteRequestorAttachmentLoading, isFetching: isDeleteRequestorAttachmentFetching }] = useDeleteRequestorAttachmentMutation();
+  const [manageTransferTickets] = useTransferIssueHandlerTicketsMutation();
+  const [deleteRequestorAttachment] = useDeleteRequestorAttachmentMutation();
 
   const {
     control,
@@ -281,7 +283,7 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
     }
 
     // UI/form cleanup for both saved and newly added files
-    setAttachments((prevFiles) => prevFiles.filter((file) => file !== fileNameToDelete));
+    setAttachments((prev) => prev.filter((f) => (isSavedAttachment ? f.ticketAttachmentId !== fileNameToDelete.ticketAttachmentId : f !== fileNameToDelete)));
 
     setValue(
       "AddTransferAttachments",
@@ -364,68 +366,116 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
         confirmButton: "custom-confirm-btn",
         cancelButton: "custom-cancel-btn",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const payload = new FormData();
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
 
-        payload.append("TransferTicketId", formData.TransferTicketId);
-        payload.append("TicketConcernId", formData.TicketConcernId);
-        payload.append("TransferRemarks", formData.TransferRemarks);
+      const payload = new FormData();
 
-        payload.append("TransferChannelId", formData?.ChannelId?.id);
-        payload.append("Transfer_To", formData?.Transfer_To?.userId);
+      payload.append("TransferTicketId", formData.TransferTicketId);
+      payload.append("TicketConcernId", formData.TicketConcernId);
+      payload.append("TransferRemarks", formData.TransferRemarks);
 
-        // Attachments
-        const files = formData.AddTransferAttachments;
-        for (let i = 0; i < files.length; i++) {
-          payload.append(`AddTransferAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
-          payload.append(`AddTransferAttachments[${i}].attachment`, files[i]);
-        }
+      payload.append("TransferChannelId", formData?.ChannelId?.id);
+      payload.append("Transfer_To", formData?.Transfer_To?.userId);
 
-        if (files.length === 0) {
-          payload.append(`AddTransferAttachments[0].ticketAttachmentId`, "");
-          payload.append(`AddTransferAttachments[0].attachment`, "");
-        }
-
-        // console.log("Payload Entries: ", [...payload.entries()]);
-
-        const idsToDelete = [...deletedAttachmentIds];
-
-        manageTransferTickets(payload)
-          .unwrap()
-          .then(async () => {
-            // Ticket saved successfully -> now delete the attachments the user removed
-            if (idsToDelete.length > 0) {
-              const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
-
-              const failedCount = results.filter((r) => r.status === "rejected").length;
-              if (failedCount > 0) {
-                toast.error("Error!", {
-                  description: `${failedCount} attachment(s) could not be deleted.`,
-                  duration: 2500,
-                });
-              }
-
-              refetch();
-            }
-
-            toast.success("Success!", {
-              description: "Transfer updated successfully!",
-              duration: 1500,
-            });
-
-            setAttachments([]);
-            setDeletedAttachmentIds([]);
-            reset();
-            onClose();
-          })
-          .catch((err) => {
-            toast.error("Error!", {
-              description: err.data.error.message,
-              duration: 1500,
-            });
-          });
+      // Attachments
+      const files = formData.AddTransferAttachments;
+      for (let i = 0; i < files.length; i++) {
+        payload.append(`AddTransferAttachments[${i}].ticketAttachmentId`, files[i].ticketAttachmentId || "");
+        payload.append(`AddTransferAttachments[${i}].attachment`, files[i]);
       }
+
+      if (files.length === 0) {
+        payload.append(`AddTransferAttachments[0].ticketAttachmentId`, "");
+        payload.append(`AddTransferAttachments[0].attachment`, "");
+      }
+
+      // console.log("Payload Entries: ", [...payload.entries()]);
+      const idsToDelete = [...deletedAttachmentIds];
+      setIsSaving(true);
+
+      try {
+        // API 1: save the tickets
+        manageTransferTickets(payload).unwrap();
+
+        // API 2: delete removed attachments
+        let failedCount = 0;
+
+        for (const id of idsToDelete) {
+          try {
+            await deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap();
+          } catch (err) {
+            failedCount++;
+            console.error("Delete failed:", id, err);
+          }
+        }
+
+        if (failedCount > 0) {
+          toast.error("Error!", {
+            description: `${failedCount} attachment(s) could not be deleted.`,
+            duration: 2500,
+          });
+        }
+
+        if (idsToDelete.length > 0) {
+          await refetch();
+        }
+
+        toast.success("Success!", {
+          description: "Transfer updated successfully!",
+          duration: 1500,
+        });
+
+        reset();
+        setAttachments([]);
+        setDeletedAttachmentIds([]);
+        setIsSaving(false);
+        onClose();
+      } catch (err) {
+        toast.error("Error!", {
+          description: err?.data?.error?.message || "Something went wrong while saving.",
+          duration: 1500,
+        });
+        setIsSaving(false);
+      } finally {
+        setIsSaving(false);
+      }
+
+      // Old payload
+      // manageTransferTickets(payload)
+      //   .unwrap()
+      //   .then(async () => {
+      //     // Ticket saved successfully -> now delete the attachments the user removed
+      //     if (idsToDelete.length > 0) {
+      //       const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
+
+      //       const failedCount = results.filter((r) => r.status === "rejected").length;
+      //       if (failedCount > 0) {
+      //         toast.error("Error!", {
+      //           description: `${failedCount} attachment(s) could not be deleted.`,
+      //           duration: 2500,
+      //         });
+      //       }
+
+      //       refetch();
+      //     }
+
+      //     toast.success("Success!", {
+      //       description: "Transfer updated successfully!",
+      //       duration: 1500,
+      //     });
+
+      //     setAttachments([]);
+      //     setDeletedAttachmentIds([]);
+      //     reset();
+      //     onClose();
+      //   })
+      //   .catch((err) => {
+      //     toast.error("Error!", {
+      //       description: err.data.error.message,
+      //       duration: 1500,
+      //     });
+      //   });
     });
   };
 
@@ -433,6 +483,7 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
     reset();
     setAttachments([]);
     setDeletedAttachmentIds([]);
+    setIsSaving(false);
     onClose();
   };
 
@@ -643,6 +694,7 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
         maxWidth="md"
         open={open}
         onClose={(event, reason) => {
+          if (isSaving) return;
           if (reason === "backdropClick") {
             event.stopPropagation();
             return;
@@ -921,13 +973,13 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton form="closeTicket" variant="contained" loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching} onClick={onCloseHandler} sx={sx.cancelButton}>
+          <LoadingButton form="closeTicket" variant="contained" loading={isSaving} onClick={onCloseHandler} sx={sx.cancelButton}>
             Cancel
           </LoadingButton>
 
           {data?.getForTransferTickets?.[0]?.isApprove === false && (
-            <LoadingButton type="submit" form="closeticket" variant="contained" loading={manageTransferTicketsIsLoading || manageTransferTicketsIsFetching} disabled={!watch("TransferRemarks")}>
-              Save Changes
+            <LoadingButton type="submit" form="closeticket" variant="contained" loading={isSaving} disabled={!watch("TransferRemarks")}>
+              Save
             </LoadingButton>
           )}
         </DialogActions>
