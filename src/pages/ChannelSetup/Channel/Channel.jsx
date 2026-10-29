@@ -69,7 +69,7 @@ const Channel = () => {
 
   const [archiveChannel] = useArchiveChannelMutation();
 
-  const rows = data?.value?.channel ?? [];
+  const rows = data?.value?.approver ?? [];
   const isBusy = isLoading || isFetching;
   const hasRows = isSuccess && !isBusy && rows.length > 0;
   const isEmpty = isSuccess && !isBusy && rows.length === 0;
@@ -402,7 +402,7 @@ const Channel = () => {
             </TableContainer>
 
             <TablePagination
-              sx={{ color: "#A0AEC0", fontWeight: 400 }}
+              sx={sx.pagination}
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={data?.value?.totalCount || 0}
