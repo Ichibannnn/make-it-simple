@@ -24,8 +24,9 @@ import { AddOutlined, Search } from "@mui/icons-material";
 
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import { theme } from "../../../theme/theme";
+import { useEffect, useState } from "react";
+import { masterlistStyles as sx } from "../../Masterlist/styles/masterlistStyles";
 
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
@@ -38,6 +39,14 @@ import { useGetRolesQuery, useArchiveRoleMutation } from "../../../features/user
 import RoleAction from "./RoleAction";
 import RolePermissions from "./RolePermissions";
 import RoleAddDialog from "./RoleAddDialog";
+
+const STATUS_TABS = [
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
+];
+
+const TABLE_COLUMNS = ["LINE NO.", "ROLE NAME", "PERMISSIONS", "STATUS", "ACTIONS"];
 
 const Roles = () => {
   const [status, setStatus] = useState("true");
@@ -60,10 +69,15 @@ const Roles = () => {
     },
     {
       refetchOnMountOrArgChange: true,
-    }
+    },
   );
 
   const [archiveRole] = useArchiveRoleMutation();
+
+  const rows = data?.value?.userRole ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
 
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
@@ -232,85 +246,43 @@ const Roles = () => {
         padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
       }}
     >
-      <Stack>
+      {/* Header */}
+      <Stack sx={sx.pageHeader}>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
-            <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>Roles</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button variant="contained" size={isSmallScreen ? "medium" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
-                Add
-              </Button>
-            </Stack>
+          <Stack sx={sx.titleGroup}>
+            <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
+              Roles
+            </Typography>
+            <Chip label={`${data?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
+          <Typography sx={sx.pageSubtitle}>Manage roles and their assigned access permissions</Typography>
         </Stack>
+
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+          Add
+        </Button>
       </Stack>
 
-      <Stack
-        sx={{
-          backgroundColor: theme.palette.bgForm.black3,
-          borderRadius: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange} variant={isSmallScreen ? "scrollable" : "fullWidth"} scrollButtons="auto">
-            <Tab
-              value=""
-              label="All"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="true"
-              label="Active"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-            <Tab
-              value="false"
-              label="Archived"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-          </Tabs>
-        </Stack>
+      {/* Content Container */}
+      <Stack sx={sx.contentContainer}>
+        <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto" sx={sx.tabs}>
+          {STATUS_TABS.map((tab) => (
+            <Tab key={tab.label} value={tab.value} label={tab.label} sx={sx.tab} />
+          ))}
+        </Tabs>
 
-        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
+        <Divider variant="fullWidth" sx={sx.divider} />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "10px", padding: "10px" }} gap={4}>
-          <OutlinedInput
-            flex="1"
-            placeholder="Search role"
-            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            sx={{
-              flex: 1,
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-            }}
-          />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+          <OutlinedInput placeholder="Search role" startAdornment={<Search sx={sx.searchIcon} />} value={searchValue} onChange={(e) => setSearchValue(e.target.value)} sx={sx.searchInput} />
         </Stack>
 
         {isSmallScreen ? (
           // Card-Based Layout for Small Screens
           <Stack spacing={2}>
-            {isSuccess &&
-              !isLoading &&
-              !isFetching &&
-              data?.value?.userRole?.map((item, index) => (
-                <Card key={item.id} sx={{ backgroundColor: theme.palette.bgForm.black3, borderRadius: "15px", borderColor: "#2D3748" }}>
+            {hasRows &&
+              rows?.map((item, index) => (
+                <Card key={item.id} sx={sx.card}>
                   <CardContent>
                     <Stack spacing={1}>
                       <Stack direction="row" gap={0.5} alignItems="center">
@@ -318,16 +290,7 @@ const Roles = () => {
                           LINE NO. {index + 1}
                         </Typography>
 
-                        <Chip
-                          label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                          size="small"
-                          sx={{
-                            fontSize: "10px",
-                            backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                            borderRadius: "none",
-                            color: item.is_Active ? "#10B981" : "#D27D0E",
-                          }}
-                        />
+                        <Chip label={item.is_Active ? "ACTIVE" : "INACTIVE"} size="small" sx={{ ...sx.statusChip(item.is_Active), ...sx.cardChip }} />
                       </Stack>
 
                       <Typography variant="h6" sx={{ color: "#D65DB1" }}>
@@ -355,7 +318,7 @@ const Roles = () => {
               ))}
 
             {isError && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+              <Stack sx={sx.feedbackContainer}>
                 <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                 <Typography variant="h6" color="error" align="center">
                   Something went wrong.
@@ -363,17 +326,17 @@ const Roles = () => {
               </Stack>
             )}
 
-            {(isLoading || isFetching) && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isBusy && (
+              <Stack sx={sx.feedbackContainer}>
                 <CircularProgress />
-                <Typography variant="h5" color="#EDF2F7">
+                <Typography variant="h5" sx={sx.feedbackText}>
                   Please wait...
                 </Typography>
               </Stack>
             )}
 
-            {isSuccess && !data?.value?.userRole.length && (
-              <Stack justifyContent="center" alignItems="center" padding={4}>
+            {isEmpty && (
+              <Stack sx={sx.feedbackContainer}>
                 <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                 <Typography variant="h6" align="center">
                   No records found.
@@ -396,136 +359,35 @@ const Roles = () => {
           <>
             <TableContainer>
               <Table sx={{ borderBottom: "none" }}>
-                <TableHead>
+                <TableHead sx={{ whiteSpace: "nowra" }}>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      LINE NO.
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                    >
-                      ROLE NAME
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      PERMISSIONS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      STATUS
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        background: "#1C2536",
-                        color: "#D65DB1",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                      }}
-                      align="center"
-                    >
-                      ACTIONS
-                    </TableCell>
+                    {TABLE_COLUMNS.map((column) => (
+                      <TableCell key={column} sx={sx.headCell} align={column === "ROLE NAME" ? "left" : "center"}>
+                        {column}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {isSuccess &&
-                    !isLoading &&
-                    !isFetching &&
-                    data?.value?.userRole?.map((item, index) => (
+                  {hasRows &&
+                    rows?.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           {item.id}
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.user_Role_Name}
-                        </TableCell>
+                        <TableCell sx={sx.bodyCell}>{item.user_Role_Name}</TableCell>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           <RolePermissions permissions={item.permissions} />
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
-                          <Chip
-                            variant="filled"
-                            size="30px"
-                            sx={{
-                              fontSize: "13px",
-                              backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                              color: item.is_Active ? "#10B981" : "#D27D0E",
-                              fontWeight: 800,
-                            }}
-                            label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                          />
+                        <TableCell sx={sx.bodyCell} align="center">
+                          <Chip variant="filled" size="small" sx={sx.statusChip(item.is_Active)} label={item.is_Active ? "ACTIVE" : "INACTIVE"} />
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            color: "#EDF2F7",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                          }}
-                          align="center"
-                        >
+                        <TableCell sx={sx.bodyCell} align="center">
                           <RoleAction data={item} status={status} onArchive={onArchiveAction} onUpdate={onEditAction} />
                         </TableCell>
                       </TableRow>
@@ -533,31 +395,31 @@ const Roles = () => {
 
                   {isError && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           Something went wrong.
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {(isLoading || isFetching) && (
+                  {isBusy && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                         <CircularProgress />
-                        <Typography variant="h5" color="#EDF2F7">
+                        <Typography variant="h5" sx={sx.feedbackText}>
                           Please wait...
                         </Typography>
                       </TableCell>
                     </TableRow>
                   )}
 
-                  {isSuccess && !data?.value?.userRole.length && !isLoading && !isFetching && (
+                  {isEmpty && (
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                        <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                      <TableCell colSpan={TABLE_COLUMNS.length} align="center">
+                        <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
+                        <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                           No records found.
                         </Typography>
                       </TableCell>

@@ -29,6 +29,7 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import useDebounce from "../../../hooks/useDebounce";
 import useDisclosure from "../../../hooks/useDisclosure";
+import { masterlistStyles as sx } from "../../Masterlist/styles/masterlistStyles";
 
 import noRecordsFound from "../../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../../assets/svg/SomethingWentWrong.svg";
@@ -39,12 +40,21 @@ import UserAccountDialog from "./UserAccountDialog";
 import { useGetUsersQuery, useResetUserPasswordMutation, useArchiveUserMutation, useGetPendingUsersQuery } from "../../../features/user_management_api/user/userApi";
 import PendingAccountsTab from "./PendingAccounts/PendingAccountsTab";
 
-const TABLE_COLUMNS = ["LINE NO.", "SITE", "NAME", "TOTAL EVALUATION", "LOOKUP SOURCE", "STATUS", "ACTIONS"];
+const STATUS_TABS = [
+  { value: "", label: "ALL" },
+  { value: "true", label: "ACTIVE" },
+  { value: "false", label: "ARCHIVED" },
+  { value: "pending", label: "PENDING" },
+];
+
+const TABLE_COLUMNS = ["LINE NO.", "FULLNAME", "USERNAME", "ROLE", "ACCOUNT ACCESS", "STATUS", "ACTIONS"];
 
 const UserAccounts = () => {
   const [status, setStatus] = useState("true");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(100);
+
+  const [getTabName, setGetTabName] = useState(null);
 
   const [searchValue, setSearchValue] = useState("");
   const search = useDebounce(searchValue, 500);
@@ -77,6 +87,11 @@ const UserAccounts = () => {
   const [resetUser] = useResetUserPasswordMutation();
   const [archiveUser] = useArchiveUserMutation();
 
+  const rows = data?.value?.users ?? [];
+  const isBusy = isLoading || isFetching;
+  const hasRows = isSuccess && !isBusy && rows.length > 0;
+  const isEmpty = isSuccess && !isBusy && rows.length === 0;
+
   const onPageNumberChange = (_, page) => {
     setPageNumber(page + 1);
   };
@@ -88,15 +103,17 @@ const UserAccounts = () => {
 
   const onStatusChange = (_, newValue) => {
     if (newValue === "pending") {
+      setGetTabName(newValue);
       setOnPendingTab(newValue);
       setStatus(newValue);
       setPageNumber(1);
-      setPageSize(5);
+      setPageSize(100);
     } else {
+      setGetTabName(null);
       setOnPendingTab(null);
       setStatus(newValue);
       setPageNumber(1);
-      setPageSize(5);
+      setPageSize(100);
     }
   };
 
@@ -317,96 +334,36 @@ const UserAccounts = () => {
   }, [searchValue]);
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        backgroundColor: theme.palette.bgForm.black1,
-        color: "#fff",
-        padding: isSmallScreen ? "20px" : "44px 94px 94px 94px",
-      }}
-    >
-      <Stack>
+    <Stack sx={sx.pageContainer}>
+      {/* Header */}
+      <Stack sx={sx.pageHeader}>
         <Stack>
-          <Stack width="100%" justifyContent="space-between" sx={{ flexDirection: isSmallScreen ? "column" : "row" }}>
-            <Stack justifyItems="left">
-              <Typography variant={isSmallScreen ? "h5" : "h4"}>User Accounts</Typography>
-            </Stack>
-
-            <Stack justifyItems="space-between" direction="row" marginTop={1}>
-              <Button variant="contained" size={isSmallScreen ? "medium" : "large"} color="primary" startIcon={<AddOutlined />} onClick={onToggle}>
-                Add
-              </Button>
-            </Stack>
+          <Stack sx={sx.titleGroup}>
+            <Typography variant={isSmallScreen ? "h5" : "h4"} sx={sx.pageTitle}>
+              User Accounts
+            </Typography>
+            <Chip label={getTabName !== "pending" ? `${data?.value?.totalCount ?? 0} total` : `${pendingUsersData?.value?.totalCount ?? 0} total`} size="small" sx={sx.countChip} />
           </Stack>
+          <Typography sx={sx.pageSubtitle}>Manage user profiles and their assigned charging details</Typography>
         </Stack>
+
+        <Button variant="contained" size="large" startIcon={<AddOutlined />} onClick={onToggle} sx={sx.addButton}>
+          Add
+        </Button>
       </Stack>
 
-      <Stack
-        sx={{
-          backgroundColor: theme.palette.bgForm.black3,
-          borderRadius: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <Stack direction="row" justifyContent="space-between">
-          <Tabs value={status} onChange={onStatusChange} variant={isSmallScreen ? "scrollable" : "fullWidth"} scrollButtons="auto">
-            <Tab
-              value=""
-              label="All"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
+      {/* Content Container */}
+      <Stack sx={sx.contentContainer}>
+        <Tabs value={status} onChange={onStatusChange} variant="scrollable" scrollButtons="auto" sx={sx.tabs}>
+          {STATUS_TABS.map((tab) => (
+            <Tab key={tab.label} value={tab.value} label={tab.label} sx={sx.tab} />
+          ))}
+        </Tabs>
 
-            <Tab
-              value="true"
-              label="Active"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
+        <Divider variant="fullWidth" sx={sx.divider} />
 
-            <Tab
-              value="false"
-              label="Archived"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-
-            <Tab
-              value="pending"
-              label="Pending"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 600,
-              }}
-            />
-          </Tabs>
-        </Stack>
-
-        <Divider variant="fullWidth" sx={{ background: "#2D3748", marginTop: "1px" }} />
-
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ marginTop: "5px", padding: "10px" }}>
-          <OutlinedInput
-            placeholder="Search user"
-            startAdornment={<Search sx={{ marginRight: 0.5, color: "#A0AEC0" }} />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            sx={{
-              flex: 1,
-              borderRadius: "15px",
-              fontSize: "small",
-              fontWeight: 400,
-              lineHeight: "1.4375rem",
-              // backgroundColor: "#111927",
-            }}
-          />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={sx.searchContainer} gap={4}>
+          <OutlinedInput placeholder="Search user" startAdornment={<Search sx={sx.searchIcon} />} value={searchValue} onChange={(e) => setSearchValue(e.target.value)} sx={sx.searchInput} />
         </Stack>
 
         {onPendingTab ? (
@@ -416,8 +373,6 @@ const UserAccounts = () => {
             isFetching={pendingUsersIsFetching}
             isSuccess={pendingUsersIsSuccess}
             isError={pendingUsersIsError}
-            setPageNumber={setPageNumber}
-            setPageSize={setPageSize}
             onPageNumberChange={onPageNumberChange}
             onPageSizeChange={onPageSizeChange}
             isSmallScreen={isSmallScreen}
@@ -428,18 +383,9 @@ const UserAccounts = () => {
             {isSmallScreen ? (
               // Card-Based Layout for Small Screens
               <Stack spacing={2}>
-                {isSuccess &&
-                  !isLoading &&
-                  !isFetching &&
-                  data?.value?.users?.map((item, index) => (
-                    <Card
-                      key={item.id}
-                      sx={{
-                        backgroundColor: theme.palette.bgForm.black3,
-                        borderRadius: "15px",
-                        borderColor: "#2D3748",
-                      }}
-                    >
+                {hasRows &&
+                  rows?.map((item, index) => (
+                    <Card key={item.id} sx={sx.card}>
                       <CardContent>
                         <Stack spacing={1}>
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -447,16 +393,7 @@ const UserAccounts = () => {
                               LINE NO. {index + 1}
                             </Typography>
 
-                            <Chip
-                              label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                              size="small"
-                              sx={{
-                                fontSize: "10px",
-                                backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                                borderRadius: "none",
-                                color: item.is_Active ? "#10B981" : "#D27D0E",
-                              }}
-                            />
+                            <Chip label={item.is_Active ? "ACTIVE" : "INACTIVE"} size="small" sx={{ ...sx.statusChip(item.is_Active), ...sx.cardChip }} />
                           </Stack>
 
                           <Typography variant="h6" sx={{ color: "#EDF2F7" }}>
@@ -496,7 +433,7 @@ const UserAccounts = () => {
                   ))}
 
                 {isError && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                  <Stack sx={sx.feedbackContainer}>
                     <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                     <Typography variant="h6" color="error" align="center">
                       Something went wrong.
@@ -504,17 +441,17 @@ const UserAccounts = () => {
                   </Stack>
                 )}
 
-                {(isLoading || isFetching) && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                {isBusy && (
+                  <Stack sx={sx.feedbackContainer}>
                     <CircularProgress />
-                    <Typography variant="h5" color="#EDF2F7">
+                    <Typography variant="h5" sx={sx.feedbackText}>
                       Please wait...
                     </Typography>
                   </Stack>
                 )}
 
-                {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
-                  <Stack justifyContent="center" alignItems="center" padding={4}>
+                {isEmpty && (
+                  <Stack sx={sx.feedbackContainer}>
                     <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
                     <Typography variant="h6" align="center">
                       No records found.
@@ -546,40 +483,21 @@ const UserAccounts = () => {
                     <Table stickyHeader sx={{ borderBottom: "none" }}>
                       <TableHead>
                         <TableRow>
-                          {["LINE NO.", "FULLNAME", "USERNAME", "ROLE", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].map((header, idx) => (
-                            <TableCell
-                              key={idx}
-                              sx={{
-                                background: "#1C2536",
-                                color: "#D65DB1",
-                                fontWeight: 700,
-                                fontSize: "12px",
-                              }}
-                              align={["LINE NO.", "ACCOUNT ACCESS", "STATUS", "ACTIONS"].includes(header) ? "center" : "left"}
-                            >
-                              {header}
+                          {TABLE_COLUMNS.map((column) => (
+                            <TableCell key={column} sx={sx.headCell} align={column === "FULLNAME" || column === "USERNAME" || column === "ROLE" ? "left" : "center"}>
+                              {column}
                             </TableCell>
                           ))}
                         </TableRow>
                       </TableHead>
 
                       <TableBody>
-                        {isSuccess &&
-                          !isLoading &&
-                          !isFetching &&
-                          data?.value?.users?.map((item, index) => (
+                        {hasRows &&
+                          rows?.map((item, index) => (
                             <TableRow key={item.id}>
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                                align="center"
-                              >
+                              <TableCell sx={sx.bodyCell} align="center">
                                 {index + 1}
                               </TableCell>
-
                               <TableCell>
                                 <Typography
                                   sx={{
@@ -600,67 +518,15 @@ const UserAccounts = () => {
                                   {item.empId}
                                 </Typography>
                               </TableCell>
-
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                {item.username}
-                              </TableCell>
-
-                              <TableCell
-                                sx={{
-                                  color: "#22B4BF",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                {item.user_Role_Name}
-                              </TableCell>
-
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                                align="center"
-                              >
+                              <TableCell sx={sx.bodyCell}>{item.username}</TableCell>
+                              <TableCell sx={sx.bodyCell}>{item.user_Role_Name}</TableCell>
+                              <TableCell sx={sx.bodyCell} align="center">
                                 <UserAccountPermissions permissions={item.permission} />
                               </TableCell>
-
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                                align="center"
-                              >
-                                <Chip
-                                  variant="filled"
-                                  size="30px"
-                                  sx={{
-                                    fontSize: "13px",
-                                    backgroundColor: item.is_Active ? "#112C32" : "#2D2823",
-                                    color: item.is_Active ? "#10B981" : "#D27D0E",
-                                    fontWeight: 800,
-                                  }}
-                                  label={item.is_Active ? "ACTIVE" : "INACTIVE"}
-                                />
+                              <TableCell sx={sx.bodyCell} align="center">
+                                <Chip variant="filled" size="small" sx={sx.statusChip(item.is_Active)} label={item.is_Active ? "ACTIVE" : "INACTIVE"} />
                               </TableCell>
-
-                              <TableCell
-                                sx={{
-                                  color: "#EDF2F7",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                }}
-                                align="center"
-                              >
+                              <TableCell sx={sx.bodyCell} align="center">
                                 <UserAccountAction data={item} onReset={onResetPasswordAction} onArchive={onArchiveAction} onUpdate={onEditAction} />
                               </TableCell>
                             </TableRow>
@@ -668,31 +534,31 @@ const UserAccounts = () => {
 
                         {isError && (
                           <TableRow>
-                            <TableCell colSpan={7} align="center">
+                            <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                               <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                              <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                              <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                                 Something went wrong.
                               </Typography>
                             </TableCell>
                           </TableRow>
                         )}
 
-                        {(isLoading || isFetching) && (
+                        {isBusy && (
                           <TableRow>
-                            <TableCell colSpan={7} align="center">
+                            <TableCell colSpan={TABLE_COLUMNS.length} align="center">
                               <CircularProgress />
-                              <Typography variant="h5" color="#EDF2F7">
+                              <Typography variant="h5" sx={sx.feedbackText}>
                                 Please wait...
                               </Typography>
                             </TableCell>
                           </TableRow>
                         )}
 
-                        {isSuccess && !data?.value?.users.length && !isLoading && !isFetching && (
+                        {isEmpty && (
                           <TableRow>
-                            <TableCell colSpan={7} align="center">
-                              <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                              <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
+                            <TableCell colSpan={TABLE_COLUMNS.length} align="center">
+                              <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" style={{ width: "100%", maxWidth: "300px" }} />
+                              <Typography variant="h5" sx={sx.feedbackText} marginLeft={2}>
                                 No records found.
                               </Typography>
                             </TableCell>
