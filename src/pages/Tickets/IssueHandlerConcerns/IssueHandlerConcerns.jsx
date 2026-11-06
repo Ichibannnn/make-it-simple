@@ -879,6 +879,7 @@ const IssueHandlerConcerns = () => {
                       ".MuiBadge-badge": {
                         fontSize: "0.55rem",
                         fontWeight: 400,
+                        color: "#ffff",
                       },
                     }}
                   >

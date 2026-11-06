@@ -69,7 +69,7 @@ const Channel = () => {
 
   const [archiveChannel] = useArchiveChannelMutation();
 
-  const rows = data?.value?.approver ?? [];
+  const rows = data?.value?.channel ?? [];
   const isBusy = isLoading || isFetching;
   const hasRows = isSuccess && !isBusy && rows.length > 0;
   const isEmpty = isSuccess && !isBusy && rows.length === 0;
