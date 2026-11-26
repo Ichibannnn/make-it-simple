@@ -3,15 +3,16 @@ import React from "react";
 
 import * as yup from "yup";
 import Swal from "sweetalert2";
+
 import { toast } from "sonner";
-import { theme } from "../../../../theme/theme";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { LoadingButton } from "@mui/lab";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { formStyle as sx } from "../../../Tickets/IssueHandlerConcerns/style/formStyle";
 
 import { useDispatch } from "react-redux";
-import { useDisapproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { notificationApi } from "../../../../features/api_notification/notificationApi";
+import { useDisapproveTargetMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
 import { notificationMessageApi } from "../../../../features/api_notification_message/notificationMessageApi";
 
 const schema = yup.object().shape({
@@ -48,7 +49,7 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
 
     Swal.fire({
       title: "Confirmation",
-      text: `Disapprove this selected request(s)?`,
+      text: `Disapprove selected request?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -142,22 +143,11 @@ const DisapprovedSelectedTargetDialog = ({ open, onClose, selectedTickets, setSe
           </DialogContent>
 
           <DialogActions>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isLoading || isFetching}
-              disabled={!watch("reject_Remarks")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
-            >
-              Submit
-            </LoadingButton>
-            <LoadingButton variant="outlined" loading={isLoading || isFetching} onClick={onCloseAction}>
+            <LoadingButton variant="contained" loading={isLoading || isFetching} onClick={onCloseAction} sx={sx.cancelButton}>
               Close
+            </LoadingButton>
+            <LoadingButton type="submit" variant="contained" loading={isLoading || isFetching} disabled={!watch("reject_Remarks")}>
+              Submit
             </LoadingButton>
           </DialogActions>
         </form>
@@ -309,22 +299,11 @@ export const DisapproveTargetDialog = ({ data, open, onClose, onCloseDisapprove,
           </DialogContent>
 
           <DialogActions>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isLoading || isFetching}
-              disabled={!watch("reject_Remarks")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
-            >
-              Submit
-            </LoadingButton>
-            <LoadingButton variant="outlined" loading={isLoading || isFetching} onClick={onCloseAction}>
+            <LoadingButton variant="contained" loading={isLoading || isFetching} onClick={onCloseAction} sx={sx.cancelButton}>
               Close
+            </LoadingButton>
+            <LoadingButton type="submit" variant="contained" loading={isLoading || isFetching} disabled={!watch("reject_Remarks")}>
+              Submit
             </LoadingButton>
           </DialogActions>
         </form>

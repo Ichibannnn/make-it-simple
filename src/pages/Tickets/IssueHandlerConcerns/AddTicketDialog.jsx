@@ -875,7 +875,8 @@ const AddTicketDialog = ({ open, onClose }) => {
                                     <Chip
                                       key={option.subCategoryId}
                                       size="small"
-                                      label={`${option.category_Description?.trim()} - ${option.sub_Category_Description?.trim()}`}
+                                      // label={`${option.category_Description?.trim()} - ${option.sub_Category_Description?.trim()}`}
+                                      label={`${option.sub_Category_Description?.trim()}`}
                                       sx={{ fontSize: "11px" }}
                                       {...tagProps}
                                     />

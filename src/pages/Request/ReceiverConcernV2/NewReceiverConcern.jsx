@@ -311,7 +311,7 @@ const NewReceiverConcern = () => {
                                   color: theme.palette.text.main,
                                 }}
                               >
-                                {`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}
+                                {`${item.ticketNumber}`}
                               </Typography>
                             </Stack>
 
@@ -656,12 +656,12 @@ const NewReceiverConcern = () => {
                                   checked={isSelected(item)}
                                   onChange={() => handleSelectTicket(item)}
                                   inputProps={{
-                                    "aria-label": `select ticket ${item?.ticketRequestConcerns[0]?.ticketConcernId}`,
+                                    "aria-label": `select ticket ${item?.ticketNumber}`,
                                   }}
                                 />
                               </Stack>
                               {item.severity === "Urgent" && <FlashOn color="warning" />}
-                              <Typography sx={{ fontSize: "12px" }}>{`${moment(item.created_At).format("YYYY")}-${item.ticketRequestConcerns[0]?.ticketConcernId}`}</Typography>
+                              <Typography sx={{ fontSize: "12px" }}>{item.ticketNumber}</Typography>
                             </Stack>
                           </TableCell>
 

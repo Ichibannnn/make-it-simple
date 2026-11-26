@@ -2,41 +2,17 @@ import moment from "moment";
 import { theme } from "../../../theme/theme";
 
 import { Close, History } from "@mui/icons-material";
-import {
-  Timeline,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineItem,
-  TimelineOppositeContent,
-  TimelineSeparator,
-  timelineOppositeContentClasses,
-} from "@mui/lab";
-import {
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  Divider,
-  IconButton,
-  Skeleton,
-  Stack,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator, timelineOppositeContentClasses } from "@mui/lab";
+import { Avatar, Box, Button, Dialog, DialogContent, Divider, IconButton, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { useGetTicketHistoryQuery } from "../../../features/api_ticketing/issue_handler/concernIssueHandlerApi";
 import { reqConcernStyles as sx } from "./style/reqConcernStyles";
 import { useMemo, useState } from "react";
 
 const NEGATIVE = ["Rejected", "Disapprove", "Cancel"];
-const getTone = (item, pending) =>
-  pending ? "pending" : NEGATIVE.includes(item.request) ? "error" : "ok";
+const getTone = (item, pending) => (pending ? "pending" : NEGATIVE.includes(item.request) ? "error" : "ok");
 
 const getInitials = (name = "") => {
-  const [last = "", rest = ""] = name.includes(",")
-    ? name.split(",").map((s) => s.trim())
-    : ["", name.trim()];
+  const [last = "", rest = ""] = name.includes(",") ? name.split(",").map((s) => s.trim()) : ["", name.trim()];
   const first = rest.split(" ")[0] || last;
   return `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase() || "?";
 };
@@ -44,9 +20,7 @@ const getInitials = (name = "") => {
 const DateCell = ({ date }) =>
   date ? (
     <Stack>
-      <Typography sx={sx.dateDay}>
-        {moment(date).format("MMM D, YYYY")}
-      </Typography>
+      <Typography sx={sx.dateDay}>{moment(date).format("MMM D, YYYY")}</Typography>
       <Typography sx={sx.dateTime}>{moment(date).format("h:mm A")}</Typography>
     </Stack>
   ) : (
@@ -72,9 +46,7 @@ const Entry = ({ item, pending, next, isLast }) => {
 
       <TimelineContent sx={sx.timelineContent}>
         <Box sx={sx.card({ tone })}>
-          <Typography sx={sx.statusText({ tone, next })}>
-            {item.request}
-          </Typography>
+          <Typography sx={sx.statusText({ tone, next })}>{item.request}</Typography>
           <Typography sx={sx.historyDesc}>{item.status}</Typography>
 
           <Stack sx={sx.transactedByBox}>
@@ -96,17 +68,9 @@ const Reason = ({ text, tone }) => {
   return (
     <Box sx={sx.reasonBox({ tone })}>
       <Typography sx={sx.reasonLabel}>Reason</Typography>
-      <Typography
-        sx={[sx.reasonText({ tone }), !open && isLong && sx.reasonClamp]}
-      >
-        {text}
-      </Typography>
+      <Typography sx={[sx.reasonText({ tone }), !open && isLong && sx.reasonClamp]}>{text}</Typography>
       {isLong && (
-        <Button
-          disableRipple
-          onClick={() => setOpen((o) => !o)}
-          sx={sx.reasonToggle}
-        >
+        <Button disableRipple onClick={() => setOpen((o) => !o)} sx={sx.reasonToggle}>
           {open ? "Show less" : "Show more"}
         </Button>
       )}
@@ -115,14 +79,9 @@ const Reason = ({ text, tone }) => {
 };
 
 const ConcernHistory = ({ data, open, onClose }) => {
-  const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
-
-  const { data: historyData, isLoading } = useGetTicketHistoryQuery(
-    data?.ticketRequestConcerns?.[0]?.ticketConcernId,
-    {
-      skip: !data?.ticketRequestConcerns?.[0]?.ticketConcernId,
-    },
-  );
+  const { data: historyData, isLoading } = useGetTicketHistoryQuery(data?.ticketRequestConcerns?.[0]?.ticketConcernId, {
+    skip: !data?.ticketRequestConcerns?.[0]?.ticketConcernId,
+  });
 
   const entries = useMemo(() => {
     const record = historyData?.value?.[0];
@@ -156,16 +115,10 @@ const ConcernHistory = ({ data, open, onClose }) => {
         // PaperProps={{ style: { overflow: "auto" } }}
       >
         <DialogContent>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" gap={1} alignItems="center">
               <Stack sx={sx.titleHeaderStack}>
-                <Typography sx={sx.titleText}>
-                  {`Ticket Number: ${moment(data?.created_At).format("YYYY")}-${data?.ticketRequestConcerns?.[0]?.ticketConcernId}`}
-                </Typography>
+                <Typography sx={sx.titleText}>{`Ticket Number: ${data?.ticketNumber}`}</Typography>
               </Stack>
             </Stack>
 
@@ -176,10 +129,7 @@ const ConcernHistory = ({ data, open, onClose }) => {
 
           <Divider variant="fullWidth" sx={sx.divider} />
 
-          <Stack
-            gap={2}
-            sx={{ padding: 2, borderRadius: "20px", marginTop: 2 }}
-          >
+          <Stack gap={2} sx={{ padding: 2, borderRadius: "20px", marginTop: 2 }}>
             {/* TIMELINE */}
             <Stack sx={sx.dialogStack}>
               <Stack sx={sx.titleHeaderStack}>
@@ -190,28 +140,15 @@ const ConcernHistory = ({ data, open, onClose }) => {
               {isLoading ? (
                 <Stack gap={2}>
                   {[0, 1, 2].map((i) => (
-                    <Skeleton
-                      key={i}
-                      variant="rounded"
-                      height={84}
-                      sx={{ bgcolor: "rgba(255,255,255,0.05)" }}
-                    />
+                    <Skeleton key={i} variant="rounded" height={84} sx={{ bgcolor: "rgba(255,255,255,0.05)" }} />
                   ))}
                 </Stack>
               ) : entries.length === 0 ? (
-                <Typography sx={sx.emptyText}>
-                  No activity on this ticket yet.
-                </Typography>
+                <Typography sx={sx.emptyText}>No activity on this ticket yet.</Typography>
               ) : (
                 <Timeline position="right" sx={sx.timeline}>
                   {entries.map(({ item, pending }, index) => (
-                    <Entry
-                      key={`${pending ? "up" : "hist"}-${index}`}
-                      item={item}
-                      pending={pending}
-                      next={index === nextIndex}
-                      isLast={index === entries.length - 1}
-                    />
+                    <Entry key={`${pending ? "up" : "hist"}-${index}`} item={item} pending={pending} next={index === nextIndex} isLast={index === entries.length - 1} />
                   ))}
                 </Timeline>
               )}

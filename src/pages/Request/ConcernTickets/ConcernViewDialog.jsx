@@ -364,7 +364,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
   const onConcernFormSubmit = (formData) => {
     Swal.fire({
       title: "Confirmation",
-      text: `Edit this ticket number ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}?`,
+      text: `Edit this ticket number ${editData?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -509,60 +509,6 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
       } finally {
         setIsSaving(false);
       }
-
-      // Old payload
-      // createEditRequestorConcern(payload)
-      //   .unwrap()
-      //   .then(async () => {
-      //     // Ticket saved successfully -> now delete the attachments the user removed
-      //     if (idsToDelete.length > 0) {
-      //       const results = await Promise.allSettled(idsToDelete.map((id) => deleteRequestorAttachment({ ticketAttachmentId: id }).unwrap()));
-
-      //       const failedCount = results.filter((r) => r.status === "rejected").length;
-
-      //       if (failedCount > 0) {
-      //         toast.error("Error!", {
-      //           description: `${failedCount} attachment(s) could not be deleted.`,
-      //           duration: 2500,
-      //         });
-      //       }
-
-      //       refetch();
-      //     }
-
-      //     toast.success("Success!", {
-      //       description: "Concern updated successfully!",
-      //       duration: 1500,
-      //     });
-
-      //     dispatch(notificationApi.util.resetApiState());
-      //     dispatch(notificationMessageApi.util.resetApiState());
-      //     setAttachments([]);
-      //     reset({
-      //       Request_Type: "New Request",
-      //       Severity: "Normal",
-      //       BackJobId: null,
-      //       Contact_Number: "",
-
-      //       DateNeeded: moment().format("YYYY-MM-DD"),
-      //       ChannelId: null,
-      //       CategoryId: [],
-      //       SubCategoryId: [],
-
-      //       Concern: "",
-      //       Notes: "",
-      //     });
-      //     setIsLoading(false);
-      //     setDeletedAttachmentIds([]);
-      //     onClose();
-      //   })
-      //   .catch((err) => {
-      //     console.log("Error", err);
-      //     toast.error("Error!", {
-      //       description: err.data.error.message,
-      //       duration: 1500,
-      //     });
-      //   });
     });
   };
 
@@ -1048,7 +994,7 @@ const ConcernViewDialog = ({ editData, open, onClose, refetch }) => {
               {/* Header */}
               <Stack mb={1}>
                 <Typography sx={sx.titleText}>{!editData ? "New Request" : "View Request"}</Typography>
-                <Typography sx={sx.captionText}>{`Ticket Number: ${moment(editData?.created_At).format("YYYY")}-${editData?.ticketRequestConcerns?.[0]?.ticketConcernId}`}</Typography>
+                <Typography sx={sx.captionText}>{`Ticket Number: ${editData?.ticketNumber}`}</Typography>
               </Stack>
 
               {/* Fields */}

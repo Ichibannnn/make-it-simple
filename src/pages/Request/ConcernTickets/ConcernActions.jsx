@@ -1,11 +1,4 @@
-import {
-  ArrowBackOutlined,
-  CloseOutlined,
-  ContentCopyOutlined,
-  DoneOutlined,
-  MoreHoriz,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { ArrowBackOutlined, CloseOutlined, ContentCopyOutlined, DoneOutlined, MoreHoriz, VisibilityOutlined } from "@mui/icons-material";
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 
 import { useRef } from "react";
@@ -41,11 +34,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
   };
 
   const onCopyTicket = async (data) => {
-    const message = `Fresh Morning, ${data?.fullName}, ${data?.department_Name}. Your request has been successfully created under Service Ticket #${moment(
-      data?.created_At,
-    ).format("YYYY")}-${data?.ticketRequestConcerns?.[0]?.ticketConcernId} and forwarded to our ${
-      data?.channel_Name
-    } for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${data?.concern}`;
+    const message = `Fresh Morning, ${data?.fullName}, ${data?.department_Name}. Your request has been successfully created under Service Ticket #${data?.ticketNumber} and forwarded to our ${data?.channel_Name} for review. A member of the Support Team will contact you shortly to provide further assistance.\n\nConcern: ${data?.concern}`;
 
     try {
       await navigator?.clipboard?.writeText(message);
@@ -77,9 +66,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
             <ListItemIcon>
               <DoneOutlined fontSize="small" color="success" />
             </ListItemIcon>
-            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>
-              Confirm
-            </Typography>
+            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.success.main }}>Confirm</Typography>
           </MenuItem>
         )}
 
@@ -95,9 +82,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
             <ListItemIcon>
               <ArrowBackOutlined fontSize="small" color="error" />
             </ListItemIcon>
-            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>
-              Return
-            </Typography>
+            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Return</Typography>
           </MenuItem>
         )}
 
@@ -106,9 +91,7 @@ const ConcernActions = ({ data, onView, onConfirm, onReturn, onCancel, status })
             <ListItemIcon>
               <CloseOutlined fontSize="small" color="error" />
             </ListItemIcon>
-            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>
-              Cancel
-            </Typography>
+            <Typography sx={{ fontSize: "17px", fontWeight: 500, color: theme.palette.error.main }}>Cancel</Typography>
           </MenuItem>
         )}
       </Menu>
