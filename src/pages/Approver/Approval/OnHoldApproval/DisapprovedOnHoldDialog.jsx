@@ -1,20 +1,13 @@
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 
 import * as yup from "yup";
 import Swal from "sweetalert2";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { theme } from "../../../../theme/theme";
-import { LoadingButton } from "@mui/lab";
 import { toast } from "sonner";
+import { LoadingButton } from "@mui/lab";
+import { useForm } from "react-hook-form";
+import { theme } from "../../../../theme/theme";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { formStyle as sx } from "../../../Tickets/IssueHandlerConcerns/style/formStyle";
 
 import { useDispatch } from "react-redux";
 import { useRejectOnHoldMutation } from "../../../../features/api_ticketing/approver/ticketApprovalApi";
@@ -55,7 +48,7 @@ const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Disapproved this request hold ticket number ${data?.ticketConcernId}?`,
+      text: `Disapproved this request hold ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -164,22 +157,12 @@ const DisapprovedOnHoldDialog = ({ data, open, onClose, approvalOnClose }) => {
           </DialogContent>
 
           <DialogActions>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isLoading || isFetching}
-              disabled={!watch("reject_Remarks")}
-              sx={{
-                ":disabled": {
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "black",
-                },
-              }}
-            >
-              Submit
-            </LoadingButton>
-            <LoadingButton variant="outlined" loading={isLoading || isFetching} onClick={onCloseAction}>
+            <LoadingButton variant="contained" loading={isLoading || isFetching} onClick={onCloseAction} sx={sx.cancelButton}>
               Close
+            </LoadingButton>
+
+            <LoadingButton type="submit" variant="contained" loading={isLoading || isFetching} disabled={!watch("reject_Remarks")}>
+              Submit
             </LoadingButton>
           </DialogActions>
         </form>

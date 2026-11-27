@@ -2,8 +2,8 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { theme } from "../../../../theme/theme";
 
-import { Avatar, Box, Button,  CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
-import {  AttachFileOutlined, Check, Close,  RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
+import { Avatar, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Divider, IconButton, Skeleton, Stack, Typography, useMediaQuery } from "@mui/material";
+import { AttachFileOutlined, Check, Close, RestartAlt, ZoomIn, ZoomOut } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
@@ -22,7 +22,6 @@ import { useApproveTargetMutation } from "../../../../features/api_ticketing/app
 
 import TargetApprovalMenuActions from "./MenuActions/TargetApprovalMenuActions";
 import { DisapproveTargetDialog } from "./DisapprovedSelectedTargetDialog";
-
 
 const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
   const [attachments, setAttachments] = useState([]);
@@ -259,7 +258,7 @@ const TargetApprovalDialog = ({ data, open, onClose, setSelectedTickets }) => {
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.descDetailBox}>
-                      <Typography sx={sx.description}>{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                      <Typography sx={sx.description}>{data?.ticketNumber}</Typography>
                     </Box>
                   </Stack>
 

@@ -48,7 +48,7 @@ const DisapprovedDialog = ({ data, open, onClose, approvalOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Disapproved this ticket number ${data?.ticketConcernId}?`,
+      text: `Disapproved this ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,

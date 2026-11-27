@@ -48,7 +48,7 @@ const TransferDisapproveDialog = ({ data, open, onClose, approvalOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Disapproved this request transfer ticket number ${data?.ticketConcernId}?`,
+      text: `Disapproved this request transfer ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,

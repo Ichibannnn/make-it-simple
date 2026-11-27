@@ -261,7 +261,9 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                                 lineHeight: 1.57,
                                 color: theme.palette.text.main,
                               }}
-                            >{`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}</Typography>
+                            >
+                              {item?.ticketNumber}
+                            </Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -728,7 +730,7 @@ const TicketApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
+                          {item?.ticketNumber}
                         </TableCell>
 
                         <TableCell onClick={() => onViewAction(item)}>

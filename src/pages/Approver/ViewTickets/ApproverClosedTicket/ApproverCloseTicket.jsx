@@ -89,9 +89,7 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NUMBER:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{`${moment(item?.created_At).format(
-                              "YYYY"
-                            )}-${item.ticketConcernId}`}</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item?.ticketNumber}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -294,7 +292,7 @@ const ApproverCloseTicket = ({ data, isLoading, isFetching, isSuccess, isError, 
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {`${moment(item?.created_At).format("YYYY")}-${item.ticketConcernId}`}
+                          {item.ticketNumber}
                         </TableCell>
 
                         <TableCell onClick={() => onViewAction(item)}>

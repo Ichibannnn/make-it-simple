@@ -261,7 +261,7 @@ const TicketApprovalDialog = ({ data, open, onClose }) => {
                     </Box>
                     <Box sx={sx.spacer} />
                     <Box sx={sx.descDetailBox}>
-                      <Typography sx={sx.description}>{`${moment(data?.requestedAt).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                      <Typography sx={sx.description}>{data?.ticketNumber}</Typography>
                     </Box>
                   </Stack>
 

@@ -223,9 +223,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
 
                           <Stack direction="row" gap={0.5} alignItems="center">
                             <Typography sx={{ fontWeight: 700, fontSize: "0.775rem", lineHeight: 1.57, color: "#D65DB1" }}>TICKET NO:</Typography>
-                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{`${moment(item.created_At).format(
-                              "YYYY"
-                            )}-${item.ticketConcernId}`}</Typography>
+                            <Typography sx={{ fontWeight: 400, fontSize: "0.775rem", lineHeight: 1.57, color: theme.palette.text.main }}>{item.ticketNumber}</Typography>
                           </Stack>
 
                           <Stack direction="row" gap={0.5} alignItems="center">
@@ -439,7 +437,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
                           align="center"
                           onClick={() => onViewAction(item)}
                         >
-                          {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
+                          {item.ticketNumber}
                         </TableCell>
 
                         <TableCell onClick={() => onViewAction(item)}>
@@ -587,12 +585,7 @@ const TargetApproval = ({ data, isLoading, isFetching, isSuccess, isError, setPa
       )}
 
       <TargetApprovalDialog data={viewApprovalData} open={open} onClose={onDialogClose} setSelectedTickets={setSelectedTickets} />
-      <DisapprovedSelectedTargetDialog
-        open={disapproveSelectedOpen}
-        onClose={disapproveSelectedOnClose}
-        selectedTickets={selectedTickets}
-        setSelectedTickets={setSelectedTickets}
-      />
+      <DisapprovedSelectedTargetDialog open={disapproveSelectedOpen} onClose={disapproveSelectedOnClose} selectedTickets={selectedTickets} setSelectedTickets={setSelectedTickets} />
     </Stack>
   );
 };
