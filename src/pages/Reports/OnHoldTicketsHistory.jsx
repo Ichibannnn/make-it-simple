@@ -1,42 +1,14 @@
 import { useEffect } from "react";
 import { useGetOnHoldTicketsQuery } from "../../features/api_reports/reportsApi";
 import { CalendarMonthOutlined, Search } from "@mui/icons-material";
-import {
-  Chip,
-  OutlinedInput,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Chip, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { theme } from "../../theme/theme";
 
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const OnHoldTicketsHistory = ({
-  search,
-  searchValue,
-  setSearchValue,
-  serviceProvider,
-  channel,
-  user,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const OnHoldTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvider, channel, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOnHoldTicketsQuery({
     Search: search,
@@ -67,22 +39,9 @@ const OnHoldTicketsHistory = ({
   return (
     <Stack sx={{ width: "100%" }}>
       <Stack>
-        <Stack
-          direction={isScreenSmall ? "column" : "row"}
-          justifyContent="space-between"
-          alignItems={isScreenSmall ? "left" : "center"}
-          gap={isScreenSmall ? 0.5 : 0}
-          mt={1}
-          mb={1}
-          ml={2}
-          mr={2}
-        >
+        <Stack direction={isScreenSmall ? "column" : "row"} justifyContent="space-between" alignItems={isScreenSmall ? "left" : "center"} gap={isScreenSmall ? 0.5 : 0} mt={1} mb={1} ml={2} mr={2}>
           <Stack>
-            <Typography
-              sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}
-            >
-              On-Hold Tickets Report
-            </Typography>
+            <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>On-Hold Tickets Report</Typography>
           </Stack>
 
           <Stack justifyItems="space-between" direction="row">
@@ -216,7 +175,7 @@ const OnHoldTicketsHistory = ({
                       },
                     }}
                   >
-                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
+                    {item.ticketConcernId}
                   </TableCell>
 
                   <Tooltip title={item?.concerns} placement="bottom-start">
@@ -348,11 +307,7 @@ const OnHoldTicketsHistory = ({
             {isError && (
               <TableRow>
                 <TableCell colSpan={9} align="center">
-                  <img
-                    src={somethingWentWrong}
-                    alt="Something Went Wrong"
-                    className="something-went-wrong-table"
-                  />
+                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F9" marginLeft={2}>
                     Something went wrong.
                   </Typography>

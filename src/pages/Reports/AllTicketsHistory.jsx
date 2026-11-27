@@ -241,7 +241,7 @@ const AllTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvide
                         }}
                         align="center"
                       >
-                        {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
+                        {item.ticketConcernId}
                       </TableCell>
 
                       <Tooltip title={item?.concerns} placement="bottom-start">

@@ -1,21 +1,7 @@
 import { useEffect } from "react";
 import { useGetClosedTicketsQuery, useGetSlaTicketsQuery } from "../../features/api_reports/reportsApi";
 import { CalendarMonthOutlined, FiberManualRecord, Search } from "@mui/icons-material";
-import {
-  Chip,
-  CircularProgress,
-  OutlinedInput,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Chip, CircularProgress, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
 
 import moment from "moment";
 import { theme } from "../../theme/theme";
@@ -23,22 +9,7 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const ServiceLevelAgreement = ({
-  search,
-  searchValue,
-  setSearchValue,
-  serviceProvider,
-  channel,
-  user,
-  remarks,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const ServiceLevelAgreement = ({ search, searchValue, setSearchValue, serviceProvider, channel, user, remarks, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetSlaTicketsQuery({
     Search: search,
@@ -70,22 +41,9 @@ const ServiceLevelAgreement = ({
   return (
     <Stack sx={{ width: "100%" }}>
       <Stack>
-        <Stack
-          direction={isScreenSmall ? "column" : "row"}
-          justifyContent="space-between"
-          alignItems={isScreenSmall ? "left" : "center"}
-          gap={isScreenSmall ? 0.5 : 0}
-          mt={1}
-          mb={1}
-          ml={2}
-          mr={2}
-        >
+        <Stack direction={isScreenSmall ? "column" : "row"} justifyContent="space-between" alignItems={isScreenSmall ? "left" : "center"} gap={isScreenSmall ? 0.5 : 0} mt={1} mb={1} ml={2} mr={2}>
           <Stack>
-            <Typography
-              sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}
-            >
-              SLA Report
-            </Typography>
+            <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>SLA Report</Typography>
           </Stack>
 
           <Stack>
@@ -302,7 +260,7 @@ const ServiceLevelAgreement = ({
                     }}
                     align="center"
                   >
-                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketNo}`}
+                    {item.ticketNo}
                   </TableCell>
                   <TableCell
                     className="ellipsis-styling"
@@ -313,16 +271,12 @@ const ServiceLevelAgreement = ({
                   >
                     <Stack gap={0.5}>
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                          Assign:
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Assign:</Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.assign}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                          Store:
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Store:</Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.store}</Typography>
                       </Stack>
                     </Stack>
@@ -356,39 +310,23 @@ const ServiceLevelAgreement = ({
                   >
                     <Stack gap={0.5}>
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                          Open Date:
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                          {moment(item.openDate).format("LL hh:mma")}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Open Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{moment(item.openDate).format("LL hh:mma")}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                          Target Date:
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                          {item.targetDate ? moment(item.targetDate).format("LL") : "--"}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Target Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.targetDate ? moment(item.targetDate).format("LL") : "--"}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                          For Closing Date:
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                          {item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>For Closing Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.forClosingDate ? moment(item.forClosingDate).format("LL hh:mma") : "--"}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>
-                          Closed Date:
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                          {item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, color: "#22B4BF" }}>Closed Date:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item?.closedDate ? moment(item.closedDate).format("LL hh:mma") : "--"}</Typography>
                       </Stack>
                     </Stack>
                   </TableCell>
@@ -471,26 +409,13 @@ const ServiceLevelAgreement = ({
                   >
                     <Stack gap={0.5}>
                       <Stack>
-                        <Typography
-                          sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}
-                        >
-                          Category:
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                          {" "}
-                          {item.category ? item.category : "--"}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Category:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}> {item.category ? item.category : "--"}</Typography>
                       </Stack>
 
                       <Stack>
-                        <Typography
-                          sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}
-                        >
-                          Sub Category:
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>
-                          {item.subCategory ? item.subCategory : "--"}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 600, fontWeight: 600, color: "#22B4BF" }}>Sub Category:</Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: 500 }}>{item.subCategory ? item.subCategory : "--"}</Typography>
                       </Stack>
                     </Stack>
                   </TableCell>
@@ -531,11 +456,7 @@ const ServiceLevelAgreement = ({
             {isError && (
               <TableRow>
                 <TableCell colSpan={17} align="center">
-                  <img
-                    src={somethingWentWrong}
-                    alt="Something Went Wrong"
-                    className="something-went-wrong-table"
-                  />
+                  <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
                   <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
                     Something went wrong.
                   </Typography>

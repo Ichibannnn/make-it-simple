@@ -24,21 +24,7 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const OpenTicketsHistory = ({
-  search,
-  searchValue,
-  setSearchValue,
-  serviceProvider,
-  channel,
-  user,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const OpenTicketsHistory = ({ search, searchValue, setSearchValue, serviceProvider, channel, user, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetOpenTicketsQuery({
     Search: search,
@@ -71,16 +57,7 @@ const OpenTicketsHistory = ({
   return (
     <Stack sx={{ width: "100%" }}>
       <Stack>
-        <Stack
-          direction={isScreenSmall ? "column" : "row"}
-          justifyContent="space-between"
-          alignItems={isScreenSmall ? "left" : "center"}
-          gap={isScreenSmall ? 0.5 : 0}
-          mt={1}
-          mb={1}
-          ml={2}
-          mr={2}
-        >
+        <Stack direction={isScreenSmall ? "column" : "row"} justifyContent="space-between" alignItems={isScreenSmall ? "left" : "center"} gap={isScreenSmall ? 0.5 : 0} mt={1} mb={1} ml={2} mr={2}>
           <Stack>
             <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>Open Tickets Report</Typography>
           </Stack>
@@ -199,7 +176,7 @@ const OpenTicketsHistory = ({
                       }}
                       align="center"
                     >
-                      {`${moment(item.requestedAt).format("YYYY")}-${item.ticketConcernId}`}
+                      {item.ticketConcernId}
                     </TableCell>
 
                     <TableCell>

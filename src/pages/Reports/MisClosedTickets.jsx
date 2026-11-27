@@ -1,20 +1,7 @@
 import { useEffect } from "react";
 import { useGetMisClosedTicketsQuery } from "../../features/api_reports/reportsApi";
 import { Search } from "@mui/icons-material";
-import {
-  CircularProgress,
-  OutlinedInput,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { CircularProgress, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from "@mui/material";
 
 import moment from "moment";
 import { theme } from "../../theme/theme";
@@ -22,22 +9,7 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const MisClosedTickets = ({
-  search,
-  searchValue,
-  setSearchValue,
-  serviceProvider,
-  channel,
-  user,
-  remarks,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const MisClosedTickets = ({ search, searchValue, setSearchValue, serviceProvider, channel, user, remarks, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetMisClosedTicketsQuery({
     Search: search,
@@ -69,16 +41,7 @@ const MisClosedTickets = ({
   return (
     <Stack sx={{ width: "100%" }}>
       <Stack>
-        <Stack
-          direction={isScreenSmall ? "column" : "row"}
-          justifyContent="space-between"
-          alignItems={isScreenSmall ? "left" : "center"}
-          gap={isScreenSmall ? 0.5 : 0}
-          mt={1}
-          mb={1}
-          ml={2}
-          mr={2}
-        >
+        <Stack direction={isScreenSmall ? "column" : "row"} justifyContent="space-between" alignItems={isScreenSmall ? "left" : "center"} gap={isScreenSmall ? 0.5 : 0} mt={1} mb={1} ml={2} mr={2}>
           <Stack>
             <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>MIS Closed Tickets Report</Typography>
           </Stack>
@@ -172,50 +135,6 @@ const MisClosedTickets = ({
                 DATE
               </TableCell>
 
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                OPEN DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                TARGET DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                CLOSED DATE
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                APPROVER DATE
-              </TableCell> */}
-
               <TableCell
                 sx={{
                   background: "#1C2536",
@@ -237,72 +156,6 @@ const MisClosedTickets = ({
               >
                 CHARGING
               </TableCell>
-
-              {/* <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                COMPANY
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                BUSINESS UNIT
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                DEPARTMENT
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                UNIT
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                SUB UNIT
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  background: "#1C2536",
-                  color: "#D65DB1",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                }}
-              >
-                LOCATION
-              </TableCell> */}
 
               <TableCell
                 sx={{
@@ -343,7 +196,7 @@ const MisClosedTickets = ({
                     }}
                     align="center"
                   >
-                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticketNumber}`}
+                    {item.ticketNumber}
                   </TableCell>
 
                   <TableCell
@@ -364,34 +217,6 @@ const MisClosedTickets = ({
                       </Stack>
                     </Stack>
                   </TableCell>
-                  {/* 
-                  <TableCell
-                    sx={{
-                      color: "#22B4BF",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.assignTo}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#22B4BF",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.requestor}
-                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -442,62 +267,6 @@ const MisClosedTickets = ({
                       </Stack>
                     </Stack>
                   </TableCell>
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {moment(item.open_Date).format("LL")}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.target_Date ? moment(item.target_Date).format("LL") : "--"}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.forClosingDate ? moment(item.forClosingDate).format("LL") : "--"}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.closingDate ? moment(item.closingDate).format("LL") : "--"}
-                  </TableCell> */}
 
                   <TableCell
                     sx={{
@@ -566,91 +335,6 @@ const MisClosedTickets = ({
                       </Stack>
                     </Stack>
                   </TableCell>
-
-                  {/* <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.companyCode} - {item.companyName}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.businessUnitCode} - {item.businessUnitName}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.departmentCode} - {item.departmentName}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.unitCode} - {item.unitName}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                  >
-                    {item.subUnitCode} - {item.subUnitName}
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      color: "#EDF2F7",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      "&:hover": {
-                        background: "",
-                        color: "#EDF2F7",
-                      },
-                    }}
-                    align="center"
-                  >
-                    {item.locationCode} - {item.locationName}
-                  </TableCell> */}
 
                   <TableCell
                     sx={{

@@ -1,22 +1,7 @@
 import { useEffect } from "react";
 import { useGetClosedTicketsTargetQuery } from "../../features/api_reports/reportsApi";
 import { FiberManualRecord, Search } from "@mui/icons-material";
-import {
-  Chip,
-  CircularProgress,
-  OutlinedInput,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Chip, CircularProgress, OutlinedInput, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useMediaQuery } from "@mui/material";
 
 import moment from "moment";
 import { theme } from "../../theme/theme";
@@ -24,22 +9,7 @@ import { theme } from "../../theme/theme";
 import noRecordsFound from "../../assets/svg/noRecordsFound.svg";
 import somethingWentWrong from "../../assets/svg/SomethingWentWrong.svg";
 
-const CloseTicketTarget = ({
-  search,
-  searchValue,
-  setSearchValue,
-  serviceProvider,
-  channel,
-  user,
-  remarks,
-  dateFrom,
-  dateTo,
-  pageNumber,
-  setPageNumber,
-  pageSize,
-  setPageSize,
-  setSheetData,
-}) => {
+const CloseTicketTarget = ({ search, searchValue, setSearchValue, serviceProvider, channel, user, remarks, dateFrom, dateTo, pageNumber, setPageNumber, pageSize, setPageSize, setSheetData }) => {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { data, isLoading, isFetching, isSuccess, isError } = useGetClosedTicketsTargetQuery({
     Search: search,
@@ -71,16 +41,7 @@ const CloseTicketTarget = ({
   return (
     <Stack sx={{ width: "100%" }}>
       <Stack>
-        <Stack
-          direction={isScreenSmall ? "column" : "row"}
-          justifyContent="space-between"
-          alignItems={isScreenSmall ? "left" : "center"}
-          gap={isScreenSmall ? 0.5 : 0}
-          mt={1}
-          mb={1}
-          ml={2}
-          mr={2}
-        >
+        <Stack direction={isScreenSmall ? "column" : "row"} justifyContent="space-between" alignItems={isScreenSmall ? "left" : "center"} gap={isScreenSmall ? 0.5 : 0} mt={1} mb={1} ml={2} mr={2}>
           <Stack>
             <Typography sx={{ fontSize: isScreenSmall ? "18px" : "1.5rem", fontWeight: isScreenSmall ? 600 : 700 }}>Target Tickets Summary</Typography>
           </Stack>
@@ -285,7 +246,7 @@ const CloseTicketTarget = ({
                     }}
                     align="center"
                   >
-                    {`${moment(item.requestedAt).format("YYYY")}-${item.ticket_Number}`}
+                    {item.ticket_Number}
                   </TableCell>
 
                   <TableCell>
@@ -368,13 +329,7 @@ const CloseTicketTarget = ({
                       variant="filled"
                       size="30px"
                       icon={
-                        item?.remarks === "On-Time" ? (
-                          <FiberManualRecord fontSize="small" color="success" />
-                        ) : item?.remarks === "Delay" ? (
-                          <FiberManualRecord fontSize="small" color="error" />
-                        ) : (
-                          ""
-                        )
+                        item?.remarks === "On-Time" ? <FiberManualRecord fontSize="small" color="success" /> : item?.remarks === "Delay" ? <FiberManualRecord fontSize="small" color="error" /> : ""
                       }
                       sx={{
                         fontSize: "12px",
