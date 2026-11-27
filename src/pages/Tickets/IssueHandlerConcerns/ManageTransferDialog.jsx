@@ -289,37 +289,6 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
       "AddTransferAttachments",
       watch("AddTransferAttachments").filter((file) => file.name !== fileNameToDelete.name),
     );
-
-    // try {
-    //   if (fileNameToDelete.ticketAttachmentId) {
-    //     const deletePayload = {
-    //       ticketAttachmentId: fileNameToDelete.ticketAttachmentId,
-    //     };
-    //     await deleteRequestorAttachment(deletePayload)
-    //       .unwrap()
-    //       .then(() => {
-    //         toast.success("Success!", {
-    //           description: "File deleted successfully.",
-    //           duration: 1500,
-    //         });
-    //         refetch();
-    //       })
-    //       .catch((err) => {
-    //         console.log("error: ", err);
-    //         toast.error("Error!", {
-    //           description: err.data.error.message,
-    //           duration: 1500,
-    //         });
-    //       });
-    //   }
-
-    //   setAttachments((prevFiles) => prevFiles.filter((fileName) => fileName !== fileNameToDelete));
-
-    //   setValue(
-    //     "AddTransferAttachments",
-    //     watch("AddTransferAttachments").filter((file) => file.name !== fileNameToDelete.name),
-    //   );
-    // } catch (error) {}
   };
 
   const handleDragOver = (event) => {
@@ -347,7 +316,7 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
   const onSubmitAction = (formData) => {
     Swal.fire({
       title: "Confirmation",
-      text: `Edit transfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Edit transfer ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -713,7 +682,7 @@ const ManageTransferDialog = ({ data, open, onClose, refetch }) => {
                 <Stack>
                   <Typography sx={sx.titleText}>Manage Transfer</Typography>
                   <Stack sx={sx.manageTicketBox}>
-                    <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                    <Typography sx={sx.captionText}>{` Ticket # ${data?.ticketNumber}`}</Typography>
                   </Stack>
                 </Stack>
 

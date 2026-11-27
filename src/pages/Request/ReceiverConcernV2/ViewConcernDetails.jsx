@@ -177,7 +177,7 @@ const ViewConcernDetails = ({ data, setData, open, onClose }) => {
               <Avatar sx={sx.avatarIcon}>{trimLetters(data?.fullName)}</Avatar>
 
               <Box>
-                <Typography sx={sx.header}>{`Ticket Number ${data.ticketNumber}`}</Typography>
+                <Typography sx={sx.header}>{`Ticket Number ${data?.ticketNumber}`}</Typography>
                 <Typography sx={sx.subHeader}>{`New request from ${data?.fullName}`}</Typography>
               </Box>
             </Stack>

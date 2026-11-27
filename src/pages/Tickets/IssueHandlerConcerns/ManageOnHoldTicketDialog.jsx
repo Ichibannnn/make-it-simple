@@ -222,7 +222,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
   const onSubmitAction = (formData) => {
     Swal.fire({
       title: "Confirmation",
-      text: `Update on-hold changes to ticket ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Update on-hold changes to ticket ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -674,7 +674,7 @@ const ManageOnHoldTicketDialog = ({ data, open, onClose, refetch }) => {
                 <Stack>
                   <Typography sx={sx.titleText}>Manage Hold Ticket</Typography>
                   <Stack sx={sx.manageTicketBox}>
-                    <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                    <Typography sx={sx.captionText}>{` Ticket # ${data?.ticketNumber}`}</Typography>
 
                     {data?.getForClosingTickets?.[0]?.isApprove === true && <Typography sx={sx.approvedText}>(Approved)</Typography>}
                   </Stack>

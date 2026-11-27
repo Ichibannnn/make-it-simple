@@ -214,8 +214,6 @@ const IssueHandlerConcerns = () => {
   };
 
   const onPrintTicketAction = async (data) => {
-    console.log("Data: ", data);
-
     Swal.fire({
       title: "Printing Service Report...",
       allowOutsideClick: false,
@@ -289,7 +287,7 @@ const IssueHandlerConcerns = () => {
           description.setText(data?.concern_Description.replace(/\r\n/g, " - "));
           resolution.setText(data?.getForClosingTickets?.[0]?.resolution);
           issue_handler.setText(data?.issue_Handler);
-          ticket_number.setText(data?.ticketConcernId.toString());
+          ticket_number.setText(data?.ticketNumber.toString());
           status_close.check();
 
           // Site
@@ -415,7 +413,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to resume this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Requesting to resume this ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -465,7 +463,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Cancel transfer ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Cancel transfer ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -512,7 +510,7 @@ const IssueHandlerConcerns = () => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Cancel ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Cancel ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -1195,7 +1193,7 @@ const IssueHandlerConcerns = () => {
                               <Box sx={global.cardSpacer} />
 
                               <Box sx={global.cardDescDetailBox}>
-                                <Typography sx={global.cardDescription}>{`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}</Typography>
+                                <Typography sx={global.cardDescription}>{item.ticketNumber}</Typography>
                               </Box>
                             </Stack>
 
@@ -1624,7 +1622,7 @@ const IssueHandlerConcerns = () => {
                               )}
 
                               <TableCell sx={sx.tableCellBody} onClick={() => onViewAction(item)}>
-                                {`${moment(item.created_At).format("YYYY")}-${item.ticketConcernId}`}
+                                {item.ticketNumber}
                               </TableCell>
 
                               <TableCell onClick={() => onViewAction(item)}>
@@ -1938,39 +1936,6 @@ const IssueHandlerConcerns = () => {
                     {loading && <TableSkeleton columns={tableColumns} rows={10} cellSx={sx.tableCellBody} />}
                     {no_records && <NoRecordsFoundTable colSpan={12} label="No records found" />}
                     {isError && <SomethingWentWrongTable colSpan={12} label="Something went wrong." />}
-
-                    {/* {isError && (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          <img src={somethingWentWrong} alt="Something Went Wrong" className="something-went-wrong-table" />
-                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                            Something went wrong.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
-
-                    {(isLoading || isFetching) && (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          <CircularProgress />
-                          <Typography variant="h5" color="#EDF2F7">
-                            Please wait...
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
-
-                    {isSuccess && !data?.value?.openTicket.length && !isLoading && !isFetching && (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          <img src={noRecordsFound} alt="No Records Found" className="norecords-found-table" />
-                          <Typography variant="h5" color="#EDF2F7" marginLeft={2}>
-                            No records found.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )} */}
                   </TableBody>
                 </Table>
               </TableContainer>

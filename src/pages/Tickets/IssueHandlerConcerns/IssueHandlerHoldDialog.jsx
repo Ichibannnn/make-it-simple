@@ -84,7 +84,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Requesting to hold this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Requesting to hold this ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -289,7 +289,7 @@ const IssueHandlerHoldDialog = ({ data, open, onClose, viewOnClose }) => {
                 {/* Ticket Number */}
                 <Stack>
                   <Typography sx={sx.titleText}>Hold Ticket</Typography>
-                  <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                  <Typography sx={sx.captionText}>{` Ticket # ${data?.ticketNumber}`}</Typography>
                 </Stack>
 
                 {/* Ticket Detail Section */}

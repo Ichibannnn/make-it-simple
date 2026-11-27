@@ -94,11 +94,11 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
       payload.append(`AddTransferAttachments[0].attachment`, "");
     }
 
-    console.log("Payload Entries: ", [...payload.entries()]);
+    // console.log("Payload Entries: ", [...payload.entries()]);
 
     Swal.fire({
       title: "Confirmation",
-      text: `Request to transfer this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Request to transfer this ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -305,7 +305,7 @@ const TicketForTransferDialog = ({ data, open, onClose, viewOnClose }) => {
             {/* Ticket Number */}
             <Stack>
               <Typography sx={sx.titleText}>Transfer Ticket</Typography>
-              <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+              <Typography sx={sx.captionText}>{` Ticket # ${data?.ticketNumber}`}</Typography>
             </Stack>
 
             {/* Ticket Detail Section */}

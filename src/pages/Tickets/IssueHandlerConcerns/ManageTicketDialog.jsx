@@ -311,7 +311,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
   const onSubmitAction = (formData) => {
     Swal.fire({
       title: "Confirmation",
-      text: `Edit this ticket number ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}?`,
+      text: `Edit this ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,
@@ -816,7 +816,7 @@ const ManageTicketDialog = ({ data, open, onClose, refetch }) => {
                   <Typography sx={sx.titleText}>{data?.getForClosingTickets?.[0]?.isApprove === false ? "Manage Ticket" : "View Ticket"}</Typography>
 
                   <Stack sx={sx.manageTicketBox}>
-                    <Typography sx={sx.captionText}>{` Ticket # ${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                    <Typography sx={sx.captionText}>{` Ticket # ${data?.ticketNumber}`}</Typography>
 
                     {data?.getForClosingTickets?.[0]?.isApprove === true && <Typography sx={sx.approvedText}>(Approved)</Typography>}
                   </Stack>

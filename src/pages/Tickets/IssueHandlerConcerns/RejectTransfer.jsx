@@ -41,7 +41,7 @@ const RejectTransfer = ({ data, open, onClose }) => {
 
     Swal.fire({
       title: "Confirmation",
-      text: `Reject this transfer ticket number ${data?.ticketConcernId}?`,
+      text: `Reject this transfer ticket number ${data?.ticketNumber}?`,
       icon: "info",
       color: "white",
       showCancelButton: true,

@@ -452,7 +452,7 @@ const IssueViewDialog = ({ data, viewOpen, viewOnClose, onClosing, onTransfer, o
                       <TableBody>
                         <TableRow>
                           <TableCell sx={global.bodyCell}>
-                            <Typography sx={global.ticketNoText}>{`${moment(data?.created_At).format("YYYY")}-${data?.ticketConcernId}`}</Typography>
+                            <Typography sx={global.ticketNoText}>{data?.ticketNumber}</Typography>
                           </TableCell>
                           <TableCell sx={global.bodyCell}>
                             {data?.concern_Description?.split("\r\n").map((line, index) => (
